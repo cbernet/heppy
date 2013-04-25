@@ -95,11 +95,11 @@ if __name__ == '__main__':
     c2 = Average('TestAve2')
     # c2.add(10,1)
 
-    sum = c+c2
+    csum = c+c2
     print c
     print c2
-    print sum
-    sum.write('.')
+    print csum
+    csum.write('.')
 
     import random
 
