@@ -54,32 +54,33 @@ class Analyzer(object):
         self.mainLogger.warning( str(self) )
         self.mainLogger.warning( '' )
 
-    def process(self, iEvent, event ):
+    def process(self, event ):
         '''Automatically called by Looper, for all analyzers.
         each analyzer in the sequence will be passed the same event instance.
         each analyzer can access, modify, and store event information, of any type.'''
         print self.cfg_ana.name
-        self.readCollections( iEvent )
+        # self.readCollections( event )
 
-    def readCollections(self, iEvent ):
-        '''You must call this function at the beginning of the process
-        function of your child analyzer.'''
-        # if not self.beginLoopCalled:
-        #    # necessary in case the user calls process to go straight to a given event, before looping
-        #    self.beginLoop()
-        for str,handle in self.handles.iteritems():
-            handle.Load( iEvent )
-        if self.cfg_comp.isMC:
-            for str,handle in self.mchandles.iteritems():
-                handle.Load( iEvent )
-        if self.cfg_comp.isEmbed:
-            for str,handle in self.embhandles.iteritems():
-                handle.Load( iEvent )
+    #def readCollections(self, event ):
+        #'''You must call this function at the beginning of the process
+        #function of your child analyzer.
+        #DEV: not sure I want to keep this function
+        #'''
+        ## if not self.beginLoopCalled:
+        ##    # necessary in case the user calls process to go straight to a given event, before looping
+        ##    self.beginLoop()
+        #for str,handle in self.handles.iteritems():
+            #handle.Load( event )
+        #if self.cfg_comp.isMC:
+            #for str,handle in self.mchandles.iteritems():
+                #handle.Load( event )
+        #if self.cfg_comp.isEmbed:
+            #for str,handle in self.embhandles.iteritems():
+                #handle.Load( event )
 
     def write(self):
         '''Called by Looper.write, for all analyzers.
         Just overload it if you have histograms to write.'''
-        # print 'writing not implemented for', self.cfg_ana.name 
         self.counters.write( self.dirName )
         self.averages.write( self.dirName )
 

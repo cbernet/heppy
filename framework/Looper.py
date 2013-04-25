@@ -147,7 +147,7 @@ class Looper(object):
         for analyzer in self.analyzers:
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop()
-            if analyzer.process( self.events, self.event ) == False:
+            if analyzer.process( self.event ) == False:
                 return (False, analyzer.name)
         return (True, analyzer.name)
             
