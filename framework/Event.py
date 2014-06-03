@@ -8,6 +8,8 @@ class Event(object):
     - read some information
     - add more information
     - modify existing information.
+
+    #TODO: provide a clear interface for access control (put, get, del products) - we should keep track of the name and id of the analyzer.
     '''
 
     def __init__(self, iEv):

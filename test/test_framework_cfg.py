@@ -6,15 +6,19 @@ dummyInputSample = cfg.Component(
     files = []
     )
 
+gun = cfg.Analyzer(
+    'ParticleGun'
+    )
+
 printer = cfg.Analyzer(
     'Printer'
     )
 
 
-
 selectedComponents  = [dummyInputSample]
 
 sequence = cfg.Sequence( [
+    gun,
     printer
     ] )
 

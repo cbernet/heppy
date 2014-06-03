@@ -7,7 +7,16 @@ import random
 import math
 
 class ParticleGun( Analyzer ):
-    
+    """
+    Random, single particle generator.
+
+    #TODO add parameters and describe them here
+    #TODO base class for particle generators?
+
+    The list of particles is put in
+    event.gen_particles
+    """
+
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         super(ParticleGun,self).__init__(cfg_ana, cfg_comp, looperName)
 
@@ -15,11 +24,4 @@ class ParticleGun( Analyzer ):
         # for now, just shoot a photon
         lv = TLorentzVector(0, 20, 50, math.sqrt(20*20+50*50))
         photon = Particle(0, 22, lv)
-        
-        #DEV need a way to specify what a processor takes, 
-        # and what it produces. 
-        # for example, generators produce a list of gen particles
-        # and store them with the name particles. 
-        event.put(self.name, 'particles', [photon])
-        
-        
+        event.gen_particles = [photon]
