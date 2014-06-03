@@ -2,30 +2,32 @@ import os
 import sys
 import imp
 import logging
-import pprint 
-# from DataFormats.FWLite import Events, Handle
-from framework.Events import Events
-from framework.Event import Event 
-## from framework.PythonPath import pythonpath
+import pprint
+from framework.DummyEvents import Events
+from framework.Event import Event
 
-                
+
 class Looper(object):
     '''Creates a set of analyzers, and schedules the event processing.'''
 
-    def __init__( self, name, cfg_comp, sequence, nEvents=None, firstEvent=0, nPrint=0):
+    def __init__( self, name, cfg_comp, sequence, nEvents=None,
+                  firstEvent=0, nPrint=0):
         '''Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
-        in sequence. The Looper can now be used to process an event,
-        or a collection of events in the sample. 
+        in sequence. The Looper can then be used to process an event,
+        or a collection of events.
 
+        Parameters:
         name    : name of the Looper, will be used as the output directory name
         cfg_comp: information for the input sample, see Config
-        sequence: an ordered list of Config.Analyzer 
+        sequence: an ordered list of Config.Analyzer
+        nEvents : number of events to process. Defaults to all.
+        firstEvent : first event to process. Defaults to the first one.
         nPrint  : number of events to print at the beginning
         '''
-        
+
         self.name = self._prepareOutput(name)
-        self.outDir = self.name 
+        self.outDir = self.name
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))
@@ -33,19 +35,20 @@ class Looper(object):
 
         self.cfg_comp = cfg_comp
         self.classes = {}
-        #TODO: should be a diclist? 
         self.analyzers = map( self._buildAnalyzer, sequence )
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
-        # initialize FWLite chain on input file:
+        #TODO: reactivate reading from a file.
+        #TODO: plug in simple particle gun
         ## try:
         ##     self.events = Events( self.cfg_comp.files )
         ## except RuntimeError:
         ##     print 'cannot find any file matching pattern', self.cfg_comp.files
         ##     raise
         self.events = Events()
-        
+        # self.event is set in self.process
+        self.event = None
 
     def _prepareOutput(self, name):
         index = 0
@@ -70,7 +73,7 @@ class Looper(object):
             # instead several instances are built
             theClass = self.classes[className]
             print 'found class', theClass
-            obj = theClass( cfg_ana, self.cfg_comp, self.outDir ) 
+            obj = theClass( cfg_ana, self.cfg_comp, self.outDir )
         except KeyError:
             file = None
             try:
@@ -93,7 +96,7 @@ class Looper(object):
                     print 'problem loading module', cfg_ana.name
                     print 'please make sure that the module name is correct.'
                     print 'if it is, is this module in your path, as defined below?'
-                    pprint.pprint( sorted( sys.path )) 
+                    pprint.pprint( sorted( sys.path ))
         return obj
 
     def loop(self):
@@ -111,10 +114,10 @@ class Looper(object):
             nEvents = int(nEvents)
         eventSize = nEvents
         self.logger.warning('starting loop at event {firstEvent} to process {eventSize} events.'.format(firstEvent=firstEvent, eventSize=eventSize))
-        self.logger.warning( str( self.cfg_comp ) ) 
+        self.logger.warning( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop()
-        
+
         try:
             for iEv in range(firstEvent, firstEvent+eventSize):
                 # if iEv == nEvents:
@@ -128,18 +131,18 @@ class Looper(object):
             print 'Stopped loop following a UserWarning exception'
         for analyzer in self.analyzers:
             analyzer.endLoop()
-        self.logger.warning('')
-        self.logger.warning( self.cfg_comp )
-        self.logger.warning('')
-        self.logger.warning( 'number of events processed: {nEv}'.format(nEv=iEv+1) )
+        warn = self.logger.warning
+        warn('')
+        warn( self.cfg_comp )
+        warn('')
+        warn('number of events processed: {nEv}'.format(nEv=iEv+1))
 
     def process(self, iEv ):
         '''Run event processing for all analyzers in the sequence.
 
-        This function is called by self.loop, but can also be called directly from
+        This function is called by self.loop,
+        but can also be called directly from
         the python interpreter, to jump to a given event.
-
-        TODO: add an example for event investigation.
         '''
         self.event = Event( iEv )
         self.iEvent = iEv
@@ -150,23 +153,21 @@ class Looper(object):
             if analyzer.process( self.event ) == False:
                 return (False, analyzer.name)
         return (True, analyzer.name)
-            
+
     def write(self):
         '''Writes all analyzers.
 
         See Analyzer.Write for more information.'''
         for analyzer in self.analyzers:
             analyzer.write()
-        pass 
+        pass
 
-    
+
 if __name__ == '__main__':
 
     import pickle
     import sys
     import os
-    ## from CMGTools.RootTools.fwlite.PythonPath import pythonpath
-    ## sys.path = pythonpath + sys.path
 
     cfgFileName = sys.argv[1]
     pckfile = open( cfgFileName, 'r' )

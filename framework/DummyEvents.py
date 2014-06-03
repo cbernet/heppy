@@ -3,8 +3,8 @@ class Events(list):
     temporarily replaces the fwlite event list class.
     need to replace by a generator, or a source file.
     '''
-    def __init__(self):
-        super(Events, self).__init__(range(0,10))
+    def __init__(self, nevents=10):
+        super(Events, self).__init__(range(0,nevents))
 
     def size(self):
         return len(self)

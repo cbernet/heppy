@@ -8,10 +8,10 @@ from multiprocessing import Pool
 from pprint import pprint
 
 from framework.Looper import Looper
-## from framework.PythonPath import pythonpath
+from framework.path import analyzer_path
 
 # global, to be used interactively when only one component is processed.
-loop = None 
+loop = None
 
 def callBack( result ):
     pass
@@ -25,7 +25,7 @@ def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
     # import pdb; pdb.set_trace()
     loop = Looper( fullName, comp, config.sequence,
-                   options.nevents, 0, 
+                   options.nevents, 0,
                    nPrint = options.nprint)
     print loop
     if options.iEvent is None:
@@ -41,7 +41,7 @@ def runLoop( comp, outDir, config, options):
 
 def createOutputDir(dir, components, force):
     '''Creates the output dir, dealing with the case where dir exists.'''
-    answer = None 
+    answer = None
     try:
         os.mkdir(dir)
         return True
@@ -65,7 +65,7 @@ def createOutputDir(dir, components, force):
             else:
                 raise ValueError( ' '.join(['answer can not have this value!',
                                             answer]) )
-            
+
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
 
@@ -76,8 +76,8 @@ def split(comps):
         if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
             chunkSize = len(comp.files) / comp.splitFactor
             if len(comp.files) % comp.splitFactor:
-                chunkSize += 1 
-            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor 
+                chunkSize += 1
+            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor
             for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
                 newComp = copy.deepcopy(comp)
                 newComp.files = chunk
@@ -91,12 +91,12 @@ def split(comps):
 
 
 def main( options, args ):
-    
+
     if len(args) != 2:
         parser.print_help()
         print 'ERROR: please provide the processing name and the component list'
         sys.exit(1)
-        
+
     outDir = args[0]
     if os.path.exists(outDir) and not os.path.isdir( outDir ):
         parser.print_help()
@@ -111,8 +111,8 @@ def main( options, args ):
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
-    ## sys.path = pythonpath + sys.path
- 
+    sys.path = analyzer_path + sys.path
+
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
     for comp in selComps:
@@ -128,7 +128,7 @@ def main( options, args ):
         for comp in selComps:
             print 'submitting', comp.name
             pool.apply_async( runLoopAsync, [comp, outDir, cfg.config, options],
-                              callback=callBack)     
+                              callback=callBack)
         pool.close()
         pool.join()
     else:
@@ -141,7 +141,7 @@ def main( options, args ):
 
 if __name__ == '__main__':
     from optparse import OptionParser
-    
+
     parser = OptionParser()
     parser.usage = """
     %prog <name> <analysis_cfg>
@@ -149,19 +149,19 @@ if __name__ == '__main__':
     'name' is whatever you want.
     """
 
-    parser.add_option("-N", "--nevents", 
-                      dest="nevents", 
+    parser.add_option("-N", "--nevents",
+                      dest="nevents",
                       help="number of events to process",
                       default=None)
-    parser.add_option("-p", "--nprint", 
-                      dest="nprint", 
+    parser.add_option("-p", "--nprint",
+                      dest="nprint",
                       help="number of events to print at the beginning",
                       default=5)
-    parser.add_option("-i", "--iEvent", 
-                      dest="iEvent", 
+    parser.add_option("-i", "--iEvent",
+                      dest="iEvent",
                       help="jump to a given event. ignored in multiprocessing.",
                       default=None)
-    parser.add_option("-f", "--force", 
+    parser.add_option("-f", "--force",
                       dest="force",
                       action='store_true',
                       help="don't ask questions in case output directory already exists.",

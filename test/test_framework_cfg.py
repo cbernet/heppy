@@ -6,17 +6,17 @@ dummyInputSample = cfg.Component(
     files = []
     )
 
-dummyAna = cfg.Analyzer(
-    'Analyzer'
+printer = cfg.Analyzer(
+    'Printer'
     )
 
 
-selectedComponents  = [dummyInputSample] 
+
+selectedComponents  = [dummyInputSample]
 
 sequence = cfg.Sequence( [
-    dummyAna
+    printer
     ] )
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
-
