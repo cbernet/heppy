@@ -1,3 +1,3 @@
-curpath=$PWD
-echo prepending $curpath to PYTHONPATH
-export PYTHONPATH=$curpath:$PYTHONPATH
+export PYFCC=$PWD
+echo prepending $PYFCC to PYTHONPATH
+export PYTHONPATH=$PYFCC:$PYTHONPATH

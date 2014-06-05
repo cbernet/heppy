@@ -1,4 +1,5 @@
 import collections
+from ROOT import TChain
 
 class Event(object):
     '''Event class.
@@ -23,8 +24,8 @@ class Event(object):
         for var,value in sorted(vars(self).iteritems()):
             tmp = value
             if isinstance( value, collections.Iterable ) and \
-                   not isinstance( value, (str,unicode)) and \
-                   not str(iter( value )).startswith('<ROOT.reco::candidate'):
+                   not isinstance(value, (str,unicode)) and \
+                   not isinstance(value, TChain):
                 tmp = map(str, value)
 
             varlines.append( '\t{var:<15}:   {value}'.format(var=var, value=tmp) )

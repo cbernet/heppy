@@ -1,9 +1,10 @@
-
+import os
+from framework.chain import Chain
 import framework.Config as cfg
 
 dummyInputSample = cfg.Component(
-    'Test',
-    files = []
+    'TestSample',
+    files = ['test_tree.root']
     )
 
 gun = cfg.Analyzer(

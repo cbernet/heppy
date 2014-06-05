@@ -8,7 +8,7 @@ from multiprocessing import Pool
 from pprint import pprint
 
 from framework.Looper import Looper
-from framework.path import analyzer_path
+from framework.anapath import analyzer_path
 
 # global, to be used interactively when only one component is processed.
 loop = None

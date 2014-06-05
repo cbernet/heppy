@@ -3,9 +3,9 @@ import sys
 import imp
 import logging
 import pprint
-from framework.DummyEvents import Events
+# from framework.DummyEvents import Events
+from framework.chain import Chain as Events
 from framework.Event import Event
-
 
 class Looper(object):
     '''Creates a set of analyzers, and schedules the event processing.'''
@@ -39,14 +39,7 @@ class Looper(object):
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
-        #TODO: reactivate reading from a file.
-        #TODO: plug in simple particle gun
-        ## try:
-        ##     self.events = Events( self.cfg_comp.files )
-        ## except RuntimeError:
-        ##     print 'cannot find any file matching pattern', self.cfg_comp.files
-        ##     raise
-        self.events = Events()
+        self.events = Events('test_tree', self.cfg_comp.files)
         # self.event is set in self.process
         self.event = None
 
@@ -108,8 +101,8 @@ class Looper(object):
         nEvents = self.nEvents
         firstEvent = self.firstEvent
         iEv = firstEvent
-        if nEvents is None or int (nEvents) > int (self.events.size()) :
-            nEvents = self.events.size()
+        if nEvents is None or int(nEvents) > len(self.events) :
+            nEvents = len(self.events)
         else:
             nEvents = int(nEvents)
         eventSize = nEvents
@@ -144,9 +137,9 @@ class Looper(object):
         but can also be called directly from
         the python interpreter, to jump to a given event.
         '''
-        self.event = Event( iEv )
+        self.event = Event(iEv)
         self.iEvent = iEv
-        self.events.to(iEv)
+        self.event.input = self.events[iEv]
         for analyzer in self.analyzers:
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop()
