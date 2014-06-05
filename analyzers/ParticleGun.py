@@ -1,4 +1,4 @@
-from framework.Analyzer import Analyzer
+from framework.analyzer import Analyzer
 from particles.Particle import Particle
 
 from ROOT import TLorentzVector

@@ -1,6 +1,6 @@
 import os
 from framework.chain import Chain
-import framework.Config as cfg
+import framework.config as cfg
 
 dummyInputSample = cfg.Component(
     'TestSample',
@@ -26,3 +26,6 @@ sequence = cfg.Sequence( [
 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )
+
+#TODO illustrate the use of Counter
+#TODO illustrate the use of

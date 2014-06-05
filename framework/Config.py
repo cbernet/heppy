@@ -1,4 +1,4 @@
-from framework.Weight import Weight
+from framework.weight import Weight
 import glob
 
 

@@ -7,7 +7,7 @@ import copy
 from multiprocessing import Pool
 from pprint import pprint
 
-from framework.Looper import Looper
+from framework.looper import Looper
 from framework.anapath import analyzer_path
 
 # global, to be used interactively when only one component is processed.

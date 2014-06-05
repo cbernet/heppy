@@ -1,4 +1,4 @@
-from framework.Analyzer import Analyzer
+from framework.analyzer import Analyzer
 
 class Printer(Analyzer):
 

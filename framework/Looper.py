@@ -7,11 +7,11 @@ from framework.chain import Chain as Events
 from framework.event import Event
 
 class Looper(object):
-    '''Creates a set of analyzers, and schedules the event processing.'''
+    """Creates a set of analyzers, and schedules the event processing."""
 
     def __init__( self, name, cfg_comp, sequence, nEvents=None,
                   firstEvent=0, nPrint=0):
-        '''Handles the processing of an event sample.
+        """Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
         in sequence. The Looper can then be used to process an event,
         or a collection of events.
@@ -23,7 +23,7 @@ class Looper(object):
         nEvents : number of events to process. Defaults to all.
         firstEvent : first event to process. Defaults to the first one.
         nPrint  : number of events to print at the beginning
-        '''
+        """
 
         self.name = self._prepareOutput(name)
         self.outDir = self.name
@@ -92,11 +92,12 @@ class Looper(object):
         return obj
 
     def loop(self):
-        '''Loop on a given number of events.
+        """Loop on a given number of events.
 
         At the beginning of the loop, Analyzer.beginLoop is called for each Analyzer.
         At each event, self.process is called.
-        At the end of the loop, Analyzer.endLoop is called.'''
+        At the end of the loop, Analyzer.endLoop is called.
+        """
         nEvents = self.nEvents
         firstEvent = self.firstEvent
         iEv = firstEvent
@@ -105,7 +106,9 @@ class Looper(object):
         else:
             nEvents = int(nEvents)
         eventSize = nEvents
-        self.logger.warning('starting loop at event {firstEvent} to process {eventSize} events.'.format(firstEvent=firstEvent, eventSize=eventSize))
+        self.logger.warning('starting loop at event {firstEvent} '\
+                            'to process {eventSize} events.'.format(firstEvent=firstEvent,
+                                                                    eventSize=eventSize))
         self.logger.warning( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop()
@@ -130,12 +133,12 @@ class Looper(object):
         warn('number of events processed: {nEv}'.format(nEv=iEv+1))
 
     def process(self, iEv ):
-        '''Run event processing for all analyzers in the sequence.
+        """Run event processing for all analyzers in the sequence.
 
         This function is called by self.loop,
         but can also be called directly from
         the python interpreter, to jump to a given event.
-        '''
+        """
         self.event = Event(iEv, self.events[iEv])
         self.iEvent = iEv
         for analyzer in self.analyzers:
@@ -146,9 +149,10 @@ class Looper(object):
         return (True, analyzer.name)
 
     def write(self):
-        '''Writes all analyzers.
+        """Writes all analyzers.
 
-        See Analyzer.Write for more information.'''
+        See Analyzer.Write for more information.
+        """
         for analyzer in self.analyzers:
             analyzer.write()
         pass
