@@ -8,14 +8,14 @@ class ChainTestCase(unittest.TestCase):
 
     def setUp(self):
         self.file = '../test/test_tree.root'
-        self.chain = Chain('test_tree', self.file)
+        self.chain = Chain(self.file, 'test_tree')
 
     def test_file(self):
         self.assertTrue(os.path.isfile(self.file))
 
     def test_guess_name(self):
         self.assertRaises(ValueError,
-                          Chain, None, 'self.file')
+                          Chain, 'self.file')
 
     def test_load_1(self):
         self.assertEqual(len(self.chain), 100)
@@ -23,7 +23,7 @@ class ChainTestCase(unittest.TestCase):
     def test_load_2(self):
         tmpfile = self.file.replace('test_tree', 'test_tree_2_tmp')
         shutil.copyfile(self.file, tmpfile)
-        chain = Chain('test_tree', self.file.replace('.root', '*.root'))
+        chain = Chain(self.file.replace('.root', '*.root'), 'test_tree')
         self.assertEqual(len(chain), 200)
         os.remove(tmpfile)
 

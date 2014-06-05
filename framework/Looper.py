@@ -3,9 +3,8 @@ import sys
 import imp
 import logging
 import pprint
-# from framework.DummyEvents import Events
 from framework.chain import Chain as Events
-from framework.Event import Event
+from framework.event import Event
 
 class Looper(object):
     '''Creates a set of analyzers, and schedules the event processing.'''
@@ -39,7 +38,7 @@ class Looper(object):
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
-        self.events = Events('test_tree', self.cfg_comp.files)
+        self.events = Events(self.cfg_comp.files)
         # self.event is set in self.process
         self.event = None
 

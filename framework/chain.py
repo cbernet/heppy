@@ -6,7 +6,7 @@ class Chain( object ):
 
     Example of use:  #TODO make that a doctest / nose?
        from chain import Chain
-       the_chain = Chain('test_tree', '../test/test_*.root')
+       the_chain = Chain('../test/test_*.root', 'test_tree')
        event3 = the_chain[2]
        print event3.var1
 
@@ -14,7 +14,7 @@ class Chain( object ):
            print event.var1
     """
 
-    def __init__(self, tree_name, input):
+    def __init__(self, input, tree_name=None):
         """
         Create a chain.
 
