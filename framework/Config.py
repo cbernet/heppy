@@ -21,7 +21,7 @@ def printComps(comps, details=False):
                 print c.files[0]
             nJobs += c.splitFactor
             nCompsWithFiles += 1
-            
+
     print '-'*70
     print '# components with files = ', nCompsWithFiles
     print '# jobs                  = ', nJobs
@@ -32,7 +32,7 @@ class CFG(object):
     def __init__(self, **kwargs):
         '''All keyword arguments are added as attributes.'''
         self.__dict__.update( **kwargs )
-        
+
     def __str__(self):
         '''A useful printout'''
         header = '{type}: {name}'.format( type=self.__class__.__name__,
@@ -50,7 +50,7 @@ class Analyzer( CFG ):
         '''
         One could for example define the analyzer configuration for a
         di-muon framework.Analyzer.Analyzer in the following way:
-        
+
         ZMuMuAna = cfg.Analyzer(
         "ZMuMuAnalyzer",
         pt1 = 20,
@@ -62,7 +62,7 @@ class Analyzer( CFG ):
         m_min = 0,
         m_max = 200
         )
-        
+
         Any kinds of keyword arguments can be added.
         The name must be present, and must be well chosen, as it will be used
         by the Looper to find the module containing the Analyzer class.
@@ -71,22 +71,23 @@ class Analyzer( CFG ):
         '''
 
         self.name = name
-        self.verbose = verbose 
+        self.verbose = verbose
         # self.cfg = CFG(**kwargs)
         super(Analyzer, self).__init__(**kwargs)
-        
+
 
 class Sequence( list ):
     '''A list with print functionalities.
 
     Used to define a sequence of analyzers.'''
     def __str__(self):
-        tmp = [] 
+        tmp = []
         for index, ana in enumerate( self ):
             tmp.append( '{index} :'.format(index=index) )
             tmp.append( '{ana} :'.format(ana=ana) )
         return '\n'.join(tmp)
-        
+
+#TODO review inheritance, and in particular constructor args - this is a mess.
 
 class Component( CFG ):
     '''Base component class.
@@ -94,13 +95,14 @@ class Component( CFG ):
     See the child classes:
     DataComponent, MCComponent, EmbedComponent
     for more information.'''
-    def __init__(self, name, files, triggers=None, **kwargs):
+    def __init__(self, name, files, tree_name, triggers=None, **kwargs):
         if isinstance(triggers, basestring):
             triggers = [triggers]
         if type(files) == str:
             files = sorted(glob.glob(files))
         super( Component, self).__init__( name = name,
                                           files = files,
+                                          tree_name = tree_name,
                                           triggers = triggers, **kwargs)
         self.isMC = False
         self.isData = False
@@ -112,7 +114,7 @@ class DataComponent( Component ):
 
     def __init__(self, name, files, intLumi, triggers, json=None):
         super(DataComponent, self).__init__(name, files, triggers)
-        self.isData = True 
+        self.isData = True
         self.intLumi = intLumi
         self.json = json
 
@@ -121,7 +123,7 @@ class DataComponent( Component ):
                        xSection = None,
                        genEff = -1,
                        intLumi = self.intLumi,
-                       addWeight = 1. ) 
+                       addWeight = 1. )
 
 class EmbedComponent( Component ):
     def __init__(self, name, **kwargs ):
@@ -129,7 +131,7 @@ class EmbedComponent( Component ):
                                                **kwargs )
         # self.tauEffWeight = None
         # self.muEffWeight = None
-        #WARNING what to do here ?? 
+        #WARNING what to do here ??
         self.isEmbed = True
 
     def getWeight( self, intLumi = None):
@@ -137,12 +139,12 @@ class EmbedComponent( Component ):
                        xSection = None,
                        genEff = -1,
                        intLumi = None,
-                       addWeight = 1. ) 
+                       addWeight = 1. )
 
-        
+
 class MCComponent( Component ):
     def __init__(self, name, files, triggers, xSection,
-                 nGenEvents, 
+                 nGenEvents,
                  # vertexWeight,tauEffWeight, muEffWeight,
                  effCorrFactor, **kwargs ):
         super( MCComponent, self).__init__( name = name,
@@ -199,16 +201,16 @@ if __name__ == '__main__':
     comp1 = Component( 'DYJets',
                        files='*.root',
                        triggers='HLT_stuff')
-    print 
+    print
     print comp1
 
     ecomp = EmbedComponent('Embed',
                            files='*.root',
                            triggers='HLT_stuff')
 
-    print 
+    print
     print ecomp
-    
+
 
     DYJets = MCComponent(
         name = 'DYJets',
@@ -221,4 +223,3 @@ if __name__ == '__main__':
 
     print
     print DYJets
-

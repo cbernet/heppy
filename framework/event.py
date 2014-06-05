@@ -10,12 +10,17 @@ class Event(object):
     - add more information
     - modify existing information.
 
+    Attributes:
+      iEv = event processing index, starting at 0
+      eventWeight = a weight, set to 1 at the beginning of the processing
+      input = input, as determined by the looper
     #TODO: provide a clear interface for access control (put, get, del products) - we should keep track of the name and id of the analyzer.
     '''
 
-    def __init__(self, iEv):
+    def __init__(self, iEv, input_data, eventWeight=1):
         self.iEv = iEv
-        self.eventWeight = 1
+        self.input = input_data
+        self.eventWeight = eventWeight
 
     def __str__(self):
         header = '{type}: {iEv}'.format( type=self.__class__.__name__,

@@ -4,7 +4,8 @@ import framework.Config as cfg
 
 dummyInputSample = cfg.Component(
     'TestSample',
-    files = ['test_tree.root']
+    files = ['test_tree.root'],
+    tree_name = 'test_tree'
     )
 
 gun = cfg.Analyzer(

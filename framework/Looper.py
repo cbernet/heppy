@@ -38,7 +38,7 @@ class Looper(object):
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
-        self.events = Events(self.cfg_comp.files)
+        self.events = Events(self.cfg_comp.files, self.cfg_comp.tree_name)
         # self.event is set in self.process
         self.event = None
 
@@ -136,9 +136,8 @@ class Looper(object):
         but can also be called directly from
         the python interpreter, to jump to a given event.
         '''
-        self.event = Event(iEv)
+        self.event = Event(iEv, self.events[iEv])
         self.iEvent = iEv
-        self.event.input = self.events[iEv]
         for analyzer in self.analyzers:
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop()
