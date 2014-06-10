@@ -12,17 +12,22 @@ Environment
 -----------
 
 From this directory, run the initialization script:
-source init.sh
+	
+	source init.sh
 
+
+Examples
+--------
+
+	cd test/
+	python ../framework/multiloop.py  Trash  test_framework_cfg.py
 
 Todo list
 ---------
 
 * TODO organize subdirs / review dependencies
 * TODO run pylint
-     make all modules lower case.
-* TODO rename repo on github -> find a name, not specific to FCC
-
+  * make all modules lower case.
 * TODO add unittests whenever possible
-     tests in same dir
-     how to organize global test suite?
+  * tests in same dir
+  * how to organize global test suite?
