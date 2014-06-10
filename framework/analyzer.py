@@ -2,8 +2,8 @@ import os
 import logging 
 
 
-from statistics.Counter import Counters
-from statistics.Average import Averages
+from statistics.counter import Counters
+from statistics.average import Averages
 
 class Analyzer(object):
     '''Base Analyzer class. Used in Looper.'''
