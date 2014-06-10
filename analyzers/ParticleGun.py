@@ -1,5 +1,5 @@
 from framework.analyzer import Analyzer
-from particles.Particle import Particle
+from particles.particle import Particle
 
 from ROOT import TLorentzVector
 

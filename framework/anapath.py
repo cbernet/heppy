@@ -2,10 +2,10 @@ import os
 import sys
 
 try:
-    root = os.environ["PYFCC"]
+    root = os.environ["HEPPY"]
 except KeyError:
     print """
-Define the PYFCC environment variable.
+anapath.py: Define the PYFCC environment variable.
 
 This variable should contain the path to the root directory of the python
 analysis framework.
