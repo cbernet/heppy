@@ -1,21 +1,28 @@
 TLEP
 ====
 
+Prerequisites 
+-------------
+
+* python 2.x, x>5
+* ROOT 5
+
+
 Environment
 -----------
 
-# from this directory, run the initialization script:
+From this directory, run the initialization script:
 source init.sh
 
 
-Test
-----
+Todo list
+---------
 
-#TODO organize subdirs / review dependencies
-#TODO run pylint
-      make all modules lower case.
-#TODO rename repo on github -> find a name, not specific to FCC
+* TODO organize subdirs / review dependencies
+* TODO run pylint
+     make all modules lower case.
+* TODO rename repo on github -> find a name, not specific to FCC
 
-#TODO add unittests whenever possible
-      tests in same dir
-      how to organize global test suite?
+* TODO add unittests whenever possible
+     tests in same dir
+     how to organize global test suite?
