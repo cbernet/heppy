@@ -4,13 +4,13 @@ Heppy : a python framework for high-energy physics data analysis
 Prerequisites 
 -------------
 
-*python 2.x, x>5*
+**python 2.x, x>5**
 
 Check your version of python by doing: 
 
 	python -V
 
-*ROOT 5*
+**ROOT 5**
 
 Environment
 -----------
