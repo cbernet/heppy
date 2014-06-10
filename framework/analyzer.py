@@ -6,21 +6,22 @@ from statistics.counter import Counters
 from statistics.average import Averages
 
 class Analyzer(object):
-    '''Base Analyzer class. Used in Looper.'''
+    """Base Analyzer class. Used in Looper.
+
+    Your custom analyzers should inherit from this class
+    """
     
     def __init__(self, cfg_ana, cfg_comp, looperName ):
-        '''Create an analyzer.
+        """Create an analyzer.
 
+        Parameters (also stored as attributes for later use):
         cfg_ana: configuration parameters for this analyzer (e.g. a pt cut)
         cfg_comp: configuration parameters for the data or MC component (e.g. DYJets)
         looperName: name of the Looper which runs this analyzer.
 
-        See Looper and Config for more information.
-
-        You should inherit from this class.
-        Interesting examples of child analyzers are:
-          DiLeptonAnalyzer, TauMuAnalyzer, VertexAnalyzer, H2TauTauEventSorter. 
-        '''
+        Attributes:
+        dirName : analyzer directory, where you can write anything you want      
+        """
         self.name = cfg_ana.name
         self.verbose = cfg_ana.verbose
         self.cfg_ana = cfg_ana
@@ -34,58 +35,35 @@ class Analyzer(object):
         self.mainLogger = logging.getLogger( looperName )
         self.beginLoopCalled = False
 
-    def declareHandles(self):
-        self.handles = {}
-        self.mchandles = {}
-        self.embhandles = {}
-
     def beginLoop(self):
-        '''Automatically called by Looper, for all analyzers.'''
-        self.declareHandles()
+        """Automatically called by Looper, for all analyzers."""
         self.counters = Counters()
         self.averages = Averages()
         self.mainLogger.warning( 'beginLoop ' + self.cfg_ana.name ) 
         self.beginLoopCalled = True
         
     def endLoop(self):
-        '''Automatically called by Looper, for all analyzers.'''
+        """Automatically called by Looper, for all analyzers."""
         #print self.cfg_ana
         self.mainLogger.warning( '' )
         self.mainLogger.warning( str(self) )
         self.mainLogger.warning( '' )
 
     def process(self, event ):
-        '''Automatically called by Looper, for all analyzers.
+        """Automatically called by Looper, for all analyzers.
         each analyzer in the sequence will be passed the same event instance.
-        each analyzer can access, modify, and store event information, of any type.'''
+        each analyzer can access, modify, and store event information, of any type."""
         print self.cfg_ana.name
-        # self.readCollections( event )
 
-    #def readCollections(self, event ):
-        #'''You must call this function at the beginning of the process
-        #function of your child analyzer.
-        #DEV: not sure I want to keep this function
-        #'''
-        ## if not self.beginLoopCalled:
-        ##    # necessary in case the user calls process to go straight to a given event, before looping
-        ##    self.beginLoop()
-        #for str,handle in self.handles.iteritems():
-            #handle.Load( event )
-        #if self.cfg_comp.isMC:
-            #for str,handle in self.mchandles.iteritems():
-                #handle.Load( event )
-        #if self.cfg_comp.isEmbed:
-            #for str,handle in self.embhandles.iteritems():
-                #handle.Load( event )
 
     def write(self):
-        '''Called by Looper.write, for all analyzers.
-        Just overload it if you have histograms to write.'''
+        """Called by Looper.write, for all analyzers.
+        Just overload it if you have histograms to write."""
         self.counters.write( self.dirName )
         self.averages.write( self.dirName )
 
     def __str__(self):
-        '''A multipurpose printout. Should do the job for most analyzers.'''
+        """A multipurpose printout. Should do the job for most analyzers."""
         ana = str( self.cfg_ana )
         count = ''
         ave = ''

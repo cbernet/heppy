@@ -6,11 +6,7 @@ Prerequisites
 
 **python 2.x, x>5**
 
-Check your version of python by doing: 
-
-	python -V
-
-**ROOT 5**
+**ROOT 5, with pyroot support**
 
 Environment
 -----------
