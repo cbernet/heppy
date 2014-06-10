@@ -7,7 +7,7 @@ from chain import Chain
 class ChainTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.file = '../test/test_tree.root'
+        self.file = os.environ['HEPPY']+'/test/test_tree.root'
         self.chain = Chain(self.file, 'test_tree')
 
     def test_file(self):

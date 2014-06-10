@@ -1,3 +1,3 @@
-export PYFCC=$PWD
-echo prepending $PYFCC to PYTHONPATH
-export PYTHONPATH=$PYFCC:$PYTHONPATH
+export HEPPY=$PWD
+echo prepending $HEPPY to PYTHONPATH
+export PYTHONPATH=$HEPPY:$PYTHONPATH
