@@ -20,12 +20,15 @@ Examples
 --------
 
 Several examples are provided in the test/ directory:
+
 	cd test/
 	
 Read a root file and print each event:
+
 	multiloop.py  Trash   print_events_cfg.py
 
 Read a root file and create a simple tree:
+
 	multiloop.py  Trash2  simple_tree_cfg.py
 
 Todo list
