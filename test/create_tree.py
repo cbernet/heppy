@@ -1,14 +1,14 @@
 from ROOT import TFile
-from statistics.TreeNumpy import TreeNumpy
+from statistics.tree import Tree
 
 #TODO create CWN
 
 outfile = TFile('test_tree.root', 'recreate')
 
-tree = TreeNumpy('test_tree', 'A test tree')
+tree = Tree('test_tree', 'A test tree')
 tree.var('var1')
 
-tree2 = TreeNumpy('test_tree_2', 'Another test tree')
+tree2 = Tree('test_tree_2', 'Another test tree')
 tree2.var('var2')
 
 for i in range(100):
