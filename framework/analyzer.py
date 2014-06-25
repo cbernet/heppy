@@ -1,6 +1,5 @@
-import os 
-import logging 
-
+import os
+import logging
 
 from statistics.counter import Counters
 from statistics.average import Averages
@@ -10,7 +9,7 @@ class Analyzer(object):
 
     Your custom analyzers should inherit from this class
     """
-    
+
     def __init__(self, cfg_ana, cfg_comp, looperName ):
         """Create an analyzer.
 
@@ -20,7 +19,7 @@ class Analyzer(object):
         looperName: name of the Looper which runs this analyzer.
 
         Attributes:
-        dirName : analyzer directory, where you can write anything you want      
+        dirName : analyzer directory, where you can write anything you want
         """
         self.name = cfg_ana.name
         self.verbose = cfg_ana.verbose
@@ -39,9 +38,9 @@ class Analyzer(object):
         """Automatically called by Looper, for all analyzers."""
         self.counters = Counters()
         self.averages = Averages()
-        self.mainLogger.warning( 'beginLoop ' + self.cfg_ana.name ) 
+        self.mainLogger.warning( 'beginLoop ' + self.cfg_ana.name )
         self.beginLoopCalled = True
-        
+
     def endLoop(self):
         """Automatically called by Looper, for all analyzers."""
         #print self.cfg_ana
@@ -72,5 +71,3 @@ class Analyzer(object):
         if hasattr(self, 'averages') and len( self.averages ) > 0:
             ave = '\n'.join(map(str, self.averages))
         return '\n'.join( [ana, count, ave] )
-        
-

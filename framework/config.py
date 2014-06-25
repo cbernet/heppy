@@ -1,4 +1,4 @@
-from framework.weight import Weight
+from weight import Weight
 import glob
 
 
@@ -140,6 +140,16 @@ class EmbedComponent( Component ):
                        genEff = -1,
                        intLumi = None,
                        addWeight = 1. )
+
+class MCGenComponent( Component ):
+    def __init__(self, name, xSection,
+                 nGenEvents, **kwargs ):
+        super( MCComponent, self).__init__( name = name, **kwargs )
+        self.xSection = xSection
+        self.nGenEvents = nGenEvents
+        self.isMC = True
+        self.intLumi = 1.
+        self.addWeight = 1.
 
 
 class MCComponent( Component ):

@@ -3,8 +3,8 @@ import sys
 import imp
 import logging
 import pprint
-from framework.chain import Chain as Events
-from framework.event import Event
+from chain import Chain as Events
+from event import Event
 
 class Looper(object):
     """Creates a set of analyzers, and schedules the event processing."""
