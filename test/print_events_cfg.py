@@ -3,8 +3,8 @@ import framework.config as cfg
 
 inputSample = cfg.Component(
     'NameThatYouCanChoose',
-    files = ['test_tree.root'],
-    tree_name = 'test_tree'
+    files = ['albers.root'],
+    tree_name = 'events'
     )
 
 printer = cfg.Analyzer(

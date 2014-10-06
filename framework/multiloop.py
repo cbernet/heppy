@@ -1,4 +1,4 @@
-#!/bin/env python
+#!python
 import os
 import shutil
 import glob
