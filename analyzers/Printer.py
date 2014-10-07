@@ -4,4 +4,7 @@ class Printer(Analyzer):
 
     def process(self, event):
         print "printing event", event.iEv
-        print event
+        store = event.input
+        jets = store.get("GenJet")
+        for jet in jets:
+            print 'jet', jet.P4().Pt

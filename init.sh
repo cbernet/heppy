@@ -1,5 +1,8 @@
 export HEPPY=$PWD
 
+echo prepending $ALBERS/examples/python to PYTHONPATH
+export PYTHONPATH=$ALBERS/examples/python:$PYTHONPATH
+
 echo prepending $HEPPY to PYTHONPATH
 export PYTHONPATH=$HEPPY:$PYTHONPATH
 

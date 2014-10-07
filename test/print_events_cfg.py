@@ -4,7 +4,6 @@ import framework.config as cfg
 inputSample = cfg.Component(
     'NameThatYouCanChoose',
     files = ['albers.root'],
-    tree_name = 'events'
     )
 
 printer = cfg.Analyzer(

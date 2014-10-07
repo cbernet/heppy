@@ -3,7 +3,8 @@ import sys
 import imp
 import logging
 import pprint
-from chain import Chain as Events
+# from chain import Chain as Events
+from eventsalbers import Events
 from event import Event
 
 class Looper(object):
@@ -38,7 +39,10 @@ class Looper(object):
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
-        self.events = Events(self.cfg_comp.files, self.cfg_comp.tree_name)
+        tree_name = None
+        if( hasattr(self.cfg_comp, 'tree_name') ):
+            tree_name = self.cfg_comp.tree_name
+        self.events = Events(self.cfg_comp.files, tree_name)
         # self.event is set in self.process
         self.event = None
 

@@ -95,7 +95,7 @@ class Component( CFG ):
     See the child classes:
     DataComponent, MCComponent, EmbedComponent
     for more information.'''
-    def __init__(self, name, files, tree_name, triggers=None, **kwargs):
+    def __init__(self, name, files, tree_name=None, triggers=None, **kwargs):
         if isinstance(triggers, basestring):
             triggers = [triggers]
         if type(files) == str:
