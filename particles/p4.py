@@ -1,4 +1,4 @@
-class Particle(object):
+class P4(object):
 
     def pt(self):
         return self.p4().pt()

@@ -28,9 +28,15 @@ class Event(object):
         varlines = []
         for var,value in sorted(vars(self).iteritems()):
             tmp = value
+            # check for recursivity
+            recursive = False
+            if hasattr(value, '__getitem__'):
+                if (len(value)>0 and value[0].__class__ == value.__class__):
+                    recursive = True
             if isinstance( value, collections.Iterable ) and \
                    not isinstance(value, (str,unicode)) and \
-                   not isinstance(value, TChain):
+                   not isinstance(value, TChain) and \
+                   not recursive :
                 tmp = map(str, value)
 
             varlines.append( '\t{var:<15}:   {value}'.format(var=var, value=tmp) )
