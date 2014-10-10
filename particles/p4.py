@@ -1,13 +1,13 @@
 class P4(object):
 
     def pt(self):
-        return self.p4().pt()
+        return self.P4().Pt
     def eta(self):
-        return self.p4().eta()
+        return self.P4().Eta
     def phi(self):
-        return self.p4().phi()
+        return self.P4().Phi
     def mass(self):
-        return self.p4().mass()
+        return self.P4().Mass
     
     def __str__(self):
         tmp = '{className} : pt = {pt:5.1f}, eta = {eta:5.2f}, phi = {phi:5.2f}, mass = {mass:5.2f}'

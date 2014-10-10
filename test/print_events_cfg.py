@@ -10,7 +10,7 @@ muana = cfg.Analyzer(
     'LeptonAnalyzer_1',
     id = 4,
     pt = 10.,
-    eta = 2.,
+    eta = 3.,
     coll_name = 'muons'
     )
 

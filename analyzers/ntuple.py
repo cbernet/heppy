@@ -19,7 +19,7 @@ def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_eta'.format(pName=pName), particle.P4().Eta )
     fill(tree, '{pName}_phi'.format(pName=pName), particle.P4().Phi )
     fill(tree, '{pName}_mass'.format(pName=pName), particle.P4().Mass )
-
+    
 # jet
 
 def bookJet( tree, pName ):
@@ -29,3 +29,13 @@ def bookJet( tree, pName ):
 def fillJet( tree, pName, jet ):
     fillParticle(tree, pName, jet )
     fill(tree, '{pName}_npart'.format(pName=pName), len(jet.particles) )
+
+# lepton
+
+def bookLepton( tree, pName ):
+    bookParticle(tree, pName )
+    var(tree, '{pName}_iso'.format(pName=pName))
+
+def fillLepton( tree, pName, lepton ):
+    fillParticle(tree, pName, lepton )
+    fill(tree, '{pName}_iso'.format(pName=pName), lepton.iso )

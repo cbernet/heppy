@@ -22,6 +22,16 @@ def deltaPhi( p1, p2):
     return res
 
 
+def inConeCollection(pivot, particles, deltaRMax, deltaRMin=1e-5):
+    '''Returns the list of particles that are less than deltaRMax away from pivot.'''
+    dR2Max = deltaRMax ** 2
+    dR2Min = deltaRMin ** 2
+    results = []
+    for ptc in particles:
+        dR2 = deltaR2(pivot.eta(), pivot.phi(), ptc.eta(), ptc.phi()) 
+        if dR2Min < dR2 < dR2Max:
+            results.append(ptc)
+    return results
 
 def cleanObjectCollection2( objects, masks, deltaRMin ):
     '''Masks objects using a deltaR cut, another algorithm (same results).'''
@@ -69,8 +79,6 @@ def cleanObjectCollection( objects, masks, deltaRMin ):
         else:
             dirtyObjects.append( object )
     return cleanObjects, dirtyObjects
-
-
 
 def bestMatch( object, matchCollection):
     '''Return the best match to object in matchCollection, which is the closest object in delta R'''
