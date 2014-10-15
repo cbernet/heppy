@@ -8,6 +8,6 @@ export PATH=$HEPPY/bin:$PATH
 
 # set up executable directory
 cd $HEPPY/bin
-ln -sf ../framework/multiloop.py 
+ln -sf ../scripts/*.py .
 chmod +x * 
 cd ..
