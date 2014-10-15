@@ -3,6 +3,7 @@ from particles.physicsobjects import Jet, Particle
 
 class JetAnalyzer(Analyzer):
 
+    
     def process(self, event):
         # just a shortcut
         store = event.input

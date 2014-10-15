@@ -149,33 +149,46 @@ If yo do, you have just run successfully the heppy ntuplizer for the first time.
 
 ---+++ Understanding the configuration file
 
-Go to your working directory, and do: 
-
-<verbatim>
-ln -s $CMSSW_BASE/src/CMGTools/ZJetsTutorial/cfg/diMu_2012_cfg.py
-</verbatim>
-
-Edit [[https://github.com/CERN-PH-CMG/cmg-cmssw/tree/HEAD/CMGTools/ZJetsTutorial/cfg/diMu_2012_cfg.py?view=markup][diMu_2012_cfg.py]] and read this file carefully.
+Have a detailed look at the configuration file, [[https://github.com/HEP-FCC/heppy/blob/master/test/print_events_cfg.py][print_events_cfg.py]]. 
 
 Load it in python: 
-
 <verbatim>
-python -i diMu_2012_cfg.py
+python -i print_events_cfg.py
 </verbatim>
 
-You're getting many warnings, but they are harmless. 
-All samples necessary for the analysis are now ready to be processed. 
-You can use python to print any object available in this context. Try the following:
+Get info on one of the analyzers:
+<pre>
+print muana
+</pre>
 
+Get help on this object: 
+<pre>
+help(muana)
+</pre>
+
+%T% all objects created in this cfg file are just configuration objects. These configuration objects will be passed to the actual analyzers that contain your analysis code. 
+
+%T% In the future, when you use this analysis system in your analysis, always make sure that all ingredients (components, analyzers) are defined correctly by loading your configuration in python before even trying to run.
+
+---+++ Editing analysis code
+
+Run again the multiloop script, with only 1 event:
+<pre>
+python ../bin/multiloop.py Trash print_events_cfg.py -N 1 -f 
+</pre>
+At the beginning of the log, you can see such lines:
 <verbatim>
-# get info about the DYJets component
-print DYJets
-
-# print the sequence of analyzers
-for a in sequence: print a
+loading class <class 'LeptonAnalyzer.LeptonAnalyzer'>
+  from <open file '/Users/cbernet/Code/FCC/heppy/analyzers/LeptonAnalyzer.py', mode 'U' at 0x108e13810>
+found class <class 'LeptonAnalyzer.LeptonAnalyzer'>
+loading class <class 'JetAnalyzer.JetAnalyzer'>
+  from <open file '/Users/cbernet/Code/FCC/heppy/analyzers/JetAnalyzer.py', mode 'U' at 0x108e13810>
+loading class <class 'JetTreeProducer.JetTreeProducer'>
+  from <open file '/Users/cbernet/Code/FCC/heppy/analyzers/JetTreeProducer.py', mode 'U' at 0x108e13810>
 </verbatim>
+These python classes are found and loaded automatically, based on the class names defined for each analyzer in the config file. 
 
-%T% In the future, when you use this analysis system in your analysis, always make sure that all ingredients (components, analyzers) are defined correctly before even trying to run.
+Have a look at the [[https://github.com/HEP-FCC/heppy/blob/master/analyzers/LeptonAnalyzer.py][LeptonAnalyzer.py]] module, and study the code. Then study the code of the base class in [[https://github.com/HEP-FCC/heppy/blob/master/framework/analyzer.py][analyzer.py]].
 
 
 ---+++ Running interactively on one component

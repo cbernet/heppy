@@ -22,7 +22,7 @@ class JetTreeProducer(Analyzer):
             fillJet(self.tree, 'jet1', event.jets[0])
         if( len(event.jets)>1 ):
             fillJet(self.tree, 'jet2', event.jets[1])
-        if( len(event.leptons)>0 ):
+        if( hasattr(event, 'leptons') and len(event.leptons)>0 ):
             fillLepton(self.tree, 'lep1', event.leptons[0])
         self.tree.tree.Fill()
         

@@ -105,7 +105,8 @@ class Counters(object):
         prints = map( str, self.counters )
         return '\n'.join(prints)
         
-
+    def __getitem__(self, name):
+        return self.counter(name)
 
 if __name__ == '__main__':
     
