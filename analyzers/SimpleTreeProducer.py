@@ -1,5 +1,5 @@
-from framework.analyzer import Analyzer
-from statistics.tree import Tree
+from heppy.framework.analyzer import Analyzer
+from heppy.statistics.tree import Tree
 from ROOT import TFile
 
 class SimpleTreeProducer(Analyzer):

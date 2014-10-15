@@ -1,5 +1,5 @@
 import pickle
-from utils.diclist import diclist
+from heppy.utils.diclist import diclist
 
 class Counter(diclist):
     

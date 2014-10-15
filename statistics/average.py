@@ -1,6 +1,6 @@
 import math
 import pickle
-from utils.diclist import diclist
+from heppy.utils.diclist import diclist
 
 #TODO make user interface less verbose?
 

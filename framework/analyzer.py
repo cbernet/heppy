@@ -1,8 +1,8 @@
 import os
 import logging
 
-from statistics.counter import Counters
-from statistics.average import Averages
+from heppy.statistics.counter import Counters
+from heppy.statistics.average import Averages
 
 class Analyzer(object):
     """Base Analyzer class. Used in Looper.

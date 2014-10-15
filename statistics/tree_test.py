@@ -1,7 +1,6 @@
 import unittest
 from ROOT import TFile
-from statistics.tree import Tree
-
+from heppy.statistics.tree import Tree
 
 class TreeTestCase(unittest.TestCase):
 

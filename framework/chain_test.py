@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 
-from chain import Chain
+from heppy.framework.chain import Chain
 
 class ChainTestCase(unittest.TestCase):
 

@@ -1,6 +1,6 @@
 import unittest
 
-from statistics.average import Average
+from heppy.statistics.average import Average
 
 class AverageTestCase(unittest.TestCase):
 

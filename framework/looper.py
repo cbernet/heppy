@@ -4,9 +4,9 @@ import imp
 import logging
 import pprint
 from chain import Chain as Events
-if os.environ['HEPPY_FCC']:
+if os.environ.get('HEPPY_FCC', None) is not None:
     from eventsalbers import Events
-elif os.environ['HEPPY_CMS']:
+elif os.environ.get('HEPPY_CMS', None) is not None:
     assert(False)
 from event import Event
 

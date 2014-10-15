@@ -1,4 +1,4 @@
-from framework.analyzer import Analyzer
+from heppy.framework.analyzer import Analyzer
 
 class Printer(Analyzer):
 
@@ -11,3 +11,4 @@ class Printer(Analyzer):
             event.input.Print()
             self.firstEvent = False
         print "printing event", event.iEv, 'var1', event.input.var1
+        
