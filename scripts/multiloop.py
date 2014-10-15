@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+# Copyright (C) 2014 Colin Bernet
+# https://github.com/cbernet/heppy/blob/master/GPL
+
 import os
 import shutil
 import glob

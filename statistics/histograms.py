@@ -1,5 +1,6 @@
-# from ROOT import TTree, TH1F, TH2F, TProfile, gDirectory
-#ROOTTOOLS
+# Copyright (C) 2014 Colin Bernet
+# https://github.com/cbernet/heppy/blob/master/GPL
+
 class Histograms(object):
     '''Base class to handle writing and formatting of a set of histograms. 
 

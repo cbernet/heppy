@@ -1,8 +1,8 @@
+# Copyright (C) 2014 Colin Bernet
+# https://github.com/cbernet/heppy/blob/master/GPL
+
 import glob
 from ROOT import TChain, TFile, TTree, gSystem
-
-# print 'loading data model - ALBERS SPECIFIC'
-# gSystem.Load("libDataModelExample") # .so or .dylib on the mac..
 
 class Chain( object ):
     """Wrapper to TChain, with a python iterable interface.
