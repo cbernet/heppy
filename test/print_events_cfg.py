@@ -53,6 +53,9 @@ sequence = cfg.Sequence( [
     treeprod
     ] )
 
+inputSample.files.append('albers_2.root')
+inputSample.splitFactor = 2  # splitting the component in 2 chunks
+
 # finalization of the configuration object. 
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence )

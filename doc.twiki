@@ -1,8 +1,7 @@
----+ Heppy : a mini framework for analysis in python
+---+ Heppy : a mini framework for HEP event processing in python
 
 
 %TOC{title="Contents:"}%
-
 
 ---++ Prerequisites
 
@@ -13,7 +12,7 @@ Why python? In short:
    * fast learning curve: python is the most easy-to-learn language
    * high productivity: coding in python is about 10 times faster than in C++
    * high flexibility: code can be easily reused, refactored, extended. 
-   * dynamic typing (similar to C++ template features, without the pain in the neck): if you do an analysis for e.g. the muon channel, it is going to work for the electron channel with only minor modifications. If your analysis reads a certain kind of particle-like objects, it will probably work on other kinds of particle-like objects. 
+   * dynamic typing (similar to C++ template features, without the pain in the neck): if you do an analysis for e.g. the muon channel, it is going to work for the electron channel with only minor modifications related to lepton identification. If your analysis reads a certain kind of particle-like objects, it will probably work on other kinds of particle-like objects. 
    * very large and easy-to-use standard library
 
 ---++ A short description of the analysis system
@@ -133,18 +132,6 @@ cd test
 ln -s $ALBERS/examples/example.root albers.root
 </pre>
 
-Test that heppy is working: 
-<pre>
-python ../bin/multiloop.py Trash print_events_cfg.py -N 100 
-</pre>
-
-You should see a healhy printout with at the end:  
-<pre>
-number of events processed: 100
-</pre>
-
-If yo do, you have just run successfully the heppy ntuplizer for the first time. Let us have a look in details. 
-
 ---++ Running the ntuplizer
 
 ---+++ Understanding the configuration file
@@ -168,13 +155,13 @@ help(muana)
 
 %T% all objects created in this cfg file are just configuration objects. These configuration objects will be passed to the actual analyzers that contain your analysis code. 
 
-%T% In the future, when you use this analysis system in your analysis, always make sure that all ingredients (components, analyzers) are defined correctly by loading your configuration in python before even trying to run.
+%T% In the future, when you use this event processing system in your analysis, always make sure that all ingredients (components, analyzers) are defined correctly by loading your configuration in python before even trying to run.
 
----+++ Editing analysis code
+---+++ Finding existing analysis code
 
-Run again the multiloop script, with only 1 event:
+Run the multiloop script, with only 1 event:
 <pre>
-python ../bin/multiloop.py Trash print_events_cfg.py -N 1 -f 
+multiloop.py Trash print_events_cfg.py -N 1 -f 
 </pre>
 At the beginning of the log, you can see such lines:
 <verbatim>
@@ -193,75 +180,76 @@ Have a look at the [[https://github.com/HEP-FCC/heppy/blob/master/analyzers/Lept
 
 ---+++ Running interactively on one component
 
-Edit [[https://github.com/CERN-PH-CMG/cmg-cmssw/tree/HEAD/CMGTools/ZJetsTutorial/cfg/diMu_2012_cfg.py?view=markup][diMu_2012_cfg.py]], and make sure that the following variable is set to 1: 
+Run:  
 <pre>
-test =  1
+multiloop.py Trash print_events_cfg.py -N 1000
 </pre>
 
-Read the configuration code to understand what this modification is doing.
-Also, after setting this variable to 0 or 1, check the effect on the DYJets component as explained in the previous section.
+You should see a healhy printout with at the end:  
+<pre>
+number of events processed: 100
+</pre>
 
-<verbatim>
-multiloop Trash diMu_2012_cfg.py -N 1000
-</verbatim>
-
-In the ouput =Trash= directory, you can find a component directory, =DYJets=.
+In the ouput =Trash= directory, you can find a component directory, =albers_example=.
 Investigate the contents of this component directory, and of all directories within.
+Have a look at the text files, but ignore the =.pck= files
 
-Fire up root (python + pyroot, in fact), and check the main output tree: 
+Fire up root (here we choose to use ipython + pyroot), and check the main output tree: 
 
 <verbatim>
-pyroot Trash/DYJets/ZJetsTreeProducer/ZJetsTreeProducer_tree.root
-ZJetsTreeProducer.Draw('diL_mass')
+ipython 
+from ROOT import TFile 
+f = TFile('Trash/albers_example/JetTreeProducer/jet_tree.root')
+f.ls()
+t = f.Get('tree')
+t.Print()
+t.Draw('lep1_iso')
 </verbatim>
 
----+++ Running interactively on several components, and a large number of events
+---+++ Multiprocessing on a single machine
 
-Edit [[https://github.com/CERN-PH-CMG/cmg-cmssw/tree/HEAD/CMGTools/ZJetsTutorial/cfg/diMu_2012_cfg.py?view=markup][diMu_2012_cfg.py]] and change: 
-   * the file list to take the first 20 files, 
-   * the component splitFactor to 6 
-in the following block of code:
-<verbatim>
-if test==1:
-    # test a single component, using a single thread.
-    # necessary to debug the code, until it doesn't crash anymore
-    comp = DYJets
-    # restricting the file list to the first 2 files
-    comp.files = comp.files[:20] # <<<<<<<<<<<<<< HERE
-    # selectedComponents now contains only this component
-    selectedComponents = [comp]
-    # only one thread, we want to run interactively
-    comp.splitFactor = 6  # <<<<<<<<<<< HERE
-</verbatim>
+Copy your input file: 
+<pre>
+cp albers.root albers_2.root
+</pre>
 
-Of course, in case you have 16 processors on your machine, feel free to set the splitFactor to something like 14 to get 14 parallel threads.
+Edit [[https://github.com/HEP-FCC/heppy/blob/master/test/print_events_cfg.py][print_events_cfg.py]]
+and add the following lines, after the creation of the inputSample component object, 
+and before the creation of the config object.  
+<pre>
+inputSample.files.append('albers_2.root') # adding a file to the component
+inputSample.splitFactor = 2  # splitting the component in 2 chunks
+</pre>
+
+As usual, load the configutation script in python, 
+and print the =config= object.
 
 Run again: 
 <verbatim>
-multiloop Multi diMu_2012_cfg.py -N 10000
+multiloop.py Multi print_events_cfg.py -N 1000
 </verbatim>
 
 In the =Multi= output directory, you have chunks. 
-Each of these chunks correspond to one of the threads. 
+Each of these chunks correspond to one of the threads you have run 
 We're going to add everything up: 
 <verbatim>
 cd Multi
-chunkOutCheck.py * 
-haddChunks.py .
+heppy_check.py * 
+heppy_hadd.py .
 </verbatim>
 
 The first command checks that all chunks terminated correctly. 
-The second command adds the root files, and also all cut flow counters and averages. 
+The second command adds the root files (with hadd), the cut-flow counters, and the averages. 
 For example, you can see that this cut flow counter has been added correctly:
 <verbatim>
-cat DYJets*/ZMuMuAnalyzer/DiLepton.txt 
+cat albers_example/LeptonAnalyzer_1/leptons.txt 
 </verbatim>
 
-Again, fire up pyroot and check the Z->mu mu mass: 
-<verbatim>
-pyroot DYJets/ZJetsTreeProducer/ZJetsTreeProducer_tree.root
-ZJetsTreeProducer.Draw('diL_mass')
-</verbatim>
+%T% To do multiprocessing, you can also define several components corresponding to the samples you need to process. Each of these components can have its own split factor. 
+
+%T% Check the number of processors on your machine, and define the number of threads accordingly. 
+
+%T% When debugging your code, make sure to have only one thread. 
 
 ---+++ Running on all components on LSF, using pybatch.py
 
@@ -314,48 +302,5 @@ When all jobs are ok, add them with =haddChunks.py=, and redo the mass plot.
 
 %T% If you need it, the output of my own big production is here: =/eos/cms/store/cmst3/user/cbern/BigProd.tgz=
 
----++ Plotting
 
-The late stages of the analysis can be done using the set of trees obtained above: 
-   * data/MC comparison plots, 
-   * data-driven background estimation
-   * fitting using RooFit
-   * statistical analysis using RooStats
-
-Here, we're just going to do a few data/MC comparison plots, 
-normalizing the MC Z->mu mu yield to the data, using the [[https://github.com/CERN-PH-CMG/cmg-cmssw/tree/HEAD/CMGTools/ZJetsTutorial/python/plotter/plot_MuMu.py?view=markup][plot_MuMu.py]] macro.
-
-<verbatim>
-ln -s $CMSSW_BASE/src/CMGTools/ZJetsTutorial/python/plotter/plot_MuMu.py 
-ipython
-%run plot_MuMu.py BigProd diMu_2012_cfg.py -H diL_mass -C 'diL_charge==0 && leg1_relIso05<0.1 && leg2_relIso05<0.1'
-</verbatim>
-
-To do other plots, use the plot function declared in this python macro, for example:
-<verbatim>
-plot('nJets', options.cut, 10, 0, 10)
-plot('leg1_relIso05', 'diL_charge==0', 50, 0, 1)
-plot('leg1_relIso05', 'diL_charge==0', 50, 0, 1)
-</verbatim>
-In the last plot, note the cut at 0.3. This cut was applied during the flat tree production, check [[https://github.com/CERN-PH-CMG/cmg-cmssw/tree/HEAD/CMGTools/ZJetsTutorial/cfg/diMu_2012_cfg.py?view=markup][diMu_2012_cfg.py]].
-
-Do a few more plots to check various quantities related to the 2 jets, e.g. pile-up jet ID, PF jet ID, charged-hadron energy fraction. Feel free to apply cuts on the jet variables to try and understand data/MC discrepancies. 
-When you're done, quit ipython. 
-
-%T% Note that this plotting macro doesn't estimate reducible backgrounds. Reducible background estimation could however easily be implemented there. 
-
-%T% you can use pyroot or ipython as a root interface. 
-
-
----++ Distributing plots 
-
-Do the following to generate a web page with your plots:
-
-<verbatim>
-mkdir Plots
-mv *.png Plots
-htmldir Plots
-</verbatim>
-
-%T% The script works with any level of sub-directories, and any number of plots. 
 -- Main.ColinBernet - 08 Oct 2014

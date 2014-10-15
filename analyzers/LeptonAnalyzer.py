@@ -13,7 +13,7 @@ class LeptonAnalyzer(Analyzer):
         self.counters['leptons'].register('all events')
         self.counters['leptons'].register('at least 1 lepton')
         self.counters['leptons'].register('lepton iso < 0.1')
-        self.averages.add('lepton iso', Average('lepton iso'))
+        self.averages.add('lepton_iso', Average('lepton isolation'))
         
     def process(self, event):
 
@@ -31,7 +31,7 @@ class LeptonAnalyzer(Analyzer):
         for lepton in leptons:
             lepton.incone = inConeCollection(lepton, particles, deltaRMax=1.)
             lepton.iso = sum( ptc.pt() for ptc in lepton.incone)
-            self.averages['lepton iso'].add(lepton.iso)
+            self.averages['lepton_iso'].add(lepton.iso)
             
         if(len(leptons)>0):
             self.counters['leptons'].inc('at least 1 lepton')
