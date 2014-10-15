@@ -104,11 +104,9 @@ class Component( CFG ):
                                           files = files,
                                           tree_name = tree_name,
                                           triggers = triggers, **kwargs)
-        self.isMC = False
-        self.isData = False
-        self.isEmbed = False
         self.dataset_entries = 0
-
+        self.isData = False
+        
 
 class DataComponent( Component ):
 
@@ -125,31 +123,6 @@ class DataComponent( Component ):
                        intLumi = self.intLumi,
                        addWeight = 1. )
 
-class EmbedComponent( Component ):
-    def __init__(self, name, **kwargs ):
-        super( EmbedComponent, self).__init__( name = name,
-                                               **kwargs )
-        # self.tauEffWeight = None
-        # self.muEffWeight = None
-        #WARNING what to do here ??
-        self.isEmbed = True
-
-    def getWeight( self, intLumi = None):
-        return Weight( genNEvents = -1,
-                       xSection = None,
-                       genEff = -1,
-                       intLumi = None,
-                       addWeight = 1. )
-
-class MCGenComponent( Component ):
-    def __init__(self, name, xSection,
-                 nGenEvents, **kwargs ):
-        super( MCComponent, self).__init__( name = name, **kwargs )
-        self.xSection = xSection
-        self.nGenEvents = nGenEvents
-        self.isMC = True
-        self.intLumi = 1.
-        self.addWeight = 1.
 
 
 class MCComponent( Component ):
@@ -162,11 +135,8 @@ class MCComponent( Component ):
                                             triggers = triggers, **kwargs )
         self.xSection = xSection
         self.nGenEvents = nGenEvents
-        # self.vertexWeight = vertexWeight
         self.effCorrFactor = effCorrFactor
-        # self.tauEffWeight = tauEffWeight
-        # self.muEffWeight = muEffWeight
-        self.isMC = True
+        self.isData = False
         self.intLumi = 1.
         self.addWeight = 1.
 
@@ -211,13 +181,6 @@ if __name__ == '__main__':
     comp1 = Component( 'DYJets',
                        files='*.root',
                        triggers='HLT_stuff')
-    print
-    print comp1
-
-    ecomp = EmbedComponent('Embed',
-                           files='*.root',
-                           triggers='HLT_stuff')
-
     print
     print ecomp
 

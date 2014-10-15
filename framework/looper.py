@@ -3,8 +3,8 @@ import sys
 import imp
 import logging
 import pprint
-# from chain import Chain as Events
-from eventsalbers import Events
+from chain import Chain as Events
+# from eventsalbers import Events
 from event import Event
 
 class Looper(object):
