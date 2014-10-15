@@ -4,7 +4,10 @@ import imp
 import logging
 import pprint
 from chain import Chain as Events
-# from eventsalbers import Events
+if os.environ['HEPPY_FCC']:
+    from eventsalbers import Events
+elif os.environ['HEPPY_CMS']:
+    assert(False)
 from event import Event
 
 class Looper(object):
