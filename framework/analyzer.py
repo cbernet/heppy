@@ -1,3 +1,6 @@
+# Copyright (C) 2014 Colin Bernet
+# 
+
 import os
 import logging
 
