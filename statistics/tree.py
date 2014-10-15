@@ -1,5 +1,5 @@
 # Copyright (C) 2014 Giovanni Petrucciani 
-# https://github.com/cbernet/heppy/blob/master/GPL
+# https://github.com/cbernet/heppy/blob/master/LICENSE
 
 import numpy
 from ROOT import TTree

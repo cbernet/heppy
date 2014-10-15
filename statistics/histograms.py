@@ -1,5 +1,5 @@
 # Copyright (C) 2014 Colin Bernet
-# https://github.com/cbernet/heppy/blob/master/GPL
+# https://github.com/cbernet/heppy/blob/master/LICENSE
 
 class Histograms(object):
     '''Base class to handle writing and formatting of a set of histograms. 
