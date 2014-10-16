@@ -1,17 +1,13 @@
 import os
 import re
+import glob
 
 pythonpath = os.environ['PYTHONPATH']
 
-pattern = re.compile('(.*heppy.*)/(.*)')
-
 analyzer_path = []
 for path in pythonpath.split(':'):
-    match = pattern.match(path)
-    if match is not None:
-        apath = match.group(1)
-        anapath = '/'.join([apath, 'analyzers'])
-        analyzer_path.append(anapath)
+    anadirs = glob.glob( '/'.join([path, '*', 'analyzers']) )
+    analyzer_path.extend(anadirs)
 
 if __name__ == '__main__':
     print analyzer_path    
