@@ -14,7 +14,7 @@ version of python as the one in your PATH.
 To check that, do the following:
 
     python
-	import ROOT
+    import ROOT
 
 Any error message needs to be taken care of before going further. 
 
@@ -23,12 +23,12 @@ Environment
 Put the heppy package in a directory that is in your PYTHONPATH
 For example, you can do:
 
-	export PYTHONPATH=$PWD/..:$PYTHONPATH
+    export PYTHONPATH=$PWD/..:$PYTHONPATH
 
 Check that you can now import heppy:
 
     python
-	import heppy 
+    import heppy 
 
 From this directory, run the initialization script, which makes a few
 executable scripts available to you:
