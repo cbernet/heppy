@@ -33,7 +33,7 @@ Check that you can now import heppy:
 From this directory, run the initialization script, which makes a few
 executable scripts available to you:
 
-	source init.sh
+    source init.sh
 
 
 Examples
@@ -41,7 +41,7 @@ Examples
 
 A simple example are provided in the test/ directory:
 
-	cd test/
+    cd test/
 
 Create a root file with a tree:
 
@@ -49,6 +49,6 @@ Create a root file with a tree:
 	
 Process the root file:
 
-	multiloop.py  Output   simple_example_cfg.py
+    heppy_loop.py  Output   simple_example_cfg.py
 
 Investigate the contents of the Output folder and its subdirectories. 
