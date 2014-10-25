@@ -11,8 +11,8 @@ import copy
 from multiprocessing import Pool
 from pprint import pprint
 
-from heppy.framework.looper import Looper
-from heppy.framework.anapath import analyzer_path
+from PhysicsTools.HeppyCore.framework.looper import Looper
+from PhysicsTools.HeppyCore.framework.anapath import analyzer_path
 
 # global, to be used interactively when only one component is processed.
 loop = None
@@ -28,7 +28,7 @@ def runLoopAsync(comp, outDir, config, options):
 def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
     # import pdb; pdb.set_trace()
-    loop = Looper( fullName, comp, config.sequence,
+    loop = Looper( fullName, comp, config.sequence, config.events_class,
                    options.nevents, 0,
                    nPrint = options.nprint)
     print loop

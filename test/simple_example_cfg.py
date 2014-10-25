@@ -1,23 +1,26 @@
 import os
-import heppy.framework.config as cfg
+import PhysicsTools.HeppyCore.framework.config as cfg
+from PhysicsTools.HeppyCore.framework.chain import Chain as Events
+from PhysicsTools.HeppyCore.analyzers.Printer import Printer
+from PhysicsTools.HeppyCore.analyzers.SimpleTreeProducer import SimpleTreeProducer
 
 # input component 
 # several input components can be declared,
 # and added to the list of selected components
 inputSample = cfg.Component(
     'test_component',
-    files = ['test_tree.root'],
+    files = [os.path.abspath('test_tree.root')],
     # tree_name = 'test_tree'
     )
 
 selectedComponents  = [inputSample]
 
 printer = cfg.Analyzer(
-    "Printer"
+    Printer
     )
 
 tree = cfg.Analyzer(
-    "SimpleTreeProducer",
+    SimpleTreeProducer,
     tree_name = 'tree',
     tree_title = 'A test tree'
     )
@@ -31,6 +34,7 @@ sequence = cfg.Sequence( [
 
 # finalization of the configuration object. 
 config = cfg.Config( components = selectedComponents,
-                     sequence = sequence )
+                     sequence = sequence, 
+                     events_class = Events )
 
 print config 
