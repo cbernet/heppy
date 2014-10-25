@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 
-from PhysicsTools.HeppyCore.framework.config import *
+from heppy.framework.config import *
 
 class ConfigTestCase(unittest.TestCase):
 
@@ -42,7 +42,7 @@ class ConfigTestCase(unittest.TestCase):
             files='*.root',
             triggers='HLT_stuff'
             )
-        from PhysicsTools.HeppyCore.framework.chain import Chain as Events
+        from heppy.framework.chain import Chain as Events
         config = Config( components = [comp1],
                          sequence = [ana1], 
                          events_class = Events )

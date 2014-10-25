@@ -11,8 +11,7 @@ import copy
 from multiprocessing import Pool
 from pprint import pprint
 
-from PhysicsTools.HeppyCore.framework.looper import Looper
-from PhysicsTools.HeppyCore.framework.anapath import analyzer_path
+from heppy.framework.looper import Looper
 
 # global, to be used interactively when only one component is processed.
 loop = None
@@ -114,8 +113,6 @@ def main( options, args ):
 
     file = open( cfgFileName, 'r' )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
-
-    sys.path = analyzer_path + sys.path
 
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)

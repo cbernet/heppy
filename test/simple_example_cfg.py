@@ -1,8 +1,8 @@
 import os
-import PhysicsTools.HeppyCore.framework.config as cfg
-from PhysicsTools.HeppyCore.framework.chain import Chain as Events
-from PhysicsTools.HeppyCore.analyzers.Printer import Printer
-from PhysicsTools.HeppyCore.analyzers.SimpleTreeProducer import SimpleTreeProducer
+import heppy.framework.config as cfg
+from heppy.framework.chain import Chain as Events
+from heppy.analyzers.Printer import Printer
+from heppy.analyzers.SimpleTreeProducer import SimpleTreeProducer
 
 # input component 
 # several input components can be declared,

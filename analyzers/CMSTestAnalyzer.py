@@ -1,4 +1,4 @@
-from PhysicsTools.HeppyCore.framework.analyzer import Analyzer
+from heppy.framework.analyzer import Analyzer
 
 class CMSTestAnalyzer(Analyzer):
        

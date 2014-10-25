@@ -4,8 +4,8 @@
 import os
 import logging
 
-from PhysicsTools.HeppyCore.statistics.counter import Counters
-from PhysicsTools.HeppyCore.statistics.average import Averages
+from heppy.statistics.counter import Counters
+from heppy.statistics.average import Averages
 
 class Analyzer(object):
     """Base Analyzer class. Used in Looper.

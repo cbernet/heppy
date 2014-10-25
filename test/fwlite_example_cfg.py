@@ -1,5 +1,5 @@
 import os
-import PhysicsTools.HeppyCore.framework.config as cfg
+import heppy.framework.config as cfg
 
 # input component 
 # several input components can be declared,

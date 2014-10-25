@@ -177,8 +177,8 @@ class Config( object ):
 
 if __name__ == '__main__':
 
-    from PhysicsTools.HeppyCore.framework.chain import Chain as Events
-    from PhysicsTools.HeppyCore.analyzers.Printer import Printer
+    from heppy.framework.chain import Chain as Events
+    from heppy.analyzers.Printer import Printer
 
     class Ana1(object):
         pass

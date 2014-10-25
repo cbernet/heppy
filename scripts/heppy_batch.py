@@ -7,7 +7,7 @@ import os
 import shutil
 import pickle
 import math
-from PhysicsTools.HeppyCore.utils.batchmanager import BatchManager
+from heppy.utils.batchmanager import BatchManager
 
 def chunks(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
@@ -50,7 +50,7 @@ cp -rf $LS_SUBCWD .
 ls
 cd `find . -type d | grep /`
 echo 'running'
-python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py config.pck
+python $CMSSW_BASE/src/heppy/python/framework/looper.py config.pck
 echo
 echo 'sending the job directory back'
 cp -r Loop/* $LS_SUBCWD 
@@ -155,7 +155,7 @@ def batchScriptLocal(  remoteDir, index ):
 
    script = """#!/bin/bash
 echo 'running'
-python $CMSSW_BASE/src/PhysicsTools/HeppyCore/python/framework/looper.py config.pck                   echo
+python $CMSSW_BASE/src/heppy/python/framework/looper.py config.pck                   echo
 echo 'sending the job directory back'
 mv Loop/* ./
 """ 

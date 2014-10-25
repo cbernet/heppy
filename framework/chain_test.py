@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 
-from PhysicsTools.HeppyCore.framework.chain import Chain
+from heppy.framework.chain import Chain
 
 class ChainTestCase(unittest.TestCase):
 
