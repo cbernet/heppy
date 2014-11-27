@@ -33,9 +33,19 @@ sequence = cfg.Sequence( [
     tree
     ] )
 
+from heppy.framework.services.tfile import TFileService
+output_rootfile = cfg.Service(
+    TFileService,
+    fname='histograms.root',
+    option='recreate'
+)
+
+services = [output_rootfile]
+
 # finalization of the configuration object. 
 config = cfg.Config( components = selectedComponents,
-                     sequence = sequence, 
+                     sequence = sequence,
+                     services = services, 
                      events_class = Events )
 
 print config 

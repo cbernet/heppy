@@ -18,8 +18,9 @@ from event import Event
 class Looper(object):
     """Creates a set of analyzers, and schedules the event processing."""
 
-    def __init__( self, name, cfg_comp, sequence, events_class, nEvents=None,
-                  firstEvent=0, nPrint=0):
+    def __init__( self, name, cfg_comp, sequence, services,
+                  events_class, nEvents=None,
+                  firstEvent=0, nPrint=0 ):
         """Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
         in sequence. The Looper can then be used to process an event,
@@ -43,7 +44,8 @@ class Looper(object):
 
         self.cfg_comp = cfg_comp
         self.classes = {}
-        self.analyzers = map( self._buildAnalyzer, sequence )
+        self.analyzers = map( self._build, sequence )
+        self.services = map( self._build, services )
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
@@ -70,9 +72,9 @@ class Looper(object):
                 tmpname = '%s_%d' % (name, index)
         return tmpname
 
-    def _buildAnalyzer(self, cfg_ana):
-        theClass = cfg_ana.class_object
-        obj = theClass( cfg_ana, self.cfg_comp, self.outDir )
+    def _build(self, cfg):
+        theClass = cfg.class_object
+        obj = theClass( cfg, self.cfg_comp, self.outDir )
         return obj
 
     def loop(self):
@@ -155,7 +157,8 @@ if __name__ == '__main__':
     comp = config.components[0]
     events_class = config.events_class
     looper = Looper( 'Loop', comp,
-                     config.sequence, 
+                     config.sequence,
+                     config.services,
                      events_class, 
                      nPrint = 5)
     looper.loop()
