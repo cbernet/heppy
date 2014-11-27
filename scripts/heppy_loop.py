@@ -27,10 +27,9 @@ def runLoopAsync(comp, outDir, config, options):
 def runLoop( comp, outDir, config, options):
     fullName = '/'.join( [outDir, comp.name ] )
     # import pdb; pdb.set_trace()
-    loop = Looper( fullName, comp,
-                   config.sequence,
-                   config.services,
-                   config.events_class,
+    config.components = [comp]
+    loop = Looper( fullName,
+                   config,
                    options.nevents, 0,
                    nPrint = options.nprint)
     print loop

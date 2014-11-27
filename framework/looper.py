@@ -6,11 +6,6 @@ import sys
 import imp
 import logging
 import pprint
-# from chain import Chain as Events
-# if 'HEPPY_FCC' in os.environ:
-#    from eventsalbers import Events
-#elif 'CMSSW_BASE' in os.environ:
-#    from eventsfwlite import Events
 from platform import platform 
 from event import Event
 
@@ -18,8 +13,9 @@ from event import Event
 class Looper(object):
     """Creates a set of analyzers, and schedules the event processing."""
 
-    def __init__( self, name, cfg_comp, sequence, services,
-                  events_class, nEvents=None,
+    def __init__( self, name,
+                  config, 
+                  nEvents=None,
                   firstEvent=0, nPrint=0 ):
         """Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
@@ -28,8 +24,7 @@ class Looper(object):
 
         Parameters:
         name    : name of the Looper, will be used as the output directory name
-        cfg_comp: information for the input sample, see Config
-        sequence: an ordered list of Config.Analyzer
+        config  : process configuration information, see Config
         nEvents : number of events to process. Defaults to all.
         firstEvent : first event to process. Defaults to the first one.
         nPrint  : number of events to print at the beginning
@@ -42,10 +37,10 @@ class Looper(object):
                                                              'log.txt'])))
         self.logger.addHandler( logging.StreamHandler(sys.stdout) )
 
-        self.cfg_comp = cfg_comp
+        self.cfg_comp = config.components[0]
         self.classes = {}
-        self.analyzers = map( self._build, sequence )
-        self.services = map( self._build, services )
+        self.analyzers = map( self._build, config.sequence )
+        self.services = map( self._build, config.services )
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
@@ -55,7 +50,7 @@ class Looper(object):
         if len(self.cfg_comp.files)==0:
             errmsg = 'please provide at least an input file in the files attribute of this component\n' + str(self.cfg_comp)
             raise ValueError( errmsg )
-        self.events = events_class(self.cfg_comp.files, tree_name)
+        self.events = config.events_class(self.cfg_comp.files, tree_name)
         # self.event is set in self.process
         self.event = None
 
