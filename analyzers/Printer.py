@@ -2,8 +2,8 @@ from heppy.framework.analyzer import Analyzer
 
 class Printer(Analyzer):
 
-    def beginLoop(self):
-        super(Printer, self).beginLoop()
+    def beginLoop(self, setup):
+        super(Printer, self).beginLoop(setup)
         self.firstEvent = True
         
     def process(self, event):

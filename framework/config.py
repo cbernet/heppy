@@ -189,9 +189,10 @@ class Config( object ):
         self.events_class = events_class
 
     def __str__(self):
-        comp = '\n'.join( map(str, self.components))
-        sequence = str( self.sequence)
-        return '\n'.join([comp, sequence])
+        comp = '\n'.join(map(str, self.components))
+        sequence = str(self.sequence)
+        services = '\n'.join( map(str, self.services))
+        return '\n'.join([comp, sequence, services])
 
 
 if __name__ == '__main__':

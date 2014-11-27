@@ -4,11 +4,25 @@
 import os
 import sys
 import imp
+import copy
 import logging
 import pprint
 from platform import platform 
 from event import Event
 
+
+
+
+class Setup(object):
+    
+    def __init__(self, config, services):
+        self.config = config
+        self.services = services
+        
+    def close(self):
+        for service in self.services.values():
+            service.stop()
+        
 
 class Looper(object):
     """Creates a set of analyzers, and schedules the event processing."""
@@ -40,7 +54,6 @@ class Looper(object):
         self.cfg_comp = config.components[0]
         self.classes = {}
         self.analyzers = map( self._build, config.sequence )
-        self.services = map( self._build, config.services )
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
@@ -53,7 +66,17 @@ class Looper(object):
         self.events = config.events_class(self.cfg_comp.files, tree_name)
         # self.event is set in self.process
         self.event = None
+        services = dict()
+        for cfg_serv in config.services:
+            service = self._build(cfg_serv)
+            services[cfg_serv.name] = service
+        self.setup = Setup( copy.deepcopy(config), services)
 
+    def _build(self, cfg):
+        theClass = cfg.class_object
+        obj = theClass( cfg, self.cfg_comp, self.outDir )
+        return obj
+        
     def _prepareOutput(self, name):
         index = 0
         tmpname = name
@@ -67,10 +90,6 @@ class Looper(object):
                 tmpname = '%s_%d' % (name, index)
         return tmpname
 
-    def _build(self, cfg):
-        theClass = cfg.class_object
-        obj = theClass( cfg, self.cfg_comp, self.outDir )
-        return obj
 
     def loop(self):
         """Loop on a given number of events.
@@ -94,7 +113,7 @@ class Looper(object):
                                                         eventSize=eventSize))
         self.logger.warning( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
-            analyzer.beginLoop()
+            analyzer.beginLoop(self.setup)
         try:
             for iEv in range(firstEvent, firstEvent+eventSize):
                 # if iEv == nEvents:
@@ -107,7 +126,7 @@ class Looper(object):
         except UserWarning:
             print 'Stopped loop following a UserWarning exception'
         for analyzer in self.analyzers:
-            analyzer.endLoop()
+            analyzer.endLoop(self.setup)
         warn = self.logger.warning
         warn('')
         warn( self.cfg_comp )
@@ -121,7 +140,7 @@ class Looper(object):
         but can also be called directly from
         the python interpreter, to jump to a given event.
         """
-        self.event = Event(iEv, self.events[iEv])
+        self.event = Event(iEv, self.events[iEv], self.setup)
         self.iEvent = iEv
         for analyzer in self.analyzers:
             if not analyzer.beginLoopCalled:
@@ -137,6 +156,7 @@ class Looper(object):
         """
         for analyzer in self.analyzers:
             analyzer.write()
+        self.setup.close() 
         pass
 
 
