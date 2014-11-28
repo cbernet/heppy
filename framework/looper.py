@@ -11,15 +11,36 @@ from platform import platform
 from event import Event
 
 
-
-
 class Setup(object):
-    
+    '''The Looper creates a Setup object to hold information relevant during 
+    the whole process, such as the process configuration obtained from 
+    the configuration file, or services that can be used by several analyzers.
+
+    The user may freely attach new information to the setup object, 
+    as long as this information is relevant during the whole process. 
+    If the information is event specific, it should be attached to the event 
+    object instead.
+    ''' 
     def __init__(self, config, services):
+        '''
+        Create a Setup object. 
+        
+        parameters: 
+        
+        config: configuration object from the configuration file
+        
+        services: dictionary of services indexed by service name.
+        The service name has the form classObject_instanceLabel 
+        as in this example: 
+        heppy.framework.services.tfile.TFileService_myhists
+        To find out about the service name of a given service, 
+        load your configuration file in python, and print the service. 
+        '''
         self.config = config
         self.services = services
         
     def close(self):
+        '''Stop all services'''
         for service in self.services.values():
             service.stop()
         
