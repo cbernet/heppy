@@ -70,7 +70,8 @@ class Looper(object):
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))
-        self.logger.addHandler( logging.StreamHandler(sys.stdout) )
+        self.logger.propagate = False
+        # self.logger.addHandler( logging.StreamHandler(sys.stdout) )
 
         self.cfg_comp = config.components[0]
         self.classes = {}
@@ -128,11 +129,11 @@ class Looper(object):
         else:
             nEvents = int(nEvents)
         eventSize = nEvents
-        self.logger.warning(
+        self.logger.info(
             'starting loop at event {firstEvent} '\
                 'to process {eventSize} events.'.format(firstEvent=firstEvent,
                                                         eventSize=eventSize))
-        self.logger.warning( str( self.cfg_comp ) )
+        self.logger.info( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop(self.setup)
         try:
@@ -142,17 +143,15 @@ class Looper(object):
                 if iEv%100 ==0:
                     print 'event', iEv
                 self.process( iEv )
-                if iEv<self.nPrint:
-                    print self.event
         except UserWarning:
             print 'Stopped loop following a UserWarning exception'
         for analyzer in self.analyzers:
             analyzer.endLoop(self.setup)
-        warn = self.logger.warning
-        warn('')
-        warn( self.cfg_comp )
-        warn('')
-        warn('number of events processed: {nEv}'.format(nEv=iEv+1))
+        info = self.logger.info
+        info('')
+        info( self.cfg_comp )
+        info('')
+        info('number of events processed: {nEv}'.format(nEv=iEv+1))
 
     def process(self, iEv ):
         """Run event processing for all analyzers in the sequence.
@@ -168,6 +167,8 @@ class Looper(object):
                 analyzer.beginLoop()
             if analyzer.process( self.event ) == False:
                 return (False, analyzer.name)
+        if iEv<self.nPrint:
+            self.logger.info( self.event.__str__() )
         return (True, analyzer.name)
 
     def write(self):

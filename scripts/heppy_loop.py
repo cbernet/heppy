@@ -32,11 +32,11 @@ def runLoop( comp, outDir, config, options):
                    config,
                    options.nevents, 0,
                    nPrint = options.nprint)
-    print loop
+    # print loop
     if options.iEvent is None:
         loop.loop()
         loop.write()
-        print loop
+        # print loop
     else:
         # loop.InitOutput()
         iEvent = int(options.iEvent)
@@ -118,8 +118,8 @@ def main( options, args ):
 
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
-    for comp in selComps:
-        print comp
+    # for comp in selComps:
+    #    print comp
     if len(selComps)>14:
         raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
     if not createOutputDir(outDir, selComps, options.force):

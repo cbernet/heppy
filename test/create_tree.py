@@ -7,7 +7,7 @@ tree = Tree('test_tree', 'A test tree')
 tree.var('var1')
 
 
-for i in range(100):
+for i in range(200):
     tree.fill('var1', i)
     tree.tree.Fill()
 
