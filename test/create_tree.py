@@ -1,18 +1,2 @@
-from ROOT import TFile
-from heppy.statistics.tree import Tree
-
-outfile = TFile('test_tree.root', 'recreate')
-
-tree = Tree('test_tree', 'A test tree')
-tree.var('var1')
-
-
-for i in range(200):
-    tree.fill('var1', i)
-    tree.tree.Fill()
-
-print 'creating a tree', tree.tree.GetName(),\
-      tree.tree.GetEntries(), 'entries in',\
-      outfile.GetName()
-
-outfile.Write()
+from heppy.utils.testtree import create_tree
+create_tree() 

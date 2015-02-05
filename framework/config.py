@@ -135,10 +135,11 @@ class Component( CFG ):
         self.dataset_entries = 0
         self.isData = False
         self.isMC = False
+        self.isEmbed = False
 
 class DataComponent( Component ):
 
-    def __init__(self, name, files, intLumi, triggers, json=None):
+    def __init__(self, name, files, intLumi=None, triggers=[], json=None):
         super(DataComponent, self).__init__(name, files, triggers)
         self.isData = True
         self.intLumi = intLumi
@@ -154,10 +155,9 @@ class DataComponent( Component ):
 
 
 class MCComponent( Component ):
-    def __init__(self, name, files, triggers, xSection,
-                 nGenEvents,
-                 # vertexWeight,tauEffWeight, muEffWeight,
-                 effCorrFactor, **kwargs ):
+    def __init__(self, name, files, triggers=[], xSection=1,
+                 nGenEvents=None,
+                 effCorrFactor=None, **kwargs ):
         super( MCComponent, self).__init__( name = name,
                                             files = files,
                                             triggers = triggers, **kwargs )
@@ -195,35 +195,3 @@ class Config( object ):
         return '\n'.join([comp, sequence, services])
 
 
-if __name__ == '__main__':
-
-    from heppy.framework.chain import Chain as Events
-    from heppy.analyzers.Printer import Printer
-
-    class Ana1(object):
-        pass
-    ana1 = Analyzer(
-        Ana1,
-        toto = '1',
-        tata = 'a'
-        )
-    ana2 = Analyzer(
-        Printer,
-        'instance1'
-        )
-    sequence = Sequence( [ana1, ana2] )
-
-    DYJets = MCComponent(
-        name = 'DYJets',
-        files ='blah_mc.root',
-        xSection = 3048.,
-        nGenEvents = 34915945,
-        triggers = ['HLT_MC'],
-        vertexWeight = 1.,
-        effCorrFactor = 1 )
-    selectedComponents = [DYJets]
-    sequence = [ana1, ana2]
-    config = Config( components = selectedComponents,
-                     sequence = sequence, 
-                     events_class = Events )
-    print config
