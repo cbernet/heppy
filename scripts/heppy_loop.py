@@ -31,7 +31,9 @@ def runLoop( comp, outDir, config, options):
     loop = Looper( fullName,
                    config,
                    options.nevents, 0,
-                   nPrint = options.nprint)
+                   nPrint = options.nprint,
+                   timeReport = True,
+                   quiet=options.quiet)
     # print loop
     if options.iEvent is None:
         loop.loop()
@@ -169,7 +171,12 @@ if __name__ == '__main__':
                       action='store_true',
                       help="don't ask questions in case output directory already exists.",
                       default=False)
-
+    parser.add_option("-q", "--quiet",
+                      dest="quiet",
+                      action='store_true',
+                      help="do not print log messages to screen.",
+                      default=False)
+ 
     (options,args) = parser.parse_args()
 
     main(options, args)
