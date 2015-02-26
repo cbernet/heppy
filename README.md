@@ -16,7 +16,10 @@ To check that, do the following:
     python
     import ROOT
 
+If you're using this package in the context of the FCC on lxplus,
+everything should be fine.
 Any error message needs to be taken care of before going further. 
+
 
 Environment
 -----------
