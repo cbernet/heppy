@@ -17,7 +17,7 @@ class Event(object):
     #TODO: provide a clear interface for access control (put, get, del products) - we should keep track of the name and id of the analyzer.
     '''
 
-    def __init__(self, iEv, input_data, setup, eventWeight=1 ):
+    def __init__(self, iEv, input_data=None, setup=None, eventWeight=1 ):
         self.iEv = iEv
         self.input = input_data
         self.setup = setup
