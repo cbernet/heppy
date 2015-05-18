@@ -6,6 +6,14 @@ Prerequisites
 
 **python 2.x, x>5**
 
+On top of python, you need the following python packages: 
+
+     numpy
+     ipython  (not strictly needed, but really useful)
+
+To get them, install pip and use it to install these packages.
+
+
 **ROOT 5, with pyroot support**
 
 Note that you need to ensure that ROOT was compiled with the same
