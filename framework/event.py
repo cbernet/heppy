@@ -31,8 +31,9 @@ class Event(object):
             tmp = value
             # check for recursivity
             recursive = False
-            if hasattr(value, '__getitem__'):
-                if (len(value)>0 and value[0].__class__ == value.__class__):
+            if hasattr(value, '__getitem__') and \
+               not isinstance(value, collections.Mapping) and \
+               (len(value)>0 and value[0].__class__ == value.__class__):
                     recursive = True
             if isinstance( value, collections.Iterable ) and \
                    not isinstance(value, (str,unicode)) and \
