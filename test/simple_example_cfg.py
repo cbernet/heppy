@@ -1,6 +1,8 @@
 import os
 import heppy.framework.config as cfg
 from heppy.framework.chain import Chain as Events
+import logging
+logging.basicConfig(level=logging.INFO)
 
 # input component 
 # several input components can be declared,

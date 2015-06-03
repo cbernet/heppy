@@ -4,7 +4,10 @@
 import math
 import copy
 
-def deltaR2( e1, p1, e2, p2):
+def deltaR2( e1, p1, e2=None, p2=None):
+    """Take either 4 arguments (eta,phi, eta,phi) or two objects that have 'eta', 'phi' methods)"""
+    if (e2 == None and p2 == None):
+        return deltaR2(e1.eta(),e1.phi(), p1.eta(), p1.phi())
     de = e1 - e2
     dp = deltaPhi(p1, p2)
     return de*de + dp*dp
@@ -49,7 +52,10 @@ def matchObjectCollection3 ( objects, matchCollection, deltaRMax = 0.3, filter =
             return dict( zip(objects, [None]*len(objects)) )
     # build all possible combinations
 
-    allPairs = [(deltaR2 (object.eta(), object.phi(), match.eta(), match.phi()), (object, match)) for object in objects for match in matchCollection if filter(object,match) ]
+    objectCoords = [ (o.eta(),o.phi(),o) for o in objects ]
+    matchdCoords = [ (o.eta(),o.phi(),o) for o in matchCollection ]
+    allPairs = [(deltaR2 (oeta, ophi, meta, mphi), (object, match)) for (oeta,ophi,object) in objectCoords for (meta,mphi,match) in matchdCoords if abs(oeta-meta)<=deltaRMax and filter(object,match) ]
+    #allPairs = [(deltaR2 (object.eta(), object.phi(), match.eta(), match.phi()), (object, match)) for object in objects for match in matchCollection if filter(object,match) ]
     allPairs.sort ()
     #
     # to flag already matched objects

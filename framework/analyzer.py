@@ -3,7 +3,6 @@
 
 import os
 import logging
-logging.basicConfig(level=logging.INFO)
 
 from heppy.statistics.counter import Counters
 from heppy.statistics.average import Averages

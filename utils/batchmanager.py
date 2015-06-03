@@ -32,7 +32,7 @@ class BatchManager:
                           help="Name of the local output directory for your jobs. This directory will be created automatically.",
                           default=None)
         self.parser_.add_option("-r", "--remote-copy", dest="remoteCopy",
-                          help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz. For remote copy to PSI specify path like: '/pnfs/psi.ch/...'. Logs will be sent back to the submision directory.",
+                          help="remote output directory for your jobs. Example: /store/cmst3/user/cbern/CMG/HT/Run2011A-PromptReco-v1/AOD/PAT_CMG/RA2. This directory *must* be provided as a logical file name (LFN). When this option is used, all root files produced by a job are copied to the remote directory, and the job index is appended to the root file name. The Logger directory is tarred and compressed into Logger.tgz, and sent to the remote output directory as well. Afterwards, use logger.py to access the information contained in Logger.tgz. For remote copy to PSI specify path like: '/pnfs/psi.ch/...'. Logs will be sent back to the submision directory. NOTE: so far this option has been implemented and validated to work only for a remote copy to PSI",
                           default=None)
         self.parser_.add_option("-f", "--force", action="store_true",
                                 dest="force", default=False,
@@ -44,6 +44,9 @@ class BatchManager:
         self.parser_.add_option("-b", "--batch", dest="batch",
                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
                                 default="bsub -q 8nh < ./batchScript.sh")
+        self.parser_.add_option("-p", "--parametric", action="store_true",
+                                dest="parametric", default=False,
+                                help="submit jobs parametrically, implemented for IC so far")
 
         
     def ParseOptions(self):     
@@ -58,13 +61,18 @@ class BatchManager:
             if "psi.ch" in self.remoteOutputDir_: # T3 @ PSI:
                 # overwriting protection to be improved
                 if self.remoteOutputDir_.startswith("/pnfs/psi.ch"):
+                    ld_lib_path = os.environ.get('LD_LIBRARY_PATH')
+                    if ld_lib_path != "None":
+                        os.environ['LD_LIBRARY_PATH'] = "/usr/lib64/:"+ld_lib_path  # to solve gfal conflict with CMSSW
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
-                    outputDir = self.options_.outputDir
+                    outputDir = self.options_.outputDir.rstrip("/").split("/")[-1] # to for instance direct output to /afs/cern.ch/work/u/user/outputDir
                     if outputDir==None:
                         today = datetime.today()
                         outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
                     self.remoteOutputDir_+="/"+outputDir
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
+                    if ld_lib_path != "None":
+                        os.environ['LD_LIBRARY_PATH'] = ld_lib_path  # back to original to avoid conflicts
                 else:
                     print "remote directory must start with /pnfs/psi.ch to send to the tier3 at PSI"
                     print self.remoteOutputDir_, "not valid"
@@ -169,17 +177,51 @@ class BatchManager:
             print '*NOT* SUBMITTING JOBS - exit '
             return
         print 'SUBMITTING JOBS ======== '
-        for jobDir  in self.listOfJobs_:
-            root = os.getcwd()
-            # run it
-            print 'processing ', jobDir
-            os.chdir( jobDir )
-            self.SubmitJob( jobDir )
-            # and come back
-            os.chdir(root)
-            print 'waiting %s seconds...' % waitingTimeInSec
-            time.sleep( waitingTimeInSec )
-            print 'done.'
+
+        mode = self.RunningMode(self.options_.batch)
+
+        #  If at IC write all the job directories to a file then submit a parameteric
+        # job that depends on the file number. This is required to circumvent the 2000
+        # individual job limit at IC
+        if mode=="IC" and self.options_.parametric:
+
+            jobDirsFile = os.path.join(self.outputDir_,"jobDirectories.txt")
+            with open(jobDirsFile, 'w') as f:
+                for jobDir in self.listOfJobs_:
+                    print>>f,jobDir
+
+            readLine = "readarray JOBDIR < "+jobDirsFile+"\n"
+
+            submitScript = os.path.join(self.outputDir_,"parametricSubmit.sh")
+            with open(submitScript,'w') as batchScript:
+                batchScript.write("#!/bin/bash\n")
+                batchScript.write("#$ -e /dev/null -o /dev/null \n")
+                batchScript.write("cd "+self.outputDir_+"\n") 
+                batchScript.write(readLine)
+                batchScript.write("cd ${JOBDIR[${SGE_TASK_ID}-1]}\n")
+                batchScript.write( "./batchScript.sh > BATCH_outputLog.txt 2> BATCH_errorLog.txt" )
+
+            #Find the queue
+            splitBatchOptions = self.options_.batch.split()
+            if '-q' in splitBatchOptions: queue =  splitBatchOptions[splitBatchOptions.index('-q')+1]
+            else: queue = "hepshort.q"
+
+            os.system("qsub -q "+queue+" -t 1-"+str(len(self.listOfJobs_))+" "+submitScript)
+            
+        else:
+        #continue as before, submitting one job per directory
+
+            for jobDir  in self.listOfJobs_:
+                root = os.getcwd()
+                # run it
+                print 'processing ', jobDir
+                os.chdir( jobDir )
+                self.SubmitJob( jobDir )
+                # and come back
+                os.chdir(root)
+                print 'waiting %s seconds...' % waitingTimeInSec
+                time.sleep( waitingTimeInSec )
+                print 'done.'
 
     def SubmitJob( self, jobDir ):
         '''Hook for job submission.'''
@@ -231,6 +273,7 @@ class BatchManager:
         
         "LXPLUS" : batch command is bsub, and logged on lxplus
         "PSI"    : batch command is qsub, and logged to t3uiXX
+        "IC"     : batch command is qsub, and logged to hep.ph.ic.ac.uk
         "LOCAL"  : batch command is nohup.
         In all other cases, a CmsBatchException is raised
         '''
@@ -238,26 +281,38 @@ class BatchManager:
         hostName = os.environ['HOSTNAME']
         onLxplus = hostName.startswith('lxplus')
         onPSI    = hostName.startswith('t3ui'  )
-        onPISA    = re.match('.*gridui.*',hostName) or  re.match('.*faiwn.*',hostName)
+        onPISA   = re.match('.*gridui.*',hostName) or  re.match('.*faiwn.*',hostName)
+        onPADOVA = ( hostName.startswith('t2-ui') and re.match('.*pd.infn.*',hostName) ) or ( hostName.startswith('t2-cld') and re.match('.*lnl.infn.*',hostName) )
+        onIC = 'hep.ph.ic.ac.uk' in hostName
         batchCmd = batch.split()[0]
         
         if batchCmd == 'bsub':
-            if not (onLxplus or onPISA) :
+            if not (onLxplus or onPISA or onPADOVA) :
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
             elif onPISA :
                 print 'running on LSF pisa : %s from %s' % (batchCmd, hostName)
                 return 'PISA'
+            elif onPADOVA:
+                print 'running on LSF padova: %s from %s' % (batchCmd, hostName)
+                return 'PADOVA'
             else:
                 print 'running on LSF lxplus: %s from %s' % (batchCmd, hostName)
                 return 'LXPLUS'
         elif batchCmd == "qsub":
-            if not onPSI:
-                err = 'Cannot run %s on %s' % (batchCmd, hostName)
-                raise ValueError( err )
+            #if not onPSI:
+            #    err = 'Cannot run %s on %s' % (batchCmd, hostName)
+            #    raise ValueError( err )
+
+            if onIC: 
+                print 'running on IC : %s from %s' % (batchCmd, hostName)
+                return 'IC'
+
             else:
-                print 'running on SGE : %s from %s' % (batchCmd, hostName)
-                return 'PSI'
+		if onPSI:
+                	print 'running on SGE : %s from %s' % (batchCmd, hostName)
+                	return 'PSI'
+
         elif batchCmd == 'nohup' or batchCmd == './batchScript.sh':
             print 'running locally : %s on %s' % (batchCmd, hostName)
             return 'LOCAL'
