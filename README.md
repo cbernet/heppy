@@ -35,7 +35,7 @@ Environment
 From this directory, run the initialization script, which makes a few
 executable scripts available to you:
 
-    source init.sh
+    source ./init.sh
     
 Check that you can now import heppy:
 
