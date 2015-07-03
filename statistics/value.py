@@ -10,7 +10,10 @@ class Value(object):
         self.err = err
 
     def relerr(self):
-        return abs(self.err / self.val)
+        try:
+            return abs(self.err / self.val)
+        except ZeroDivisionError:
+            return None
 
     def __iadd__(self, other):
         self.val += other.val
@@ -44,9 +47,18 @@ class Value(object):
         return new
 
     def __str__(self):
-        return '{val:10.3f} +- {err:8.3f} ({relerr:5.2f}%)'.format(val=self.val,
-                                                                  err=self.err,
-                                                                  relerr=self.relerr()*100)
+        relerr = self.relerr()
+        relerr_format = '{relerr}'
+        if relerr:
+            relerr *= 100
+            relerr_format = '{relerr:5.2f}%'
+        format_template = '{{val:10.3f}} +- {{err:8.3f}} ({relerr_format})'.format(
+            relerr_format = relerr_format
+        )
+        
+        return format_template.format(val=self.val,
+                                      err=self.err,
+                                      relerr=relerr)
 
 if __name__=='__main__':
 
