@@ -131,8 +131,6 @@ class Component( CFG ):
     def __init__(self, name, files, tree_name=None, triggers=None, **kwargs):
         if isinstance(triggers, basestring):
             triggers = [triggers]
-        if type(files) == str:
-            files = sorted(glob.glob(files))
         super( Component, self).__init__( name = name,
                                           files = files,
                                           tree_name = tree_name,
