@@ -19,24 +19,5 @@ class PFSequence(object):
         elements = merge_clusters(elements, 'ecal_in')
         self.links = Links(elements, distance)
         self.pfreco = PFReconstructor( self.links, detector, self.logger)
-        # print self.pfreco
 
 
-if __name__ == '__main__':
-    
-    import shelve
-
-    db = shelve.open('bad_photon')
-    ptcs = db['ptcs']
-    
-    import logging
-    logging.basicConfig(level='INFO')
-    logger = logging.getLogger('Simulator')
-    from heppy.fastsim.detectors.CMS import CMS
-    detector = CMS()
-    
-    pfsequence = PFSequence(ptcs, detector, logger)
-    particles = pfsequence.pfreco.particles
-
-    for p in particles:
-        print p 
