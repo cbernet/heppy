@@ -262,7 +262,9 @@ if __name__ == '__main__':
         comp = pickle.load( pckfile )
         cfg.config.components=[comp]
         events_class = cfg.config.events_class
-
+    else:
+        print 'usage: looper.py <configuration_file.py> [component.pickle]'
+        sys.exit(1)
     looper = Looper( 'Loop', cfg.config,nPrint = 5)
     looper.loop()
     looper.write()
