@@ -4,7 +4,7 @@ from links import Links
 from distance import distance
 from pfreconstructor import PFReconstructor
 
-#TODO: this class and PFInput should probably be in the fastsim module, to try to keep the pfalgo package independent from the dataformat in use. 
+#TODO: this class and PFInput should probably be in the papas module, to try to keep the pfalgo package independent from the dataformat in use. 
 
 class PFSequence(object):
     

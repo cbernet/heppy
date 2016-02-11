@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.fastsim.pdt import particle_data
+from heppy.papas.pdt import particle_data
 from heppy.particles.tlv.particle import Particle 
 
 import math

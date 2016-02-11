@@ -1,6 +1,6 @@
-from heppy.fastsim.pdt import particle_data
-from heppy.fastsim.path import StraightLine, Helix
-from heppy.fastsim.pfobjects import Particle
+from heppy.papas.pdt import particle_data
+from heppy.papas.path import StraightLine, Helix
+from heppy.papas.pfobjects import Particle
 
 from ROOT import TVector3, TLorentzVector
 import math

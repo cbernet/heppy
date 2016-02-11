@@ -1,6 +1,6 @@
 import unittest
 from ROOT import TVector3 
-from heppy.fastsim.pfobjects import Cluster, Particle
+from heppy.papas.pfobjects import Cluster, Particle
 from pfinput import merge_clusters
 
 class TestPFInput(unittest.TestCase):

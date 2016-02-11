@@ -2,10 +2,10 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle 
 
 import math
-from heppy.fastsim.simulator import Simulator
-from heppy.fastsim.vectors import Point
-from heppy.fastsim.pfobjects import Particle as PFSimParticle
-from heppy.fastsim.toyevents import particles
+from heppy.papas.simulator import Simulator
+from heppy.papas.vectors import Point
+from heppy.papas.pfobjects import Particle as PFSimParticle
+from heppy.papas.toyevents import particles
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories
@@ -19,7 +19,7 @@ class PFSim(Analyzer):
     Example configuration: 
 
     from heppy.analyzers.PFSim import PFSim
-    from heppy.fastsim.detectors.CMS import CMS
+    from heppy.papas.detectors.CMS import CMS
     papas = cfg.Analyzer(
         PFSim,
         instance_label = 'papas',              

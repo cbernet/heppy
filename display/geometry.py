@@ -84,7 +84,7 @@ class GDetector(object):
 if __name__ == '__main__':
 
     from ROOT import TCanvas, TH2F
-    from heppy.fastsim.detectors.CMS import CMS
+    from heppy.papas.detectors.CMS import CMS
     from heppy.display.core import Display
 
     cms = CMS()

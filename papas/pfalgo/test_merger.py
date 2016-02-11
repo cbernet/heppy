@@ -1,7 +1,7 @@
 import unittest
 import copy
 from merger import merge_clusters
-from heppy.fastsim.pfobjects import Cluster
+from heppy.papas.pfobjects import Cluster
 from ROOT import TVector3
 
 class TestMerger(unittest.TestCase):

@@ -188,10 +188,10 @@ class GTrajectories(list):
         
 if __name__ == '__main__':
     import math
-    from heppy.fastsim.detectors.CMS import CMS
-    from heppy.fastsim.simulator import Simulator
-    from heppy.fastsim.vectors import Point
-    from heppy.fastsim.toyevents import particles
+    from heppy.papas.detectors.CMS import CMS
+    from heppy.papas.simulator import Simulator
+    from heppy.papas.vectors import Point
+    from heppy.papas.toyevents import particles
     from heppy.display.core import Display
     from heppy.display.geometry import GDetector
 

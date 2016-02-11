@@ -1,6 +1,6 @@
-from heppy.fastsim.propagator import StraightLinePropagator, HelixPropagator
-from heppy.fastsim.pfobjects import Cluster, SmearedCluster, SmearedTrack
-from heppy.fastsim.pfobjects import Particle as PFSimParticle
+from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
+from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
+from heppy.papas.pfobjects import Particle as PFSimParticle
 
 from pfalgo.sequence import PFSequence
 import random

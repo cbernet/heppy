@@ -2,8 +2,8 @@ import unittest
 import itertools
 from distance import Distance
 from links import Element
-from heppy.fastsim.pfobjects import Cluster, Track
-from heppy.fastsim.path import StraightLine
+from heppy.papas.pfobjects import Cluster, Track
+from heppy.papas.path import StraightLine
 
 from ROOT import TVector3, TLorentzVector
  
