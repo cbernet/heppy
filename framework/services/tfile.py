@@ -24,7 +24,3 @@ class TFileService(Service):
         self.file.Write() 
         self.file.Close()
 
-if __name__ == '__main__':
-    fileservice = TFileService('test.root', 'recreate')
-    fileservice.start()
-    fileservice.stop()

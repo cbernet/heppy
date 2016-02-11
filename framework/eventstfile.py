@@ -31,6 +31,9 @@ class Events(object):
 if __name__ == '__main__':
 
     import sys
+    if len(sys.argv)!=2:
+        print 'usage: eventstfile.py <root_file>'
+        sys.exit(1)
     events = Events(sys.argv[1], 'test_tree')
     print '\naccessing one event directly'
     event = events.to(2)

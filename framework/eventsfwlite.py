@@ -1,7 +1,7 @@
-from DataFormats.FWLite import Events as FWLiteEvents
 
 class Events(object):
     def __init__(self, files, tree_name,  options=None):
+        from DataFormats.FWLite import Events as FWLiteEvents
 	if options is not None :
 		if not hasattr(options,"inputFiles"):
 		 	options.inputFiles=files
