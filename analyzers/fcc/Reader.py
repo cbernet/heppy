@@ -2,7 +2,6 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
-from heppy.tools.genbrowser import GenBrowser
 
 import math
 import pprint
@@ -34,4 +33,3 @@ class FCCReader(Analyzer):
         if hasattr(self.cfg_ana, 'gen_jets'):
             event.gen_jets = map(Jet, store.get(self.cfg_ana.gen_jets))
             event.gen_jets.sort(key = self.sort_key, reverse=True)
-        # event.genbrowser = GenBrowser(event.gen_particles, event.gen_vertices)
