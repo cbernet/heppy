@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.tools.genbrowser import GenBrowser
+from heppy.particles.genbrowser import GenBrowser
 
 class UserWarning(Exception):
     pass

@@ -13,15 +13,15 @@ from heppy.display.pfobjects import GTrajectories
 from ROOT import TLorentzVector, TVector3
 
         
-class PFSim(Analyzer):
+class Papas(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
 
     Example configuration: 
 
-    from heppy.analyzers.PFSim import PFSim
+    from heppy.analyzers.Papas import Papas
     from heppy.papas.detectors.CMS import CMS
     papas = cfg.Analyzer(
-        PFSim,
+        Papas,
         instance_label = 'papas',              
         detector = CMS(),
         gen_particles = 'gen_particles_stable',
@@ -44,7 +44,7 @@ class PFSim(Analyzer):
     '''
 
     def __init__(self, *args, **kwargs):
-        super(PFSim, self).__init__(*args, **kwargs)
+        super(Papas, self).__init__(*args, **kwargs)
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector,
                                    self.mainLogger)
