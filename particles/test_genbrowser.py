@@ -28,8 +28,8 @@ class Vertex(object):
 
     def __init__(self, id):
         self.id = id
-        # self.outgoing = []
-        # self.incoming = []
+        self.outgoing = []
+        self.incoming = []
 
     def __str__(self):
         outg = map(str, self.outgoing)

@@ -1,5 +1,5 @@
 import unittest
-from heppy.particles.tlv.resonance import Resonance
+from heppy.particles.tlv.resonance import Resonance2 as Resonance
 from heppy.particles.tlv.particle import Particle
 from ROOT import TLorentzVector
 
@@ -11,8 +11,8 @@ class TestResonance(unittest.TestCase):
         reso = Resonance( ptc1, ptc2, 23 )
         self.assertEqual( reso._pid, 23 )
         self.assertEqual( reso.e(), 3 )
-        self.assertEqual( reso.leg1(), ptc2 )
-        self.assertEqual( reso.leg2(), ptc1 )
+        self.assertEqual( reso.leg1(), ptc1 )
+        self.assertEqual( reso.leg2(), ptc2 )
         self.assertEqual( reso.q(), 0 )
         self.assertEqual( reso.p4(), TLorentzVector(3,0,0,3) )
 

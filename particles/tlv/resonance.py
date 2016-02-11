@@ -22,12 +22,19 @@ class Resonance(Particle):
 
             
 class Resonance2(Resonance):
+    '''Resonance decaying to two legs.'''
 
     def __init__(self, leg1, leg2, pid):
+        '''leg1 and leg2 are the first and second legs, respectively.
+        no sorting is done internally.
+        pid is the pdg id of the resonance.
+        '''
         super(Resonance2, self).__init__([leg1, leg2], pid)
 
     def leg1(self):
+        '''return first leg'''
         return self.legs[0]
 
     def leg2(self):
+        '''return second leg'''
         return self.legs[1]
