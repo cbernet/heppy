@@ -203,16 +203,3 @@ def matchObjectCollection2 ( objects, matchCollection, deltaRMax = 0.3 ):
     # by now, the matched attribute remains in the objects, for future usage
     # one could remove it with delattr (object, attrname)
 
-
-
-if __name__ == '__main__':
-
-    import sys
-    args = sys.argv[1:]
-    fargs = map( float, args )
-
-    print 'dR2 = ', deltaR2( *fargs )
-    print 'dR = ', deltaR( *fargs )
-    
-
-    
