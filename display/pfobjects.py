@@ -185,26 +185,3 @@ class GTrajectories(list):
     def draw(self, projection):
         for traj in self:
             traj.draw(projection)
-        
-if __name__ == '__main__':
-    import math
-    from heppy.papas.detectors.CMS import CMS
-    from heppy.papas.simulator import Simulator
-    from heppy.papas.vectors import Point
-    from heppy.papas.toyevents import particles
-    from heppy.display.core import Display
-    from heppy.display.geometry import GDetector
-
-    cms = CMS()
-    simulator = Simulator(cms)
-    
-    particles = list( particles(5, 211, math.pi/5., 4*math.pi/5.,
-                                10., 10., Point(0.5,0.5,0)) )
-    simulator.simulate(particles)
-    
-    display = Display()
-    gcms = GDetector(cms)
-    display.register(gcms, 0)
-    gtrajectories = GTrajectories(particles)
-    display.register(gtrajectories,1)
-    display.draw()
