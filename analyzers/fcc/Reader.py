@@ -6,10 +6,10 @@ from heppy.particles.fcc.vertex import Vertex
 import math
 import pprint
 
-class FCCReader(Analyzer):
+class Reader(Analyzer):
 
     def beginLoop(self, setup):
-        super(FCCReader, self).beginLoop(setup)
+        super(Reader, self).beginLoop(setup)
         self.sort_key = lambda ptc: ptc.e()
         if self.cfg_ana.mode=='pp' or self.cfg_ana.mode=='ep':
             self.sort_key = lambda ptc: ptc.pt()
