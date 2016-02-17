@@ -16,9 +16,11 @@ class Reader(Analyzer):
     
     def process(self, event):
         store = event.input
+        import pdb; pdb.set_trace()
         if hasattr(self.cfg_ana, 'gen_particles'):
             name_genptc = self.cfg_ana.gen_particles
-            gen_particles = map(Particle, store.get("GenParticle"))
+            import pdb; pdb.set_trace()
+            gen_particles = map(Particle, store.get(self.cfg_ana.gen_particles))
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,
                                           reverse=True )  
