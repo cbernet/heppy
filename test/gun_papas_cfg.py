@@ -34,10 +34,10 @@ from ROOT import gSystem
 # from EventStore import EventStore as Events
 from heppy.framework.eventsgen import Events
 
-from heppy.analyzers.Papas import Papas
+from heppy.analyzers.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
-    Papas,
+    PapasSim,
     instance_label = 'papas',
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
@@ -47,12 +47,19 @@ papas = cfg.Analyzer(
     verbose = True
 )
 
+from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
+pfblocks = cfg.Analyzer(
+    PapasPFBlockBuilder
+)
+
+# and then particle reconstruction from blocks 
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    papas
+    papas,
+    pfblocks,
     ] )
  
 config = cfg.Config(
