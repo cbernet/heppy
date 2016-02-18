@@ -30,7 +30,7 @@ source = cfg.Analyzer(
 )  
 
 from ROOT import gSystem
-gSystem.Load("libdatamodelDict")
+# gSystem.Load("libdatamodelDict")
 # from EventStore import EventStore as Events
 from heppy.framework.eventsgen import Events
 
