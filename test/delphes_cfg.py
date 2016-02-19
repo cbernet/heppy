@@ -18,7 +18,8 @@ from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
     mode = 'pp',
-    # gen_particles = 'GenParticle',
+    gen_particles = 'genParticles',
+    gen_vertices  = 'genVertices', 
     # gen_jets = 'GenJet',
     jets = 'recJets'
 )  
