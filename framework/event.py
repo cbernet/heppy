@@ -1,4 +1,5 @@
 import collections
+import pprint
 from ROOT import TChain
 
 class Event(object):
@@ -39,7 +40,10 @@ class Event(object):
                    not isinstance(value, (str,unicode)) and \
                    not isinstance(value, TChain) and \
                    not recursive :
-                tmp = map(str, value)
+                nelems_to_print = 5
+                tmp = map(str, value[:nelems_to_print])
+                if nelems_to_print<len(value):
+                    tmp.append('...')
 
             varlines.append( '\t{var:<15}:   {value}'.format(var=var, value=tmp) )
         all = [ header ]
