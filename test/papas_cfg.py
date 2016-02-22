@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     # files = 'example.root'
-    files = 'FCCDelphesOutput.root'
+    files = ['example.root']
 )
 selectedComponents = [comp]
 
