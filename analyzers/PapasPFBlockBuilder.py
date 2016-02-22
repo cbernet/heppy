@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.pfalgo.blockbuilder import BlockBuilder
-        
+from heppy.papas.aliceproto.aliceblockbuilder import BlockBuilder
+
 class PapasPFBlockBuilder(Analyzer):
 
     def __init__(self, *args, **kwargs):
@@ -12,3 +12,5 @@ class PapasPFBlockBuilder(Analyzer):
         tracks = event.tracks
         blockbuilder = BlockBuilder(tracks, ecal, hcal)
         event.blocks = blockbuilder.blocks
+        print "processed"
+        

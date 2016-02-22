@@ -3,6 +3,8 @@ import copy
 import heppy.framework.config as cfg
 
 import logging
+
+import sys
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
@@ -18,6 +20,7 @@ selectedComponents = [comp]
 
 
 #TODO colin debug this! 
+#from heppy.analyzers.Gun import Gun
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
@@ -92,7 +95,7 @@ if __name__ == '__main__':
     if len(sys.argv)==2:
         papas.display = True
         iev = int(sys.argv[1])
-        
+       
     loop = Looper( 'looper', config,
                    nEvents=100,
                    nPrint=0,
@@ -106,6 +109,11 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        process(iev)
+        process(iev)
+        process(iev)
+        process(iev)
+        process(iev)
         process(iev)
     else:
         loop.loop()
