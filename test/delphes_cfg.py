@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-    files = ['example.root']
+    files = ['FCCDelphesOutput.root']
 )
 selectedComponents = [comp]
 
@@ -18,28 +18,15 @@ from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
     mode = 'pp',
-    gen_particles = 'GenParticle',
-    gen_jets = 'GenJet',
+    gen_particles = 'genParticles',
+    gen_vertices  = 'genVertices', 
+    # gen_jets = 'GenJet',
+    jets = 'recJets'
 )  
 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-
-from heppy.analyzers.METBuilder import METBuilder
-gen_met = cfg.Analyzer(
-    METBuilder,
-    instance_label = 'gen_met',
-    particles = 'gen_particles_stable'
-)
-
-# in case we want to redo jet clustering, not used at the moment.
-from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-gen_jets = cfg.Analyzer(
-    JetClusterizer,
-    instance_label = 'gen_jets_reclustered',
-    particles = 'gen_particles_stable'
-)
 
 # currently treating electrons and muons transparently.
 # could use the same modules to have a collection of electrons
@@ -123,16 +110,14 @@ gen_tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    # gen_jets,
-    gen_met,
-    leptons,
-    iso_leptons,
-    gen_jets_30,
-    sel_iso_leptons,
-    match_jet_leptons,
-    sel_jets_nolepton,
-    m3, 
-    gen_tree
+    # leptons,
+    # iso_leptons,
+    # gen_jets_30,
+    # sel_iso_leptons,
+    # match_jet_leptons,
+    # sel_jets_nolepton,
+    # m3, 
+    # gen_tree
     ] )
 
 # comp.files.append('example_2.root')

@@ -11,26 +11,32 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     # files = 'example.root'
-    files = ['example.root']
+    files = [None]
 )
 selectedComponents = [comp]
 
 
-from heppy.analyzers.fcc.Reader import Reader
+#TODO colin debug this! 
+from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
-    Reader,
-    mode = 'ee',
-    gen_particles = 'GenParticle'
+    Gun,
+    pdgid = 211,
+    thetamin = -0.5,
+    thetamax = 0.5,
+    ptmin = 10,
+    ptmax = 10,
+    flat_pt = True,
 )  
 
 from ROOT import gSystem
-gSystem.Load("libdatamodelDict")
-from EventStore import EventStore as Events
+# gSystem.Load("libdatamodelDict")
+# from EventStore import EventStore as Events
+from heppy.framework.eventsgen import Events
 
-from heppy.analyzers.Papas import Papas
+from heppy.analyzers.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
-    Papas,
+    PapasSim,
     instance_label = 'papas',
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
@@ -40,12 +46,19 @@ papas = cfg.Analyzer(
     verbose = True
 )
 
+from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
+pfblocks = cfg.Analyzer(
+    PapasPFBlockBuilder
+)
+
+# and then particle reconstruction from blocks 
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    papas
+    papas,
+    pfblocks,
     ] )
  
 config = cfg.Config(

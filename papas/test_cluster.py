@@ -33,8 +33,8 @@ class TestCluster(unittest.TestCase):
         mean = np.mean(npe)
         rms = np.std(npe)
         eres = ecal.energy_resolution(cluster.energy)
-        self.assertAlmostEqual(mean, energy, places=2)
-        self.assertAlmostEqual(rms, eres*energy, places=2)
+        self.assertAlmostEqual(mean, energy, places=1)
+        self.assertAlmostEqual(rms, eres*energy, places=1)
         rootfile.Write()
         rootfile.Close()
         

@@ -18,7 +18,7 @@ class Reader(Analyzer):
         store = event.input
         if hasattr(self.cfg_ana, 'gen_particles'):
             name_genptc = self.cfg_ana.gen_particles
-            gen_particles = map(Particle, store.get("GenParticle"))
+            gen_particles = map(Particle, store.get(self.cfg_ana.gen_particles))
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,
                                           reverse=True )  
@@ -28,8 +28,15 @@ class Reader(Analyzer):
                                           ptc.e()>1e-5 and 
                                           ptc.pt()>1e-5 and
                                           not abs(ptc.pdgid()) in [12, 14, 16]]
-            gen_vertices = store.get("GenVertex")
+        if hasattr(self.cfg_ana, 'gen_vertices'):        
+            gen_vertices = store.get(self.cfg_ana.gen_vertices)
             event.gen_vertices = map(Vertex, gen_vertices)
         if hasattr(self.cfg_ana, 'gen_jets'):
             event.gen_jets = map(Jet, store.get(self.cfg_ana.gen_jets))
             event.gen_jets.sort(key = self.sort_key, reverse=True)
+        if hasattr(self.cfg_ana, 'jets'):
+            event.jets = map(Jet, store.get(self.cfg_ana.jets))
+            event.jets.sort(key = self.sort_key, reverse=True)
+        
+        
+            

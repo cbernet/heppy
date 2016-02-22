@@ -1,4 +1,6 @@
-import collections
+import pprint
+import copy
+
 from ROOT import TChain
 
 class Event(object):
@@ -23,25 +25,12 @@ class Event(object):
         self.setup = setup
         self.eventWeight = eventWeight
 
+
     def __str__(self):
         header = '{type}: {iEv}'.format( type=self.__class__.__name__,
                                          iEv = self.iEv)
-        varlines = []
-        for var,value in sorted(vars(self).iteritems()):
-            tmp = value
-            # check for recursivity
-            recursive = False
-            if hasattr(value, '__getitem__') and \
-               not isinstance(value, collections.Mapping) and \
-               (len(value)>0 and value[0].__class__ == value.__class__):
-                    recursive = True
-            if hasattr(value, '__contains__') and \
-                   not isinstance(value, (str,unicode)) and \
-                   not isinstance(value, TChain) and \
-                   not recursive :
-                tmp = map(str, value)
-
-            varlines.append( '\t{var:<15}:   {value}'.format(var=var, value=tmp) )
-        all = [ header ]
-        all.extend(varlines)
-        return '\n'.join( all )
+        stripped_attrs = copy.copy( self.__dict__ )
+        stripped_attrs.pop('setup')
+        stripped_attrs.pop('input')        
+        contents = pprint.pformat(stripped_attrs, indent=4)
+        return '\n'.join([header, contents])
