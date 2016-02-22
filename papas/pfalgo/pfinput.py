@@ -12,8 +12,8 @@ class PFInput(object):
     def __init__(self, ptcs):
         '''
         attributes: 
-        - tracks: list of tracks
-        - clusters: dictionary of clusters sorted by layer, with this format: 
+        - elements: dictionary of elements:
+          tracker : [track0, track1, ...]
           ecal: [cluster0, cluster1, ...]
           hcal: [... ]
         '''
