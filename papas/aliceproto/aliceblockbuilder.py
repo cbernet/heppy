@@ -56,8 +56,6 @@ class BlockBuilder(object):
         self.makeEdgeNodes()
         self.makeEdges()
         self.makeBlocks()  
-        
-    
     
     #maybe not in right place yet
     def makeHistoryNodes(self, dictcollection) :
