@@ -1,5 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.aliceproto.aliceblockbuilder import BlockBuilder
+from heppy.papas.pfalgo.distance  import Distance
 
 class PapasPFBlockBuilder(Analyzer):
 

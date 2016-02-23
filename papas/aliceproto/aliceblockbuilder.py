@@ -4,9 +4,10 @@ from PFfloodfill import FloodFill
 from enum import Enum
 #import sys
 #Get the DAGtool
-from distance import Distance
+
 from DAG import Node, BreadthFirstSearchIterative,DAGFloodfill
 from heppy.papas.aliceproto.Identifier import Identifier
+from heppy.papas.pfalgo.distance import Distance
  
 class Event(object):
     def __init__(self):
@@ -37,7 +38,7 @@ def MergeNodes (Nodes1 , Nodes2) :
 
 
 class BlockBuilder(object):
-    def __init__(self,tracks, ecal, hcal,histNodes=dict(),ruler=Distance):
+    def __init__(self,tracks, ecal, hcal,histNodes=dict(),ruler=None):
         self.tracks=tracks
         self.ecal=ecal
         self.hcal=hcal
@@ -137,11 +138,11 @@ class BlockBuilder(object):
 
   
 #alice todo improve?
-   
+ruler = Distance()
        
 class Edge(object): #edge information 
     # end nodes, distance and whether they are linked
-    ruler =staticmethod(Distance())
+    ruler = None
     
     def __init__(self, obj1,obj2,id1, id2): #bit clunky
         self.id1=id1
@@ -149,7 +150,12 @@ class Edge(object): #edge information
         #these two will need some unravelling as need to go from the id to the actual cluster or tracks in order to get the distance
         #self.type=self.GetType(e1,e2)
      
-        link_type, link_ok, distance = Edge.ruler(obj1,obj2)
+       #This is a bodge (sorry) wanted to be able to change the ruler for the test case
+       #but has an issue with using the Distance class as the Edge.ruler (nor sure why but I imagine there is a cleaner solution)
+        if Edge.ruler==None :
+            link_type, link_ok, distance = ruler(obj1,obj2) # for Distance
+        else :
+            link_type, link_ok, distance = Edge.ruler(obj1,obj2) # eg for DistanceItem for test_reconstructor
         self.distance=distance
         self.link_type=link_type
         self.linked= link_ok

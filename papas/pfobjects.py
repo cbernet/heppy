@@ -42,9 +42,11 @@ class Cluster(PFObject):
     max_energy = 0.
     
     def __init__(self, energy, position, size_m, layer, particle=None):
-        if (layer=='ecal_in)') :
+        
+        #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
+        if (layer=='ecal_in') :
             super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER)
-        elif (layer=='hcal_in)') :
+        elif (layer=='hcal_in') :
             super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER)
         else :
             assert False
@@ -158,7 +160,7 @@ class SmearedTrack(Track):
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge, pdgid=None):
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.makeID(self, Identifier.PFOBJECTTYPE.CLUSTER)
+        self.uniqueid=Identifier.makeID(self, Identifier.PFOBJECTTYPE.PARTICLE)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()

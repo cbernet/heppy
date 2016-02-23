@@ -3,7 +3,7 @@
 class Identifier(long) :
     class PFOBJECTTYPE:
         NONE=0
-        ECALCLUSTER=1
+        ECALCLUSTER=1 #simplistic initial implementation (may need an enum for layer to be added)
         HCALCLUSTER=2
         TRACK=3
         PARTICLE=4
@@ -44,7 +44,7 @@ class Identifier(long) :
     @staticmethod  
     def isRecParticle ( ident) :
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.RECPARTICLE 
+    
     @staticmethod  
     def isParticle ( ident) :
-        print Identifier.gettype(ident)
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.PARTICLE     
