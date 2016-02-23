@@ -11,7 +11,7 @@ class PapasPFBlockBuilder(Analyzer):
         ecal = event.ECALclusters
         hcal = event.HCALclusters
         tracks = event.tracks
-        blockbuilder = BlockBuilder(tracks, ecal, hcal)
+        histnodes=dict() # for some reason ipython fails without this
+        blockbuilder = BlockBuilder(tracks, ecal, hcal,histnodes)
         event.blocks = blockbuilder.blocks
-        print "processed"
         

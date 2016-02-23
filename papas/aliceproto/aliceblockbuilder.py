@@ -57,7 +57,6 @@ class BlockBuilder(object):
         self.makeEdges()
         self.makeBlocks()  
     
-    #maybe not in right place yet
     def makeHistoryNodes(self, dictcollection) :
         for label, thing in dictcollection.iteritems() :
             self.historyNodes[label]=Node(label )       
@@ -79,9 +78,9 @@ class BlockBuilder(object):
         obj1=self.getObject(id1)
         obj2=self.getObject(id2)
         
-        edge=Edge(obj1,obj2,id1,id2)
+        edge=Edge(obj1,obj2,id1,id2) #this is a bit clunky and can likely be improved
         self.edgedata[edge.key] = edge
-        if  edge.linked: #TODO this is actually an undirected linke - will work for undriected searches 
+        if  edge.linked: #TODO this is actually an undirected link - will work for undriected searches 
             self.edgeNodes[id1].add_child(self.edgeNodes[id2])
 
 
@@ -105,7 +104,7 @@ class BlockBuilder(object):
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] =  block        
             
-            #Linkthe block into the historyNodes
+            #Link the block into the historyNodes
             self.setBlockLinks(block)
                      
     
@@ -117,20 +116,15 @@ class BlockBuilder(object):
             return self.ecal[e1] 
         elif type==Identifier.PFOBJECTTYPE.HCALCLUSTER :
             return self.hcal[e1]            
-        
         else :
             assert(False)    
     
-        
-    def newUniqueID(self):
-        uniqueid=self.particlecount
-        self.particlecount+=1
-        return uniqueid
-    
     def setBlockLinks(self,block):
-        #make a node for the block
+        #make a node for the block and add into the history Node
         blocknode=Node(block.uniqueid)
         self.historyNodes[block.uniqueid]=blocknode
+        
+        #now add in the links between the block elements and the block into the historyNodes
         for elemid in block.pfelements:
             self.historyNodes[elemid].add_child(blocknode)
 
@@ -153,7 +147,7 @@ class Edge(object): #edge information
         if Edge.ruler==None :
             link_type, link_ok, distance = ruler(obj1,obj2) # for Distance
         else :
-            link_type, link_ok, distance = Edge.ruler(obj1,obj2) # eg for DistanceItem for test_reconstructor
+            link_type, link_ok, distance = Edge.ruler(obj1,obj2) # eg for DistanceItem for test_reconstructor (need to make into a class like Distance)
         self.distance=distance
         self.link_type=link_type
         self.linked= link_ok
@@ -175,8 +169,7 @@ class Edge(object): #edge information
     
 class PFBlock(object):
 # Stores a set of nodes that are connected
-# together with the edge data for each possible edge
-# call edgevec edgedata
+# together with the edge data for each possible edge con
     def __init__(self, elements,alledges):
         
         self.pfelements = elements

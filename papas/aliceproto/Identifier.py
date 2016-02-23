@@ -48,3 +48,4 @@ class Identifier(long) :
     @staticmethod  
     def isParticle ( ident) :
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.PARTICLE     
+    

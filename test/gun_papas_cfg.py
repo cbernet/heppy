@@ -4,7 +4,7 @@ import heppy.framework.config as cfg
 
 import logging
 
-import sys
+#import sys
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
@@ -109,11 +109,6 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
         process(iev)
     else:
         loop.loop()
