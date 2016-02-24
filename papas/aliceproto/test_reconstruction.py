@@ -7,6 +7,22 @@ from aliceblockbuilder import Event
 from aliceblockbuilder import PFBlock as realPFBlock
 from enum import Enum
 
+class Event(object):
+    def __init__(self):
+        self.simParticles=dict()
+        self.recParticles=dict()
+        self.ECALclusters=dict()
+        self.HCALclusters=dict()
+        self.tracks=dict()           #tracks to be used in reconstruction
+        self.historyNodes=dict()  #Nodes used in simulation/reconstruction (contain uniqueid)
+        #self.recHistoryNodes=dict() #Nodes used in reconstruction (contain uniqueid)
+        self.edgeNodes=dict()     #Contains Edge distances between nodes
+        
+        #dictionary with uniqueids
+        self.blocks=dict()           #Blocks made in reconstuction
+        #self.edgedata=dict() 
+    
+
     
 class Simulator(object):
     def __init__(self,event):

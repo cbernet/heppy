@@ -36,4 +36,7 @@ class Particle(P4):
             q = self.q(),
             p4 = super(Particle, self).__str__()
             )
+
+    def __repr__(self):
+        return str(self)
     
