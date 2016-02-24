@@ -1,7 +1,6 @@
 
 import itertools
 from PFfloodfill import FloodFill
-from enum import Enum
 #import sys
 #Get the DAGtool
 
