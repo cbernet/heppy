@@ -1,6 +1,7 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.pfalgo.blockbuilder import BlockBuilder
-        
+from heppy.papas.aliceproto.aliceblockbuilder import BlockBuilder
+from heppy.papas.pfalgo.distance  import Distance
+
 class PapasPFBlockBuilder(Analyzer):
 
     def __init__(self, *args, **kwargs):
@@ -10,5 +11,7 @@ class PapasPFBlockBuilder(Analyzer):
         ecal = event.ECALclusters
         hcal = event.HCALclusters
         tracks = event.tracks
-        blockbuilder = BlockBuilder(tracks, ecal, hcal)
+        histnodes=dict() # for some reason ipython fails without this
+        blockbuilder = BlockBuilder(tracks, ecal, hcal,histnodes)
         event.blocks = blockbuilder.blocks
+        

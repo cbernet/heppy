@@ -1,7 +1,12 @@
 from vectors import Point
 from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
+from heppy.papas.aliceproto.Identifier import Identifier
 import math
+
+
+
+
 
 class PFObject(object):
     '''Base class for all particle flow objects (tracks, clusters, etc).
@@ -14,11 +19,12 @@ class PFObject(object):
     block_label : label of the block the PFObject belongs to. The block label is a unique identifier for the block.
     ''' 
     
-    def __init__(self):
+    def __init__(self,pfobjecttype=Identifier.PFOBJECTTYPE.NONE):
         self.linked = []
         self.locked = False
         self.block_label = None
-
+        self.uniqueid=Identifier.makeID(self,pfobjecttype)
+        
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
         notseen = visitor.visit(self)
@@ -36,7 +42,14 @@ class Cluster(PFObject):
     max_energy = 0.
     
     def __init__(self, energy, position, size_m, layer, particle=None):
-        super(Cluster, self).__init__()
+        
+        #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
+        if (layer=='ecal_in') :
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER)
+        elif (layer=='hcal_in') :
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER)
+        else :
+            assert False
         self.position = position
         self.set_energy(energy)
         self.set_size( float(size_m) )
@@ -116,7 +129,7 @@ class Track(PFObject):
     '''
     
     def __init__(self, p3, charge, path, particle=None):
-        super(Track, self).__init__()
+        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK)
         self.p3 = p3
         self.pt = p3.Perp()
         self.energy = p3.Mag()  #TODO clarify energy and momentum
@@ -147,6 +160,7 @@ class SmearedTrack(Track):
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge, pdgid=None):
         super(Particle, self).__init__(pdgid, charge, tlv)
+        self.uniqueid=Identifier.makeID(self, Identifier.PFOBJECTTYPE.PARTICLE)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
