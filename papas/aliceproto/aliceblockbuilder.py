@@ -2,6 +2,34 @@ import itertools
 
 from DAG import Node, BreadthFirstSearchIterative,DAGFloodfill
 from heppy.papas.aliceproto.Identifier import Identifier
+    
+      
+class Edge(object): 
+    '''edge information 
+       stored end node ids, distance and whether they are linked
+    '''
+    ruler = None
+    
+    def __init__(self, id1, id2,  link_type, is_linked, distance): 
+        ''' The edge knows the ids of its ends, the distance between the two ends and whether or not they are linked '''
+        self.id1=id1
+        self.id2=id2
+        self.distance=distance
+        self.link_type=link_type
+        self.linked= is_linked
+        self.key=Edge.make_key(id1,id2) 
+
+    def __str__(self):
+        descrip =str(self.link_type) + "=" + str(self.distance)+  " ("+ str( self.linked) + " ) :" + self.descrip
+        return descrip
+    
+    def __repr__(self):
+        return self.__str__()      
+    
+
+    @staticmethod    
+    def make_key(id1,id2):
+        return hash(tuple(sorted([id1,id2])))
 
   
 class PFBlock(object):
@@ -9,11 +37,16 @@ class PFBlock(object):
      together with the edge data (distances) for each possible edge combination
      '''
  
-    def __init__(self, elements,alledges):
+    def __init__(self, element_ids,alledges, element_descrips):
         
+        #make a uniqueid for this block
         self.uniqueid=Identifier.makeID(self,Identifier.PFOBJECTTYPE.BLOCK) 
-        self.element_unique_ids = sorted(elements, key=lambda x: Identifier.type_short_code(x) + str(x))
-        self.size = len(elements)
+        
+        #order the elements by element type (ecal, hcal, track) and then by element id 
+        #both the element ids and the descriptions need to be ordered in the same way
+        sortid=[Identifier.type_short_code(x) + str(x) for x in element_ids]
+        self.element_descrips   =[x for (s,x) in sorted(zip(sortid,element_descrips), key=lambda pair: pair[0])]         
+        self.element_unique_ids =[x for (s,x) in sorted(zip(sortid,element_ids), key=lambda pair: pair[0])] 
         
         #extract the relevant parts of the edges and store this within the block
         self.edges = dict()       
@@ -21,9 +54,7 @@ class PFBlock(object):
             key=Edge.make_key(id1,id2)
             self.edges[key] =alledges[key]
         print("finished block")    
-        
     
-   
    
     def count_ecal(self):
         ''' Counts how many ecal cluster ids are in the block '''
@@ -46,26 +77,32 @@ class PFBlock(object):
             count+=Identifier.is_hcal(elem)
         return count  
     
+    def elements_string(self) : 
+        #srting descrip of the elements in a block
+        count=0
+        elemdetails="\n      elements: {\n"  
+        for i in range(0,len(self.element_unique_ids)):
+            elemname = Identifier.type_short_code(self.element_unique_ids[i]) +str(count)
+            elemdetails += "      " + elemname + ": " + self.element_descrips[i] + "\n"
+            count=count+1            
+        return elemdetails + "      }"
+    
     def edge_matrix_string(self) :
         #produces the lower part of the matrix of distances between elements
-        #and at the same time construct a string of the corresponding edges
-        #with additional edge details
         #elements are ordered as ECAL(E), HCAL(H), Track(T) and by edgekey
-        
+    
         # make the header line for the matrix       
         count=0
-        matrixstr="      Edge Distance Matrix:\n           "
-        for e1 in sorted(self.element_unique_ids) :
+        matrixstr="      distances:\n           "
+        for e1 in self.element_unique_ids :
             elemstr=Identifier.type_short_code(e1) +str(count)
             matrixstr +=  "{:>9}".format(elemstr)
             count += 1
         matrixstr +=  "\n"
-        
+    
         #for each element find distances to all other items that are in the lower part of the matrix
-        #at the same time collect up the corresponding edge details
-        edgedetails="      Edge details: {\n"        
         countrow=0
-        for e1 in sorted(self.element_unique_ids) : # this will be the rows
+        for e1 in self.element_unique_ids : # this will be the rows
             countcol=0
             rowstr=""
             #make short name for the row element eg E3, H5 etc
@@ -79,11 +116,11 @@ class PFBlock(object):
                     break
                 edge=self.edges[Edge.make_key(e1,e2)]
                 rowstr   += "{:8.4f}".format(edge.distance) + " "
-                edgedetails += "      " + rowname + colname + edge.__str__() + "\n"
             matrixstr += "{:>11}".format(rowname) + rowstr + "\n"
             countrow += 1        
     
-        return matrixstr  + edgedetails +"      }\n"
+        return matrixstr   +"      }\n"
+    
     
     def __str__(self):
         descrip = str('\n      ecals={count_ecal} hcals={count_hcal} tracks={count_tracks}'.format(
@@ -91,66 +128,15 @@ class PFBlock(object):
             count_hcal=self.count_hcal(),
             count_tracks=self.count_tracks() )
         ) 
-                
+        descrip += self.elements_string()        
         descrip += "\n" + self.edge_matrix_string()     
         return descrip
     
     def __repr__(self):
             return self.__str__()    
 
-'''
-COLIN: how to represent a block? 
 
-block : block id 
 
-elements: 
-  T1: track1 printout 
-  E1: ecal1 printout 
-  ..
-
-links: 
-       T1    E1 
-  T1   x     dist
-  E2         x
-  ..
-
-'''
-
-    
-      
-class Edge(object): #edge information 
-    # end nodes, distance and whether they are linked
-    ruler = None
-    
-    def __init__(self, id1, id2,  link_type, is_linked, distance, descrip =""): 
-        ''' The edge knows the ids of its ends, the distance between the two ends and whether or not they are linked '''
-        self.id1=id1
-        self.id2=id2
-        self.distance=distance
-        self.link_type=link_type
-        self.linked= is_linked
-        self.key=Edge.make_key(id1,id2) 
-        self.descrip=descrip
-    
-    def short_link_type(self) :
-        ''' for example  
-            ee for ecal to ecal
-            ht for hcal to track
-        '''
-        return self.link_type[0][0] + self.link_type[1][0]
-        
-  
-    def __str__(self):
-        descrip =str(self.link_type) + "=" + str(self.distance)+  " ("+ str( self.linked) + " ) :" + self.descrip
-        return descrip
-    
-    def __repr__(self):
-        return self.__str__()      
-    
-
-    @staticmethod    
-    def make_key(id1,id2):
-        return hash(tuple(sorted([id1,id2])))
 
         
 class BlockBuilder(object):
@@ -225,9 +211,8 @@ class BlockBuilder(object):
         obj1=self.get_object(id1)
         obj2=self.get_object(id2)
         link_type, is_linked, distance = self.ruler(obj1,obj2)
-        edge_descrip = obj1.__str__() + " to " + obj2.__str__()
         
-        edge=Edge(id1,id2, link_type,is_linked, distance,edge_descrip) #this is a bit clunky and can likely be improved
+        edge=Edge(id1,id2, link_type,is_linked, distance) 
         self.edges[edge.key] = edge
         if  edge.linked: #this is actually an undirected link - will work fine for undirected searches 
             self.nodes[id1].add_child(self.nodes[id2])
@@ -239,14 +224,16 @@ class BlockBuilder(object):
         
         for b in DAGFloodfill(self.nodes).blocks :
             recHistoryUIDs= [] 
+            elemdescrips =[]
             #NB the nodes that are found by FloodFill are the edgeNodes
             # we acually want the blocks to contain the History nodes (the ones with matching uniqueid)
             #So, find the corresponding history nodes
             for e in b :
-                recHistoryUIDs.append(e.getValue())         
+                recHistoryUIDs.append(e.getValue())
+                elemdescrips.append(self.get_object(e.getValue()).__str__())
 
             #now we can make the block
-            block=PFBlock(recHistoryUIDs,  self.edges) #pass the edgedata and extract the needed edge links for this block          
+            block=PFBlock(recHistoryUIDs,  self.edges, elemdescrips) #pass the edgedata and extract the needed edge links for this block          
             
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] =  block        
