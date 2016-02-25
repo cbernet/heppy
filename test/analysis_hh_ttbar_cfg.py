@@ -10,7 +10,8 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-    files = ['example.root']
+    #files = ['example.root']
+    files = ['/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput.root']
 )
 selectedComponents = [comp]
 
@@ -18,8 +19,13 @@ from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
     mode = 'pp',
-    gen_particles = 'GenParticle',
-    gen_jets = 'GenJet',
+    gen_particles = 'genParticles',
+    #gen_jets = 'GenJet',
+    jets = 'recJets',
+    electrons = 'recElectrons',
+    muons = 'recMuons',
+    photons = 'recPhotons',
+    met = 'recMETs',
 )  
 
 from ROOT import gSystem
@@ -124,15 +130,15 @@ gen_tree = cfg.Analyzer(
 sequence = cfg.Sequence( [
     source,
     # gen_jets,
-    gen_met,
-    leptons,
-    iso_leptons,
-    gen_jets_30,
-    sel_iso_leptons,
-    match_jet_leptons,
-    sel_jets_nolepton,
-    m3, 
-    gen_tree
+    #gen_met,
+    #leptons,
+    #iso_leptons,
+    #gen_jets_30,
+    #sel_iso_leptons,
+    #match_jet_leptons,
+    #sel_jets_nolepton,
+    #m3, 
+    #gen_tree
     ] )
 
 # comp.files.append('example_2.root')
