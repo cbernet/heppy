@@ -108,6 +108,8 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+       
+        process(iev)
         process(iev)
     else:
         loop.loop()

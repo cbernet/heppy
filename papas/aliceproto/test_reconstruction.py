@@ -3,7 +3,6 @@ from DAG import Node, BreadthFirstSearchIterative,DAGFloodfill
 from heppy.papas.aliceproto.Identifier import Identifier
 from aliceblockbuilder import Edge
 from aliceblockbuilder import BlockBuilder
-from aliceblockbuilder import Event
 from aliceblockbuilder import PFBlock as realPFBlock
 from enum import Enum
 
@@ -15,13 +14,9 @@ class Event(object):
         self.HCALclusters=dict()
         self.tracks=dict()           #tracks to be used in reconstruction
         self.historyNodes=dict()  #Nodes used in simulation/reconstruction (contain uniqueid)
-        #self.recHistoryNodes=dict() #Nodes used in reconstruction (contain uniqueid)
         self.edgeNodes=dict()     #Contains Edge distances between nodes
-        
-        #dictionary with uniqueids
         self.blocks=dict()           #Blocks made in reconstuction
-        #self.edgedata=dict() 
-    
+        
 
     
 class Simulator(object):
@@ -224,10 +219,21 @@ class recParticle(Particle):
     #ECAL_HCAL = 6
     #HCAL_HCAL=8
            
+class DistanceItem(object):
+    '''Concrete distance calculator.
+    ''' 
+    def __call__(self, ele1, ele2):
+        '''returns a tuple: 
+          True/False depending on the validity of the link
+          float      the link distance
+        '''
+        distance=abs(obj1.id%100 -obj2.id%100)
+        return  None, distance==0, distance        
+
+  
     
-def DistanceItem(obj1,obj2): #simple distance uses the short ids
-    distance=abs(obj1.id%100 -obj2.id%100)
-    return  None, distance==0, distance
+
+#distance = DistanceItem()
          
         
 class TestFloodFill(unittest.TestCase):

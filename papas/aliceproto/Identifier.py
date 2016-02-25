@@ -25,16 +25,16 @@ class Identifier(long) :
         return ident >> 40
     
     @staticmethod  
-    def isECAL ( ident) :
+    def is_ecal ( ident) :
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.ECALCLUSTER  
 
     @staticmethod  
-    def isHCAL ( ident) :
+    def is_hcal ( ident) :
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.HCALCLUSTER  
 
 
     @staticmethod  
-    def isTrack ( ident) :
+    def is_track ( ident) :
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.TRACK 
     
     @staticmethod  
@@ -49,3 +49,7 @@ class Identifier(long) :
     def isParticle ( ident) :
         return Identifier.gettype(ident)  ==Identifier.PFOBJECTTYPE.PARTICLE     
     
+    @staticmethod
+    def type_short_code(ident) :
+        typelist=".EHT......" #the enum value will index into this and return E is it is ECAL etc
+        return typelist[Identifier.gettype(ident)]    

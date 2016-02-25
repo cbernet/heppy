@@ -71,6 +71,13 @@ class Node(object):
             children=self.children
             ) )
 
+    def __str__(self):
+            '''unique string representation'''
+            
+            return str('node: {val} {children}'.format(
+                val = self.value,
+                children=self.children
+                ) )    
 
 
 class BreadthFirstSearch(object):
