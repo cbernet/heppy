@@ -119,27 +119,26 @@ class Reconstructor(object):
     
     def makeParticlesFromBlock(self,block):
         #take a block and find its parents (clusters and tracks)
-        parents=block.pfelements
+        parents=block.element_unique_ids
         
         
-        #print block.countECAL(), block.countTrack(),block.countHCAL()
         
-        if  (len(parents)==1) & (Identifier.isECAL(parents[0])) :
+        if  (len(parents)==1) & (Identifier.is_ecal(parents[0])) :
             self.makePhoton(parents)
             print "made photon"
             
            
-        elif ( (len(parents)==2)  & (block.countECAL()==1 ) & (block.countTrack()==1)) :
+        elif ( (len(parents)==2)  & (block.count_ecal()==1 ) & (block.count_tracks()==1)) :
                 self.makeHadron(parents)
                 print "made hadron" 
                 
-        elif  ((len(parents)==3)  & (block.countECAL()==1) & (block.countTrack()==1) & (block.countHCAL()==1)) :
+        elif  ((len(parents)==3)  & (block.count_ecal()==1) & (block.count_tracks()==1) & (block.count_hcal()==1)) :
                 print "made hadron and photon"
                 
                 #probably not right but illustrates splitting of parents
                 hparents=[] # will contain parents for the Hadron
                 for elem in parents:
-                    if (Identifier.isHCAL(elem)) :
+                    if (Identifier.is_hcal(elem)) :
                         self.makePhoton({elem})
                     else :
                         hparents.append(elem)    
@@ -227,13 +226,13 @@ class DistanceItem(object):
           True/False depending on the validity of the link
           float      the link distance
         '''
-        distance=abs(obj1.id%100 -obj2.id%100)
+        distance=abs(ele1.id%100 -ele2.id%100)
         return  None, distance==0, distance        
 
   
     
 
-#distance = DistanceItem()
+distance = DistanceItem()
          
         
 class TestFloodFill(unittest.TestCase):
@@ -244,7 +243,7 @@ class TestFloodFill(unittest.TestCase):
         event = Event()
         sim = Simulator(event)
         
-        pfblocker=BlockBuilder(event.tracks, event.ECALclusters,event.HCALclusters,event.historyNodes,ruler=DistanceItem)
+        pfblocker=BlockBuilder(event.tracks, event.ECALclusters,event.HCALclusters,event.historyNodes,ruler=distance)
         
         event.blocks=pfblocker.blocks
         event.historyNodes=pfblocker.historyNodes
@@ -270,12 +269,12 @@ class TestFloodFill(unittest.TestCase):
         x=None
         for id in ids:
             if Identifier.isBlock(id) :
-                x=event.blocks[id]
-                print "Block " + str(id) 
+                x= event.blocks[id]
+        print x       
                 
         #1c what else is in this block        
         pids=[] 
-        for n in x.pfelements:
+        for n in x.element_unique_ids:
                     print (n)
                     pids.append(n)            
         #check that the block contains the expected list of suspects
@@ -287,7 +286,7 @@ class TestFloodFill(unittest.TestCase):
         
         #(2) use edge nodes to see what is connected
         ids=[]
-        BFS = BreadthFirstSearchIterative(pfblocker.edgeNodes[nodeuid],"undirected")
+        BFS = BreadthFirstSearchIterative(pfblocker.nodes[nodeuid],"undirected")
         for n in BFS.result :
             ids.append(n.getValue())
         expectedids=sorted([sim.UID(2), sim.UID(102),sim.UID(202)])   
@@ -296,9 +295,7 @@ class TestFloodFill(unittest.TestCase):
         #(3) Give me all blocks with  one track:
         blockids=[]
         for b in event.blocks.itervalues() :
-            if b.countTrack()==1 : 
-                blockids.append(b.uniqueid)
-                print "Block with 1 TRACK: " + str(b.uniqueid);
+            print b
         
         #(4) Give me all simulation particles attached to each reconstructed particle
         for rp in event.recParticles :
