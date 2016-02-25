@@ -10,12 +10,13 @@ class Particle(BaseParticle):
         self._charge = fccptc.Core().Charge
         self._pid = fccptc.Core().Type
         self._status = fccptc.Core().Status
-        start = fccptc.StartVertex()
-        self._start_vertex = Vertex(start) if start.isAvailable() \
-                             else None 
-        end = fccptc.EndVertex()
-        self._end_vertex = Vertex(end) if end.isAvailable() \
-                           else None 
+        if hasattr(fccptc, 'StartVertex'):
+            start = fccptc.StartVertex()
+            self._start_vertex = Vertex(start) if start.isAvailable() \
+                else None 
+            end = fccptc.EndVertex()
+            self._end_vertex = Vertex(end) if end.isAvailable() \
+                else None 
         self._tlv = TLorentzVector()
         p4 = fccptc.Core().P4
         self._tlv.SetXYZM(p4.Px, p4.Py, p4.Pz, p4.Mass)
