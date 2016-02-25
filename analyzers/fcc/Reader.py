@@ -2,6 +2,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
+from heppy.particles.fcc.met import Met
 
 import math
 import pprint
@@ -18,6 +19,7 @@ class Reader(Analyzer):
         store = event.input
         if hasattr(self.cfg_ana, 'gen_particles'):
             name_genptc = self.cfg_ana.gen_particles
+            #import pdb; pdb.set_trace()
             gen_particles = map(Particle, store.get(self.cfg_ana.gen_particles))
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,
@@ -31,12 +33,26 @@ class Reader(Analyzer):
         if hasattr(self.cfg_ana, 'gen_vertices'):        
             gen_vertices = store.get(self.cfg_ana.gen_vertices)
             event.gen_vertices = map(Vertex, gen_vertices)
+ 
         if hasattr(self.cfg_ana, 'gen_jets'):
             event.gen_jets = map(Jet, store.get(self.cfg_ana.gen_jets))
             event.gen_jets.sort(key = self.sort_key, reverse=True)
+
         if hasattr(self.cfg_ana, 'jets'):
             event.jets = map(Jet, store.get(self.cfg_ana.jets))
             event.jets.sort(key = self.sort_key, reverse=True)
-        
-        
-            
+ 
+        if hasattr(self.cfg_ana, 'electrons'):
+            event.electrons = map(Particle, store.get(self.cfg_ana.electrons))
+            event.electrons.sort(key = self.sort_key, reverse=True)
+ 
+        if hasattr(self.cfg_ana, 'muons'):
+            event.muons = map(Particle, store.get(self.cfg_ana.muons))
+            event.muons.sort(key = self.sort_key, reverse=True)   
+
+        if hasattr(self.cfg_ana, 'photons'):
+            event.photons = map(Particle, store.get(self.cfg_ana.photons))
+            event.photons.sort(key = self.sort_key, reverse=True)   
+
+        if hasattr(self.cfg_ana, 'met'):
+            event.met = map(Met, store.get(self.cfg_ana.met))
