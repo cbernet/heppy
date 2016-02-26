@@ -19,7 +19,7 @@ from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
     mode = 'pp',
-    gen_particles = 'genParticles',
+    #gen_particles = 'genParticles',
     #gen_jets = 'GenJet',
     jets = 'recJets',
     electrons = 'recElectrons',
@@ -41,7 +41,7 @@ gen_met = cfg.Analyzer(
 
 # in case we want to redo jet clustering, not used at the moment.
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-gen_jets = cfg.Analyzer(
+jets = cfg.Analyzer(
     JetClusterizer,
     instance_label = 'gen_jets_reclustered',
     particles = 'gen_particles_stable'
@@ -58,6 +58,26 @@ leptons = cfg.Analyzer(
     input_objects = 'gen_particles_stable',
     filter_func = lambda ptc: ptc.pt()>30 and abs(ptc.pdgid()) in [11, 13]
 )
+
+from heppy.analyzers.Filter import Filter
+muons = cfg.Analyzer(
+    Filter,
+    'sel_muons',
+    output = 'muons',
+    input_objects = 'muons',
+    filter_func = lambda ptc: ptc.pt()>30
+)
+
+
+from heppy.analyzers.Filter import Filter
+met = cfg.Analyzer(
+    Filter,
+    'sel_met',
+    output = 'met',
+    input_objects = 'met',
+    filter_func = lambda ptc: ptc.pt()>30
+)
+
 
 from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
@@ -82,11 +102,11 @@ sel_iso_leptons = cfg.Analyzer(
     filter_func = lambda lep : relative_isolation(lep)<0.25
 )
 
-gen_jets_30 = cfg.Analyzer(
+jets_30 = cfg.Analyzer(
     Filter,
-    'gen_jets_30',
-    output = 'gen_jets_30',
-    input_objects = 'gen_jets',
+    'jets_30',
+    output = 'jets_30',
+    input_objects = 'jets',
     filter_func = lambda jet: jet.pt()>30.
 )
 
@@ -117,10 +137,10 @@ m3 = cfg.Analyzer(
 from heppy.analyzers.examples.ttbar.TTbarTreeProducer import TTbarTreeProducer
 gen_tree = cfg.Analyzer(
     TTbarTreeProducer,
-    jets = 'gen_jets',
-    m3 = 'gen_m3',
-    met = 'gen_met',
-    leptons = 'leptons'
+    jets_30 = 'jets',
+    #m3 = 'gen_m3',
+    met = 'met',
+    #muons = 'muons'
 )
 
 
@@ -129,16 +149,17 @@ gen_tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    # gen_jets,
+    jets_30,
+    #met,
     #gen_met,
-    #leptons,
+    #muons,
     #iso_leptons,
     #gen_jets_30,
     #sel_iso_leptons,
     #match_jet_leptons,
     #sel_jets_nolepton,
     #m3, 
-    #gen_tree
+    gen_tree
     ] )
 
 # comp.files.append('example_2.root')

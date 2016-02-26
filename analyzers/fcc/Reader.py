@@ -45,7 +45,7 @@ class Reader(Analyzer):
         if hasattr(self.cfg_ana, 'electrons'):
             event.electrons = map(Particle, store.get(self.cfg_ana.electrons))
             event.electrons.sort(key = self.sort_key, reverse=True)
- 
+
         if hasattr(self.cfg_ana, 'muons'):
             event.muons = map(Particle, store.get(self.cfg_ana.muons))
             event.muons.sort(key = self.sort_key, reverse=True)   
