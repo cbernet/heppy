@@ -7,8 +7,8 @@ import os
 
 from ROOT import gSystem
 CCJetClusterizer = None
-if os.environ.get('ANALYSISCPP'):
-    gSystem.Load("libanalysiscpp-tools")
+if os.environ.get('FCCPHYSICS'):
+    gSystem.Load("libfccphysics-tools")
     from ROOT import JetClusterizer as CCJetClusterizer
 elif os.environ.get('CMSSW_BASE'):
     gSystem.Load("libColinPFSim")

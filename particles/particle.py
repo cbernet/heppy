@@ -27,6 +27,9 @@ class Particle(P4):
         '''end vertex (3d point)'''
         return self._end_vertex
 
+    def __repr__(self):
+        return str(self)
+    
     def __str__(self):
         tmp = '{className} : pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
         return tmp.format(
