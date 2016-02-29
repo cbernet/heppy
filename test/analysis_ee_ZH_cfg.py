@@ -19,18 +19,39 @@ source = cfg.Analyzer(
     Reader,
     mode = 'ee',
     gen_particles = 'GenParticle',
-)  
+)
+
+from heppy.analyzers.Papas import Papas
+from heppy.papas.detectors.CMS import CMS
+papas = cfg.Analyzer(
+    Papas,
+    instance_label = 'papas',
+    detector = CMS(),
+    gen_particles = 'gen_particles_stable',
+    sim_particles = 'sim_particles',
+    rec_particles = 'particles',
+    display = False,
+    verbose = True
+)
 
 # currently treating electrons and muons transparently.
 # could use the same modules to have a collection of electrons
 # and a collection of muons 
 from heppy.analyzers.Filter import Filter
-leptons = cfg.Analyzer(
+leptons_true = cfg.Analyzer(
     Filter,
     'sel_leptons',
-    output = 'leptons',
-    input_objects = 'gen_particles_stable',
+    output = 'leptons_true',
+    input_objects = 'particles',
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
+)
+
+from heppy.analyzers.examples.zh.LeptonSmearer import LeptonSmearer
+leptons = cfg.Analyzer(
+    LeptonSmearer,
+    'leptons',
+    output = 'leptons',
+    input_objects = 'leptons_true',
 )
 
 from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
@@ -38,7 +59,7 @@ from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     LeptonAnalyzer,
     leptons = 'leptons',
-    particles = 'gen_particles_stable',
+    particles = 'particles',
     iso_area = EtaPhiCircle(0.4)
 )
 
@@ -77,7 +98,7 @@ from heppy.analyzers.Masker import Masker
 particles_not_zed = cfg.Analyzer(
     Masker,
     output = 'particles_not_zed',
-    input = 'gen_particles_stable',
+    input = 'particles',
     mask = 'zeds_legs',
 
 )
@@ -104,6 +125,8 @@ tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
+    papas, 
+    leptons_true,
     leptons,
     iso_leptons,
     sel_iso_leptons,
@@ -131,12 +154,41 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
+    
+    import random
+    random.seed(0xdeadbeef)
+
+    def process(iev=None):
+        if iev is None:
+            iev = loop.iEvent
+        loop.process(iev)
+        if display:
+            display.draw()
+
     def next():
         loop.process(loop.iEvent+1)
+        if display:
+            display.draw()            
 
+    iev = None
+    if len(sys.argv)==2:
+        papas.display = True
+        iev = int(sys.argv[1])
+        
     loop = Looper( 'looper', config,
                    nEvents=100,
-                   nPrint=0,
+                   nPrint=1,
                    timeReport=True)
-    loop.process(6)
-    print loop.event
+    simulation = None
+    for ana in loop.analyzers: 
+        if hasattr(ana, 'display'):
+            simulation = ana
+    display = getattr(simulation, 'display', None)
+    simulator = getattr(simulation, 'simulator', None)
+    if simulator: 
+        detector = simulator.detector
+    if iev is not None:
+        process(iev)
+    else:
+        loop.loop()
+        loop.write()

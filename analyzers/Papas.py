@@ -48,8 +48,6 @@ class Papas(Analyzer):
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector,
                                    self.mainLogger)
-        self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        self.recname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles])
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
@@ -75,5 +73,5 @@ class Papas(Analyzer):
                                key = lambda ptc: ptc.e(), reverse=True)
         particles = sorted( self.simulator.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, self.simname, simparticles)
-        setattr(event, self.recname, particles)
+        setattr(event, self.cfg_ana.sim_particles, simparticles)
+        setattr(event, self.cfg_ana.rec_particles, particles)
