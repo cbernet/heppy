@@ -1,8 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 
 class Masker(Analyzer):
-    '''Masks objects in input collection by objects in mask collection, 
-    and returns the results in output collection. 
+    '''Returns in output all objects that are in input and not in mask. 
 
     Example: 
 
@@ -13,6 +12,7 @@ class Masker(Analyzer):
       input = 'gen_particles_stable',
       mask = 'zeds',
     )
+
     '''
     def process(self, event):
         inputs = getattr(event, self.cfg_ana.input)

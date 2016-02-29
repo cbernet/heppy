@@ -125,6 +125,8 @@ recoil = cfg.Analyzer(
     to_remove = 'zeds_legs'
 ) 
 
+# Creating a list of particles excluding the decay products of the best zed.
+# help(Masker) for more information
 from heppy.analyzers.Masker import Masker
 particles_not_zed = cfg.Analyzer(
     Masker,
