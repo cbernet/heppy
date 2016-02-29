@@ -28,7 +28,13 @@ class P4(object):
         theta = pi/2 -> 0 
         theta = pi -> eta = -inf
         '''
-        return self._tlv.Eta()
+        if self._tlv.Pt()<1e-9:
+            if self._tlv.Pz()>0.:
+                return float('inf')
+            else:
+                return -float('inf')
+        else:
+            return self._tlv.Eta()
 
     def phi(self):
         '''azymuthal angle (from x axis, in the transverse plane)'''
