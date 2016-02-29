@@ -74,12 +74,12 @@ particles_not_zed = cfg.Analyzer(
 
 )
 
-# TODO exclusive jet reco
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 gen_jets_reclustered = cfg.Analyzer(
     JetClusterizer,
     instance_label = 'gen_jets_reclustered',
-    particles = 'particles_not_zed'
+    particles = 'particles_not_zed',
+    fastjet_args = dict( njets = 2)  
 )
 
 gen_jets_30 = cfg.Analyzer(

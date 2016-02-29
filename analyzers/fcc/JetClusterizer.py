@@ -27,19 +27,40 @@ class JetClusterizer(Analyzer):
     papas_jets = cfg.Analyzer(
        JetClusterizer,
        instance_label = 'papas', 
-       particles = 'papas_rec_particles'
+       particles = 'papas_rec_particles', 
+       ptmin = 1.  # for inclusive jets 
+       # or 
+       # njets = 2 # for exclusive jets
     )
 
     particles: Name of the input particle collection.
     The output jet collection name is built from the instance_label, 
-    in this case "papas_jets".
+    in this case "papas_jets". 
+    
+    you should provide either one or the other of the following arguments:
+    - ptmin : pt threshold for exclusive jet reconstruction 
+    - njets : number of jets for inclusive jet reconstruction 
     '''
 
     def __init__(self, *args, **kwargs):
         super(JetClusterizer, self).__init__(*args, **kwargs)
-        min_e = 0.
-        self.clusterizer = CCJetClusterizer(min_e)
-
+        args = self.cfg_ana.fastjet_args
+        self.clusterize = None
+        if 'ptmin' in args and 'njets' in args:
+            raise ValueError('cannot specify both ptmin and njets arguments')
+        if 'ptmin' in args:
+            self.clusterizer = CCJetClusterizer(0)
+            def clusterize():
+                return self.clusterizer.make_inclusive_jets(args['ptmin']) 
+            self.clusterize = clusterize
+        elif 'njets' in args:
+            self.clusterizer = CCJetClusterizer(1)
+            def clusterize():
+                return self.clusterizer.make_exclusive_jets(args['njets']) 
+            self.clusterize = clusterize
+        else:
+            raise ValueError('specify either ptmin or njets') 
+        
     def validate(self, jet):
         constits = jet.constituents
         keys = set(jet.constituents.keys())
@@ -63,7 +84,7 @@ class JetClusterizer(Analyzer):
         self.clusterizer.clear();
         for ptc in particles:
             self.clusterizer.add_p4( ptc.p4() )
-        self.clusterizer.clusterize()
+        self.clusterize()
         jets = []
         for jeti in range(self.clusterizer.n_jets()):
             jet = Jet( self.clusterizer.jet(jeti) )
