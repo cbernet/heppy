@@ -12,22 +12,31 @@ class ZHTreeProducer(Analyzer):
                                         'tree.root']),
                               'recreate')
         self.tree = Tree( 'events', '')
-        bookParticle(self.tree, 'jet1')
-        bookParticle(self.tree, 'jet2')
-        bookParticle(self.tree, 'jet3')
-        bookLepton(self.tree, 'lepton')
+        bookParticle(self.tree, 'zed')
+        bookParticle(self.tree, 'recoil')
+        bookJet(self.tree, 'jet1')
+        bookJet(self.tree, 'jet2')
+        bookJet(self.tree, 'jet3')
+        bookJet(self.tree, 'jet4')
+        bookLepton(self.tree, 'zed_1')
+        bookLepton(self.tree, 'zed_2')
         
     def process(self, event):
         self.tree.reset()
-        leptons = getattr(event, self.cfg_ana.leptons)
-        if len(leptons)==0:
-            return # NOT FILLING THE TREE IF NO LEPTON
-        fillLepton(self.tree, 'lepton', leptons[0])
+        recoil = getattr(event, self.cfg_ana.recoil)
+        fillParticle(self.tree, 'recoil', recoil)        
+        zeds = getattr(event, self.cfg_ana.zeds)
+        if len(zeds)==0:
+            return
+        zed = zeds[0]
+        fillParticle(self.tree, 'zed', zed)
+        fillLepton(self.tree, 'zed_1', zed.legs[0])
+        fillLepton(self.tree, 'zed_2', zed.legs[1])
         jets = getattr(event, self.cfg_ana.jets)
         for ijet, jet in enumerate(jets):
-            if ijet==3:
+            if ijet==4:
                 break
-            fillParticle(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet)
+            fillJet(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet)
         self.tree.tree.Fill()
         
     def write(self, setup):

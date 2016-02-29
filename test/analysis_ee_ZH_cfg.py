@@ -95,8 +95,8 @@ jets = cfg.Analyzer(
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
 tree = cfg.Analyzer(
     ZHTreeProducer,
+    zeds = 'zeds',
     jets = 'jets',
-    leptons = 'leptons',
     recoil  = 'recoil'
 )
 

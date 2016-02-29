@@ -19,6 +19,8 @@ class ResonanceBuilder(Analyzer):
         resonances.sort(key=lambda x: abs(x.m()-nominal_mass))
         setattr(event, self.cfg_ana.output, resonances)
         # getting legs of best resonance
-        setattr(event, '_'.join([self.cfg_ana.output, 'legs']),
-                resonances[0].legs )
+        legs = []
+        if len(resonances):
+            legs = resonances[0].legs
+        setattr(event, '_'.join([self.cfg_ana.output, 'legs']), legs)
                 
