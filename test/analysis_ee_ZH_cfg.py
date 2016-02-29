@@ -89,21 +89,24 @@ iso_leptons = cfg.Analyzer(
     iso_area = EtaPhiCircle(0.4)
 )
 
-#TODO: Colin: would be better to have a lepton class
+# Select isolated leptons with a Filter
+# one can pass a function like this one to the filter:
 def relative_isolation(lepton):
     sumpt = lepton.iso_211.sumpt + lepton.iso_22.sumpt + lepton.iso_130.sumpt
     sumpt /= lepton.pt()
     return sumpt
-
+# ... or use a lambda statement as done below. 
 sel_iso_leptons = cfg.Analyzer(
     Filter,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons',
-    filter_func = lambda lep : relative_isolation(lep)<0.3 # fairly loose
+    # filter_func = relative_isolation
+    filter_func = lambda lep : lep.iso.sumpt/lep.pt()<0.3 # fairly loose
 )
 
-# building Zs's
+# Building Zeds
+# help(ResonanceBuilder) for more information
 from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
 zeds = cfg.Analyzer(
     ResonanceBuilder,
