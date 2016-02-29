@@ -4,6 +4,32 @@ import copy
 import random
 
 class LeptonSmearer(Analyzer):
+    '''Apply a simple resolution and efficiency model to generated electrons and muons.
+    
+    This module is just an example, you may write your own if you want a different 
+    energy and resolution model.
+
+    Example:
+
+    from heppy.analyzers.examples.zh.LeptonSmearer import LeptonSmearer
+    leptons = cfg.Analyzer(
+    LeptonSmearer,
+      'leptons',
+      output = 'leptons',
+      input_objects = 'leptons_true',
+    )
+    
+    * input_objects: input particle collection 
+
+    * output: output particle collection. 
+
+    electrons and muons are smeared.
+    Then, if they are in the detector and if their energy is high enough, 
+    they are copied to the output collection. 
+
+    Other particles in the input_objects collection are untouched and always copied 
+    to the output. 
+    '''
     
     def process(self, event):
         input_objects = getattr(event, self.cfg_ana.input_objects)

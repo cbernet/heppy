@@ -63,6 +63,13 @@ leptons_true = cfg.Analyzer(
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
 
+# Applying a simple resolution and efficiency model to electrons and muons.
+# Indeed, papas simply copies generated electrons and muons
+# from its input gen particle collection to its output reconstructed
+# particle collection.
+# Setting up the electron and muon models is left to the user,
+# and the LeptonSmearer is just an example
+# help(LeptonSmearer) for more information
 from heppy.analyzers.examples.zh.LeptonSmearer import LeptonSmearer
 leptons = cfg.Analyzer(
     LeptonSmearer,
