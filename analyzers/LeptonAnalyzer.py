@@ -27,6 +27,6 @@ class LeptonAnalyzer(Analyzer):
                 iso = self.iso_computers[pdgid].compute(lepton, sel_ptcs)
                 isosum += iso 
                 setattr(lepton, 'iso_{pdgid}'.format(pdgid=pdgid), iso)
-            setattr(lepton, 'iso'.format(pdgid=pdgid), isosum)
+            lepton.iso = isosum
         
   

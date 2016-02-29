@@ -21,19 +21,6 @@ source = cfg.Analyzer(
     gen_particles = 'GenParticle',
 )  
 
-from ROOT import gSystem
-gSystem.Load("libdatamodelDict")
-from EventStore import EventStore as Events
-
-
-# in case we want to redo jet clustering, not used at the moment.
-from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-gen_jets_reclustered = cfg.Analyzer(
-    JetClusterizer,
-    instance_label = 'gen_jets_reclustered',
-    particles = 'gen_particles_stable'
-)
-
 # currently treating electrons and muons transparently.
 # could use the same modules to have a collection of electrons
 # and a collection of muons 
@@ -43,7 +30,7 @@ leptons = cfg.Analyzer(
     'sel_leptons',
     output = 'leptons',
     input_objects = 'gen_particles_stable',
-    filter_func = lambda ptc: ptc.pt()>30 and abs(ptc.pdgid()) in [11, 13]
+    filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
 
 from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
@@ -66,7 +53,24 @@ sel_iso_leptons = cfg.Analyzer(
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons',
-    filter_func = lambda lep : relative_isolation(lep)<0.25
+    filter_func = lambda lep : relative_isolation(lep)<0.3 # fairly loose
+)
+
+# building Zs's
+from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
+zeds = cfg.Analyzer(
+    ResonanceBuilder,
+    output = 'zeds',
+    leg_collection = 'sel_iso_leptons',
+    pdgid = 23
+)
+
+# in case we want to redo jet clustering, not used at the moment.
+from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
+gen_jets_reclustered = cfg.Analyzer(
+    JetClusterizer,
+    instance_label = 'gen_jets_reclustered',
+    particles = 'gen_particles_stable'
 )
 
 gen_jets_30 = cfg.Analyzer(
@@ -104,18 +108,22 @@ gen_tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    gen_jets_reclustered,
     leptons,
     iso_leptons,
-    gen_jets_30,
-    sel_iso_leptons,
-    match_jet_leptons,
-    sel_jets_nolepton,
-    gen_tree
+    # gen_jets_reclustered,
+    # gen_jets_30,
+    # sel_iso_leptons,
+    # zeds, 
+    # match_jet_leptons,
+    # sel_jets_nolepton,
+    # gen_tree
     ] )
 
 # comp.files.append('example_2.root')
 # comp.splitFactor = 2  # splitting the component in 2 chunks
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
 
 config = cfg.Config(
     components = selectedComponents,

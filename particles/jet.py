@@ -131,3 +131,5 @@ class Jet(object):
             m = self.m()
             )
     
+    def __repr__(self):
+        return str(self)
