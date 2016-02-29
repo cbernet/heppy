@@ -4,7 +4,7 @@ import copy
 import random
 
 class LeptonSmearer(Analyzer):
-    '''Apply a simple resolution and efficiency model to generated electrons and muons.
+    '''Apply a simple resolution and efficiency model to electrons and muons.
     
     This module is just an example, you may write your own if you want a different 
     energy and resolution model.
@@ -45,7 +45,11 @@ class LeptonSmearer(Analyzer):
         setattr(event, self.cfg_ana.output, output)
 
     def smear_electron(self, obj):
-        '''just a simple smearing, could implement a detailed model here.'''
+        '''just a simple smearing, could implement a detailed model here.
+        
+        Gaussian smearing of the p4 by 10%.
+        Electron accepted if smeared energy>5. and |eta|<2.5
+        '''
         smeared = self.smear(obj, 1, 0.1)
         if abs(smeared.eta())<2.5 and smeared.e()>5:
             return smeared
@@ -54,7 +58,11 @@ class LeptonSmearer(Analyzer):
 
         
     def smear_muon(self, obj):
-        '''just a simple smearing, could implement a detailed model here.'''
+        '''just a simple smearing, could implement a detailed model here.
+
+        Gaussian smearing of the p4 by 5%.
+        Electron accepted if smeared energy>5. and |eta|<2
+        '''
         smeared = self.smear(obj, 1, 0.05)
         if abs(smeared.eta())<2. and smeared.e()>5:
             return smeared
