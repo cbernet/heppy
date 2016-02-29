@@ -49,9 +49,11 @@ papas = cfg.Analyzer(
     verbose = True
 )
 
-# currently treating electrons and muons transparently.
-# could use the same modules to have a collection of electrons
-# and a collection of muons 
+# Use a Filter to select leptons from the output of papas.
+# Currently, we're treating electrons and muons transparently.
+# we could use two different instances for the Filter module
+# to get separate collections of electrons and muons
+# help(Filter) for more information
 from heppy.analyzers.Filter import Filter
 leptons_true = cfg.Analyzer(
     Filter,
