@@ -65,6 +65,16 @@ zeds = cfg.Analyzer(
     pdgid = 23
 )
 
+from heppy.analyzers.Masker import Masker
+particles_not_zed = cfg.Analyzer(
+    Masker,
+    output = 'particles_not_zed',
+    input = 'gen_particles_stable',
+    mask = 'zeds_legs',
+
+)
+
+
 # in case we want to redo jet clustering, not used at the moment.
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 gen_jets_reclustered = cfg.Analyzer(
@@ -110,6 +120,9 @@ sequence = cfg.Sequence( [
     source,
     leptons,
     iso_leptons,
+    sel_iso_leptons,
+    zeds,
+    particles_not_zed
     # gen_jets_reclustered,
     # gen_jets_30,
     # sel_iso_leptons,
