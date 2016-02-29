@@ -65,6 +65,14 @@ zeds = cfg.Analyzer(
     pdgid = 23
 )
 
+from heppy.analyzers.fcc.Recoil import RecoilBuilder
+recoil = cfg.Analyzer(
+    RecoilBuilder,
+    output = 'recoil',
+    sqrts = 240.,
+    to_remove = 'zeds_legs'
+) 
+
 from heppy.analyzers.Masker import Masker
 particles_not_zed = cfg.Analyzer(
     Masker,
@@ -75,43 +83,21 @@ particles_not_zed = cfg.Analyzer(
 )
 
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-gen_jets_reclustered = cfg.Analyzer(
+jets = cfg.Analyzer(
     JetClusterizer,
-    instance_label = 'gen_jets_reclustered',
+    instance_label = 'jets',
     particles = 'particles_not_zed',
     fastjet_args = dict( njets = 2)  
 )
 
-gen_jets_30 = cfg.Analyzer(
-    Filter,
-    'gen_jets_30',
-    output = 'gen_jets_30',
-    input_objects = 'gen_jets_reclustered',
-    filter_func = lambda jet: jet.pt()>30.
-)
-
-from heppy.analyzers.Matcher import Matcher
-match_jet_leptons = cfg.Analyzer(
-    Matcher,
-    delta_r = 0.4,
-    match_particles = 'sel_iso_leptons',
-    particles = 'gen_jets_30'
-)
-
-sel_jets_nolepton = cfg.Analyzer(
-    Filter,
-    'sel_jets_nolepton',
-    output = 'sel_jets_nolepton',
-    input_objects = 'gen_jets_30',
-    filter_func = lambda jet: not hasattr(jet, 'sel_iso_leptons')
-)
 
 # TODO redefine tree 
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
-gen_tree = cfg.Analyzer(
+tree = cfg.Analyzer(
     ZHTreeProducer,
-    jets = 'gen_jets_30',
-    leptons = 'leptons'
+    jets = 'jets',
+    leptons = 'leptons',
+    recoil  = 'recoil'
 )
 
 # definition of a sequence of analyzers,
@@ -122,10 +108,10 @@ sequence = cfg.Sequence( [
     iso_leptons,
     sel_iso_leptons,
     zeds,
+    recoil,
     particles_not_zed,
-    gen_jets_reclustered,
-    gen_jets_30,
-    # gen_tree
+    jets,
+    tree
     ] )
 
 # comp.files.append('example_2.root')
