@@ -74,13 +74,12 @@ particles_not_zed = cfg.Analyzer(
 
 )
 
-
-# in case we want to redo jet clustering, not used at the moment.
+# TODO exclusive jet reco
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 gen_jets_reclustered = cfg.Analyzer(
     JetClusterizer,
     instance_label = 'gen_jets_reclustered',
-    particles = 'gen_particles_stable'
+    particles = 'particles_not_zed'
 )
 
 gen_jets_30 = cfg.Analyzer(
@@ -107,6 +106,7 @@ sel_jets_nolepton = cfg.Analyzer(
     filter_func = lambda jet: not hasattr(jet, 'sel_iso_leptons')
 )
 
+# TODO redefine tree 
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
 gen_tree = cfg.Analyzer(
     ZHTreeProducer,
@@ -122,13 +122,9 @@ sequence = cfg.Sequence( [
     iso_leptons,
     sel_iso_leptons,
     zeds,
-    particles_not_zed
-    # gen_jets_reclustered,
-    # gen_jets_30,
-    # sel_iso_leptons,
-    # zeds, 
-    # match_jet_leptons,
-    # sel_jets_nolepton,
+    particles_not_zed,
+    gen_jets_reclustered,
+    gen_jets_30,
     # gen_tree
     ] )
 
