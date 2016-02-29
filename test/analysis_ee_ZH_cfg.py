@@ -1,3 +1,12 @@
+'''Example configuration file for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
+
+While studying this file, open it in ipython as well as in your editor to 
+get more information: 
+
+ipython
+from analysis_ee_ZH_cfg import * 
+'''
+
 import os
 import copy
 import heppy.framework.config as cfg
@@ -8,8 +17,6 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
-# mode = 'gen'
-mode = 'papas'
 
 # input definition
 comp = cfg.Component(
@@ -27,6 +34,8 @@ source = cfg.Analyzer(
     gen_particles = 'GenParticle',
 )
 
+# configure the papas fast simulation with the CMS detector
+# help(Papas) for more information
 from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
