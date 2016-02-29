@@ -14,16 +14,27 @@ class LeptonSmearer(Analyzer):
                 smeared = self.smear_electron(obj)
             elif abs(obj.pdgid() == 13):
                 smeared = self.smear_muon(obj)
-            output.append(smeared) 
+            if smeared: 
+                output.append(smeared) 
         setattr(event, self.cfg_ana.output, output)
 
     def smear_electron(self, obj):
         '''just a simple smearing, could implement a detailed model here.'''
-        return self.smear(obj, 1, 0.1)
+        smeared = self.smear(obj, 1, 0.1)
+        if abs(smeared.eta())<2.5 and smeared.e()>5:
+            return smeared
+        else:
+            return None
 
+        
     def smear_muon(self, obj):
         '''just a simple smearing, could implement a detailed model here.'''
-        return self.smear(obj, 1, 0.05) 
+        smeared = self.smear(obj, 1, 0.05)
+        if abs(smeared.eta())<2. and smeared.e()>5:
+            return smeared
+        else:
+            return None
+
 
     def smear(self, obj, mu, sigma):
         smear_factor = random.gauss(mu, sigma) 
