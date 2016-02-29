@@ -8,12 +8,18 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
+# mode = 'gen'
+mode = 'papas'
+
+# input definition
 comp = cfg.Component(
     'example',
     files = ['example.root']
 )
 selectedComponents = [comp]
 
+# read FCC EDM events from the input root file(s)
+# do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
@@ -111,8 +117,6 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
-
-# TODO redefine tree 
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
 tree = cfg.Analyzer(
     ZHTreeProducer,
@@ -123,9 +127,11 @@ tree = cfg.Analyzer(
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
+
+
 sequence = cfg.Sequence( [
     source,
-    papas, 
+    papas,
     leptons_true,
     leptons,
     iso_leptons,

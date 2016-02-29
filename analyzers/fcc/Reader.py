@@ -4,9 +4,52 @@ from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 
 import math
-import pprint
 
 class Reader(Analyzer):
+    '''Reads events in FCC EDM format, and creates lists of objects adapted to an
+    analysis in python.
+
+    Configuration: 
+    ----------------------
+    
+    Example: 
+    
+    from heppy.analyzers.fcc.Reader import Reader
+    source = cfg.Analyzer(
+      Reader,
+      mode = 'ee',
+      # all the parameters below are optional: 
+      gen_particles = 'GenParticle',
+      # gen_vertices = '<gen_vertices_name>', 
+      # gen_jets = '<gen_jets_name>',
+      # jets = '<jets_name>',
+    )
+
+    * mode: 
+
+    'ee', 'pp', or 'ep'.
+
+    In 'ee' mode, particle-like objects are sorted by decreasing energy. 
+    in other modes, by decreasing pt.
+
+    * gen_particles: 
+
+    Name of the collection of gen particles in the input 
+    root file. Open the root file with root, and print the events TTree 
+    to see which collections are present in your input file.
+
+    Creates: 
+    --------    
+
+    if self.cfg_ana.gen_particles is set: 
+    - event.gen_particles: gen particles
+    - event.gen_particles_stable: stable gen_particles except neutrinos
+
+    if the respective parameter is set (see above): 
+    - event.gen_vertices: gen vertices (needed for gen particle history)
+    - event.gen_jets: gen jets
+    - event.jets: reconstructed jets  
+    '''
 
     def beginLoop(self, setup):
         super(Reader, self).beginLoop(setup)
