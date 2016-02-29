@@ -21,7 +21,10 @@ class ResonanceBuilder(Analyzer):
 
     * output : resonances are stored in this collection, 
     sorted according to their distance to the nominal mass corresponding 
-    to the specified pdgid. 
+    to the specified pdgid. The first resonance in this collection is thus the best one. 
+    
+    Additionally, a collection zeds_legs (in this case) is created to contain the 
+    legs of the best resonance. 
 
     * leg_collection : collection of particles that will be combined into resonances.
 

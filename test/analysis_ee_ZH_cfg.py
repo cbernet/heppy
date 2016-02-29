@@ -115,7 +115,9 @@ zeds = cfg.Analyzer(
     pdgid = 23
 )
 
-from heppy.analyzers.fcc.Recoil import RecoilBuilder
+# Computing the recoil p4 (here, p_initial - p_zed)
+# help(RecoilBuilder) for more information
+from heppy.analyzers.RecoilBuilder import RecoilBuilder
 recoil = cfg.Analyzer(
     RecoilBuilder,
     output = 'recoil',

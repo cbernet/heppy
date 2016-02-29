@@ -6,6 +6,24 @@ from ROOT import TLorentzVector
 mass = {23: 91, 25: 125}
 
 class RecoilBuilder(Analyzer):
+    '''Computes the 4 momentum recoiling agains a selection of particles.
+    
+    Example: 
+    from heppy.analyzers.RecoilBuilder import RecoilBuilder
+    recoil = cfg.Analyzer(
+      RecoilBuilder,
+      output = 'recoil',
+      sqrts = 240.,
+      to_remove = 'zeds_legs'
+    ) 
+
+    * output : the recoil "particle" is stored in this collection. 
+    
+    * sqrts : energy in the center of mass system.
+
+    * to_remove : collection of particles to be subtracted to the initial p4. 
+
+    '''
     
     def process(self, event):
         sqrts = self.cfg_ana.sqrts
