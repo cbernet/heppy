@@ -23,7 +23,7 @@ class PFObject(object):
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.makeID(self,pfobjecttype)
+        self.uniqueid=Identifier.make_id(self,pfobjecttype)
         
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -160,7 +160,7 @@ class SmearedTrack(Track):
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge, pdgid=None):
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.makeID(self, Identifier.PFOBJECTTYPE.PARTICLE)
+        self.uniqueid=Identifier.make_id(self, Identifier.PFOBJECTTYPE.PARTICLE)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()

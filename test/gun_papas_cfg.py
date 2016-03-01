@@ -19,7 +19,6 @@ selectedComponents = [comp]
 
 
 #TODO colin debug this! 
-#from heppy.analyzers.Gun import Gun
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
