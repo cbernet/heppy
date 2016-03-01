@@ -1,0 +1,45 @@
+from heppy.framework.analyzer import Analyzer
+from heppy.statistics.tree import Tree
+from heppy.analyzers.ntuple import *
+
+from ROOT import TFile
+
+class ZHTreeProducer(Analyzer):
+
+    def beginLoop(self, setup):
+        super(ZHTreeProducer, self).beginLoop(setup)
+        self.rootfile = TFile('/'.join([self.dirName,
+                                        'tree.root']),
+                              'recreate')
+        self.tree = Tree( 'events', '')
+        bookParticle(self.tree, 'zed')
+        bookParticle(self.tree, 'recoil')
+        bookJet(self.tree, 'jet1')
+        bookJet(self.tree, 'jet2')
+        bookJet(self.tree, 'jet3')
+        bookJet(self.tree, 'jet4')
+        bookLepton(self.tree, 'zed_1')
+        bookLepton(self.tree, 'zed_2')
+        
+    def process(self, event):
+        self.tree.reset()
+        recoil = getattr(event, self.cfg_ana.recoil)
+        fillParticle(self.tree, 'recoil', recoil)        
+        zeds = getattr(event, self.cfg_ana.zeds)
+        if len(zeds)==0:
+            return
+        zed = zeds[0]
+        fillParticle(self.tree, 'zed', zed)
+        fillLepton(self.tree, 'zed_1', zed.legs[0])
+        fillLepton(self.tree, 'zed_2', zed.legs[1])
+        jets = getattr(event, self.cfg_ana.jets)
+        for ijet, jet in enumerate(jets):
+            if ijet==4:
+                break
+            fillJet(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet)
+        self.tree.tree.Fill()
+        
+    def write(self, setup):
+        self.rootfile.Write()
+        self.rootfile.Close()
+        

@@ -14,31 +14,36 @@ from ROOT import TLorentzVector, TVector3
 
         
 class Papas(Analyzer):
-    '''Runs PAPAS, the PArametrized Particle Simulation.
+    '''Runs PAPAS, the PArametrized Particle Simulation. 
 
-    Example configuration: 
+    Papas reads a list of stable generated particles, 
+    and creates a list of reconstruted particles. 
+    First, the particles are extrapolated in the magnetic field
+    through the tracker and to the calorimeters, 
+    and the particle deposits are simulated using a parametrized simulation. 
+    Then, a particle flow algorithm is used to connect the simulated tracks 
+    and calorimeter energy deposits, and to identify and reconstruct 
+    final state particles. 
+
+    Example: 
 
     from heppy.analyzers.Papas import Papas
     from heppy.papas.detectors.CMS import CMS
     papas = cfg.Analyzer(
-        Papas,
-        instance_label = 'papas',              
-        detector = CMS(),
-        gen_particles = 'gen_particles_stable',
-        sim_particles = 'sim_particles',
-        rec_particles = 'rec_particles',
-        display = False,                   
-        verbose = False
+      Papas,
+      instance_label = 'papas',
+      detector = CMS(),
+      gen_particles = 'gen_particles_stable',
+      sim_particles = 'sim_particles',
+      rec_particles = 'particles',
+      display = False,
+      verbose = True
     )
 
-    detector:      Detector model to be used. 
+    detector:      Detector model to be used, here CMS.  
     gen_particles: Name of the input gen particle collection
-    sim_particles: Name extension for the output sim particle collection. 
-                   Note that the instance label is prepended to this name. 
-                   Therefore, in this particular case, the name of the output 
-                   sim particle collection is "papas_sim_particles".
-    rec_particles: Name extension for the output reconstructed particle collection.
-                   Same comments as for the sim_particles parameter above. 
+    sim_particles: Name for the output sim particle collection. 
+    rec_particles: Name for the output reconstructed particle collection.
     display      : Enable the event display
     verbose      : Enable the detailed printout.
     '''
@@ -48,8 +53,6 @@ class Papas(Analyzer):
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector,
                                    self.mainLogger)
-        self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        self.recname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles])
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
@@ -75,5 +78,5 @@ class Papas(Analyzer):
                                key = lambda ptc: ptc.e(), reverse=True)
         particles = sorted( self.simulator.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, self.simname, simparticles)
-        setattr(event, self.recname, particles)
+        setattr(event, self.cfg_ana.sim_particles, simparticles)
+        setattr(event, self.cfg_ana.rec_particles, particles)

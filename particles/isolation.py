@@ -2,10 +2,13 @@ from heppy.utils.deltar import deltaR2
 
 class Area(object):
     '''Base Area interface.'''
-    def is_inside(self, ptc_ref, ptc_tested):
-        '''returns True if ptc_tested is in the Area around ptc_ref, 
-        a reference particle used to position the area.'''
+    def is_inside(self, *args):
+        '''returns True if *args describes a particle inside the EtaPhiCircle. 
 
+        *args may be the particle itself, assuming it has eta() and phi() methods, 
+        or eta, phi. 
+        '''
+        pass
 
 class EtaPhiCircle(Area):
     '''Circle in (eta, phi) space.'''
