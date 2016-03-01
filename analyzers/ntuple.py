@@ -98,9 +98,12 @@ def bookLepton( tree, pName ):
 def fillLepton( tree, pName, lepton ):
     fillParticle(tree, pName, lepton )
     for pdgid in iso_pdgids:
-        iso = getattr(lepton, 'iso_{pdgid:d}'.format(pdgid=pdgid))
-        fillIso(tree, '{pName}_iso{pdgid:d}'.format(pName=pName, pdgid=pdgid), iso)
-    fillIso(tree, '{pName}_iso'.format(pName=pName), lepton.iso)
+        #import pdb; pdb.set_trace()
+        isoname='iso_{pdgid:d}'.format(pdgid=pdgid)
+        if hasattr(lepton, isoname):
+            iso = getattr(lepton, isoname)
+            fillIso(tree, '{pName}_iso{pdgid:d}'.format(pName=pName, pdgid=pdgid), iso)
+    #fillIso(tree, '{pName}_iso'.format(pName=pName), lepton.iso)
     
         
 def bookIsoParticle(tree, pName):

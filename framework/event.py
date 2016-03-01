@@ -31,6 +31,11 @@ class Event(object):
                                          iEv = self.iEv)
         stripped_attrs = copy.copy( self.__dict__ )
         stripped_attrs.pop('setup')
-        stripped_attrs.pop('input')        
+        stripped_attrs.pop('input')
+        for name, value in stripped_attrs.iteritems():
+            if hasattr(value, '__len__') and len(value)>10:
+                stripped_attrs[name] = value[:10]
+                stripped_attrs[name].append('...')
+                stripped_attrs[name].append(value[-1])                
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])
