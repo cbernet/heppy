@@ -144,6 +144,11 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
+from heppy.analyzers.examples.zh.selection import Selection
+selection = cfg.Analyzer(
+    Selection
+)
+
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
 tree = cfg.Analyzer(
     ZHTreeProducer,
@@ -167,6 +172,7 @@ sequence = cfg.Sequence( [
     recoil,
     particles_not_zed,
     jets,
+    selection, 
     tree
     ] )
 
