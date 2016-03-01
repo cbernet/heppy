@@ -11,7 +11,12 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     #files = ['example.root']
-    files = ['/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput.root']
+   # files = ['/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput_ttbar8TeV_01.root',
+   #          '/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput_ttbar8TeV_02.root']
+files = ['/afs/cern.ch/user/d/drasal/public/delphes/FCCDelphes_ClementOutputBig.root',
+         '/afs/cern.ch/user/d/drasal/public/delphes/FCCDelphes_ClementOutput1.root',
+         '/afs/cern.ch/user/d/drasal/public/delphes/FCCDelphes_ClementOutput2.root',
+         ]
 )
 selectedComponents = [comp]
 
@@ -20,12 +25,14 @@ source = cfg.Analyzer(
     Reader,
     mode = 'pp',
     #gen_particles = 'genParticles',
-    #gen_jets = 'GenJet',
-    jets = 'recJets',
-    electrons = 'recElectrons',
-    muons = 'recMuons',
-    photons = 'recPhotons',
-    met = 'recMETs',
+    gen_jets = 'genJets',
+    jets = 'jets',
+    bTags = 'bTags',
+    jetsToBTags = 'jetsToBTags',
+    electrons = 'electrons',
+    muons = 'muons',
+    photons = 'photons',
+    met = 'met',
 )  
 
 from ROOT import gSystem
@@ -68,15 +75,15 @@ muons = cfg.Analyzer(
     filter_func = lambda ptc: ptc.pt()>30
 )
 
-
 from heppy.analyzers.Filter import Filter
-met = cfg.Analyzer(
+electrons = cfg.Analyzer(
     Filter,
-    'sel_met',
-    output = 'met',
-    input_objects = 'met',
+    'sel_electrons',
+    output = 'electrons',
+    input_objects = 'electrons',
     filter_func = lambda ptc: ptc.pt()>30
 )
+
 
 
 from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
@@ -122,15 +129,16 @@ sel_jets_nolepton = cfg.Analyzer(
     Filter,
     'sel_jets_nolepton',
     output = 'sel_jets_nolepton',
-    input_objects = 'gen_jets_30',
+    input_objects = 'jets_30',
     filter_func = lambda jet: not hasattr(jet, 'sel_iso_leptons')
 )
 
 from heppy.analyzers.M3Builder import M3Builder
 m3 = cfg.Analyzer(
     M3Builder,
-    instance_label = 'gen_m3',
-    jets = 'sel_jets_nolepton', 
+    instance_label = 'm3',
+#    jets = 'sel_jets_nolepton', 
+    jets = 'jets_30', 
     filter_func = lambda x : x.pt()>30.
 )
 
@@ -138,32 +146,32 @@ from heppy.analyzers.examples.ttbar.TTbarTreeProducer import TTbarTreeProducer
 gen_tree = cfg.Analyzer(
     TTbarTreeProducer,
     jets_30 = 'jets',
-    #m3 = 'gen_m3',
+    m3 = 'm3',
     met = 'met',
-    #muons = 'muons'
+    muons = 'muons',
+    electrons = 'electrons'
 )
-
 
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    jets_30,
-    #met,
     #gen_met,
-    #muons,
+    jets_30,
+    muons,
+    electrons,
     #iso_leptons,
     #gen_jets_30,
     #sel_iso_leptons,
     #match_jet_leptons,
     #sel_jets_nolepton,
-    #m3, 
+    m3, 
     gen_tree
     ] )
 
 # comp.files.append('example_2.root')
-# comp.splitFactor = 2  # splitting the component in 2 chunks
+#comp.splitFactor = len(comp.files)  # splitting the component in 2 chunks
 
 config = cfg.Config(
     components = selectedComponents,

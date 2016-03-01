@@ -40,19 +40,49 @@ class Reader(Analyzer):
 
         if hasattr(self.cfg_ana, 'jets'):
             event.jets = map(Jet, store.get(self.cfg_ana.jets))
-            event.jets.sort(key = self.sort_key, reverse=True)
- 
+            event.jets.sort(key = self.sort_key, reverse=True) 
+
+            jets = dict()
+            for jet in event.jets: 
+                jets[Jet(jet.fccjet)] = jet
+            print jets
+
+            if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
+                for tt in store.get(self.cfg_ana.jetsToBTags):
+                    print jets[tt.Jet()]
+                    #print '  =====  ',tt.Jet  
+                    #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
+#                    #jet.btag = 0
+#
+#                print '----------------------------   ',store.get(self.cfg_ana.jetsToBTags)
+#                for tt in store.get(self.cfg_ana.jetsToBTags):
+#                    print 'jet ',tt.Jet().Core().P4.Px
+#                    print 'tag ',tt.Tag().Value()
+  
+
+
+        class Iso(object):
+            def __init__(self):
+                self.sumpt=1
+                self.sume=2
+                self.num=3
+
         if hasattr(self.cfg_ana, 'electrons'):
             event.electrons = map(Particle, store.get(self.cfg_ana.electrons))
             event.electrons.sort(key = self.sort_key, reverse=True)
+            for ele in event.electrons:
+                ele.iso = Iso()
 
         if hasattr(self.cfg_ana, 'muons'):
             event.muons = map(Particle, store.get(self.cfg_ana.muons))
             event.muons.sort(key = self.sort_key, reverse=True)   
+            for mu in event.muons:
+                mu.iso = Iso()
 
         if hasattr(self.cfg_ana, 'photons'):
             event.photons = map(Particle, store.get(self.cfg_ana.photons))
             event.photons.sort(key = self.sort_key, reverse=True)   
 
         if hasattr(self.cfg_ana, 'met'):
-            event.met = map(Met, store.get(self.cfg_ana.met))
+            event.met = map(Met, store.get(self.cfg_ana.met))[0]
+            
