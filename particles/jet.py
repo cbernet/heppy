@@ -1,4 +1,5 @@
 import math
+from p4 import P4
 
 def group_pdgid(ptc):
     pdgid = abs(ptc.pdgid())
@@ -87,31 +88,7 @@ class JetConstituents(dict):
     def __str__(self):
         return '\n'.join(map(str, self.values()))
             
-class Jet(object):
-    
-    def p4(self):
-        return self._tlv
-
-    def p3(self):
-        return self._tlv.Vect()
-    
-    def e(self):
-        return self._tlv.E()
-
-    def pt(self):
-        return self._tlv.Pt()
-    
-    def theta(self):
-        return math.pi/2 - self._tlv.Theta()
-
-    def eta(self):
-        return self._tlv.Eta()
-
-    def phi(self):
-        return self._tlv.Phi()
-
-    def m(self):
-        return self._tlv.M()
+class Jet(P4):
 
     def pdgid(self):
         return 0
@@ -120,15 +97,14 @@ class Jet(object):
         return 0
 
     def __str__(self):
-        tmp = '{className} : pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:2.2f}, theta = {theta:2.2f}, phi = {phi:2.2f}, mass = {m:5.2f}'
+        btag = '?'
+        if hasattr(self, 'btag'):
+            btag = '{btag:2.1f}'.format(btag=self.btag)
+        tmp = '{className} : {p4}, b={btag}'
         return tmp.format(
             className = self.__class__.__name__,
-            pt = self.pt(),
-            e = self.e(),
-            eta = self.eta(),
-            theta = self.theta(),
-            phi = self.phi(),
-            m = self.m()
+            p4 = super(Jet, self).__str__(),
+            btag = btag
             )
     
     def __repr__(self):
