@@ -81,20 +81,19 @@ class Reader(Analyzer):
             event.gen_jets = map(Jet, store.get(self.cfg_ana.gen_jets))
             event.gen_jets.sort(key = self.sort_key, reverse=True)
 
+        jets = dict()
         if hasattr(self.cfg_ana, 'jets'):
             event.jets = map(Jet, store.get(self.cfg_ana.jets))
             event.jets.sort(key = self.sort_key, reverse=True) 
-
-            jets = dict()
             for jet in event.jets: 
-                jets[Jet(jet.fccjet)] = jet
-            print jets
+                jets[jet] = jet
 
-            if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
-                for tt in store.get(self.cfg_ana.jetsToBTags):
-                    print jets[tt.Jet()]
-                    #print '  =====  ',tt.Jet  
-                    #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
+        if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
+            for tt in store.get(self.cfg_ana.jetsToBTags):
+                jets[Jet(tt.Jet())].btag = tt.Tag()
+                
+                #print '  =====  ',tt.Jet  
+                #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
 #                    #jet.btag = 0
 #
 #                print '----------------------------   ',store.get(self.cfg_ana.jetsToBTags)

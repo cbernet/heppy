@@ -13,10 +13,7 @@ comp = cfg.Component(
     #files = ['example.root']
    # files = ['/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput_ttbar8TeV_01.root',
    #          '/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput_ttbar8TeV_02.root']
-files = ['/afs/cern.ch/user/d/drasal/public/delphes/FCCDelphes_ClementOutputBig.root',
-         '/afs/cern.ch/user/d/drasal/public/delphes/FCCDelphes_ClementOutput1.root',
-         '/afs/cern.ch/user/d/drasal/public/delphes/FCCDelphes_ClementOutput2.root',
-         ]
+    files = ['FCCDelphes_ClementOutput1.root']
 )
 selectedComponents = [comp]
 
