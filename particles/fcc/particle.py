@@ -11,7 +11,7 @@ class Particle(BaseParticle, POD):
         self._charge = fccobj.Core().Charge
         self._pid = fccobj.Core().Type
         self._status = fccobj.Core().Status
-        if hasattr(fccptc, 'StartVertex'):
+        if hasattr(fccobj, 'StartVertex'):
             start = fccobj.StartVertex()
             self._start_vertex = Vertex(start) if start.isAvailable() \
                                  else None 
