@@ -164,6 +164,8 @@ selection = cfg.Analyzer(
     instance_label='cuts'
 )
 
+# Analysis-specific ntuple producer
+# please have a look at the ZHTreeProducer class
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
 tree = cfg.Analyzer(
     ZHTreeProducer,
@@ -174,8 +176,6 @@ tree = cfg.Analyzer(
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-
-
 sequence = cfg.Sequence( [
     source,
     papas,
@@ -191,8 +191,7 @@ sequence = cfg.Sequence( [
     tree
     ] )
 
-# comp.files.append('example_2.root')
-# comp.splitFactor = 2  # splitting the component in 2 chunks
+# Specifics to read FCC events 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
@@ -208,7 +207,6 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    
     import random
     random.seed(0xdeadbeef)
 
@@ -225,9 +223,24 @@ if __name__ == '__main__':
             display.draw()            
 
     iev = None
+    usage = '''usage: python analysis_ee_ZH_cfg.py [ievent]
+    
+    Provide ievent as an integer, or loop on the first events.
+    You can also use this configuration file in this way: 
+    
+    heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
+    '''
     if len(sys.argv)==2:
         papas.display = True
-        iev = int(sys.argv[1])
+        try:
+            iev = int(sys.argv[1])
+        except ValueError:
+            print usage
+            sys.exit(1)
+    elif len(sys.argv)>2: 
+        print usage
+        sys.exit(1)
+            
         
     loop = Looper( 'looper', config,
                    nEvents=100,
