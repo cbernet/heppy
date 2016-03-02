@@ -89,18 +89,12 @@ class Reader(Analyzer):
                 jets[jet] = jet
 
         if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
-            for tt in store.get(self.cfg_ana.jetsToBTags):
-                jets[Jet(tt.Jet())].btag = tt.Tag().Value()
-                
-                #print '  =====  ',tt.Jet  
-                #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
-#                    #jet.btag = 0
-#
-#                print '----------------------------   ',store.get(self.cfg_ana.jetsToBTags)
-#                for tt in store.get(self.cfg_ana.jetsToBTags):
-#                    print 'jet ',tt.Jet().Core().P4.Px
-#                    print 'tag ',tt.Tag().Value()
-  
+            for jet in store.get(self.cfg_ana.jetsToBTags):
+                jets[Jet(jet.Jet())].btag = jet.Tag().Value()
+        
+        #if hasattr(self.cfg_ana, 'jetsFlavor') and hasattr(self.cfg_ana, 'jetsToFlavor'):
+        #    for jet in store.get(self.cfg_ana.jetsToFlavor):
+        #        jets[Jet(jet.Jet())].flavor = jet.Tag().Value()
 
 
         class Iso(object):
@@ -114,6 +108,8 @@ class Reader(Analyzer):
             event.electrons.sort(key = self.sort_key, reverse=True)
             for ele in event.electrons:
                 ele.iso = Iso()
+                if  hasattr(self.cfg_ana, 'electronITags'):
+                    print '-----------------------------------  ',store.get(self.cfg_ana.electronITags)
 
         if hasattr(self.cfg_ana, 'muons'):
             event.muons = map(Particle, store.get(self.cfg_ana.muons))
