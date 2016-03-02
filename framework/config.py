@@ -4,6 +4,11 @@
 from weight import Weight
 import glob
 
+# Forbidding PyROOT to hijack help system,
+# in case the configuration module is used as a script.
+import ROOT 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 def printComps(comps, details=False):
     '''
     Summary printout for  a list of components comps.
