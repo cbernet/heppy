@@ -53,6 +53,8 @@ class CFG(object):
     
 class Analyzer( CFG ):
     '''Base analyzer configuration, see constructor'''
+    names = set()
+    
     def __init__(self, class_object, instance_label='1', 
                  verbose=False, **kwargs):
         '''
@@ -88,12 +90,22 @@ class Analyzer( CFG ):
         its instance_label. In that case, one must stay consistent.'''
         self.__dict__[name] = value
         if name == 'instance_label':
-            self.name = self.build_name()   
+            self.name = self._build_name()   
 
-    def build_name(self):
+    def _build_name(self):
         class_name = '.'.join([self.class_object.__module__, 
                                self.class_object.__name__])
-        name = '_'.join([class_name, self.instance_label])
+        while 1:
+            # if class_name == 'heppy.analyzers.ResonanceBuilder.ResonanceBuilder':
+            #    import pdb; pdb.set_trace()
+            name = '_'.join([class_name, self.instance_label])
+            if name not in self.__class__.names:
+                self.__class__.names.add(name)
+                break
+            else:
+                # cannot set attr directly or infinite recursion,
+                # see setattr
+                self.__dict__['instance_label'] = str(int(self.instance_label)+1)
         return name 
 
     
@@ -103,11 +115,11 @@ class Service( CFG ):
                  verbose=False, **kwargs):
         self.class_object = class_object
         self.instance_label = instance_label
-        self.name = self.build_name()
+        self.name = self._build_name()
         self.verbose = verbose
         super(Service, self).__init__(**kwargs)
 
-    def build_name(self):
+    def _build_name(self):
         class_name = '.'.join([self.class_object.__module__, 
                                self.class_object.__name__])
         name = '_'.join([class_name, self.instance_label])
