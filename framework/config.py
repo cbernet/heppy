@@ -62,22 +62,33 @@ class Analyzer( CFG ):
         di-muon framework.Analyzer.Analyzer in the following way:
 
         ZMuMuAna = cfg.Analyzer(
-        "ZMuMuAnalyzer",
-        pt1 = 20,
-        pt2 = 20,
-        iso1 = 0.1,
-        iso2 = 0.1,
-        eta1 = 2,
-        eta2 = 2,
-        m_min = 0,
-        m_max = 200
+          ZMuMuAnalyzer,
+          'zmumu', # optional!
+          pt1 = 20,
+          pt2 = 20,
+          iso1 = 0.1,
+          iso2 = 0.1,
+          eta1 = 2,
+          eta2 = 2,
+          m_min = 0,
+          m_max = 200
         )
 
-        Any kinds of keyword arguments can be added.
-        The name must be present, and must be well chosen, as it will be used
-        by the Looper to find the module containing the Analyzer class.
-        This module should be in your PYTHONPATH. If not, modify your python path
-        accordingly in your script.
+        The first argument is your analyzer class. 
+        It should inherit from heppy.framework.analyzer.Analyser 
+
+        The second argument is optional.
+        If you have several analyzers of the same class, 
+        e.g. ZEleEleAna and ZMuMuAna, 
+        you may choose to provide it to keep track of the output 
+        of these analyzers. 
+        If you don't so so, the instance labels of the analyzers will
+        automatically be set to 1, 2, etc.
+
+        Finally, any kinds of keyword arguments can be added.
+        
+        This analyzer configuration object will become available 
+        as self.cfg_ana in your ZMuMuAnalyzer.
         '''
 
         self.class_object = class_object
