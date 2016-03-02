@@ -90,7 +90,9 @@ class Reader(Analyzer):
 
         if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
             for tt in store.get(self.cfg_ana.jetsToBTags):
-                jets[Jet(tt.Jet())].btag = tt.Tag().Value()
+                jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
+                # do this in your btag module:
+                jets[Jet(tt.Jet())].tags['b'] = tt.Tag().Value()>0.
                 
                 #print '  =====  ',tt.Jet  
                 #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
