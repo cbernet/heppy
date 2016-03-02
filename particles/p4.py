@@ -2,6 +2,9 @@ import math
 
 class P4(object):
 
+    def __init__(self, *args, **kwargs):
+        super(P4, self).__init__(*args, **kwargs)
+    
     def p4(self):
         '''4-momentum, px, py, pz, E'''
         return self._tlv

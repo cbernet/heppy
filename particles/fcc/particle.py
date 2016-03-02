@@ -2,12 +2,13 @@ from heppy.particles.particle import Particle as BaseParticle
 from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
-import math
+
+import copy
 
 class Particle(BaseParticle, POD):
     
     def __init__(self, fccobj):
-        self.fccobj = fccobj
+        super(Particle, self).__init__(fccobj)
         self._charge = fccobj.Core().Charge
         self._pid = fccobj.Core().Type
         self._status = fccobj.Core().Status
@@ -22,4 +23,9 @@ class Particle(BaseParticle, POD):
         p4 = fccobj.Core().P4
         self._tlv.SetXYZM(p4.Px, p4.Py, p4.Pz, p4.Mass)
         
-
+    def __deepcopy__(self, memodict={}):
+        newone = type(self).__new__(type(self))
+        for attr, val in self.__dict__.iteritems():
+            if attr not in ['fccobj', '_start_vertex', '_end_vertex']:
+                setattr(newone, attr, copy.deepcopy(val, memodict))
+        return newone
