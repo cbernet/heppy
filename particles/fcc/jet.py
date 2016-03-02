@@ -7,6 +7,7 @@ import math
 class Jet(BaseJet, POD):
     
     def __init__(self, fccobj):
+        super(Jet, self).__init__()
         self.fccobj = fccobj
         self._tlv = TLorentzVector()
         p4 = fccobj.Core().P4

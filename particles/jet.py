@@ -87,24 +87,46 @@ class JetConstituents(dict):
 
     def __str__(self):
         return '\n'.join(map(str, self.values()))
+
+
+class JetTags(dict):
+
+    def summary(self):
+        tagstrs = []
+        for name, val in sorted(self.iteritems()):
+            valstr = '..'
+            if hasattr(val, 'summary'):
+                valstr = val.summary()
+            elif isinstance(val, int):
+                valstr = '{val:d}'.format(val=val)
+            else:
+                try:
+                    valstr = '{val:2.1f}'.format(val=val)
+                except:
+                    pass
+            tagstr = '{name}:{val}'.format(name=name, val=valstr)
+            tagstrs.append(tagstr)
+        return ', '.join(tagstrs)
             
+    
 class Jet(P4):
+
+    def __init__(self):
+        self.constituents = None
+        self.tags = JetTags()
 
     def pdgid(self):
         return 0
 
     def q(self):
         return 0
-
+    
     def __str__(self):
-        btag = '?'
-        if hasattr(self, 'btag'):
-            btag = '{btag:2.1f}'.format(btag=self.btag)
-        tmp = '{className} : {p4}, b={btag}'
+        tmp = '{className} : {p4}, tags={tags}'
         return tmp.format(
             className = self.__class__.__name__,
             p4 = super(Jet, self).__str__(),
-            btag = btag
+            tags = self.tags.summary()
             )
     
     def __repr__(self):
