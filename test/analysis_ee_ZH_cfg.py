@@ -136,17 +136,32 @@ particles_not_zed = cfg.Analyzer(
 
 )
 
+# Make jets from the particles not used to build the best zed.
+# Here the event is forced into 2 jets to target ZH, H->b bbar)
+# help(JetClusterizer) for more information
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 jets = cfg.Analyzer(
     JetClusterizer,
-    instance_label = 'jets',
+    output = 'jets',
     particles = 'particles_not_zed',
     fastjet_args = dict( njets = 2)  
 )
 
+# Just a basic analysis-specific event Selection module.
+# this module implements a cut-flow counter
+# After running the example as
+#    heppy_loop.py Trash/ analysis_ee_ZH_cfg.py -f -N 100 
+# this counter can be found in:
+#    Trash/example/heppy.analyzers.examples.zh.selection.Selection_cuts/cut_flow.txt
+# Counter cut_flow :
+#         All events                                     100      1.00    1.0000
+#         At least 2 leptons                              87      0.87    0.8700
+#         Both leptons e>30                               79      0.91    0.7900
+# For more information, check the code of the Selection class,
 from heppy.analyzers.examples.zh.selection import Selection
 selection = cfg.Analyzer(
-    Selection
+    Selection,
+    instance_label='cuts'
 )
 
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
