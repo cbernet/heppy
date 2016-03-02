@@ -3,8 +3,9 @@ class POD(object):
     '''Base POD class for FCC EDM.
     '''
 
-    def __init__(self, fccobj):
+    def __init__(self, fccobj, *args, **kwargs):
         '''make sure to set the fccobj attribute in your base class.'''
+        super(POD, self).__init__(*args, **kwargs)
         self.fccobj = fccobj
         self.objid = (self.fccobj.getObjectID().index,
                       self.fccobj.getObjectID().collectionID)

@@ -111,7 +111,8 @@ class JetTags(dict):
     
 class Jet(P4):
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(Jet, self).__init__(*args, **kwargs)
         self.constituents = None
         self.tags = JetTags()
 
