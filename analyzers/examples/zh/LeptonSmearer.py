@@ -73,5 +73,5 @@ class LeptonSmearer(Analyzer):
     def smear(self, obj, mu, sigma):
         smear_factor = random.gauss(mu, sigma) 
         smeared = copy.deepcopy(obj)
-        smeared._tlv *= smear_factor 
+        smeared._tlv *= smear_factor
         return smeared

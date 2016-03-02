@@ -67,12 +67,12 @@ class Reader(Analyzer):
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,
                                           reverse=True )
-            event.gen_particles_stable = [ptc for ptc in event.gen_particles
-                                          if ptc.status()==1 and 
-                                          not math.isnan(ptc.e()) and
-                                          ptc.e()>1e-5 and 
-                                          ptc.pt()>1e-5 and
-                                          not abs(ptc.pdgid()) in [12, 14, 16]]
+            # event.gen_particles_stable = [ptc for ptc in event.gen_particles
+            #                               if ptc.status()==1 and 
+            #                               not math.isnan(ptc.e()) and
+            #                               ptc.e()>1e-5 and 
+            #                               ptc.pt()>1e-5 and
+            #                               not abs(ptc.pdgid()) in [12, 14, 16]]
         if hasattr(self.cfg_ana, 'gen_vertices'):        
             gen_vertices = store.get(self.cfg_ana.gen_vertices)
             event.gen_vertices = map(Vertex, gen_vertices)

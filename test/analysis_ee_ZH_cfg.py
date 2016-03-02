@@ -34,6 +34,18 @@ source = cfg.Analyzer(
     gen_particles = 'GenParticle',
 )
 
+# Use a Filter to select stable gen particles for simulation
+# from the output of "source" 
+# help(Filter) for more information
+from heppy.analyzers.Filter import Filter
+gen_particles_stable = cfg.Analyzer(
+    Filter,
+    output = 'gen_particles_stable',
+    # output = 'particles',
+    input_objects = 'gen_particles',
+    filter_func = lambda x : x.status()==1 and x.pdgid() not in [12,14,16] and x.pt()>0.1
+)
+
 # configure the papas fast simulation with the CMS detector
 # help(Papas) for more information
 from heppy.analyzers.Papas import Papas
@@ -48,6 +60,7 @@ papas = cfg.Analyzer(
     display = False,
     verbose = True
 )
+
 
 # Use a Filter to select leptons from the output of papas.
 # Currently, we're treating electrons and muons transparently.
@@ -147,6 +160,15 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
+# Build Higgs candidates from pairs of jets.
+higgses = cfg.Analyzer(
+    ResonanceBuilder,
+    output = 'higgses',
+    leg_collection = 'jets',
+    pdgid = 25
+)
+
+
 # Just a basic analysis-specific event Selection module.
 # this module implements a cut-flow counter
 # After running the example as
@@ -171,6 +193,7 @@ tree = cfg.Analyzer(
     ZHTreeProducer,
     zeds = 'zeds',
     jets = 'jets',
+    higgses = 'higgses',
     recoil  = 'recoil'
 )
 
@@ -178,6 +201,7 @@ tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
+    gen_particles_stable,
     papas,
     leptons_true,
     leptons,
@@ -187,6 +211,7 @@ sequence = cfg.Sequence( [
     recoil,
     particles_not_zed,
     jets,
+    higgses,
     selection, 
     tree
     ] )
@@ -243,7 +268,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=100,
+                   nEvents=10,
                    nPrint=1,
                    timeReport=True)
     simulation = None

@@ -20,6 +20,11 @@ class ZHTreeProducer(Analyzer):
         bookJet(self.tree, 'jet4')
         bookLepton(self.tree, 'zed_1')
         bookLepton(self.tree, 'zed_2')
+        bookParticle(self.tree, 'higgs')
+        bookJet(self.tree, 'higgs_1')
+        bookJet(self.tree, 'higgs_2')
+       
+
         
     def process(self, event):
         self.tree.reset()
@@ -37,6 +42,13 @@ class ZHTreeProducer(Analyzer):
             if ijet==4:
                 break
             fillJet(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet)
+        higgses = getattr(event, self.cfg_ana.higgses)
+        if len(higgses)==0:
+            return
+        higgs = higgses[0]
+        fillParticle(self.tree, 'higgs', higgs)
+        fillLepton(self.tree, 'higgs_1', higgs.legs[0])
+        fillLepton(self.tree, 'higgs_2', higgs.legs[1])
         self.tree.tree.Fill()
         
     def write(self, setup):
