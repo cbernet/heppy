@@ -8,7 +8,7 @@ import copy
 class Particle(BaseParticle, POD):
     
     def __init__(self, fccobj):
-        self.fccobj = fccobj
+        super(Particle, self).__init__(fccobj)
         self._charge = fccobj.Core().Charge
         self._pid = fccobj.Core().Type
         self._status = fccobj.Core().Status
