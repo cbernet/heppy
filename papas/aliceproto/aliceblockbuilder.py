@@ -1,7 +1,7 @@
 import itertools
 
 from DAG import Node, BreadthFirstSearchIterative, DAGFloodFill
-from heppy.papas.aliceproto.Identifier import Identifier
+from heppy.papas.aliceproto.identifier import Identifier
     
       
 class Edge(object): 
@@ -9,14 +9,13 @@ class Edge(object):
        
        attributes:
        
-       id1 : element1 uniqueid 
-       id2 : element2 uniqueid
+       id1 : element1 uniqueid generated from Identifier class
+       id2 : element2 uniqueid generated from Identifier class
        key : unique key value created from id1 and id2 (order of id1 and id2 is not important) 
        distance: distance between two elements
        is_linked : boolean T/F
        link_type : not used right now
     '''
-    ruler = None
     
     def __init__(self, id1, id2,  link_type, is_linked, distance): 
         ''' The Edge knows the ids of its ends, the distance between the two ends and whether or not they are linked '''
@@ -47,7 +46,7 @@ class PFBlock(object):
      
      attributes: 
      
-     uniqueid : this blocks unique id
+     uniqueid : this blocks unique id generated from Identifier class
      element_uniqueids : list of uniqueids of its elements
      edges : Dictionary of all the edge cominations in the block dict{edgekey : Edge} 
              use  get_edge(id1,id2) to find an edge
@@ -67,10 +66,11 @@ class PFBlock(object):
         #make a uniqueid for this block
         self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.BLOCK) 
         
-        #allow access to the underlying object
+        #allow access to the underlying objects
         self.get_object = get_object        
         
-        #order the elements by element type (ecal, hcal, track) and then by element id         
+        #order the elements by element type (ecal, hcal, track) and then by element id  
+        #eg E1 E2 H3
         self.element_uniqueids =sorted(element_ids, key =lambda  x: Identifier.type_short_code(x) + str(x) )
         
         #extract the relevant parts of the complete set of edges and store this within the block
@@ -172,6 +172,7 @@ class BlockBuilder(object):
         Each element will end up in one (and only one block)
         Blocks retain information of the elements and the distances between elements
         The blocks can then be used for future particle reconstruction
+        The ids must be unique and are expected to come from the Identifier class
         
         attributes:
         
@@ -180,8 +181,8 @@ class BlockBuilder(object):
                         if an existing history_nodes tree  eg one created during simulation
                         is passed to the BlockBuilder then
                         the additional history will be added into the exisiting history 
-        nodes :    dictionary of nodes which describes the distances/links between elements
-                 the nodes dictionary is used to create the blocks
+        nodes : dictionary of nodes which describes the distances/links between elements
+                the nodes dictionary will be used to create the blocks
     
         
         Usage example:
@@ -191,10 +192,7 @@ class BlockBuilder(object):
                 print b
     '''
     def __init__(self,  tracks, ecal, hcal, ruler, get_object, hist_nodes = None):
-        '''describe what the method is doing.. here ok because constructor
-        describe what is expected for parameters, e.g. dictionary for tracks, ecal
-        hcal.
-        say also what method is returning.
+        '''
 
         tracks is a dictionary : {id1:track1, id2:track2, ...}
         ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
@@ -321,3 +319,8 @@ class BlockBuilder(object):
 #    review all methods : pythonic name e.g. make_history_node 
 #    think about what has to be private or exposed to the user
 #    same for attributes
+
+#describe what the method is doing.. here ok because constructor
+#    describe what is expected for parameters, e.g. dictionary for tracks, ecal
+#    hcal.
+#    say also what method is returning.

@@ -1,7 +1,7 @@
 from vectors import Point
 from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
-from heppy.papas.aliceproto.Identifier import Identifier
+from heppy.papas.aliceproto.identifier import Identifier
 import math
 
 

@@ -1,6 +1,7 @@
 import unittest
 from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
-from heppy.papas.aliceproto.Identifier import Identifier
+from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.aliceproto.getobject import GetObject
 from aliceblockbuilder import Edge
 from aliceblockbuilder import BlockBuilder
 from aliceblockbuilder import PFBlock as realPFBlock
@@ -78,25 +79,9 @@ class Event(object):
         self.nodes = dict()          #Contains links/ distances between nodes
         self.blocks = dict()         #Blocks to be made for use in reconstuction
         self.ruler = distance
+        self.get_object=GetObject(self)
     
-    def get_object(self, e1) :
-        ''' given a uniqueid return the underlying obejct
-        '''
-        type =  Identifier.get_type(e1)
-        if type == Identifier.PFOBJECTTYPE.TRACK :
-            return self.tracks[e1]       
-        elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER :      
-            return self.ecal_clusters[e1] 
-        elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER :            
-            return self.hcal_clusters[e1]            
-        elif type == Identifier.PFOBJECTTYPE.PARTICLE :
-            return self.sim_particles[e1]   
-        elif type == Identifier.PFOBJECTTYPE.RECPARTICLE :
-            return self.reconstructed_particles[e1]               
-        elif type == Identifier.PFOBJECTTYPE.BLOCK :
-            return self.blocks[e1]               
-        else :
-            assert(False)    
+   
 
 class Simulator(object):
     ''' Simplified simulator for testing
@@ -302,7 +287,7 @@ class TestBlockReconstruction(unittest.TestCase):
         event  =  Event(distance)
         sim  =  Simulator(event)
         
-        pfblocker = BlockBuilder(event, event.tracks, event.ecal_clusters, event.hcal_clusters, event.history_nodes)
+        pfblocker = BlockBuilder( event.tracks, event.ecal_clusters, event.hcal_clusters, distance, event.get_object, event.history_nodes)
         
         event.blocks = pfblocker.blocks
         event.history_nodes = pfblocker.history_nodes

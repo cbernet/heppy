@@ -109,7 +109,7 @@ if __name__ == '__main__':
     if iev is not None:
        
         process(iev)
-        process(iev)
+        #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()
