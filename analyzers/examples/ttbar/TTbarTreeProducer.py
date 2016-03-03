@@ -17,6 +17,8 @@ class TTbarTreeProducer(Analyzer):
         bookParticle(self.tree, 'jet3')
         bookParticle(self.tree, 'jet4')
         bookParticle(self.tree, 'm3')
+        var(self.tree, 'mtw')
+
         bookMet(self.tree, 'met')
         bookLepton(self.tree, 'muon')
         bookLepton(self.tree, 'electron')
@@ -48,6 +50,12 @@ class TTbarTreeProducer(Analyzer):
         m3 = getattr(event, self.cfg_ana.m3)
         if m3: 
             fillParticle(self.tree, 'm3', m3)
+
+        mtw = getattr(event, self.cfg_ana.mtw)
+        if mtw: 
+            fill(self.tree, 'mtw', mtw)
+            #fillParticle(self.tree, 'mtw', mtw)
+
 
         met = getattr(event, self.cfg_ana.met)
         fillMet(self.tree, 'met', met)
