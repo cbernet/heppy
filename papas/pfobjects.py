@@ -15,6 +15,7 @@ class PFObject(object):
     ''' 
     
     def __init__(self):
+        super(PFObject, self).__init__()
         self.linked = []
         self.locked = False
         self.block_label = None

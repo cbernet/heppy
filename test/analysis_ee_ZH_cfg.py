@@ -21,7 +21,10 @@ logging.basicConfig(level=logging.WARNING)
 # input definition
 comp = cfg.Component(
     'example',
-    files = ['example.root']
+    files = [
+        # 'example.root',
+        'zh_zmumu_hbb.root'
+    ]
 )
 selectedComponents = [comp]
 
@@ -72,6 +75,7 @@ leptons_true = cfg.Analyzer(
     Filter,
     'sel_leptons',
     output = 'leptons_true',
+    # output = 'leptons',
     input_objects = 'particles',
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
