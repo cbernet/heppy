@@ -49,7 +49,7 @@ class P4(object):
     
     
     def __str__(self):
-        return 'pt = {e:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
+        return 'pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
             pt = self.pt(),
             e = self.e(),
             eta = self.eta(),

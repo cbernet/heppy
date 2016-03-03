@@ -7,8 +7,11 @@ import random
 
 from ROOT import TLorentzVector
 
-def particle(pdgid, theta, phi, energy, flat_pt=False):
+def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
     mass, charge = particle_data[pdgid]
+    theta = random.uniform(thetamin, thetamax)
+    phi = random.uniform(-math.pi, math.pi)
+    energy = random.uniform(ptmin, ptmax)
     costheta = math.cos(math.pi/2. - theta)
     sintheta = math.sin(math.pi/2. - theta)
     tantheta = sintheta / costheta
@@ -30,9 +33,10 @@ def particle(pdgid, theta, phi, energy, flat_pt=False):
 class Gun(Analyzer):
     
     def process(self, event):
-        theta = random.uniform(self.cfg_ana.thetamin, self.cfg_ana.thetamax)
-        phi = random.uniform(-math.pi, math.pi)
-        energy = random.uniform( self.cfg_ana.ptmin, self.cfg_ana.ptmax)
-        event.gen_particles = [particle(self.cfg_ana.pdgid, theta, phi, energy,
+        event.gen_particles = [particle(self.cfg_ana.pdgid, 
+                                        self.cfg_ana.thetamin, 
+                                        self.cfg_ana.thetamax,
+                                        self.cfg_ana.ptmin, 
+                                        self.cfg_ana.ptmax,
                                         flat_pt=self.cfg_ana.flat_pt)]
         event.gen_particles_stable = event.gen_particles
