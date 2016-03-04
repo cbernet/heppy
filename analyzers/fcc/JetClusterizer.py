@@ -24,22 +24,27 @@ class JetClusterizer(Analyzer):
 
     Example configuration: 
 
-    papas_jets = cfg.Analyzer(
-       JetClusterizer,
-       instance_label = 'papas', 
-       particles = 'papas_rec_particles', 
-       ptmin = 1.  # for inclusive jets 
-       # or 
-       # njets = 2 # for exclusive jets
+    from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
+    jets = cfg.Analyzer(
+      JetClusterizer,
+      output = 'jets',
+      particles = 'particles_not_zed',
+      fastjet_args = dict( njets = 2)  
     )
+    
+    * output: name of the output collection of Jets. 
+    Each jet is attached a JetConstituents object as jet.constituents.
+    See the Jet and JetConstituents classes. 
 
-    particles: Name of the input particle collection.
-    The output jet collection name is built from the instance_label, 
-    in this case "papas_jets". 
+    * particles: name of the input collection of particle-like objects. 
+    These objects should have a p4(). 
     
     you should provide either one or the other of the following arguments:
     - ptmin : pt threshold for exclusive jet reconstruction 
     - njets : number of jets for inclusive jet reconstruction 
+
+    A more flexible interface can easily be provided if needed, 
+    contact Colin.
     '''
 
     def __init__(self, *args, **kwargs):
@@ -96,4 +101,4 @@ class JetClusterizer(Analyzer):
                 jet.constituents.append(constituent)
             jet.constituents.sort()
             self.validate(jet)
-        setattr(event, self.instance_label, jets)
+        setattr(event, self.cfg_ana.output, jets)

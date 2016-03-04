@@ -2,6 +2,9 @@ import math
 
 class P4(object):
 
+    def __init__(self, *args, **kwargs):
+        super(P4, self).__init__(*args, **kwargs)
+    
     def p4(self):
         '''4-momentum, px, py, pz, E'''
         return self._tlv
@@ -46,7 +49,7 @@ class P4(object):
     
     
     def __str__(self):
-        return 'pt = {e:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
+        return 'pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
             pt = self.pt(),
             e = self.e(),
             eta = self.eta(),

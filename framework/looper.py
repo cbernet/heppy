@@ -1,6 +1,9 @@
 # Copyright (C) 2014 Colin Bernet
 # https://github.com/cbernet/heppy/blob/master/LICENSE
 
+import ROOT 
+ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 import os
 import sys
 import imp

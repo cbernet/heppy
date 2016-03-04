@@ -67,12 +67,12 @@ class Reader(Analyzer):
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,
                                           reverse=True )
-            event.gen_particles_stable = [ptc for ptc in event.gen_particles
-                                          if ptc.status()==1 and 
-                                          not math.isnan(ptc.e()) and
-                                          ptc.e()>1e-5 and 
-                                          ptc.pt()>1e-5 and
-                                          not abs(ptc.pdgid()) in [12, 14, 16]]
+            # event.gen_particles_stable = [ptc for ptc in event.gen_particles
+            #                               if ptc.status()==1 and 
+            #                               not math.isnan(ptc.e()) and
+            #                               ptc.e()>1e-5 and 
+            #                               ptc.pt()>1e-5 and
+            #                               not abs(ptc.pdgid()) in [12, 14, 16]]
         if hasattr(self.cfg_ana, 'gen_vertices'):        
             gen_vertices = store.get(self.cfg_ana.gen_vertices)
             event.gen_vertices = map(Vertex, gen_vertices)
@@ -90,7 +90,9 @@ class Reader(Analyzer):
 
         if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
             for tt in store.get(self.cfg_ana.jetsToBTags):
-                jets[Jet(tt.Jet())].btag = tt.Tag().Value()
+                jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
+                # do this in your btag module:
+                jets[Jet(tt.Jet())].tags['b'] = tt.Tag().Value()>0.
                 
                 #print '  =====  ',tt.Jet  
                 #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
