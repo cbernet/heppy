@@ -22,8 +22,7 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     files = [
-        # 'example.root',
-        'zh_zmumu_hbb.root'
+        'ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
@@ -60,6 +59,7 @@ papas = cfg.Analyzer(
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
     rec_particles = 'particles',
+    display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
 )

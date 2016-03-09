@@ -122,7 +122,22 @@ class Looper(object):
         self.setup = Setup(config, services)
 
     def _build(self, cfg):
-        theClass = cfg.class_object
+        try: 
+            theClass = cfg.class_object
+        except AttributeError:
+            errfgmt = 'an object of class {cfg_class}'.format(
+                cfg_class=cfg.__class__
+            )
+            if type(cfg) is type:
+                errfgmt = 'a class named {class_name}'.format(
+                    class_name=cfg.__name__
+                )
+            err='''
+The looper is trying to build an analyzer configured by {errfgmt}. 
+
+Make sure that the configuration object is of class cfg.Analyzer.
+            '''.format(errfgmt=errfgmt)
+            raise ValueError(err)
         obj = theClass( cfg, self.cfg_comp, self.outDir )
         return obj
         

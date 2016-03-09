@@ -116,7 +116,14 @@ class Analyzer( CFG ):
             else:
                 # cannot set attr directly or infinite recursion,
                 # see setattr
-                self.__dict__['instance_label'] = str(int(self.instance_label)+1)
+                iinst = None
+                try:
+                    iinst = int(self.instance_label)
+                    self.__dict__['instance_label'] = str(iinst+1)
+                except ValueError:
+                    # here, reloading module in ipython
+                    self.__class__.names = set()
+                    self.__dict__['instance_label'] = self.instance_label
         return name 
 
     

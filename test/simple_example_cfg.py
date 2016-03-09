@@ -16,31 +16,25 @@ inputSample = cfg.Component(
 
 selectedComponents  = [inputSample]
 
-from heppy.analyzers.Printer import Printer
+from heppy.analyzers.examples.simple.Printer import Printer
 printer = cfg.Analyzer(
     Printer
     )
 
-from heppy.analyzers.SimpleTreeProducer import SimpleTreeProducer
+from heppy.analyzers.examples.simple.SimpleTreeProducer import SimpleTreeProducer
 tree = cfg.Analyzer(
     SimpleTreeProducer,
     tree_name = 'tree',
     tree_title = 'A test tree'
     )
 
-from heppy.analyzers.Histogrammer import Histogrammer
-histos = cfg.Analyzer(
-    Histogrammer,
-    file_label = 'myhists'
-)
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     printer,
     tree,
-    histos
-    ] )
+] )
 
 from heppy.framework.services.tfile import TFileService
 output_rootfile = cfg.Service(

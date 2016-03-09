@@ -72,7 +72,11 @@ class Papas(Analyzer):
         self.simulator.simulate( gen_particles )
         pfsim_particles = self.simulator.ptcs
         if self.is_display:
-            self.display.register( GTrajectories(pfsim_particles),
+            particles_for_display = pfsim_particles
+            if hasattr(self.cfg_ana, 'display_filter_func'):
+                particles_for_display = [ ptc for ptc in pfsim_particles if 
+                                          self.cfg_ana.display_filter_func(ptc) ]
+            self.display.register( GTrajectories(particles_for_display),
                                    layer=1)
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)
