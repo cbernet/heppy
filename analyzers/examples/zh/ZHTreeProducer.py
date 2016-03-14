@@ -21,8 +21,8 @@ class ZHTreeProducer(Analyzer):
         bookLepton(self.tree, 'zed_1')
         bookLepton(self.tree, 'zed_2')
         bookParticle(self.tree, 'higgs')
-        bookJet(self.tree, 'higgs_1')
-        bookJet(self.tree, 'higgs_2')
+        bookParticle(self.tree, 'higgs_1')
+        bookParticle(self.tree, 'higgs_2')
        
     def process(self, event):
         self.tree.reset()
