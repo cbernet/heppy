@@ -13,7 +13,7 @@ class Material(object):
         if freepath == 0.0:
             return sys.float_info.max
         else: 
-            return random.expovariate(freepath)
+            return random.expovariate(1./freepath)
 
 void = Material('void', 0, 0)
 
