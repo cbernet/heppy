@@ -53,6 +53,12 @@ pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder
 )
 
+from heppy.papas.aliceproto.alicepfreconstructor import PFReconstructorAnalyzer
+pfreconstruct = cfg.Analyzer(
+    PFReconstructorAnalyzer
+)
+
+
 # and then particle reconstruction from blocks 
 
 # definition of a sequence of analyzers,
@@ -61,6 +67,7 @@ sequence = cfg.Sequence( [
     source,
     papas,
     pfblocks,
+    pfreconstruct
     ] )
  
 config = cfg.Config(
@@ -109,7 +116,7 @@ if __name__ == '__main__':
     if iev is not None:
        
         process(iev)
-        #process(iev) #alice_debug
+        process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

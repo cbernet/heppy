@@ -2,9 +2,10 @@ import unittest
 from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
 from heppy.papas.aliceproto.identifier import Identifier
 from heppy.papas.aliceproto.getobject import GetObject
-from aliceblockbuilder import Edge
-from aliceblockbuilder import BlockBuilder
-from aliceblockbuilder import PFBlock as realPFBlock
+from edge import Edge
+from eventblockbuilder import EventBlockBuilder
+from blocksplitter import BlockSplitter
+from blockbuilder import PFBlock as realPFBlock
 
 
 class Cluster(object):
@@ -287,10 +288,26 @@ class TestBlockReconstruction(unittest.TestCase):
         event  =  Event(distance)
         sim  =  Simulator(event)
         
-        pfblocker = BlockBuilder( event.tracks, event.ecal_clusters, event.hcal_clusters, distance, event.get_object, event.history_nodes)
+        pfblocker = EventBlockBuilder( event, distance,  event.history_nodes)
         
         event.blocks = pfblocker.blocks
         event.history_nodes = pfblocker.history_nodes
+        
+        
+        ##test block splitting
+        #blockids = []
+        #unlink=[]
+        #for b in event.blocks.itervalues() :
+            #ids=b.element_uniqueids
+            #if len(ids)==3 :
+                #print ids[0], ids[2]
+                #unlink.append(b.edges[Edge.make_key(ids[0], ids[2])])
+                #unlink.append(b.edges[Edge.make_key(ids[0], ids[1])])
+                #print unlink
+                #splitter=BlockSplitter(b,unlink,event.history_nodes)
+                #print splitter.blocks
+        
+        #blocksplitter=BlockSplitter()
        
         rec  =  Reconstructor(event)
 

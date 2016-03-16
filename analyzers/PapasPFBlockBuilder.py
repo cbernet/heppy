@@ -1,5 +1,6 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.aliceproto.aliceblockbuilder import BlockBuilder
+from heppy.papas.aliceproto.eventblockbuilder import EventBlockBuilder
+from heppy.papas.aliceproto.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.aliceproto.getobject import GetObject
 
@@ -11,13 +12,11 @@ class PapasPFBlockBuilder(Analyzer):
                 
     def process(self, event):
         
-        ecal = event.ecal_clusters
-        hcal = event.hcal_clusters
-        tracks = event.tracks
-        distance = Distance()
-        get_object = GetObject(event)
+        pfevent=PFEvent(event) #or instead pass hcal, ecal ,track visibly? or somehow add the get_object to event?
         
-        blockbuilder = BlockBuilder( tracks, ecal, hcal, distance, get_object)
+        distance = Distance()
+    
+        blockbuilder = EventBlockBuilder( pfevent, distance)
         print blockbuilder
             
         event.blocks = blockbuilder.blocks

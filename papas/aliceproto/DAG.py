@@ -54,6 +54,14 @@ class Node(object):
         '''set the parents'''
         self.parents.append(parent)
         self.undirected_links.append(parent)
+        
+    def remove_all_links_to(self,other):
+        if (other in self.parents) :
+            self.parents.remove(other)
+            other.children.remove(self)
+        if (other in self.children) :
+            self.children.remove(other)
+            other.parents.remove(self)        
 
     def get_linked_nodes(self, type):  #ask colin, I imagine there is a more elegant Python way to do this
                                        #alice todo make type a enumeration and not a string?
