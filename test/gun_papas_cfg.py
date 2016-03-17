@@ -53,9 +53,10 @@ pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder
 )
 
-from heppy.papas.aliceproto.alicepfreconstructor import PFReconstructorAnalyzer
+
+from heppy.papas.aliceproto.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
-    PFReconstructorAnalyzer
+    PapasPFReconstructor
 )
 
 
@@ -116,6 +117,8 @@ if __name__ == '__main__':
     if iev is not None:
        
         process(iev)
+        process(iev) #alice_debug
+        process(iev) #alice_debug
         process(iev) #alice_debug
     else:
         loop.loop()

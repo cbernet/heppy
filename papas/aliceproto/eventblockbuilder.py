@@ -1,6 +1,7 @@
 import itertools
 from blockbuilder import BlockBuilder
 from edge import Edge
+from DAG import Node
 
 class EventBlockBuilder(BlockBuilder):
     ''' BlockBuilder takes a set of particle flow elements (clusters,tracks etc)
@@ -56,7 +57,8 @@ class EventBlockBuilder(BlockBuilder):
         # collate all the ids of tracks and clusters
         uniqueids=[]
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
-        
+        if history_nodes is None :
+            self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
         edges = dict()
@@ -65,7 +67,7 @@ class EventBlockBuilder(BlockBuilder):
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
             
-        super(EventBlockBuilder, self).__init__(uniqueids,edges,history_nodes, pfevent)
+        super(EventBlockBuilder, self).__init__(uniqueids,edges,self.history_nodes, pfevent)
 
     
     

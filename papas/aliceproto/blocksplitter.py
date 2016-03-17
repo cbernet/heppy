@@ -29,8 +29,10 @@ class BlockSplitter(BlockBuilder):
         # nb check with colin about the edges being updated
               
         if (len(self.blocks) == 1) :
-            self.blocks[0].is_active = False
-            inactiveblocknode=self.history_nodes[self.blocks[0]]
+            for b in self.blocks.itervalues() :
+                b.is_active = False
+                inactiveblocknode=self.history_nodes[b.uniqueid]
+                self.blocks={ block.uniqueid: block }
         else :
             inactiveblocknode=self.history_nodes[block.uniqueid]  
             
@@ -41,8 +43,9 @@ class BlockSplitter(BlockBuilder):
         #the new blocks are subblocks of the original block
         #so keep note of this in the history (at least for now)
         if (self.history_nodes != None and len(self.blocks)>1) :
-            for subblock in self.blocks :
+            for subblock in self.blocks.iteritems() :
                 self.history_nodes[block.uniqueid].add_child(history_nodes[subblock]) 
+        
                 
         
          

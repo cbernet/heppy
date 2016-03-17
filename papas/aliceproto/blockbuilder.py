@@ -73,21 +73,38 @@ class PFBlock(object):
     def __len__(self) :
         return len(self.element_uniqueids)   
     
-    def linked_edges(self,uniqueid) :
-        ''' Returns list of all edges connected to a given id sorted in order of increasing distance'''
+    def linked_edges(self,uniqueid,edgetype=None) :
+        ''' Returns list of all linked edges of a given edge type that are connected to a given id - sorted in order of increasing distance'''
         linked_edges=[]
-        for edge in edges:
-            if edge.id1()==uniqueid or edge.id2()==uniqueid :
-                linked_edges.append(edge)
+        for edge in self.edges.itervalues():
+            if edge.linked and (edge.id1==uniqueid or edge.id2==uniqueid ) :
+                if (edgetype != None) and (edge.edgetype() == edgetype ):
+                    linked_edges.append(edge)
+                elif edgetype == None :
+                    linked_edges.append(edge)
         linked_edges.sort( key = lambda x: x.distance)
+        return linked_edges
                    
+    def linked_ids(self,uniqueid,edgetype=None) :
+            ''' Returns list of all linked ids of a given edge type that are connected to a given id - sorted in order of increasing distance'''
+            linked_ids=[]  
+            linked_edges=[]
+            linked_edges=self.linked_edges(uniqueid,edgetype)
+            if len(linked_edges) :
+                for edge in linked_edges:
+                    if edge.id1==uniqueid :
+                        linked_ids.append(edge.id2)
+                    else :
+                        linked_ids.append(edge.id1)
+            return linked_ids
+    
     def elements_string(self) : 
         ''' Construct a string descrip of each of the elements in a block '''
         count = 0
         elemdetails = "\n      elements: {\n"  
         for uid in self.element_uniqueids:
-            elemname = Identifier.type_short_code(uid) +str(count)
-            elemdetails += "      " + elemname + ": " + (self.pfevent.get_object(uid)).__str__() + "\n"
+            elemname = Identifier.type_short_code(uid) +str(count) + ":" + str(uid)  + ": "
+            elemdetails += "      " + elemname + ":"  + self.pfevent.get_object(uid).__str__() + "\n"
             count = count + 1            
         return elemdetails + "      }"
     
@@ -238,7 +255,7 @@ class BlockBuilder(object):
         
                 
     def __str__(self):
-        descrip = "{ " 
+        descrip = "{ "
         for block in self.blocks.iteritems() :
             descrip = descrip + block.__str__()
         descrip = descrip + "}\n"
