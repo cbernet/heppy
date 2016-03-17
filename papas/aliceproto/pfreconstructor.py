@@ -12,6 +12,8 @@ class PFReconstructor(object):
 
     def __init__(self,event):
         self.blocks=event.blocks
+        self.unused = []
+        self.particles = []        
         
         for block in self.blocks.itervalues():
             splitblocks = self.simplifiedblocks(block,event.history_nodes)
@@ -19,27 +21,14 @@ class PFReconstructor(object):
             self.blocks.update(splitblocks)
             
         for block in self.blocks.itervalues():    
-            self.reconstruct_block(block)
+            self.particles.extend(self.reconstruct_block(block))
+            self.unused.append( [id for id in block.element_uniqueids if not self.locked[id]])
         
-    def reconstruct(self, block):
-        particles = []
-        all_subgroups = dict()
-        # pprint.pprint( links.groups )
-        # import pdb; pdb.set_trace()
-        for groupid, group in links.groups.iteritems():
-            if self.simplify_group(group):
-                all_subgroups[groupid] = links.subgroups(groupid)
-        for group_id, subgroups in all_subgroups.iteritems():
-            del links.groups[group_id]
-            links.groups.update(subgroups)
-        for group_id, group in links.groups.iteritems():
-            self.log.info( "group {group_id} {group}".format(
-                group_id = group_id,
-                group = group) ) 
-            self.particles.extend( self.reconstruct_group(group) )
-        self.unused = [elem for elem in links.elements if not elem.locked]
-        self.log.info("Particles:")
-        self.log.info(str(self))
+        
+        #print("Particles:")
+        print(str(self))        
+        
+ 
             
     def simplifiedblocks(self, block,history_nodes=None):
         # for each track, keeping only the closest hcal link
@@ -101,7 +90,7 @@ class PFReconstructor(object):
                     particles.append(self.reconstruct_track(block.pfevent.tracks[id]))
                     # tracks possibly linked to ecal->locking cluster
                     for idlink in block.linked_ids(id,"ecal_track") :
-                        locked[idlink] = True
+                        self.locked[idlink] = True
             # #TODO deal with ecal-ecal
             # ecals = [elem for elem in group if elem.layer=='ecal_in'
             #          and not elem.locked]
@@ -145,13 +134,13 @@ class PFReconstructor(object):
         for trackid in block.linked_ids(hcalid, "hcal_track"):
             tracks.append(block.pfevent.tracks[trackid])
             for ecalid in block.linked_ids(trackid, "ecal_track") :
-                if not locked[ecalid] :
+                if not self.locked[ecalid] :
                     ecals.append(block.pfevent.ecal_clusters[ecalid])
                     self.locked[ecalid]  = True
                 # hcal should be the only remaining linked hcal cluster (closest one)
                 #thcals = [th for th in elem.linked if th.layer=='hcal_in']
                 #assert(thcals[0]==hcal)
-        print( hcalid )
+        print( 'Reconstruct Hcal {hcal}'.format(hcal=hcal) )
         print( '\tT {tracks}'.format(tracks=tracks) )
         print( '\tE {ecals}'.format(ecals=ecals) )
         hcal_energy = hcal.energy
@@ -189,7 +178,7 @@ class PFReconstructor(object):
                 assert(elem.layer=='hcal_in')
                 # ecal hcal links have been cut
             particles.append(self.reconstruct_cluster(hcal, 'hcal_in'))
-        hcal.locked = True
+        self.locked[hcalid] = True
         return particles 
                 
     def reconstruct_cluster(self, cluster, layer, energy=None, vertex=None):
@@ -216,7 +205,7 @@ class PFReconstructor(object):
         path.points[layer] = cluster.position
         particle.set_path(path)
         particle.clusters[layer] = cluster
-        cluster.locked = True
+        self.locked[cluster.uniqueid] = True
         return particle
         
     def reconstruct_track(self, track, clusters=None):
@@ -228,7 +217,7 @@ class PFReconstructor(object):
         particle = Particle(p4, vertex, charge, pdg_id)
         particle.set_path(track.path)
         particle.clusters = clusters
-        track.locked = True
+        self.locked[track.uniqueid] = True
         return particle
 
 
