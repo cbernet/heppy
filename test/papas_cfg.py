@@ -25,7 +25,7 @@ source = cfg.Analyzer(
 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
-from EventStore import EventStore as Events
+#from EventStore import EventStore as Events
 
 from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS

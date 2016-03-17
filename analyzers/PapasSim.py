@@ -83,6 +83,7 @@ class PapasSim(Analyzer):
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
+        event.colin_particles = particles
         for label, element in pfinput.elements.iteritems() :
             if label == 'tracker':
                 event.tracks[element[0].uniqueid]=element[0] #alice for some reason element seems tobe a dictionary although it is just one "thing"

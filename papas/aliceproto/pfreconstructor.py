@@ -17,12 +17,13 @@ class PFReconstructor(object):
         
         for block in self.blocks.itervalues():
             splitblocks = self.simplifiedblocks(block,event.history_nodes)
+         
             #del self.blocks[block.uniqueid]
             self.blocks.update(splitblocks)
             
         for block in self.blocks.itervalues():    
             self.particles.extend(self.reconstruct_block(block))
-            self.unused.append( [id for id in block.element_uniqueids if not self.locked[id]])
+            self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
         
         
         #print("Particles:")
@@ -36,7 +37,7 @@ class PFReconstructor(object):
         ids=block.element_uniqueids
         assert(len(ids)!=0)
         if len(ids)==1:
-            return block
+            return {block.uniqueid: block}
         
         #sort ids by type
         #sort edges by distance
@@ -54,10 +55,12 @@ class PFReconstructor(object):
             elif Identifier.is_ecal(id) :
                 # remove all ecal-hcal links. ecal linked to hcal give rise to a photon anyway.
                 linked = block.linked_edges(id,"ecal_hcal")
-                to_unlink.append(linked)
-        if (linked != None) :
-            return BlockSplitter(block,to_unlink,history_nodes).blocks
-        splitblocks[block.uniqueid]=block
+                to_unlink.extend(linked)
+        if len(to_unlink) :
+            splitblocks= BlockSplitter(block,to_unlink,history_nodes).blocks
+        else :
+            splitblocks[block.uniqueid]=block
+        assert( isinstance(splitblocks,dict))
         return splitblocks
             
     def reconstruct_block(self, block):
@@ -70,7 +73,7 @@ class PFReconstructor(object):
        
         if len(ids)==1: #TODO WARNING!!! LOTS OF MISSING CASES
             id = ids[0]
-            elem=block.pfevent.getobject(id)
+            
             if Identifier.is_ecal(id) :
                 particles.append(self.reconstruct_cluster(block.pfevent.ecal_clusters[id],"ecal_in"))
             elif Identifier.is_hcal(id) :
@@ -158,7 +161,7 @@ class PFReconstructor(object):
                 res = calo_eres ))
             if delta_e_rel > self.nsigma_hcal(hcal) * calo_eres:
                 excess = delta_e_rel * track_energy
-                self.log.info( 'excess = {excess:5.2f}, ecal_E = {ecal_e:5.2f}, diff = {diff:5.2f}'.format(
+                print( 'excess = {excess:5.2f}, ecal_E = {ecal_e:5.2f}, diff = {diff:5.2f}'.format(
                     excess=excess, ecal_e = ecal_energy, diff=excess-ecal_energy))
                 if excess <= ecal_energy:
                     particles.append(self.reconstruct_cluster(hcal, 'ecal_in',
@@ -169,6 +172,7 @@ class PFReconstructor(object):
                     if particle:
                         particles.append(particle)
                     if ecal_energy:
+
                         particles.append(self.reconstruct_cluster(hcal, 'ecal_in',
                                                                   ecal_energy))
 

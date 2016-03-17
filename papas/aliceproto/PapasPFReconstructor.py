@@ -17,5 +17,7 @@ class PapasPFReconstructor(Analyzer):
         
     
         reconstructed = PFReconstructor(event)
-        
+        event.alice_particles= sorted( reconstructed.particles,
+                            key = lambda ptc: ptc.e(), reverse=True)
+        pass
         

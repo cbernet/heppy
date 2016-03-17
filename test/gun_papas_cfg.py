@@ -59,6 +59,10 @@ pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor
 )
 
+from heppy.papas.aliceproto.PapasParticlesComparer import PapasParticlesComparer 
+particlescomparer = cfg.Analyzer(
+    PapasParticlesComparer 
+)
 
 # and then particle reconstruction from blocks 
 
@@ -68,7 +72,8 @@ sequence = cfg.Sequence( [
     source,
     papas,
     pfblocks,
-    pfreconstruct
+    pfreconstruct,
+    particlescomparer
     ] )
  
 config = cfg.Config(
@@ -115,7 +120,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-       
+       for j in range(10000) :
         process(iev)
         process(iev) #alice_debug
         process(iev) #alice_debug

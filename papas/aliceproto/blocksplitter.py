@@ -19,10 +19,12 @@ class BlockSplitter(BlockBuilder):
     
         '''
         for edge in unlink_edges :
-            edge.linked=False
+            print len(unlink_edges)
+            print edge
+            edge.linked = False
         
         super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes, block.pfevent)
-        
+        assert( isinstance(self.blocks,dict))
         #we need to remove(or downgrade) either the original block node which has been split up, 
         # however in some cases the "split" block may be identical to the original  block 
         # in this case drop the new block
@@ -33,6 +35,7 @@ class BlockSplitter(BlockBuilder):
                 b.is_active = False
                 inactiveblocknode=self.history_nodes[b.uniqueid]
                 self.blocks={ block.uniqueid: block }
+                assert( isinstance(self.blocks,dict))
         else :
             inactiveblocknode=self.history_nodes[block.uniqueid]  
             
