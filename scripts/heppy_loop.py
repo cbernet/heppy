@@ -149,9 +149,8 @@ if __name__ == '__main__':
 
     parser = OptionParser()
     parser.usage = """
-    %prog <name> <analysis_cfg>
-    For each component, start a Loop.
-    'name' is whatever you want.
+    %prog <output_directory> <config_file>
+    Start the processing of the jobs defined in your configuration file.
     """
 
     parser.add_option("-N", "--nevents",
@@ -162,10 +161,11 @@ if __name__ == '__main__':
                       dest="nprint",
                       help="number of events to print at the beginning",
                       default=5)
-    parser.add_option("-i", "--iEvent",
-                      dest="iEvent",
-                      help="jump to a given event. ignored in multiprocessing.",
-                      default=None)
+#COLIN TODO : interactive processing as in CMS
+#    parser.add_option("-i", "--iEvent",
+#                      dest="iEvent",
+#                      help="jump to a given event. ignored in multiprocessing.",
+#                      default=None)
     parser.add_option("-f", "--force",
                       dest="force",
                       action='store_true',
@@ -179,4 +179,5 @@ if __name__ == '__main__':
  
     (options,args) = parser.parse_args()
 
+    options.iEvent = None
     main(options, args)

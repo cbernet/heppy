@@ -1,4 +1,5 @@
 import math
+from p4 import P4
 
 def group_pdgid(ptc):
     pdgid = abs(ptc.pdgid())
@@ -86,48 +87,48 @@ class JetConstituents(dict):
 
     def __str__(self):
         return '\n'.join(map(str, self.values()))
+
+
+class JetTags(dict):
+
+    def summary(self):
+        tagstrs = []
+        for name, val in sorted(self.iteritems()):
+            valstr = '..'
+            if hasattr(val, 'summary'):
+                valstr = val.summary()
+            elif isinstance(val, int):
+                valstr = '{val:d}'.format(val=val)
+            else:
+                try:
+                    valstr = '{val:2.1f}'.format(val=val)
+                except:
+                    pass
+            tagstr = '{name}:{val}'.format(name=name, val=valstr)
+            tagstrs.append(tagstr)
+        return ', '.join(tagstrs)
             
-class Jet(object):
     
-    def p4(self):
-        return self._tlv
+class Jet(P4):
 
-    def p3(self):
-        return self._tlv.Vect()
-    
-    def e(self):
-        return self._tlv.E()
-
-    def pt(self):
-        return self._tlv.Pt()
-    
-    def theta(self):
-        return math.pi/2 - self._tlv.Theta()
-
-    def eta(self):
-        return self._tlv.Eta()
-
-    def phi(self):
-        return self._tlv.Phi()
-
-    def m(self):
-        return self._tlv.M()
+    def __init__(self, *args, **kwargs):
+        super(Jet, self).__init__(*args, **kwargs)
+        self.constituents = None
+        self.tags = JetTags()
 
     def pdgid(self):
         return 0
 
     def q(self):
         return 0
-
+    
     def __str__(self):
-        tmp = '{className} : pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:2.2f}, theta = {theta:2.2f}, phi = {phi:2.2f}, mass = {m:5.2f}'
+        tmp = '{className} : {p4}, tags={tags}'
         return tmp.format(
             className = self.__class__.__name__,
-            pt = self.pt(),
-            e = self.e(),
-            eta = self.eta(),
-            theta = self.theta(),
-            phi = self.phi(),
-            m = self.m()
+            p4 = super(Jet, self).__str__(),
+            tags = self.tags.summary()
             )
     
+    def __repr__(self):
+        return str(self)

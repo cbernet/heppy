@@ -18,8 +18,11 @@ class PFObject(object):
     locked : already used in the particle flow algorithm 
     block_label : label of the block the PFObject belongs to. The block label is a unique identifier for the block.
     ''' 
-    
+
     def __init__(self,pfobjecttype=Identifier.PFOBJECTTYPE.NONE):
+   #def __init__(self):
+        super(PFObject, self).__init__(pfobjecttype)
+
         self.linked = []
         self.locked = False
         self.block_label = None
