@@ -4,7 +4,7 @@ from edge import Edge
 from DAG import Node
 
 class EventBlockBuilder(BlockBuilder):
-    ''' BlockBuilder takes a set of particle flow elements (clusters,tracks etc)
+    ''' EventBlockBuilder takes a set of particle flow elements (clusters,tracks etc)
         and uses the distances between elements to construct a set of blocks
         Each element will end up in one (and only one block)
         Blocks retain information of the elements and the distances between elements
@@ -24,7 +24,7 @@ class EventBlockBuilder(BlockBuilder):
         
         Usage example:
 
-            builder = BlockBuilder(tracks, ecal, hcal,ruler,get_object)
+            builder = EventBlockBuilder(pfevent,ruler)
             for b in builder.blocks.itervalues() :
                 print b
     '''
@@ -34,6 +34,7 @@ class EventBlockBuilder(BlockBuilder):
          tracks is a dictionary : {id1:track1, id2:track2, ...}
          ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
          hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
+         get_object() which allows a cluster or track to be found from its id
        ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)
             it should take the two objects as arguments and return a tuple
@@ -54,7 +55,7 @@ class EventBlockBuilder(BlockBuilder):
         #given a unique id this can return the underying object
         self.pfevent = pfevent
 
-        # collate all the ids of tracks and clusters
+        # collate all the ids of tracks and clusters and, if needed, make history nodes
         uniqueids=[]
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
         if history_nodes is None :
@@ -79,9 +80,10 @@ class EventBlockBuilder(BlockBuilder):
         #find the original items and pass to the ruler to get the distance info
         obj1 = self.pfevent.get_object(id1)
         obj2 = self.pfevent.get_object(id2)
-        link_type, is_linked, distance = ruler(obj1,obj2)
+        link_type, is_linked, distance = ruler(obj1,obj2) #some redundancy in link_type as both distance and Edge make link_type
+                                                          #not sure which to get rid of
         
         #make the edge and add the edge into the dict 
-        return Edge(id1,id2, link_type,is_linked, distance) 
+        return Edge(id1,id2, is_linked, distance) 
         
     

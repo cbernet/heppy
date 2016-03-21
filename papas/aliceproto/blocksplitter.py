@@ -25,29 +25,22 @@ class BlockSplitter(BlockBuilder):
         
         super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes, block.pfevent)
         assert( isinstance(self.blocks,dict))
-        #we need to remove(or downgrade) either the original block node which has been split up, 
-        # however in some cases the "split" block may be identical to the original  block 
-        # in this case drop the new block
-        # nb check with colin about the edges being updated
-              
-        if (len(self.blocks) == 1) :
-            for b in self.blocks.itervalues() :
-                b.is_active = False
-                inactiveblocknode=self.history_nodes[b.uniqueid]
-                self.blocks={ block.uniqueid: block }
-                assert( isinstance(self.blocks,dict))
-        else :
-            inactiveblocknode=self.history_nodes[block.uniqueid]  
-            
-       
-        for node in history_nodes.itervalues() :
-            node.remove_all_links_to(inactiveblocknode)
             
         #the new blocks are subblocks of the original block
         #so keep note of this in the history (at least for now)
-        if (self.history_nodes != None and len(self.blocks)>1) :
+        if (self.history_nodes != None ) :
             for subblock in self.blocks.iteritems() :
-                self.history_nodes[block.uniqueid].add_child(history_nodes[subblock]) 
+                self.history_nodes[block.uniqueid].add_child(history_nodes[subblock])  
+                 
+        #set the original block to be inactive
+        block.is_active = False 
+        
+        # nb in some cases the new block will be the same as the original block although
+        # the edges will have changed (for python these changes will also be seen in
+        #the original block)
+        
+            
+
         
                 
         

@@ -9,19 +9,22 @@ class Edge(object):
        key : unique key value created from id1 and id2 (order of id1 and id2 is not important) 
        distance: distance between two elements
        is_linked : boolean T/F
-       link_type : not used right now
+       edge_type : "hcal_track" "ecal_track" etc
     '''
     
-    def __init__(self, id1, id2,  link_type, is_linked, distance): 
+    def __init__(self, id1, id2, is_linked, distance): 
         ''' The Edge knows the ids of its ends, the distance between the two ends and whether or not they are linked '''
         self.id1 = id1
         self.id2 = id2
         self.distance = distance
-        self.link_type = link_type
+        self.edge_type = self._edge_type()
         self.linked = is_linked
+        #for reconstruction we do not use hcal-ecal links nor hcal-hcal etc
+        if self.edge_type == "hcal_track" or self.edge_type =="ecal_track" :
+            is_linked =False
         self.key = Edge.make_key(id1,id2)
     
-    def edgetype(self):
+    def _edge_type(self):
         shortid1=Identifier.type_short_code(self.id1);
         shortid2=Identifier.type_short_code(self.id2);
         if shortid1 == shortid2 :

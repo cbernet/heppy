@@ -6,7 +6,9 @@ from heppy.papas.aliceproto.getobject import GetObject
 
 
 class PapasPFBlockBuilder(Analyzer):
-
+    ''' Module to construct blocks of connected clusters and tracks 
+        particles will then be reconstructed from elements of a block
+    '''
     def __init__(self, *args, **kwargs):
         super(PapasPFBlockBuilder, self).__init__(*args, **kwargs)
                 
@@ -16,9 +18,9 @@ class PapasPFBlockBuilder(Analyzer):
         
         distance = Distance()
     
-        blockbuilder = EventBlockBuilder( pfevent, distance)
+        blockbuilder = EventBlockBuilder(pfevent, distance)
         print blockbuilder
             
         event.blocks = blockbuilder.blocks
-        event.history_nodes= blockbuilder.history_nodes
+        event.history_nodes = blockbuilder.history_nodes
         

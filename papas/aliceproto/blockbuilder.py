@@ -17,18 +17,19 @@ class PFBlock(object):
                underlying objects given their uniqueid
      edges : Dictionary of all the edge cominations in the block dict{edgekey : Edge} 
              use  get_edge(id1,id2) to find an edge
-     is_active : bool true/false, set to false if the block is subdivided
+     is_active : bool true/false, set to false if the block is subsequently subdivided
      
      Usage:
-            block = PFBlock(element_ids,  edges, get_object) 
+            block = PFBlock(element_ids,  edges, pfevent) 
             for uid in block.element_uniqueids:
-                 print self.get_object(uid)).__str__() + "\n"
+                 print self.get_object(uid).__str__() + "\n"
             
      '''
     def __init__(self, element_ids, edges, pfevent): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
-            edges: is a dictionary of edges it must contain at least all needed edges
+            edges: is a dictionary of edges, it must contain at least all needed edges. It is not a problem if it contains
+                   additional edges as only the ones needed will be extracted
             pfevent: allows access to the underlying elements given a uniqueid (via get_object)
         '''
         #make a uniqueid for this block
@@ -78,7 +79,7 @@ class PFBlock(object):
         linked_edges=[]
         for edge in self.edges.itervalues():
             if edge.linked and (edge.id1==uniqueid or edge.id2==uniqueid ) :
-                if (edgetype != None) and (edge.edgetype() == edgetype ):
+                if (edgetype != None) and (edge.edge_type == edgetype ):
                     linked_edges.append(edge)
                 elif edgetype == None :
                     linked_edges.append(edge)

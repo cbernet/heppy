@@ -21,7 +21,7 @@ class PFObject(object):
 
     def __init__(self,pfobjecttype=Identifier.PFOBJECTTYPE.NONE):
    #def __init__(self):
-        super(PFObject, self).__init__(pfobjecttype)
+        super(PFObject, self).__init__()
 
         self.linked = []
         self.locked = False

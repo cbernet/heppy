@@ -1,7 +1,8 @@
 from heppy.papas.aliceproto.identifier import Identifier
 
 class PFEvent(object):
-    '''GetObject used to add a function get_object to an Event class
+    '''PFEvent is used to add a function get_object to an Event class
+       allowing a cluster trck etc to be returned given the uniqueid
     ''' 
     def __init__(self, event) :    
         self.tracks=event.tracks
