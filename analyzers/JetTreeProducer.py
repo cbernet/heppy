@@ -2,7 +2,7 @@
 
 from heppy.framework.analyzer import Analyzer
 from heppy.statistics.tree import Tree
-from heppy_fcc.analyzers.ntuple import *
+from heppy.analyzers.ntuple import *
 
 from ROOT import TFile
 
