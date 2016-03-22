@@ -54,9 +54,6 @@ from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder
 )
-
-# and then particle reconstruction from blocks 
-from papas_jet_tree_cff import papas_jet_tree_sequence
  
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -66,7 +63,9 @@ sequence = cfg.Sequence( [
     pfblocks,
     ] )
 if make_tree:
-    sequence.extend(papas_jet_tree_sequence) 
+    from jet_tree_cff import jet_tree_sequence
+    sequence.extend( jet_tree_sequence('gen_particles_stable', 
+                                       'papas_rec_particles') ) 
 
 
 config = cfg.Config(
