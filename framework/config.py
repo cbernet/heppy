@@ -92,7 +92,7 @@ class Analyzer( CFG ):
         '''
 
         self.class_object = class_object
-        self.instance_label = instance_label
+        self.instance_label = instance_label # calls _build_name
         self.verbose = verbose
         super(Analyzer, self).__init__(**kwargs)
 
@@ -125,6 +125,10 @@ class Analyzer( CFG ):
                     self.__class__.names = set()
                     self.__dict__['instance_label'] = self.instance_label
         return name 
+
+    def __repr__(self):
+        baserepr = super(Analyzer, self).__repr__()
+        return ':'.join([baserepr, self.name])
 
     
 class Service( CFG ):
