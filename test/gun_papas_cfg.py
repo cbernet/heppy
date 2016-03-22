@@ -8,6 +8,10 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
+
+make_tree = True
+
+
 comp = cfg.Component(
     'example',
     # files = 'example.root'
@@ -52,7 +56,8 @@ pfblocks = cfg.Analyzer(
 )
 
 # and then particle reconstruction from blocks 
-
+from papas_jet_tree_cff import papas_jet_tree_sequence
+ 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
@@ -60,7 +65,10 @@ sequence = cfg.Sequence( [
     papas,
     pfblocks,
     ] )
- 
+if make_tree:
+    sequence.extend(papas_jet_tree_sequence) 
+
+
 config = cfg.Config(
     components = selectedComponents,
     sequence = sequence,

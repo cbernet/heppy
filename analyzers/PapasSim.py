@@ -92,8 +92,6 @@ class PapasSim(Analyzer):
                 event.HCALclusters[2,id(element)]=element
             else:
                 print label 
-                assert(False)
-
-                
-        # setattr(event, self.recname, particles)
+                assert(False)        
+        setattr(event, self.recname, particles)
         
