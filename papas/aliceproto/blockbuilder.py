@@ -6,12 +6,14 @@ from heppy.papas.aliceproto.identifier import Identifier
 
 
 class PFBlock(object):
+    
+    
     ''' A Particle Flow Block stores a set of element ids that are connected to each other
      together with the edge data (distances) for each possible edge combination
      
      attributes: 
      
-     uniqueid : this blocks unique id generated from Identifier class
+     uniqueid : the block's unique id generated from Identifier class
      element_uniqueids : list of uniqueids of its elements
      pfevent : contains the tracks and clusters and a get_object method to allow access to the
                underlying objects given their uniqueid
@@ -25,6 +27,9 @@ class PFBlock(object):
                  print self.get_object(uid).__str__() + "\n"
             
      '''
+    
+    temp_block_count=0
+    
     def __init__(self, element_ids, edges, pfevent): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
@@ -44,11 +49,15 @@ class PFBlock(object):
         self.element_uniqueids =sorted(element_ids, key =lambda  x: Identifier.type_short_code(x) + str(x) )
         
         #extract the relevant parts of the complete set of edges and store this within the block
-        self.edges = dict()       
+        self.block_count = PFBlock.temp_block_count
+        PFBlock.temp_block_count+=1
+        
+        
+        self.edges=dict()
         for id1, id2 in itertools.combinations(self.element_uniqueids,2):
             key = Edge.make_key(id1,id2)
             self.edges[key] = edges[key]
-        print("finished block")    
+        #print("finished block")    
    
     def count_ecal(self):
         ''' Counts how many ecal cluster ids are in the block '''
@@ -83,7 +92,7 @@ class PFBlock(object):
                     linked_edges.append(edge)
                 elif edgetype == None :
                     linked_edges.append(edge)
-        linked_edges.sort( key = lambda x: x.distance)
+        linked_edges.sort( key = lambda x: (x.distance is None, x.distance))
         return linked_edges
                    
     def linked_ids(self,uniqueid,edgetype=None) :
@@ -108,6 +117,19 @@ class PFBlock(object):
             elemdetails += "      " + elemname + ":"  + self.pfevent.get_object(uid).__str__() + "\n"
             count = count + 1            
         return elemdetails + "      }"
+    
+    def short_name(self) :    
+        ''' constructs a short summary name for blocks allowing sorting based on contents'''
+        shortname = "" 
+        if self.count_ecal() :
+            shortname = shortname + "E" + str(self.count_ecal())
+        if self.count_hcal() :
+            shortname = shortname + "H" + str(self.count_hcal())
+        if self.count_tracks() :
+            shortname = shortname + "T" + str(self.count_tracks())
+        
+      
+        return shortname      
     
     def edge_matrix_string(self) :
         ''' produces a string containing the the lower part of the matrix of distances between elements
@@ -137,7 +159,10 @@ class PFBlock(object):
                 if (e1 == e2) :
                     rowstr += "       . "
                     break
-                rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) + " "
+                if self.get_edge(e1,e2).distance == None:
+                    rowstr   += "     ---" + " "
+                else :
+                    rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) + " "
             matrixstr += "{:>11}".format(rowname) + rowstr + "\n"
             countrow += 1        
     
@@ -151,14 +176,15 @@ class PFBlock(object):
     
     def __str__(self):
         ''' Block description which includes list of elements and a matrix of distances  '''
-        descrip = str('\nid={blockid}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
-            blockid      = self.uniqueid,
+        descrip = str('\n{shortname:>12} id={blockid:4.0f}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
+            shortname    = self.short_name(),        
+            blockid      = self.block_count, #self.uniqueid,
             count_ecal   = self.count_ecal(),
             count_hcal   = self.count_hcal(),
             count_tracks = self.count_tracks() )
         ) 
-        descrip += self.elements_string()        
-        descrip += "\n" + self.edge_matrix_string()     
+        #descrip += self.elements_string()        
+        #descrip += "\n" + self.edge_matrix_string()     
         return descrip
     
     def __repr__(self):
@@ -216,7 +242,7 @@ class BlockBuilder(object):
         # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict( (idt, Node(idt)) for idt in ids ) 
         
-        for edge in edges.itervalues() :
+        for edge in edges.itervalues():
             #add linkage info into the nodes dictionary
             if  edge.linked: #this is actually an undirected link - OK for undirected searches 
                 self.nodes[edge.id1].add_child(self.nodes[edge.id2])            
@@ -233,11 +259,11 @@ class BlockBuilder(object):
             to work out which elements are connected
             Each set of connected elements will be used to make a new PFBlock
         ''' 
-        for blocknodelist in DAGFloodFill(self.nodes).blocks :
+        for blocknodelist in DAGFloodFill(self.nodes).blocks:
             element_ids = [] 
             # NB the nodes that are found by FloodFill are the Nodes describing links between items
             # we want the ids of these nodes
-            for node in blocknodelist :
+            for node in blocknodelist:
                 element_ids.append(node.get_value())
     
             #now we can make the block
@@ -247,18 +273,23 @@ class BlockBuilder(object):
             self.blocks[block.uniqueid] = block        
             
             #make a node for the block and add into the history Nodes
-            if (self.history_nodes != None) :
+            if (self.history_nodes != None):
                 blocknode = Node(block.uniqueid)
                 self.history_nodes[block.uniqueid] = blocknode
                 #now add in the links between the block elements and the block into the history_nodes
-                for elemid in block.element_uniqueids :
+                for elemid in block.element_uniqueids:
                     self.history_nodes[elemid].add_child(blocknode)            
         
-                
+            
     def __str__(self):
+        
+        #sortedkeys = sorted(self.blocks.items(), key=lambda (k,v): len(v.element_uniqueids), v.shortname(), reverse=True)
+        #self.element_uniqueids =sorted(element_ids, key =lambda  x: Identifier.type_short_code(x) + str(x) )
+       
         descrip = "{ "
-        for block in self.blocks.iteritems() :
-            descrip = descrip + block.__str__()
+        #for block in self.blocks.iteritems():
+        for block in   sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):            
+            descrip = descrip + self.blocks[block].__str__()
         descrip = descrip + "}\n"
         return descrip  
     

@@ -24,7 +24,7 @@ class EventBlockBuilder(BlockBuilder):
         
         Usage example:
 
-            builder = EventBlockBuilder(pfevent,ruler)
+            builder = EventBlockBuilder(pfevent, ruler)
             for b in builder.blocks.itervalues() :
                 print b
     '''
@@ -58,12 +58,13 @@ class EventBlockBuilder(BlockBuilder):
         # collate all the ids of tracks and clusters and, if needed, make history nodes
         uniqueids=[]
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
-        if history_nodes is None :
+        
+        if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
         edges = dict()
-        for id1, id2 in itertools.combinations(uniqueids,2) :
+        for id1, id2 in itertools.combinations(uniqueids,2):
             edge=self._make_edge(id1,id2, ruler)
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge

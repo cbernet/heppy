@@ -9,6 +9,12 @@ from ROOT import TVector3, TLorentzVector
 import math
 import pprint
 
+#AJRTODO check about distance for merging and whether this means that can't have more than one ecal cluster in a block (anything close enough to be linked is merged)
+# Does this apply to hcal also?
+#look at mergign
+#Tidy / document code and commit it
+
+
 class PFReconstructor(object):
     ''' The reconstructor takes blocks of elements
         and attempts to reconstruct particles
@@ -18,22 +24,27 @@ class PFReconstructor(object):
              hcal  -> neutral hadron
              ecal  -> photon
         connected elements:
-             has hcal and has a track
-                -> add up all connected tracks, turn each track into a charged hadron
-                -> add up all ecal energies
-                -> if track energies is greater than hcal energy then turn the missing energies into an ecal (photon)
-                      NB this links the photon to the hcal rather than the ecals
-                -> if track energies are less than hcal then make a neutral hadron with rest of hcal energy and turn all ecals into photons
+             an hcal with one or more connected tracks
+                -> add up all connected track energies, turn each track into a charged hadron
+                -> add up all ecal energies connected to the above tracks
+                -> if excess = hcal energy + ecal energies - track energies > 0
+                       and excess < ecal energies
+                           then turn the excess into an photon
+                -> if excess > 0 and excess > ecal energies
+                          make a neutral hadron with excess- ecal energies
+                          make photon with ecal energies
               has hcal but no track (nb by design there will be no attached ecals because hcal ecal links have been removed)
                 -> make a neutral hadron
-              has hcals
+              has more than one hcal
                 -> each hcal is treated using rules above
               has track(s) 
                 -> each track is turned into a charged hadron
               has track(s) and  ecal(s)
-                -> the tracks are turned into charged hadrons, the ecals are marked as locked but energy is not checked and no photons are made
+                -> the tracks are turned into charged hadrons, the ecals are marked as locked but energy is not checked 
+                and no photons are made
+                TODO handle case where there is more energy in ecals than in the track and make some photons
               has only ecals 
-                -> TODO/appears not to be used (has this already been removed in earlier steps?)
+                -> TODO cehck if this can occur (if so make into photons)
         
              
          If history_nodes are provided then the particles are linked into the exisiting history
@@ -47,6 +58,9 @@ class PFReconstructor(object):
     def __init__(self,event): # not sure about what the arguments should be here
         ''' Event should contain blocks and optionally history_nodes'''
         self.blocks=event.blocks
+        
+        print len(self.blocks)
+        
         self.unused = []
         self.particles = [] 
         
@@ -59,18 +73,30 @@ class PFReconstructor(object):
         
         # edit the links so that each track will end up linked to at most one hcal
         # then recalculate the blocks
-        for block in self.blocks.itervalues():   
-            splitblocks = self.simplified_blocks(block,event.history_nodes)
-            if splitblocks!=None :
-                self.blocks.update(splitblocks)
+        splitblocks=dict()        
+        for block in sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):   
+            newblocks=self.simplified_blocks(self.blocks[block],event.history_nodes)
+            if newblocks != None:
+                splitblocks.update( newblocks)
+                #print self.blocks[block], "\nnewblock", newblocks
+        if len(splitblocks):
+            self.blocks.update(splitblocks)
             
         #reconstruct each of the resulting blocks        
-        for block in self.blocks.itervalues():  
-            if block.is_active: # when blocks are split the original gets deactivated
-                self.particles.extend(self.reconstruct_block(block))
+        for b in sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):    
+            block=self.blocks[b]
+            if block.is_active: # when blocks are split the original gets deactivated                
+                newparticles=self.reconstruct_block(block)                
+                #print block, "\nparticles"
+                #for p in newparticles:
+                    #print p
+                self.particles.extend(newparticles)
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
-        if len(self.unused)> 0 :
-            print unused
+                
+        #check if anything is unused
+        if len(self.unused) :
+            print "UNUSED", self.unused
+            
         print(str(self))        
         
  

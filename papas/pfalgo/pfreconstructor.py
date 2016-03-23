@@ -26,11 +26,22 @@ class PFReconstructor(object):
         for group_id, subgroups in all_subgroups.iteritems():
             del links.groups[group_id]
             links.groups.update(subgroups)
+        
+        count=countg=0
         for group_id, group in links.groups.iteritems():
             self.log.info( "group {group_id} {group}".format(
                 group_id = group_id,
                 group = group) ) 
-            self.particles.extend( self.reconstruct_group(group) )
+            #alice debug 
+            #if len(group)==2:
+                #pass
+            particles=self.reconstruct_group(group)
+            #assert(len(particles))
+            #count =count+len(particles)
+            #countg=countg+1
+            #print group_id, len(group),len(particles), count, countg
+            self.particles.extend( particles )
+        #print(len(self.particles))
         self.unused = [elem for elem in links.elements if not elem.locked]
         self.log.info("Particles:")
         self.log.info(str(self))

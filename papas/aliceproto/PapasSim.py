@@ -15,7 +15,7 @@ from heppy.papas.pfalgo.pfinput import PFInput
 
 from ROOT import TLorentzVector, TVector3
 
-        
+
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
 
@@ -56,13 +56,13 @@ class PapasSim(Analyzer):
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
-        
+
     def init_display(self):
         self.display = Display(['xy','yz'])
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
-        
+
     def process(self, event):
         event.simulator = self 
         if self.is_display:
@@ -78,26 +78,32 @@ class PapasSim(Analyzer):
                                key = lambda ptc: ptc.e(), reverse=True)
         particles = sorted( self.simulator.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, self.simname, simparticles)
-        pfinput = PFInput(simparticles)
+        #excludes muons and electrons         
+        origrecparticles = sorted( self.simulator.pfsequence.pfreco.particles,
+                                   key = lambda ptc: ptc.e(), reverse=True)
+        setattr(event, "orig_rec_particles",origrecparticles)
+
+        #for blockbuilder to get merged clusters and to compare with the non-electron etc by passed particles
+        setattr(event,self.simname,simparticles) #check
+        pfinput = PFInput(simparticles) #this is pre cluster merging ....
+        pfinput = PFInput(origrecparticles)
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
-        event.baseline_particles = particles
-        for label, element in pfinput.elements.iteritems() :
-            if label == 'tracker':
-                for e in element: 
-                    event.tracks[e.uniqueid]=e 
-            elif label == 'ecal_in':
-                for e in element: 
-                    event.ecal_clusters[e.uniqueid]=e
-            elif label == 'hcal_in':
-                for e in element: 
-                    event.hcal_clusters[e.uniqueid]=e
-            else :            
-                print label 
-                assert(False)
+        event.baseline_particles = origrecparticles
 
-                
-        # setattr(event, self.recname, particles)
+        for element in self.simulator.pfsequence.elements :
+            if element.__class__.__name__ == 'SmearedTrack': 
+                event.tracks[element.uniqueid]=element 
+            elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
+                event.ecal_clusters[element.uniqueid]=element
+            elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
+                event.hcal_clusters[element.uniqueid]=element
+            else :            
+                print element.__class__.__name__ 
+                assert(False)
+        #print "number of elements for papas blocks", len(event.ecal_clusters) , len(event.hcal_clusters),len(event.tracks),len(event.ecal_clusters) + len(event.hcal_clusters) +len(
+        #    event.tracks)        
+        pass
+
         

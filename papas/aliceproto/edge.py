@@ -16,35 +16,46 @@ class Edge(object):
         ''' The Edge knows the ids of its ends, the distance between the two ends and whether or not they are linked '''
         self.id1 = id1
         self.id2 = id2
+        
         self.distance = distance
         self.edge_type = self._edge_type()
         self.linked = is_linked
-        #for reconstruction we do not use hcal-ecal links nor hcal-hcal etc
-        if self.edge_type == "hcal_track" or self.edge_type =="ecal_track" :
+        
+        #should not have ecal/ecal and hcal/hcal(I think) because of merging
+        #if self.edge_type=="ecal_ecal" :
+        #    assert (not is_linked)
+        #if self.edge_type=="hcal_hcal" :
+        #    assert (not is_linked)  
+            
+        #for reconstruction we do not use ecal-hcal links 
+        if self.edge_type == "ecal_hcal":
             is_linked =False
         self.key = Edge.make_key(id1,id2)
     
     def _edge_type(self):
         shortid1=Identifier.type_short_code(self.id1);
         shortid2=Identifier.type_short_code(self.id2);
-        if shortid1 == shortid2 :
-            if shortid1 == "H" :
+        if shortid1 == shortid2:
+            if shortid1 == "H":
                 return "hcal_hcal"
-            elif shortid1 == "E" :
+            elif shortid1 == "E":
                 return "ecal_ecal"
-            elif shortid1 == "T" :
+            elif shortid1 == "T":
                 return "track_track"           
-        elif (shortid1=="H" and shortid2 == "T" or shortid1=="T" and shortid2 == "H") :
+        elif (shortid1=="H" and shortid2 == "T" or shortid1=="T" and shortid2 == "H"):
             return "hcal_track"
-        elif (shortid1=="E" and shortid2 == "T" or shortid1=="T" and shortid2 == "E") :
+        elif (shortid1=="E" and shortid2 == "T" or shortid1=="T" and shortid2 == "E"):
             return "ecal_track"  
-        elif (shortid1=="E" and shortid2 == "E" or shortid1=="H" and shortid2 == "E") :
-            return "ecal_ecal"  
+        elif (shortid1=="E" and shortid2 == "H" or shortid1=="H" and shortid2 == "E"):
+            return "ecal_hcal"  
         
         return "unknown"
 
     def __str__(self):
-        descrip = "Edge: " + str(self.id1) + " - "+ str(self.id2)  + "=" + str(self.distance)+  " (" + str( self.linked) + " ) "
+        if self.distance ==None:
+            descrip = "Edge: " + str(self.id1) + " - "+ str(self.id2)  + "= None (" + str( self.linked) + " ) "
+        else :
+            descrip = "Edge: " + str(self.id1) + " - "+ str(self.id2)  + "=" + str(self.distance)+  " (" + str( self.linked) + " ) "
         return descrip
     
     def __repr__(self):

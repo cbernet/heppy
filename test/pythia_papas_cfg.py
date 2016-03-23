@@ -12,47 +12,35 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-    # files = 'example.root'
-    files = [None]
+    files = [
+        'ee_ZH_Zmumu_Hbb.root'
+    ]
 )
 selectedComponents = [comp]
 
-
-#TODO colin debug this! 
-from heppy.analyzers.Gun import Gun
+from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
-    Gun,
-    pdgid = 130,
-    thetamin = -0.5,
-    thetamax = 0.5,
-    ptmin = 10,
-    ptmax = 10,
-    flat_pt = True,
-) 
-#source = cfg.Analyzer(
-    #Gun,
-    #pdgid = 211,
-    #thetamin = -0.5,
-    #thetamax = 0.5,
-    #ptmin = 10,
-    #ptmax = 10,
-    #flat_pt = True,
-#) 
+    Reader,
+    mode = 'ee',
+    gen_particles = 'GenParticle',
+)
 
-#source = cfg.Analyzer(
-    #Gun,
-    #pdgid = 22,
-    #thetamin = -0.5,
-    #thetamax = 0.5,
-    #ptmin = 10,
-    #ptmax = 10,
-    #flat_pt = True,
-#) 
+# Use a Filter to select stable gen particles for simulation
+# from the output of "source" 
+# help(Filter) for more information
+from heppy.analyzers.Filter import Filter
+gen_particles_stable = cfg.Analyzer(
+    Filter,
+    output = 'gen_particles_stable',
+    # output = 'particles',
+    input_objects = 'gen_particles',
+    filter_func = lambda x : x.status()==1 and x.pdgid() not in [12,14,16] and x.pt()>0.1
+)
 
 from ROOT import gSystem
-# gSystem.Load("libdatamodelDict")
-# from EventStore import EventStore as Events
-from heppy.framework.eventsgen import Events
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
+#from heppy.framework.eventsgen import Events
 
 from heppy.papas.aliceproto.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
@@ -63,6 +51,7 @@ papas = cfg.Analyzer(
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
     rec_particles = 'rec_particles',
+    display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
 )
@@ -71,6 +60,7 @@ from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder
 )
+
 
 from heppy.papas.aliceproto.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
@@ -88,6 +78,7 @@ particlescomparer = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
+    gen_particles_stable,
     papas,
     pfblocks,
     pfreconstruct,
@@ -100,6 +91,9 @@ config = cfg.Config(
     services = [],
     events_class = Events
 )
+
+
+
 
 if __name__ == '__main__':
     import sys
@@ -135,6 +129,7 @@ if __name__ == '__main__':
             simulation = ana
     display = getattr(simulation, 'display', None)
     simulator = getattr(simulation, 'simulator', None)
+    
     if simulator: 
         detector = simulator.detector
     if iev is not None:

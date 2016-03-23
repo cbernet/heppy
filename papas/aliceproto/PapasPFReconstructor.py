@@ -13,11 +13,8 @@ class PapasPFReconstructor(Analyzer):
     def process(self, event):
         
         #pfevent=PFEvent(event) #or instead pass hcal, ecal ,track visibly? or somehow add the get_object to event?
-        
-        
-    
         reconstructed = PFReconstructor(event)
-        event.alice_particles= sorted( reconstructed.particles,
+        event.reconstructed_particles= sorted( reconstructed.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
         event.history_nodes=reconstructed.history_nodes
         pass

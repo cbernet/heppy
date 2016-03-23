@@ -7,7 +7,7 @@ class BlockSplitter(BlockBuilder):
         Usage example:
 
             splitter = BlockSplitter(block, unlink_edges)
-            for b in splitter.blocks.itervalues() :
+            for b in splitter.blocks.itervalues():
                 print b
     '''
     def __init__(self,  block, unlink_edges, history_nodes=None):
@@ -18,9 +18,9 @@ class BlockSplitter(BlockBuilder):
         history_nodes : an optional dictionary of history nodes which describes the parent child links between elements
     
         '''
-        for edge in unlink_edges :
-            print len(unlink_edges)
-            print edge
+        for edge in unlink_edges:
+            #print len(unlink_edges)
+            #print edge
             edge.linked = False
         
         super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes, block.pfevent)
@@ -28,16 +28,18 @@ class BlockSplitter(BlockBuilder):
             
         #the new blocks are subblocks of the original block
         #so keep note of this in the history (at least for now)
-        if (self.history_nodes != None ) :
-            for subblock in self.blocks.iteritems() :
-                self.history_nodes[block.uniqueid].add_child(history_nodes[subblock])  
+        # nb in some cases the new block will be the same as the original block although
+        # the edges will have changed (for python these changes will also be seen in
+        # the original block)        
+        if (self.history_nodes != None ):
+            for subblockid in self.blocks.keys():
+                #print "split" , block.uniqueid, subblockid
+                self.history_nodes[block.uniqueid].add_child(history_nodes[subblockid])  
                  
         #set the original block to be inactive
         block.is_active = False 
         
-        # nb in some cases the new block will be the same as the original block although
-        # the edges will have changed (for python these changes will also be seen in
-        #the original block)
+    
         
             
 

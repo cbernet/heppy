@@ -17,6 +17,14 @@ on which it operates and without modifying the objects structures (eg a visited 
 owned by the algorithm)
 
 The visitor pattern also allows the visit method to dynamically depend on both the object and the visitor
+
+example of setting up Nodes:
+        self.nodes = dict( (i, Node(i) ) for i in range(10) 
+        self.nodes[0].add_child(self.nodes[1])
+        self.nodes[0].add_child(self.nodes[2])
+traversing nodes:        
+        BFS = BreadthFirstSearchIterative(self.nodes[0],"undirected")
+        see alos test_DAG.py
 '''
 
 
@@ -31,6 +39,8 @@ class Node(object):
     def __init__(self, value):
         '''constructor. 
         value can be anything, even a complex object. 
+        example:
+           newnode=Node(uniqueid)
         '''
         self.value = value   # wrapped object
         self.children = []
@@ -56,6 +66,8 @@ class Node(object):
         self.undirected_links.append(parent)
         
     def remove_all_links_to(self,other):
+        #checks for other in the list of children and parents and
+        #removes any links from this and from other
         if (other in self.parents) :
             self.parents.remove(other)
             other.children.remove(self)
@@ -65,7 +77,7 @@ class Node(object):
 
     def get_linked_nodes(self, type):  #ask colin, I imagine there is a more elegant Python way to do this
                                        #alice todo make type a enumeration and not a string?
-        '''retunr a list of the linked children/parents/undirected links'''
+        '''return a list of the linked children/parents/undirected links'''
         if (type is "children"):
             return self.children
         if(type is "parents"):
