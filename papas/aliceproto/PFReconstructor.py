@@ -1,6 +1,6 @@
 from heppy.papas.aliceproto.identifier import Identifier
 from heppy.papas.aliceproto.DAG import Node
-from heppy.papas.aliceproto.blocksplitter import BlockSplitter
+from heppy.papas.aliceproto.BlockSplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import Particle
@@ -9,8 +9,7 @@ from ROOT import TVector3, TLorentzVector
 import math
 import pprint
 
-#AJRTODO check about distance for merging and whether this means that can't have more than one ecal cluster in a block (anything close enough to be linked is merged)
-# Does this apply to hcal also?
+#AJRTODO 
 #look at mergign
 #Tidy / document code and commit it
 
@@ -102,6 +101,7 @@ class PFReconstructor(object):
                 #for p in newparticles:
                 #    print p
                 self.particles.extend(newparticles)
+
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
         #check if anything is unused

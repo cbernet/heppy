@@ -1,10 +1,10 @@
 import itertools
-from blockbuilder import BlockBuilder
+from BlockBuilder import BlockBuilder
 from edge import Edge
 from DAG import Node
 
 class EventBlockBuilder(BlockBuilder):
-    ''' EventBlockBuilder takes a set of particle flow elements (clusters,tracks etc)
+    ''' EventBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
         and uses the distances between elements to construct a set of blocks
         Each element will end up in one (and only one block)
         Blocks retain information of the elements and the distances between elements
@@ -59,6 +59,7 @@ class EventBlockBuilder(BlockBuilder):
         uniqueids=[]
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
         
+        self.history_nodes=history_nodes
         if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
@@ -75,6 +76,13 @@ class EventBlockBuilder(BlockBuilder):
     
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items
+            ruler is something that measures distance between two objects eg track and hcal
+            (see Distance class for example)
+            it should take the two objects as arguments and return a tuple
+            of the form
+                link_type = 'ecal_ecal', 'ecal_track' etc
+                is_link = true/false
+                distance = float
             an edge object is returned which contains the link_type, is_link (bool) and distance between the 
             objects. 
         '''

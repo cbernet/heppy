@@ -9,9 +9,11 @@ class PapasParticlesComparer(Analyzer):
     def __init__(self, *args, **kwargs):
         super(PapasParticlesComparer, self).__init__(*args, **kwargs)
                 
-    def process(self, event):
-        ''' Event must contain baseline_particles (the original reconstruction from simulation)
-            and reconstructed_particles made from the new BlockBuilder approach
+    def process(self, event): #think about if argument is correct
+        ''' calls a particle comparer to compare two lists of pre-sorted particles
+        arguments
+            event: must contain baseline_particles (the original reconstruction from simulation)
+                   and reconstructed_particles made from the new BlockBuilder approach
         '''
     
         ParticlesComparer(event.reconstructed_particles,event.baseline_particles)

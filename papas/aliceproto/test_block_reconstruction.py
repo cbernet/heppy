@@ -3,9 +3,9 @@ from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
 from heppy.papas.aliceproto.identifier import Identifier
 from heppy.papas.aliceproto.getobject import GetObject
 from edge import Edge
-from eventblockbuilder import EventBlockBuilder
-from blocksplitter import BlockSplitter
-from blockbuilder import PFBlock as realPFBlock
+from heppy.papas.aliceproto.EventBlockBuilder import EventBlockBuilder
+from heppy.papas.aliceproto.BlockSplitter import BlockSplitter
+from heppy.papas.aliceproto.BlockBuilder import PFBlock as realPFBlock
 
 
 class Cluster(object):
@@ -25,6 +25,9 @@ class Cluster(object):
             assert false
         self.layer = layer
         self.id = id
+
+    def __repr__(self):
+        return "cluster:" +  str(self.id) + " :" + str(self.uniqueid)
         
 class Track(object):
     ''' Simple Track class for test case
@@ -36,7 +39,10 @@ class Track(object):
         self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.TRACK)
         self.id = id
         self.layer = 'tracker'
-
+        
+    def __repr__(self):
+        return "track:"+  str(self.id) + " :"+  str(self.uniqueid)
+        
 class Particle(object):
     ''' Simple Particle class for test case
         Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a ppdgid
@@ -46,10 +52,13 @@ class Particle(object):
             pdgid is particle id eg 22 for photon
         '''
         self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.PARTICLE)
+        print "particle: ",self.uniqueid," ",id
         self.pdgid = pdgid
         self.id = id
         #self.type = PFType.PARTICLE
-        
+    
+    def __repr__(self):
+        return "particle:"+  str(self.id) + " :"+  str(self.uniqueid)        
 class ReconstructedParticle(Particle):
     ''' Simple Particle class for test case
         Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a ppdgid
@@ -62,7 +71,8 @@ class ReconstructedParticle(Particle):
         self.pdgid = pdgid
         self.id = id
         
-
+    def __repr__(self):
+        return "reconstructed particle:"+  str(self.id) + " :"+  str(self.uniqueid)    
 
 class Event(object):
     ''' Simple Event class for test case
@@ -287,11 +297,12 @@ class TestBlockReconstruction(unittest.TestCase):
         
         event  =  Event(distance)
         sim  =  Simulator(event)
+        event=sim.event
         
-        pfblocker = EventBlockBuilder( event, distance,  event.history_nodes)
+        pfblocker = EventBlockBuilder( event, distance, event.history_nodes)
         
         event.blocks = pfblocker.blocks
-        event.history_nodes = pfblocker.history_nodes
+        #event.history_nodes = pfblocker.history_nodes
         
         
         ##test block splitting
@@ -329,7 +340,7 @@ class TestBlockReconstruction(unittest.TestCase):
         #1b WHAT BLOCK Does it belong to   
         x = None
         for id in ids:
-            if Identifier.isBlock(id) :
+            if Identifier.isBlock(id) and event.blocks[id].short_name()== "E1H1T1" :
                 x =  event.blocks[id]
         print x       
                 
@@ -337,8 +348,8 @@ class TestBlockReconstruction(unittest.TestCase):
         pids = [] 
         for n in x.element_uniqueids:
             pids.append(n)              
-        ids  = sorted(ids)[0:4] # don't include the block or rec particles as its tricky to check as order of particle manufacture varies
-        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202),sim.UID(302)])
+        ids  = sorted(pids)
+        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202)])
         self.assertEqual(ids,expected_ids )
     
         #(2) use edge nodes to see what is connected
@@ -352,16 +363,20 @@ class TestBlockReconstruction(unittest.TestCase):
         #(3) Give me all blocks with  one track:
         blockids = []
         for b in event.blocks.itervalues() :
-            print b
+            if b.count_tracks()   :        
+                print b
         
         #(4) Give me all simulation particles attached to each reconstructed particle
+        
         for rp in event.reconstructed_particles :
+            ids=[]
             BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"parents")
-            print "Rec particle: ", event.reconstructed_particles[rp].pdgid, " from "            
+            print "Rec particle: ", event.reconstructed_particles[rp], " from "            
+                  
             for n in BFS.result :
-                if (Identifier.isParticle(n.get_value())) :
-                    ids.append(n.get_value())
-                    print "      sim particle: ", event.sim_particles[n.get_value()].pdgid 
+                z=n.get_value()
+                if (Identifier.is_particle(z)) :
+                    print "      sim particle: ", event.sim_particles[z]
         
         pass       
         # Give me all rec particles attached to each sim particle

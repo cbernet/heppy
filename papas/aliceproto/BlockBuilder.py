@@ -24,7 +24,7 @@ class PFBlock(object):
      Usage:
             block = PFBlock(element_ids,  edges, pfevent) 
             for uid in block.element_uniqueids:
-                 print self.get_object(uid).__str__() + "\n"
+                 print pfevent.get_object(uid).__str__() + "\n"
             
      '''
     
@@ -112,19 +112,17 @@ class PFBlock(object):
         ''' Construct a string descrip of each of the elements in a block
         The elements are given a short name E/H/T according to ecal/hcal/track
         and then sequential numbering starting from 0, this naming is also used in the 
-        matric of distances. The full unique id is also give.
+        matric of distances. The full unique id is also given.
         For example:-
         elements: {
-      E0:1104299360912: :SmearedCluster : ecal_in       4.62  0.48 -2.59
-      H1:2203769367952: :SmearedCluster : hcal_in       5.85  0.48 -2.56
-      T2:3303280995664: :SmearedTrack   :   14.36   12.77  0.47 -2.65
-      T3:3303321490192: :SmearedTrack   :    6.56    5.79  0.49 -2.71
-      }'''
+        E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
+        H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
+        T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
+        }
+        '''
         count = 0
         elemdetails = "\n      elements: {\n"  
         for uid in self.element_uniqueids:
-            #elemname = Identifier.type_short_code(uid) +str(count) + ":" + str(uid)  + ": "
-            #elemdetails += "      " + elemname + ":"  + self.pfevent.get_object(uid).__str__() + "\n"
             elemdetails += "      {shortname}{count}:{uid:d}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
                                                                            count=count,
                                                                            uid=uid,
@@ -149,7 +147,7 @@ class PFBlock(object):
     
     def edge_matrix_string(self) :
         ''' produces a string containing the the lower part of the matrix of distances between elements
-        elements are ordered as ECAL(E), HCAL(H), Track(T) and by edgekey
+        elements are ordered as ECAL(E), HCAL(H), Track(T) 
         for example:-
         
         distances:
@@ -184,8 +182,10 @@ class PFBlock(object):
                 if (e1 == e2) :
                     rowstr += "       . "
                     break
-                if self.get_edge(e1,e2).distance == None:
+                if self.get_edge(e1,e2).distance ==None:
                     rowstr   += "     ---" + " "
+                if self.get_edge(e1,e2).linked == False:
+                    rowstr   += "     xxx" + " "                
                 else :
                     rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) + " "
             matrixstr += "{:>11}".format(rowname) + rowstr + "\n"
@@ -200,7 +200,20 @@ class PFBlock(object):
         return self.edges[Edge.make_key(id1,id2)]
     
     def __str__(self):
-        ''' Block description which includes list of elements and a matrix of distances  
+        ''' Block description which includes list of elements and a matrix of distances 
+        Example:
+        block: E1H1T1       id=  39 :uid= 6601693505424: ecals = 1 hcals = 1 tracks = 1
+            elements: {
+            E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
+            H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
+            T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
+            }
+            distances:
+                        E0       H1       T2
+               E0       . 
+               H1  0.0796        . 
+               T2  0.0210   0.0000        . 
+            }
         '''
         descrip = str('\nblock: {shortname:<12} id={blockid:4.0f} :uid= {uid}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        

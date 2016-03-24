@@ -34,6 +34,12 @@ class Node(object):
     each node has an arbitrary number of children and parents
     There are no loops in the directed DAG
     But there may be loops in the undirected version of the DAG
+    
+    attributes:
+       value = the item of interest (around which the node is wrapped)
+       children = list of child nodes
+       parents  = list of parent node
+       undirected_links = combined list of parents and children
     '''
     
     def __init__(self, value):
@@ -47,7 +53,6 @@ class Node(object):
         self.parents = []
         self.undirected_links = [] #the union of the parents and children (other implementations possible)
         
-
     def get_value(self):
         return self.value
     
@@ -65,15 +70,16 @@ class Node(object):
         self.parents.append(parent)
         self.undirected_links.append(parent)
         
-    def remove_all_links_to(self,other):
-        #checks for other in the list of children and parents and
-        #removes any links from this and from other
-        if (other in self.parents) :
-            self.parents.remove(other)
-            other.children.remove(self)
-        if (other in self.children) :
-            self.children.remove(other)
-            other.parents.remove(self)        
+    def remove_all_links_to(self,toremove):
+        '''checks for element toremove in the list of children and parents and
+           removes any links from both this and from the toremove node
+        '''
+        if (toremove in self.parents) :
+            self.parents.remove(toremove)
+            toremove.children.remove(self)
+        if (toremove in self.children) :
+            self.children.remove(toremove)
+            toremove.parents.remove(self)        
 
     def get_linked_nodes(self, type):  #ask colin, I imagine there is a more elegant Python way to do this
                                        #alice todo make type a enumeration and not a string?
@@ -87,10 +93,7 @@ class Node(object):
 
     def __repr__(self):
         '''unique string representation'''
-        return str('node: {val} {children}'.format(
-            val = self.value,
-            children = self.children
-            ) )
+        return self.__str__()
 
     def __str__(self):
             '''unique string representation'''         

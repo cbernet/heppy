@@ -14,7 +14,7 @@ class ParticlesComparer(object):
         assert(len(self.A)==len(self.B))
         
         for i in range(len(self.A)):
-            assert_allclose(self.A[i].pdgid(),  self.B[i].pdgid(),   rtol=1e-8, atol=0.0000001 )
+            assert_allclose(self.A[i].pdgid(),  self.B[i].pdgid(),  rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].q(),      self.B[i].q(),      rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].p4().M(), self.B[i].p4().M(), rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].p4().X(), self.B[i].p4().X(), rtol=1e-8, atol=0.0000001 )

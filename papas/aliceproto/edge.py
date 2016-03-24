@@ -13,7 +13,12 @@ class Edge(object):
     '''
     
     def __init__(self, id1, id2, is_linked, distance): 
-        ''' The Edge knows the ids of its ends, the distance between the two ends and whether or not they are linked '''
+        ''' The Edge knows the ids of its ends, the distance between the two ends and whether or not they are linked 
+           id1 : element1 uniqueid generated from Identifier class
+           id2 : element2 uniqueid generated from Identifier class
+           is_linked : boolean T/F
+           distance: distance between two elements
+        '''
         self.id1 = id1
         self.id2 = id2
         
@@ -33,25 +38,34 @@ class Edge(object):
         self.key = Edge.make_key(id1,id2)
     
     def _edge_type(self):
+        ''' produces an edge_type string eg "ecal_track"
+            the order of id1 an id2 does not matter, 
+            eg for one track and one ecal the type will always be "ecal_track" (and never be a "track_ecal")         
+        '''
+        #consider creating an ENUM instead for the edge_type
         shortid1=Identifier.type_short_code(self.id1);
         shortid2=Identifier.type_short_code(self.id2);
         if shortid1 == shortid2:
-            if shortid1 == "H":
+            if shortid1 == "f":
                 return "hcal_hcal"
-            elif shortid1 == "E":
+            elif shortid1 == "e":
                 return "ecal_ecal"
-            elif shortid1 == "T":
+            elif shortid1 == "t":
                 return "track_track"           
-        elif (shortid1=="H" and shortid2 == "T" or shortid1=="T" and shortid2 == "H"):
+        elif (shortid1=="h" and shortid2 == "t" or shortid1=="t" and shortid2 == "h"):
             return "hcal_track"
-        elif (shortid1=="E" and shortid2 == "T" or shortid1=="T" and shortid2 == "E"):
+        elif (shortid1=="e" and shortid2 == "t" or shortid1=="t" and shortid2 == "e"):
             return "ecal_track"  
-        elif (shortid1=="E" and shortid2 == "H" or shortid1=="H" and shortid2 == "E"):
+        elif (shortid1=="e" and shortid2 == "h" or shortid1=="h" and shortid2 == "h"):
             return "ecal_hcal"  
         
         return "unknown"
 
     def __str__(self):
+        ''' String descriptor of the edge
+             for example:
+             Edge: 3303164520272<->3303164436240 = No distance (link = False) 
+        '''
         if self.distance ==None:
             descrip = 'Edge: {id1:d}<->{id2:d} = No distance (link = {linked}) '.format(id1=self.id1,id2=self.id2,linked=self.linked)
         else :

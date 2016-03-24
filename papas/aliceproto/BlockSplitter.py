@@ -1,4 +1,5 @@
-from blockbuilder import BlockBuilder
+from BlockBuilder import BlockBuilder
+
 class BlockSplitter(BlockBuilder):
     ''' BlockSplitter takes a block of particle flow element ids (clusters,tracks etc)
         and unlinks any specified edges. It then recalculates a new set of sub-blocks

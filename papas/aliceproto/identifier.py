@@ -1,18 +1,21 @@
 # simplified class to provide a unique identifier for each object
 # could also add more information into the identifier as needed
 class Identifier(long):
-    '''the Idenfifier is a unquiid that contains encoded information about an element
+    '''the Identififier is a uniqueid that contains encoded information about an element
            for example, given an indentifier, we can determine that the element is an ecal_cluster
            and retrieve the cluster from a cluster dict.
     
-           attributes:
-    
-           id1 : element1 uniqueid generated from Identifier class
-           id2 : element2 uniqueid generated from Identifier class
-           key : unique key value created from id1 and id2 (order of id1 and id2 is not important) 
-           distance: distance between two elements
-           is_linked : boolean T/F
-           edge_type : "hcal_track" "ecal_track" etc
+        The Identifier class consists of a set of static methods that can be used
+        to create and to dissect identifiers.
+        
+        The first(rightmost) 40 bits are used to contain the python unique objectid of the item
+        The bits to the left of this contain the objecttype eg ECALCLUSTER etc
+        
+        usage:
+           self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.BLOCK) 
+           if Identifier.is_track(self.uniqueid) :
+                ....
+           
         '''    
     class PFOBJECTTYPE:
         NONE=0
@@ -54,16 +57,16 @@ class Identifier(long):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.BLOCK     
     
     @staticmethod  
-    def isRecParticle ( ident):
+    def is_rec_particle ( ident):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.RECPARTICLE 
     
     @staticmethod  
-    def isParticle ( ident):
+    def is_particle ( ident):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.PARTICLE     
     
     @staticmethod
     def type_short_code(ident):
-        typelist=".EHT......" #the enum value (0 to 8) will index into this and return E is it is ECAL etc
+        typelist=".eht......" #the enum value (0 to 8) will index into this and return E is it is ECAL etc
         return typelist[Identifier.get_type(ident)]    
     
     

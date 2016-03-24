@@ -133,11 +133,11 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-       for j in range(10000) :
-        process(iev)
-        process(iev) #alice_debug
-        process(iev) #alice_debug
-        process(iev) #alice_debug
+        for j in range(10000) :
+            process(iev)
+            process(iev) #alice_debug
+            process(iev) #alice_debug
+            process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()
