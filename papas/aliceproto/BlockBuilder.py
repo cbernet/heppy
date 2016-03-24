@@ -318,14 +318,18 @@ class BlockBuilder(object):
                 self.history_nodes[block.uniqueid] = blocknode
                 #now add in the links between the block elements and the block into the history_nodes
                 for elemid in block.element_uniqueids:
-                    self.history_nodes[elemid].add_child(blocknode)            
+                    self.history_nodes[elemid].add_child(blocknode)
+            print block
+     
+ 
         
-            
+                     
     def __str__(self):
         descrip = "{ "
         #for block in self.blocks.iteritems():
         for block in   sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):            
             descrip = descrip + self.blocks[block].__str__()
+           
         descrip = descrip + "}\n"
         return descrip  
     

@@ -97,9 +97,9 @@ class PFReconstructor(object):
             if block.is_active: # when blocks are split the original gets deactivated                
                 newparticles=self.reconstruct_block(block)                
                 self.insert_particle_history(block,newparticles)                
-                #print block, "makes particles"
-                #for p in newparticles:
-                #    print p
+               # print block, "makes particles"
+               # for p in newparticles:
+               #     print p
                 self.particles.extend(newparticles)
 
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])

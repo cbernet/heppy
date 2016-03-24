@@ -1,5 +1,7 @@
 from heppy.papas.aliceproto.identifier import Identifier
 
+
+
 class PFEvent(object):
     '''PFEvent is used to  allow addition of a function get_object to an Event class
        get_object() allows a cluster or track to be found from its id
@@ -48,3 +50,41 @@ class PFEvent(object):
             return self.blocks[uniqueid]               
         else:
             assert(False)   
+
+
+from heppy.papas.aliceproto.DAG import Node, BreadthFirstSearch
+class History(object):
+    
+    def __init__(self, history_nodes):
+        self.history_nodes=history_nodes
+        
+    def summary_of_links(self, id):
+    
+        BFS = BreadthFirstSearch(self.history_nodes[id],"undirected")
+        print "history connected to node:", id
+        particles=[]
+        tracks=[]
+        ecals=[]
+        hcals=[]
+        recparticles=[]
+        recon_particles=[]
+        for n in BFS.result :
+            z=n.get_value()
+            if (Identifier.is_particle(z)) :
+                particles.append(z)
+            if (Identifier.is_track(z)) :
+                tracks.append(z)         
+            if (Identifier.is_ecal(z)) :
+                ecals.append(z)  
+            if (Identifier.is_hcal(z)) :
+                hcals.append(z)         
+            if (Identifier.is_rec_particle(z)) :
+                recon_particles.append(z)               
+        
+        print "raw particles", particles
+        print "   tracks", tracks
+        print "   ecals", ecals
+        print "   hcals", hcals
+        print "reconstructed particles", recon_particles
+        
+        #print "reconstructed particles"

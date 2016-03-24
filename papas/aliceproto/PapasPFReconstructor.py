@@ -3,7 +3,7 @@ from heppy.papas.aliceproto.PFReconstructor import PFReconstructor
 from heppy.papas.aliceproto.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.aliceproto.getobject import GetObject
-
+from heppy.papas.aliceproto.pfevent import History
 
 class PapasPFReconstructor(Analyzer):
 
@@ -21,3 +21,6 @@ class PapasPFReconstructor(Analyzer):
         event.history_nodes=reconstructed.history_nodes
         pass
         
+        hist=History(event.history_nodes)
+        for block in event.blocks:
+            hist.summary_of_links(block)

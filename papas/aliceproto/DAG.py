@@ -108,13 +108,14 @@ class BreadthFirstSearch(object):
     def __init__(self,root, link_type):
         '''Perform the breadth first recursive search of the nodes'''
         self.result = []
+        self.root = root
         self.visited = dict()
         self.bfs_recursive([root],link_type)
         
     def visit(self, node):
         if self.visited.get(node, False):
             return
-        self.result.append( node.getValue() )
+        self.result.append( node )
         self.visited[node] = True
              
     def bfs_recursive(self,nodes, link_type ):
@@ -135,6 +136,11 @@ class BreadthFirstSearch(object):
             node.accept(self)
         
         self.bfs_recursive(link_nodes,  link_type)
+        
+     
+
+         
+     
 
           
 class BreadthFirstSearchIterative(object):
