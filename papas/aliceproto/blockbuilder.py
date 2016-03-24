@@ -28,7 +28,7 @@ class PFBlock(object):
             
      '''
     
-    temp_block_count=0
+    temp_block_count=0 #sequential numbering of blocks, helpful for debugging
     
     def __init__(self, element_ids, edges, pfevent): 
         ''' 
@@ -109,17 +109,33 @@ class PFBlock(object):
             return linked_ids
     
     def elements_string(self) : 
-        ''' Construct a string descrip of each of the elements in a block '''
+        ''' Construct a string descrip of each of the elements in a block
+        The elements are given a short name E/H/T according to ecal/hcal/track
+        and then sequential numbering starting from 0, this naming is also used in the 
+        matric of distances. The full unique id is also give.
+        For example:-
+        elements: {
+      E0:1104299360912: :SmearedCluster : ecal_in       4.62  0.48 -2.59
+      H1:2203769367952: :SmearedCluster : hcal_in       5.85  0.48 -2.56
+      T2:3303280995664: :SmearedTrack   :   14.36   12.77  0.47 -2.65
+      T3:3303321490192: :SmearedTrack   :    6.56    5.79  0.49 -2.71
+      }'''
         count = 0
         elemdetails = "\n      elements: {\n"  
         for uid in self.element_uniqueids:
-            elemname = Identifier.type_short_code(uid) +str(count) + ":" + str(uid)  + ": "
-            elemdetails += "      " + elemname + ":"  + self.pfevent.get_object(uid).__str__() + "\n"
+            #elemname = Identifier.type_short_code(uid) +str(count) + ":" + str(uid)  + ": "
+            #elemdetails += "      " + elemname + ":"  + self.pfevent.get_object(uid).__str__() + "\n"
+            elemdetails += "      {shortname}{count}:{uid:d}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
+                                                                           count=count,
+                                                                           uid=uid,
+                                                                           strdescrip=self.pfevent.get_object(uid).__str__() )
             count = count + 1            
         return elemdetails + "      }"
     
     def short_name(self) :    
-        ''' constructs a short summary name for blocks allowing sorting based on contents'''
+        ''' constructs a short summary name for blocks allowing sorting based on contents
+            eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks
+        '''
         shortname = "" 
         if self.count_ecal() :
             shortname = shortname + "E" + str(self.count_ecal())
@@ -133,7 +149,16 @@ class PFBlock(object):
     
     def edge_matrix_string(self) :
         ''' produces a string containing the the lower part of the matrix of distances between elements
-        elements are ordered as ECAL(E), HCAL(H), Track(T) and by edgekey '''
+        elements are ordered as ECAL(E), HCAL(H), Track(T) and by edgekey
+        for example:-
+        
+        distances:
+                  E0       H1       T2       T3
+         E0       . 
+         H1  0.0267        . 
+         T2  0.0000   0.0000        . 
+         T3  0.0287   0.0825      ---        . 
+         '''
     
         # make the header line for the matrix       
         count = 0
@@ -175,16 +200,18 @@ class PFBlock(object):
         return self.edges[Edge.make_key(id1,id2)]
     
     def __str__(self):
-        ''' Block description which includes list of elements and a matrix of distances  '''
-        descrip = str('\n{shortname:>12} id={blockid:4.0f}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
+        ''' Block description which includes list of elements and a matrix of distances  
+        '''
+        descrip = str('\nblock: {shortname:<12} id={blockid:4.0f} :uid= {uid}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        
-            blockid      = self.block_count, #self.uniqueid,
+            blockid      = self.block_count, 
+            uid          = self.uniqueid,
             count_ecal   = self.count_ecal(),
             count_hcal   = self.count_hcal(),
             count_tracks = self.count_tracks() )
         ) 
-        #descrip += self.elements_string()        
-        #descrip += "\n" + self.edge_matrix_string()     
+        descrip += self.elements_string()        
+        descrip += "\n" + self.edge_matrix_string()     
         return descrip
     
     def __repr__(self):
@@ -282,10 +309,6 @@ class BlockBuilder(object):
         
             
     def __str__(self):
-        
-        #sortedkeys = sorted(self.blocks.items(), key=lambda (k,v): len(v.element_uniqueids), v.shortname(), reverse=True)
-        #self.element_uniqueids =sorted(element_ids, key =lambda  x: Identifier.type_short_code(x) + str(x) )
-       
         descrip = "{ "
         #for block in self.blocks.iteritems():
         for block in   sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):            

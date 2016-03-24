@@ -19,8 +19,6 @@ class BlockSplitter(BlockBuilder):
     
         '''
         for edge in unlink_edges:
-            #print len(unlink_edges)
-            #print edge
             edge.linked = False
         
         super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes, block.pfevent)
@@ -40,7 +38,7 @@ class BlockSplitter(BlockBuilder):
         block.is_active = False 
         
     
-        
+       
             
 
         

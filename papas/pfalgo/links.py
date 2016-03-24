@@ -46,7 +46,7 @@ class Links(dict):
             if link_ok: 
                 self.add(ele1, ele2, dist)
         floodfill = FloodFill(elements)
-        print floodfill
+        #print floodfill
         self.groups = floodfill.groups
         self.group_label = floodfill.label
         for elem in elements:

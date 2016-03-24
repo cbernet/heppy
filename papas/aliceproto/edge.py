@@ -18,18 +18,18 @@ class Edge(object):
         self.id2 = id2
         
         self.distance = distance
-        self.edge_type = self._edge_type()
         self.linked = is_linked
+        self.edge_type = self._edge_type()
         
         #should not have ecal/ecal and hcal/hcal(I think) because of merging
-        #if self.edge_type=="ecal_ecal" :
-        #    assert (not is_linked)
-        #if self.edge_type=="hcal_hcal" :
-        #    assert (not is_linked)  
+        if self.edge_type=="ecal_ecal" :
+            assert (not is_linked)
+        if self.edge_type=="hcal_hcal" :
+            assert (not is_linked)  
             
-        #for reconstruction we do not use ecal-hcal links 
+        #for reconstruction we do not use ecal-hcal links (may need to be moved if we use these edges for merging)
         if self.edge_type == "ecal_hcal":
-            is_linked =False
+            self.is_linked =False
         self.key = Edge.make_key(id1,id2)
     
     def _edge_type(self):
@@ -53,9 +53,9 @@ class Edge(object):
 
     def __str__(self):
         if self.distance ==None:
-            descrip = "Edge: " + str(self.id1) + " - "+ str(self.id2)  + "= None (" + str( self.linked) + " ) "
+            descrip = 'Edge: {id1:d}<->{id2:d} = No distance (link = {linked}) '.format(id1=self.id1,id2=self.id2,linked=self.linked)
         else :
-            descrip = "Edge: " + str(self.id1) + " - "+ str(self.id2)  + "=" + str(self.distance)+  " (" + str( self.linked) + " ) "
+            descrip = 'Edge: {id1}<->{id2} = {dist:8.4f} (link = {linked}) '.format(id1=self.id1,id2=self.id2,dist=self.distance,linked=self.linked)            
         return descrip
     
     def __repr__(self):
