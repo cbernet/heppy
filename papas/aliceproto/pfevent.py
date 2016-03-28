@@ -30,7 +30,10 @@ class PFEvent(object):
         self.blocks = []
         if hasattr(event,"blocks"):
             self.blocks= event.blocks
-
+        if hasattr(event,"papas_sim_particles"): #todo think about naming
+            self.sim_particles= event.papas_sim_particles 
+        if hasattr(event,"reconstructed_particles"): #todo think about naming
+            self.reconstructed_particles= event.reconstructed_particles                         
     
     def get_object(self, uniqueid):
         ''' given a uniqueid return the underlying obejct
@@ -55,36 +58,38 @@ class PFEvent(object):
 from heppy.papas.aliceproto.DAG import Node, BreadthFirstSearch
 class History(object):
     
-    def __init__(self, history_nodes):
+    def __init__(self, history_nodes,pfevent):
         self.history_nodes=history_nodes
+        self.pfevent=pfevent
         
     def summary_of_links(self, id):
     
         BFS = BreadthFirstSearch(self.history_nodes[id],"undirected")
         print "history connected to node:", id
-        particles=[]
+        
         tracks=[]
         ecals=[]
         hcals=[]
-        recparticles=[]
-        recon_particles=[]
+        sim_particles=[]
+        rec_particles=[]
         for n in BFS.result :
             z=n.get_value()
+            descrip=self.pfevent.get_object(z).__str__()
             if (Identifier.is_particle(z)) :
-                particles.append(z)
+                sim_particles.append(descrip)
             if (Identifier.is_track(z)) :
-                tracks.append(z)         
+                tracks.append(descrip)         
             if (Identifier.is_ecal(z)) :
-                ecals.append(z)  
+                ecals.append(descrip)  
             if (Identifier.is_hcal(z)) :
-                hcals.append(z)         
+                hcals.append(descrip)         
             if (Identifier.is_rec_particle(z)) :
-                recon_particles.append(z)               
+                rec_particles.append(descrip)               
         
-        print "raw particles", particles
-        print "   tracks", tracks
-        print "   ecals", ecals
-        print "   hcals", hcals
-        print "reconstructed particles", recon_particles
+        print "sim particles", sim_particles
+        print "       tracks", tracks
+        print "        ecals", ecals
+        print "        hcals", hcals
+        print "rec particles", rec_particles
         
         #print "reconstructed particles"

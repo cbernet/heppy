@@ -161,9 +161,9 @@ class SmearedTrack(Track):
     
         
 class Particle(BaseParticle):
-    def __init__(self, tlv, vertex, charge, pdgid=None):
+    def __init__(self, tlv, vertex, charge, pdgid=None,ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.make_id(self, Identifier.PFOBJECTTYPE.PARTICLE)
+        self.uniqueid=Identifier.make_id(self, ParticleType)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -191,8 +191,35 @@ class Particle(BaseParticle):
         if option == 'w' or self.path is None:
             self.path = path
             self.track = Track(self.p3(), self.q(), self.path)
-
     
+            def __str__(self):
+                tmp = '{className} :{uniquedid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
+                return tmp.format(
+                    className = self.__class__.__name__,
+                    uniqueid = self.uniqueid,
+                    pdgid = self.pdgid(),
+                    status = self.status(),
+                    q = self.q(),
+                    p4 = super(Particle, self).__str__()
+                )
+    
+
+
+class Reconstructed_Particle(Particle):
+    def __init__(self, tlv, vertex, charge, pdgid=None):
+        super(Reconstructed_Particle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)
+       
+    def __str__(self):
+        tmp = '{className} : {uniqueid} : pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
+        return tmp.format(
+            className = self.__class__.__name__,
+            uniqueid=self.uniqueid,
+            pdgid = self.pdgid(),
+            status = self.status(),
+            q = self.q(),
+            p4 = super(Particle, self).__str__()
+        )
+  
 if __name__ == '__main__':
     from ROOT import TVector3
     cluster = Cluster(10., TVector3(1,0,0), 1, 1)

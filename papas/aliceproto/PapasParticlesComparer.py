@@ -16,6 +16,6 @@ class PapasParticlesComparer(Analyzer):
                    and reconstructed_particles made from the new BlockBuilder approach
         '''
     
-        ParticlesComparer(event.reconstructed_particles,event.baseline_particles)
+        ParticlesComparer(event.reconstructed_particle_list,event.baseline_particles)
         pass
         

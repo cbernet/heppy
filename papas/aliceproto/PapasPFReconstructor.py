@@ -16,11 +16,15 @@ class PapasPFReconstructor(Analyzer):
            arguments:
                     event must contain blocks amde using BlockBuilder'''
         reconstructed = PFReconstructor(event)
-        event.reconstructed_particles= sorted( reconstructed.particles,
-                            key = lambda ptc: ptc.e(), reverse=True)
-        event.history_nodes=reconstructed.history_nodes
-        pass
+        #for history to work we want a dict of particles
+        event.reconstructed_particles=reconstructed.particles
         
-        hist=History(event.history_nodes)
+        hist=History(event.history_nodes,PFEvent(event))
         for block in event.blocks:
             hist.summary_of_links(block)
+        
+        #for particle comparison we want a list of particles so that we can sort and compare
+        event.reconstructed_particle_list= sorted( reconstructed.particles.values(),
+                                                   key = lambda ptc: ptc.e(), reverse=True)
+        event.history_nodes=reconstructed.history_nodes
+        pass         

@@ -91,6 +91,7 @@ class PapasSim(Analyzer):
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
         event.baseline_particles = origrecparticles
+        event.sim_partciles=simparticles
 
         for element in self.simulator.pfsequence.elements :
             if element.__class__.__name__ == 'SmearedTrack': 
