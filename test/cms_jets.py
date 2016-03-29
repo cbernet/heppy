@@ -9,7 +9,7 @@ if debug:
 
 comp = cfg.Component(
     'singlepi',
-    files = ['/gridgroup/cms/cbernet/data/singlePiPlus_Pt100.root']
+    files = ['/gridgroup/cms/cbernet/data/singlePi_50k.root']
 )
 
 selectedComponents = [comp]
@@ -27,8 +27,8 @@ source = cfg.Analyzer(
 from heppy.analyzers.Matcher import Matcher
 jet_match = cfg.Analyzer(
     Matcher,
-    match_particles = 'gen_jets',
-    particles = 'cms_jets',
+    match_particles = 'cms_jets',
+    particles = 'gen_jets',
     delta_r = 0.3
     )
 
@@ -37,7 +37,7 @@ jet_tree = cfg.Analyzer(
     JetTreeProducer,
     tree_name = 'events',
     tree_title = 'jets',
-    jets = 'cms_jets'
+    jets = 'gen_jets'
     )
 
 
