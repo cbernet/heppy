@@ -52,11 +52,11 @@ class Edge(object):
                 return "ecal_ecal"
             elif shortid1 == "t":
                 return "track_track"           
-        elif (shortid1=="h" and shortid2 == "t" or shortid1=="t" and shortid2 == "h"):
+        elif (shortid1=="h" and shortid2=="t" or shortid1=="t" and shortid2=="h"):
             return "hcal_track"
-        elif (shortid1=="e" and shortid2 == "t" or shortid1=="t" and shortid2 == "e"):
+        elif (shortid1=="e" and shortid2=="t" or shortid1=="t" and shortid2=="e"):
             return "ecal_track"  
-        elif (shortid1=="e" and shortid2 == "h" or shortid1=="h" and shortid2 == "h"):
+        elif (shortid1=="e" and shortid2=="h" or shortid1=="h" and shortid2=="h"):
             return "ecal_hcal"  
         
         return "unknown"
@@ -66,7 +66,7 @@ class Edge(object):
              for example:
              Edge: 3303164520272<->3303164436240 = No distance (link = False) 
         '''
-        if self.distance ==None:
+        if self.distance==None:
             descrip = 'Edge: {id1:d}<->{id2:d} = No distance (link = {linked}) '.format(id1=self.id1,id2=self.id2,linked=self.linked)
         else :
             descrip = 'Edge: {id1}<->{id2} = {dist:8.4f} (link = {linked}) '.format(id1=self.id1,id2=self.id2,dist=self.distance,linked=self.linked)            

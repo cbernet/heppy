@@ -90,11 +90,11 @@ class PapasSim(Analyzer):
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict() 
-        for element in self.simulator.pfsequence.pfinput.elements["tracker"] :
+        for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
             event.tracks[element.uniqueid] = element 
-        for element in self.simulator.pfsequence.pfinput.elements["ecal_in"] :
+        for element in self.simulator.pfsequence.pfinput.elements["ecal_in"]:
             event.ecal_clusters[element.uniqueid] = element 
-        for element in self.simulator.pfsequence.pfinput.elements["hcal_in"] :
+        for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
             event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
         #event.tracks = MergingBlockBuilder("tracker",PFEvent(event), ruler).merged
@@ -115,11 +115,11 @@ class PapasSim(Analyzer):
         event.hcal_clusters = dict()
         for element in self.simulator.pfsequence.elements :
             if element.__class__.__name__ == 'SmearedTrack': 
-                event.tracks[element.uniqueid]=element 
+                event.tracks[element.uniqueid] = element 
             elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
-                event.ecal_clusters[element.uniqueid]=element
+                event.ecal_clusters[element.uniqueid] = element
             elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
-                event.hcal_clusters[element.uniqueid]=element
+                event.hcal_clusters[element.uniqueid] = element
             else :            
                 print element.__class__.__name__ 
                 assert(False)

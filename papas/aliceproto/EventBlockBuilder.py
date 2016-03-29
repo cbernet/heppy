@@ -56,7 +56,7 @@ class EventBlockBuilder(BlockBuilder):
         self.pfevent = pfevent
 
         # collate all the ids of tracks and clusters and, if needed, make history nodes
-        uniqueids=[]
+        uniqueids = []
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
         
         self.history_nodes=history_nodes

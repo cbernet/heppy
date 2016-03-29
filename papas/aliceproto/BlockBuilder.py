@@ -28,7 +28,7 @@ class PFBlock(object):
             
      '''
     
-    temp_block_count=0 #sequential numbering of blocks, helpful for debugging
+    temp_block_count = 0 #sequential numbering of blocks, helpful for debugging
     
     def __init__(self, element_ids, edges, pfevent): 
         ''' 
@@ -46,14 +46,14 @@ class PFBlock(object):
         
         #order the elements by element type (ecal, hcal, track) and then by element id  
         #eg E1 E2 H3
-        self.element_uniqueids =sorted(element_ids, key =lambda  x: Identifier.type_short_code(x) + str(x) )
+        self.element_uniqueids = sorted(element_ids, key = lambda  x: Identifier.type_short_code(x) + str(x) )
         
         #extract the relevant parts of the complete set of edges and store this within the block
         self.block_count = PFBlock.temp_block_count
-        PFBlock.temp_block_count+=1
+        PFBlock.temp_block_count += 1
         
         
-        self.edges=dict()
+        self.edges = dict()
         for id1, id2 in itertools.combinations(self.element_uniqueids,2):
             key = Edge.make_key(id1,id2)
             self.edges[key] = edges[key]
@@ -85,9 +85,9 @@ class PFBlock(object):
     
     def linked_edges(self,uniqueid,edgetype=None) :
         ''' Returns list of all linked edges of a given edge type that are connected to a given id - sorted in order of increasing distance'''
-        linked_edges=[]
+        linked_edges = []
         for edge in self.edges.itervalues():
-            if edge.linked and (edge.id1==uniqueid or edge.id2==uniqueid ) :
+            if edge.linked and (edge.id1 == uniqueid or edge.id2 == uniqueid ) :
                 if (edgetype != None) and (edge.edge_type == edgetype ):
                     linked_edges.append(edge)
                 elif edgetype == None :
@@ -97,18 +97,18 @@ class PFBlock(object):
                    
     def linked_ids(self,uniqueid,edgetype=None) :
             ''' Returns list of all linked ids of a given edge type that are connected to a given id - sorted in order of increasing distance'''
-            linked_ids=[]  
-            linked_edges=[]
-            linked_edges=self.linked_edges(uniqueid,edgetype)
-            if len(linked_edges) :
+            linked_ids = []  
+            linked_edges = []
+            linked_edges = self.linked_edges(uniqueid,edgetype)
+            if len(linked_edges):
                 for edge in linked_edges:
-                    if edge.id1==uniqueid :
+                    if edge.id1 == uniqueid:
                         linked_ids.append(edge.id2)
-                    else :
+                    else:
                         linked_ids.append(edge.id1)
             return linked_ids
     
-    def elements_string(self) : 
+    def elements_string(self): 
         ''' Construct a string descrip of each of the elements in a block
         The elements are given a short name E/H/T according to ecal/hcal/track
         and then sequential numbering starting from 0, this naming is also used in the 
@@ -123,29 +123,29 @@ class PFBlock(object):
         count = 0
         elemdetails = "\n      elements: {\n"  
         for uid in self.element_uniqueids:
-            elemdetails += "      {shortname}{count}:{uid:d}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
+            elemdetails += "      {shortname}{count}:{uid:d}:{strdescrip}".format(shortname=Identifier.type_short_code(uid),
                                                                            count=count,
                                                                            uid=uid,
                                                                            strdescrip=self.pfevent.get_object(uid).__str__() )
             count = count + 1            
-        return elemdetails + "      }"
+        return elemdetails + "      \n}\n"
     
-    def short_name(self) :    
+    def short_name(self):    
         ''' constructs a short summary name for blocks allowing sorting based on contents
             eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks
         '''
         shortname = "" 
-        if self.count_ecal() :
+        if self.count_ecal():
             shortname = shortname + "E" + str(self.count_ecal())
-        if self.count_hcal() :
+        if self.count_hcal():
             shortname = shortname + "H" + str(self.count_hcal())
-        if self.count_tracks() :
+        if self.count_tracks():
             shortname = shortname + "T" + str(self.count_tracks())
         
       
         return shortname      
     
-    def edge_matrix_string(self) :
+    def edge_matrix_string(self):
         ''' produces a string containing the the lower part of the matrix of distances between elements
         elements are ordered as ECAL(E), HCAL(H), Track(T) 
         for example:-
@@ -175,11 +175,11 @@ class PFBlock(object):
             rowstr = ""
             #make short name for the row element eg E3, H5 etc
             rowname = Identifier.type_short_code(e1) +str(countrow)
-            for e2 in sorted(self.element_uniqueids) :  # these will be the columns
+            for e2 in sorted(self.element_uniqueids):  # these will be the columns
                 #make short name for the col element eg E3, H5                
                 colname = Identifier.type_short_code(e1) + str(countcol) 
                 countcol += 1
-                if (e1 == e2) :
+                if (e1 == e2):
                     rowstr += "       . "
                     break
                 if self.get_edge(e1,e2).distance ==None:
@@ -193,7 +193,7 @@ class PFBlock(object):
     
         return matrixstr   +"      }\n"
     
-    def get_edge(self,id1, id2) :
+    def get_edge(self,id1, id2):
         ''' Find the edge corresponding to e1 e2 
             Note that make_key deals with whether it is get_edge(e1, e2) or get_edge(e2, e1) (either order gives same result)
             '''
@@ -224,7 +224,7 @@ class PFBlock(object):
             count_tracks = self.count_tracks() )
         ) 
         descrip += self.elements_string()        
-        descrip += "\n" + self.edge_matrix_string()     
+        descrip += self.edge_matrix_string()     
         return descrip
     
     def __repr__(self):
@@ -319,7 +319,7 @@ class BlockBuilder(object):
                 #now add in the links between the block elements and the block into the history_nodes
                 for elemid in block.element_uniqueids:
                     self.history_nodes[elemid].add_child(blocknode)
-            print block
+            #print block
      
  
         
@@ -327,7 +327,7 @@ class BlockBuilder(object):
     def __str__(self):
         descrip = "{ "
         #for block in self.blocks.iteritems():
-        for block in   sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):            
+        for block in   sorted(self.blocks, key = lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):            
             descrip = descrip + self.blocks[block].__str__()
            
         descrip = descrip + "}\n"

@@ -106,7 +106,7 @@ class Cluster(PFObject):
     #     self.__dict__[name] = value
 #AJR added \n need to remove
     def __str__(self):
-        return '{classname:15}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}\n'.format(
+        return '{classname:15}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             classname = self.__class__.__name__,
             layer = self.layer,
             energy = self.energy,
@@ -219,8 +219,8 @@ class Particle(BaseParticle):
             self.track = Track(self.p3(), self.q(), self.path)
     
     def __str__(self):
-        tmp = '{className} :!{uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
-        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}\n'.format(
+        tmp = '{className}:uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
+        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
             pt = self.pt(),
             e = self.e(),
             eta = self.eta(),
@@ -241,20 +241,11 @@ class Particle(BaseParticle):
 
 
 class Reconstructed_Particle(Particle):
-    #just like a particle but has a reconstructed particle uniqueid
+    '''  A reconstruceted Particle sis just like a particle but has a reconstructed particle uniqueid
+    '''
     def __init__(self, tlv, vertex, charge, pdgid=None):
         super(Reconstructed_Particle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)
        
-    #def __str__(self):
-        #tmp = '{className} : {uniqueid} : pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
-        #return tmp.format(
-            #className = self.__class__.__name__,
-            #uniqueid=self.uniqueid,
-            #pdgid = self.pdgid(),
-            #status = self.status(),
-            #q = self.q(),
-            #p4 = super(super(Reconstructed_Particle, self),self).__str__()
-        #)
   
 if __name__ == '__main__':
     from ROOT import TVector3

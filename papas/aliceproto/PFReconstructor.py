@@ -9,10 +9,6 @@ from ROOT import TVector3, TLorentzVector
 import math
 import pprint
 
-#AJRTODO 
-#look at mergign
-#Tidy / document code and commit it
-
 
 class PFReconstructor(object):
     ''' The reconstructor takes an event containing blocks of elements
@@ -23,6 +19,8 @@ class PFReconstructor(object):
              hcal  -> neutral hadron
              ecal  -> photon
         connected elements:
+              has more than one hcal
+                -> each hcal is treated using rules below
               has an hcal with one or more connected tracks
                 -> add up all connected track energies, turn each track into a charged hadron
                 -> add up all ecal energies connected to the above tracks
@@ -33,11 +31,10 @@ class PFReconstructor(object):
                           make a neutral hadron with excess- ecal energies
                           make photon with ecal energies
               has hcal but no track (nb by design there will be no attached ecals because hcal ecal links have been removed
-                    so this will equate to single element about. Note that two hcals should not occur as a single block
+                    so this will equate to single hcal:- that two hcals should not occur as a single block
                     because if they are close enough to be linked then they should already have been merged)
                 -> make a neutral hadron 
-              has more than one hcal
-                -> each hcal is treated using rules above
+              
               has track(s) 
                 -> each track is turned into a charged hadron
               has track(s) and  ecal(s)
@@ -73,7 +70,7 @@ class PFReconstructor(object):
         
         # history nodes will be used to connect reconstructed particles into the history
         # its optional at the moment
-        if hasattr(event, "history_nodes") :
+        if hasattr(event, "history_nodes"):
             self.history_nodes = event.history_nodes
         else : 
             self.history_nodes = None
@@ -105,8 +102,8 @@ class PFReconstructor(object):
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
         #check if anything is unused
-        if len(self.unused) :
-            print "UNUSED", self.unused
+        if len(self.unused):
+            pass
             
         #print(str(self))        
         
@@ -135,7 +132,7 @@ class PFReconstructor(object):
         # work out any links that need to be removed        
         to_unlink = []        
         for id in ids :
-            if Identifier.is_track(id) :
+            if Identifier.is_track(id):
                 linked = block.linked_edges(id,"hcal_track") # NB already sorted from small to large distance
                 if linked!=None :
                     first_hcal = True
@@ -144,7 +141,7 @@ class PFReconstructor(object):
                             first_hcal = False
                         else:
                             to_unlink.append(elem)
-            elif Identifier.is_ecal(id) :
+            elif Identifier.is_ecal(id):
                 # this is now handled  and so could be removed
                 # remove all ecal-hcal links. ecal linked to hcal give rise to a photon anyway.
                 linked = block.linked_edges(id,"ecal_hcal")
@@ -152,7 +149,7 @@ class PFReconstructor(object):
         
         #if there is something to unlink then use the BlockSplitter        
         splitblocks=None        
-        if len(to_unlink) :
+        if len(to_unlink):
             splitblocks= BlockSplitter(block,to_unlink,history_nodes).blocks
         
         return splitblocks
@@ -167,34 +164,36 @@ class PFReconstructor(object):
             self.locked[id] = False
         
        
-        if len(ids)==1: #TODO WARNING!!! LOTS OF MISSING CASES
+        if len(ids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
             id = ids[0]
             
-            if Identifier.is_ecal(id) :
+            if Identifier.is_ecal(id):
                 newparticle =self.reconstruct_cluster(block.pfevent.ecal_clusters[id],"ecal_in")
                 particles[newparticle.uniqueid]=newparticle
-            elif Identifier.is_hcal(id) :
+            elif Identifier.is_hcal(id):
                 newparticle =self.reconstruct_cluster(block.pfevent.hcal_clusters[id],"hcal_in")
                 particles[newparticle.uniqueid]=newparticle
-            elif Identifier.is_track(id) :
+            elif Identifier.is_track(id):
                 newparticle =self.reconstruct_track(block.pfevent.tracks[id])
                 particles[newparticle.uniqueid]=newparticle# ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
             for id in ids :
-                if Identifier.is_hcal(id) :
+                if Identifier.is_hcal(id):
                     
                     particles.update(self.reconstruct_hcal(block,id))
             for id in ids :
-                if Identifier.is_track(id) and not self.locked[id] :
+                if Identifier.is_track(id) and not self.locked[id]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
                 # ELECTRONS TO BE DEALT WITH.
                     newparticle=self.reconstruct_track(block.pfevent.tracks[id])
                     particles[newparticle.uniqueid]=newparticle
                     # tracks possibly linked to ecal->locking cluster
-                    for idlink in block.linked_ids(id,"ecal_track") :
+                    for idlink in block.linked_ids(id,"ecal_track"):
                         #ask colin what happened to possible photons here:
                         self.locked[idlink] = True
+                        #TODO add in extra photonsbut decide where they should go?
+                        
                         
             # #TODO deal with ecal-ecal
             # ecals = [elem for elem in group if elem.layer=='ecal_in'
@@ -207,9 +206,11 @@ class PFReconstructor(object):
             #TODO deal with track-ecal
         return particles 
     
+    
+    
     def insert_particle_history(self, block, particles):
         ''' The new particle will be inserted into the history_nodes (if present).
-            A new nodefor the particle will be created if needed.
+            A new node for the particle will be created if needed.
             It will have as its parents the block and all the elements of the block.
             '''        
         #Note that although it may be possible to specify more closely that the particle comes from
@@ -217,7 +218,7 @@ class PFReconstructor(object):
         #linked to everything in the block
         
         #check if history nodes exists
-        if (self.history_nodes == None) :
+        if (self.history_nodes == None):
             return
         
         #find the node for the block        
@@ -288,12 +289,12 @@ class PFReconstructor(object):
                
         for trackid in block.linked_ids(hcalid, "hcal_track"):
             tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in block.linked_ids(trackid, "ecal_track") :
+            for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work
                 # ask colin.
-                if not self.locked[ecalid] :
+                if not self.locked[ecalid]:
                     ecals.append(block.pfevent.ecal_clusters[ecalid])
                     self.locked[ecalid]  = True
                 # hcal should be the only remaining linked hcal cluster (closest one)
@@ -342,7 +343,7 @@ class PFReconstructor(object):
                         #make a photon from the remaining ecal energies
                         #again history is confusingbecause hcal is used to provide direction
                         #be better to make several smaller photons one per ecal?
-                        newparticle=self.reconstruct_cluster(hcal, 'ecal_in',
+                        newparticle = self.reconstruct_cluster(hcal, 'ecal_in',
                                                                   ecal_energy)
                         if newparticle:
                             particles[newparticle.uniqueid]=newparticle
@@ -352,16 +353,16 @@ class PFReconstructor(object):
               # other hcals
             
             for elem in hcal.linked:
-                assert(elem.layer=='hcal_in')
+                assert(elem.layer == 'hcal_in')
                 
-            newparticle=self.reconstruct_cluster(hcal, 'hcal_in')
+            newparticle = self.reconstruct_cluster(hcal, 'hcal_in')
             if newparticle:
-                particles[newparticle.uniqueid]=newparticle
+                particles[newparticle.uniqueid] = newparticle
             
         self.locked[hcalid] = True
         return particles 
                 
-    def reconstruct_cluster(self, cluster, layer, energy=None, vertex=None):
+    def reconstruct_cluster(self, cluster, layer, energy = None, vertex = None):
         '''construct a photon if it is an ecal
            construct a neutral hadron if it is an hcal
         '''        
@@ -384,8 +385,6 @@ class PFReconstructor(object):
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy)
         particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
-        if (pdg_id==22 and particle.p4().M()!=0):
-            print cluster.uniqueid,cluster.energy
         
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
@@ -395,7 +394,7 @@ class PFReconstructor(object):
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
         return particle
         
-    def reconstruct_track(self, track, clusters=None): # cluster argument does not ever seem to be used at present
+    def reconstruct_track(self, track, clusters = None): # cluster argument does not ever seem to be used at present
         '''construct a charged hadron from the track
         '''
         vertex = track.path.points['vertex']
@@ -413,8 +412,7 @@ class PFReconstructor(object):
 
     def __str__(self):
         
-        #make this use the history information
-        
+        #TODO make this use the history information 
         #if self.history_nodes!= None :
          #   for block in blocks:
                 

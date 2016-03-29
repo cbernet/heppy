@@ -17,9 +17,9 @@ class Cluster(object):
               unique integer from 201-299 for hcal cluster
               layer is ecal/hcal
         '''
-        if (layer == 'ecal_in') :
+        if (layer == 'ecal_in'):
             self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.ECALCLUSTER)
-        elif (layer == 'hcal_in') :
+        elif (layer == 'hcal_in'):
             self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.HCALCLUSTER)
         else:
             assert false
@@ -129,25 +129,25 @@ class Simulator(object):
         self.add_link(self.UID(302),self.UID(202))
         self.add_link(self.UID(303),self.UID(103))
               
-    def add_ecal_cluster(self, id) :
+    def add_ecal_cluster(self, id):
         clust = Cluster(id,'ecal_in')# make a cluster
         uniqueid = clust.uniqueid 
         self.event.ecal_clusters[uniqueid] = clust     # add into the collection of clusters
         self.event.history_nodes[uniqueid] = Node(uniqueid)  #add into the collection of History Nodes
                  
-    def add_hcal_cluster(self, id) :
+    def add_hcal_cluster(self, id):
         clust = Cluster(id,'hcal_in')
         uniqueid = clust.uniqueid 
         self.event.hcal_clusters[uniqueid] = clust
         self.event.history_nodes[uniqueid] = Node(uniqueid)
         
-    def add_track(self, id) :
+    def add_track(self, id):
         track = Track(id)
         uniqueid = track.uniqueid 
         self.event.tracks[uniqueid] =  track
         self.event.history_nodes[uniqueid] =  Node(uniqueid) 
         
-    def add_particle(self, id, pdgid) :
+    def add_particle(self, id, pdgid):
         particle = Particle(id,pdgid)
         uniqueid = particle.uniqueid
         self.event.sim_particles[uniqueid] =  particle
@@ -159,7 +159,7 @@ class Simulator(object):
         '''
         for h in self.event.history_nodes :
             obj = self.event.get_object(h)
-            if hasattr(obj, "id") :
+            if hasattr(obj, "id"):
                 if obj.id  == id :
                     return obj.uniqueid 
         return 0
@@ -170,12 +170,12 @@ class Simulator(object):
         '''
         for h in self.event.history_nodes :
             obj = self.event.get_object(h)
-            if hasattr(obj, "id") :
+            if hasattr(obj, "id"):
                 if obj.uniqueid  == uniqueid :
                     return obj.id 
         return 0               
 
-    def add_link(self, uniqueid1, uniqueid2) :
+    def add_link(self, uniqueid1, uniqueid2):
         ''' create a parent child link in the history nodes between two elements
             uniqueid1, uniqueid2 are the elements unique ids
         '''
@@ -191,12 +191,12 @@ class Reconstructor(object):
         self.particlecounter  =  600 #used to create reconstructed particle short ids
         self.reconstruct_particles()
     
-    def add_nodes(self, nodedict,values) :
+    def add_nodes(self, nodedict,values):
         for e1 in values :
             nodedict[e1.uniqueid] =  Node(e1.uniqueid)                   
     
-    def reconstruct_particles (self) :
-        for block in self.event.blocks.itervalues() :
+    def reconstruct_particles (self):
+        for block in self.event.blocks.itervalues():
             self.make_particles_from_block (block)    
     
     def make_particles_from_block(self, block):
@@ -205,21 +205,21 @@ class Reconstructor(object):
         #take a block and find its parents (clusters and tracks)
         parents = block.element_uniqueids
         
-        if  (len(parents) == 1) & (Identifier.is_ecal(parents[0])) :
+        if  (len(parents) == 1) & (Identifier.is_ecal(parents[0])):
             print "make photon"
             self.make_photon(parents)
             
-        elif ( (len(parents) == 2)  & (block.count_ecal() == 1 ) & (block.count_tracks() == 1)) :
+        elif ( (len(parents) == 2)  & (block.count_ecal() == 1 ) & (block.count_tracks() == 1)):
             print "make hadron" 
             self.make_hadron(parents)
             
-        elif  ((len(parents) == 3)  & (block.count_ecal() == 1) & (block.count_tracks() == 1) & (block.count_hcal() == 1)) :
+        elif  ((len(parents) == 3)  & (block.count_ecal() == 1) & (block.count_tracks() == 1) & (block.count_hcal() == 1)):
                 print "make hadron and photon"
                 #probably not right but illustrates splitting of parents for more than one particle
                 hparents = [] # will contain parents for the Hadron which gets everything except the 
                               #hcal which is used for the photom
                 for elem in parents:
-                    if (Identifier.is_hcal(elem)) :
+                    if (Identifier.is_hcal(elem)):
                         self.make_photon({elem})
                     else :
                         hparents.append(elem)    
@@ -228,13 +228,13 @@ class Reconstructor(object):
         else :
             print "particle TODO"  
          
-    def make_photon(self, parents) :
+    def make_photon(self, parents):
         return self.add_particle(self.new_id(), 22,parents)
 
-    def make_hadron(self, parents) :
+    def make_hadron(self, parents):
         return self.add_particle(self.new_id(), 211,parents)
 
-    def add_particle(self, id, pdgid, parents) :
+    def add_particle(self, id, pdgid, parents):
         ''' creates a new particle and then updates the 
             event to include the new node and its parental links
             pdgid = is the particle type id eg 22 for photon
@@ -308,7 +308,7 @@ class TestBlockReconstruction(unittest.TestCase):
         ##test block splitting
         #blockids = []
         #unlink=[]
-        #for b in event.blocks.itervalues() :
+        #for b in event.blocks.itervalues():
             #ids=b.element_uniqueids
             #if len(ids)==3 :
                 #print ids[0], ids[2]
@@ -340,7 +340,7 @@ class TestBlockReconstruction(unittest.TestCase):
         #1b WHAT BLOCK Does it belong to   
         x = None
         for id in ids:
-            if Identifier.isBlock(id) and event.blocks[id].short_name()== "E1H1T1" :
+            if Identifier.isBlock(id) and event.blocks[id].short_name()== "E1H1T1":
                 x =  event.blocks[id]
         print x       
                 
@@ -362,8 +362,8 @@ class TestBlockReconstruction(unittest.TestCase):
         
         #(3) Give me all blocks with  one track:
         blockids = []
-        for b in event.blocks.itervalues() :
-            if b.count_tracks()   :        
+        for b in event.blocks.itervalues():
+            if b.count_tracks():        
                 print b
         
         #(4) Give me all simulation particles attached to each reconstructed particle
@@ -375,7 +375,7 @@ class TestBlockReconstruction(unittest.TestCase):
                   
             for n in BFS.result :
                 z=n.get_value()
-                if (Identifier.is_particle(z)) :
+                if (Identifier.is_particle(z)):
                     print "      sim particle: ", event.sim_particles[z]
         
         pass       
@@ -386,7 +386,7 @@ class TestBlockReconstruction(unittest.TestCase):
        #     print "Sim particle: ", event.sim_particles[rp].pdgid, " gives "            
        #     for n in BFS.result :
        ##         #print n
-       ##         if (isReconstructedParticle(n.getValue())) :
+       ##         if (isReconstructedParticle(n.getValue())):
        #             ids.append(n.getValue())
        #             print "     rec particle: ", event.reconstructed_particles[n.getValue()].pdgid 
     

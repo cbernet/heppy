@@ -13,23 +13,23 @@ class Identifier(long):
         
         usage:
            self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.BLOCK) 
-           if Identifier.is_track(self.uniqueid) :
+           if Identifier.is_track(self.uniqueid):
                 ....
            
         '''    
     class PFOBJECTTYPE:
-        NONE=0
-        ECALCLUSTER=1 #simplistic initial implementation (may need an enum for layer to be added)
-        HCALCLUSTER=2
-        TRACK=3
-        PARTICLE=4
-        RECPARTICLE=5
-        BLOCK=6
+        NONE = 0
+        ECALCLUSTER = 1 #simplistic initial implementation (may need an enum for layer to be added)
+        HCALCLUSTER = 2
+        TRACK = 3
+        PARTICLE = 4
+        RECPARTICLE = 5
+        BLOCK = 6
     
     @staticmethod    
     def make_id(item, type):
-        x=id(item)
-        value=  type <<40
+        x = id(item)
+        value = type <<40
         return value | x
    
     @staticmethod      

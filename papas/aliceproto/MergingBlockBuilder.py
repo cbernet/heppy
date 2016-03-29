@@ -62,7 +62,7 @@ class MergingBlockBuilder(BlockBuilder):
         # compute edges between each pair of nodes
         edges = dict()
         for id1, id2 in itertools.combinations(uniqueids,2):
-            edge=self._make_edge(id1,id2, ruler)
+            edge = self._make_edge(id1,id2, ruler)
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
         
@@ -80,20 +80,20 @@ class MergingBlockBuilder(BlockBuilder):
         #else: 
             self._make_merged_clusters()
         
-    def _make_merged_clusters(self) :
+    def _make_merged_clusters(self):
         #carried out the merging of linked clusters
         for block in self.blocks.itervalues():
             if len(block.element_uniqueids)==1 :
                 #no merging needed
-                self.merged[block.element_uniqueids[0]]=self.pfevent.get_object(block.element_uniqueids[0])
+                self.merged[block.element_uniqueids[0]] = self.pfevent.get_object(block.element_uniqueids[0])
             else: 
                 #make a merged cluster and then add each of the linked clusters into it                
                 supercluster = None
                 for elemid in block.element_uniqueids :
-                    thing=self.pfevent.get_object(elemid)
+                    thing = self.pfevent.get_object(elemid)
                     if supercluster is None:
                         supercluster = MergedSmearedCluster(thing)
-                        self.merged[supercluster.uniqueid]=supercluster
+                        self.merged[supercluster.uniqueid] = supercluster
                         if (self.history_nodes):
                             snode = Node(supercluster.uniqueid)
                             self.history_nodes[supercluster.uniqueid] = snode
@@ -105,7 +105,8 @@ class MergingBlockBuilder(BlockBuilder):
                         if (self.history_nodes):
                             self.history_nodes[elemid].add_child(snode)  
                             
-    #def _make_merged_tracks(self) :
+    #was this just enthusiasm?                        
+    #def _make_merged_tracks(self):
         #for block in self.blocks.itervalues():
             #supertrack = None
             #for elemid in block.element_uniqueids :

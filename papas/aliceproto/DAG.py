@@ -74,10 +74,10 @@ class Node(object):
         '''checks for element toremove in the list of children and parents and
            removes any links from both this and from the toremove node
         '''
-        if (toremove in self.parents) :
+        if (toremove in self.parents):
             self.parents.remove(toremove)
             toremove.children.remove(self)
-        if (toremove in self.children) :
+        if (toremove in self.children):
             self.children.remove(toremove)
             toremove.parents.remove(self)        
 

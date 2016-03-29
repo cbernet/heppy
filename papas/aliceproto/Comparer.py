@@ -1,11 +1,11 @@
 from numpy.testing.utils import assert_allclose
 
 class ParticlesComparer(object):
-
+    '''  Checks that two lists of presorted particles are identical
+          will stop on an assert if things are different
+    '''
     def __init__(self,particlesA,particlesB):
-        ''' Simple check that two sets of sensible sorted particles are the same
-            will stop on an assert if things are different
-            assumes particles are ordered in the same way
+        ''' Simple check that two sets of sensibly sorted particles are the same
             is relatively naive but sufficient so far
         '''
         self.A = particlesA
@@ -25,51 +25,49 @@ class ParticlesComparer(object):
             
         #print "compared: ", len(self.A)
 class ClusterComparer(object):
+    '''  Checks that two dicts of clusters are identical. Will 
+         stop with an assert if differences are found
+    '''
 
     def __init__(self,clustersA,clustersB):
-        ''' Simple check that two sets of sensible sorted particles are the same
-            will stop on an assert if things are different
-            assumes particles are ordered in the same way
-            is relatively naive but sufficient so far
+        ''' Simple check that two dicts of clusters are the same
         '''
         self.A = clustersA
         self.B = clustersB
         self.A = sorted( self.A.values(),
-                            key = lambda ptc: ptc.energy, reverse=True)        
+                            key = lambda ptc: ptc.energy, reverse = True)        
         self.B = sorted( self.B.values(),
-                            key = lambda ptc: ptc.energy, reverse=True)         
+                            key = lambda ptc: ptc.energy, reverse = True)         
         assert(len(self.A)==len(self.B))
         
         for i in range(len(self.A)):
-            print self.A[i]
-            print self.B[i]
+            #print self.A[i]
+            #print self.B[i]
             AS = sorted( self.A[i].subclusters, key = lambda x: x.uniqueid)
             BS = sorted( self.B[i].subclusters, key = lambda x: x.uniqueid)            
             for j in range(len(self.A[i].subclusters)):
-                print AS[j].uniqueid, BS[j].uniqueid   
-                assert (AS[j].uniqueid== BS[j].uniqueid)
-            assert_allclose(self.A[i].energy,  self.B[i].energy,  rtol=1e-12, atol=0.00000000001 )
-            assert_allclose(self.A[i].position.Theta(),      self.B[i].position.Theta(),      rtol=1e-12, atol=0.00000000001 )
-            assert_allclose(self.A[i].position.Phi() , self.B[i].position.Phi(), rtol=1e-12, atol=0.00000000001 )
-            assert_allclose(self.A[i]._size, self.B[i]._size, rtol=1e-12, atol=0.00000000001 )
-            
-            assert_allclose(self.A[i].position.Mag(), self.B[i].position.Mag(), rtol=1e-12, atol=0.00000000001 )
-            assert_allclose(self.A[i].position.X(), self.B[i].position.X(), rtol=1e-12, atol=0.00000000001 )
-            assert_allclose(self.A[i].position.Y(), self.B[i].position.Y(), rtol=1e-12, atol=0.00000000001 )
-            assert_allclose(self.A[i].position.Z(), self.B[i].position.Z(), rtol=1e-12, atol=0.00000000001 ) 
-            assert_allclose(self.A[i]._angularsize, self.B[i]._angularsize, rtol=1e-12, atol=0.00000000001 )
-            assert(len(self.A[i].subclusters)== len(self.B[i].subclusters) )
+                #print AS[j].uniqueid, BS[j].uniqueid   
+                assert (AS[j].uniqueid==BS[j].uniqueid)
+            assert_allclose(self.A[i].energy, self.B[i].energy, rtol  = 1e-12, atol=0.00000000001 )
+            assert_allclose(self.A[i].position.Theta(), self.B[i].position.Theta(), rtol = 1e-12, atol = 0.00000000001 )
+            assert_allclose(self.A[i].position.Phi() , self.B[i].position.Phi(), rtol = 1e-12, atol = 0.00000000001 )
+            assert_allclose(self.A[i]._size, self.B[i]._size, rtol = 1e-12, atol=0.00000000001 )
+            assert_allclose(self.A[i].position.Mag(), self.B[i].position.Mag(), rtol = 1e-12, atol = 0.00000000001 )
+            assert_allclose(self.A[i].position.X(), self.B[i].position.X(), rtol = 1e-12, atol = 0.00000000001 )
+            assert_allclose(self.A[i].position.Y(), self.B[i].position.Y(), rtol = 1e-12, atol = 0.00000000001 )
+            assert_allclose(self.A[i].position.Z(), self.B[i].position.Z(), rtol = 1e-12, atol = 0.00000000001 ) 
+            assert_allclose(self.A[i]._angularsize, self.B[i]._angularsize, rtol = 1e-12, atol = 0.00000000001 )
+            assert(len(self.A[i].subclusters)==len(self.B[i].subclusters) )
            
            
-                #assert(AS[j].uniqueid==BS[j].uniqueid)
+                
             
 class TrackComparer(object):
 
     def __init__(self,tracksA,tracksB):
-        ''' Simple check that two sets of sensible sorted particles are the same
+        ''' Simple check that two dicts of tracks are the same
             will stop on an assert if things are different
-            assumes particles are ordered in the same way
-            is relatively naive but sufficient so far
+            is relatively naive and may not be complete.
         '''
         self.A = tracksA
         self.B = tracksB
@@ -80,8 +78,8 @@ class TrackComparer(object):
         assert(len(self.A)==len(self.B))
         
         for i in range(len(self.A)):
-            print self.A[i]
-            print self.B[i]
+            #print self.A[i]
+            #print self.B[i]
             assert_allclose(self.A[i].energy,  self.B[i].energy,  rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].pt,      self.B[i].pt,      rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].charge , self.B[i].charge , rtol=1e-8, atol=0.0000001 )
