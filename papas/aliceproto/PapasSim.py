@@ -97,7 +97,7 @@ class PapasSim(Analyzer):
         for element in self.simulator.pfsequence.pfinput.elements["hcal_in"] :
             event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
-        event.tracks = MergingBlockBuilder("tracker",PFEvent(event), ruler).merged
+        #event.tracks = MergingBlockBuilder("tracker",PFEvent(event), ruler).merged
         event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
         event.hcal_clusters = MergingBlockBuilder("hcal_in",PFEvent(event), ruler).merged  
         event.testtracks =event.tracks

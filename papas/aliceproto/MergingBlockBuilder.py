@@ -6,38 +6,27 @@ from heppy.papas.pfobjects import MergedSmearedCluster
 from heppy.papas.pfobjects import MergedSmearedTrack
 
 class MergingBlockBuilder(BlockBuilder):
-    ''' EventBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
-        and uses the distances between elements to construct a set of blocks
-        Each element will end up in one (and only one block)
-        Blocks retain information of the elements and the distances between elements
-        The blocks can then be used for future particle reconstruction
-        The ids must be unique and are expected to come from the Identifier class
+    ''' MergingBlockBuilder takes particle flow elements of a one type of cluster eg ecal_in
+        and uses the distances between clusters to construct a set of blocks (connected clusters)
+        The blocks will be used to merge clusters
+        
         
         attributes:
-        
-        blocks  : dictionary of blocks {id1:block1, id2:block2, ...}
-        history_nodes : dictionary of nodes that describe which elements are parents of which blocks 
-                        if an existing history_nodes tree  eg one created during simulation
-                        is passed to the BlockBuilder then
-                        the additional history will be added into the exisiting history 
-        nodes : dictionary of nodes which describes the distances/links between elements
-                the nodes dictionary will be used to create the blocks
-    
+             merged - the dictionary of merged clusters
         
         Usage example:
-
-            builder = EventBlockBuilder(pfevent, ruler)
-            for b in builder.blocks.itervalues() :
-                print b
+             (will return the merged clusters to the event)
+            event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
+            
     '''
     def __init__(self, layer, pfevent, ruler, history_nodes = None):
         '''
-       pfevent is event structure inside which we find
-         tracks is a dictionary : {id1:track1, id2:track2, ...}
-         ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
-         hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
-         get_object() which allows a cluster or track to be found from its id
-       ruler is something that measures distance between two objects eg track and hcal
+        pfevent is event structure inside which we find
+            tracks is a dictionary : {id1:track1, id2:track2, ...}
+            ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
+            hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
+            get_object() which allows a cluster or track to be found from its id
+        ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)
             it should take the two objects as arguments and return a tuple
             of the form
@@ -56,12 +45,15 @@ class MergingBlockBuilder(BlockBuilder):
         
         #given a unique id this can return the underying object
         self.pfevent = pfevent
+        
+        # the merged clusters will be stored here
         self.merged =dict()
 
         # collate ids of cluster/tracks etc
-        if layer=="tracker":
-            uniqueids = list(pfevent.tracks.keys()) 
-        elif layer=="ecal_in":
+        #if layer=="tracker":
+        #    uniqueids = list(pfevent.tracks.keys()) 
+        #el
+        if layer=="ecal_in":
             uniqueids = list(pfevent.ecal_clusters.keys())         
         elif layer=="hcal_in":
             uniqueids = list(pfevent.hcal_clusters.keys())         
@@ -74,24 +66,28 @@ class MergingBlockBuilder(BlockBuilder):
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
         
-        #note we do note want the merging blocks to be part of the history   
+        #note we do note want the merging blocks to be part of the history, they
+        #are just temporary objects
         super(MergingBlockBuilder, self).__init__(uniqueids,edges,None, pfevent)
         
+        #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
         if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )             
         
-        if layer=="tracker":
-            self._make_merged_tracks()
-        else: 
+        #if layer=="tracker":
+            #self._make_merged_tracks()
+        #else: 
             self._make_merged_clusters()
         
     def _make_merged_clusters(self) :
+        #carried out the merging of linked clusters
         for block in self.blocks.itervalues():
             if len(block.element_uniqueids)==1 :
                 #no merging needed
                 self.merged[block.element_uniqueids[0]]=self.pfevent.get_object(block.element_uniqueids[0])
             else: 
+                #make a merged cluster and then add each of the linked clusters into it                
                 supercluster = None
                 for elemid in block.element_uniqueids :
                     thing=self.pfevent.get_object(elemid)
@@ -107,25 +103,26 @@ class MergingBlockBuilder(BlockBuilder):
                     else: 
                         supercluster += thing
                         if (self.history_nodes):
-                            self.history_nodes[elemid].add_child(snode)        
-    def _make_merged_tracks(self) :
-        for block in self.blocks.itervalues():
-            supertrack = None
-            for elemid in block.element_uniqueids :
-                thing=self.pfevent.get_object(elemid)
-                if supertrack is None:
-                    supertrack = MergedSmearedTrack(thing)
-                    self.merged[supertrack.uniqueid]=supertrack
-                    if (self.history_nodes):
-                        snode = Node(supertrack.uniqueid)
-                        self.history_nodes[supertrack.uniqueid] = snode
-                        #now add in the links between the block elements and the block into the history_nodes
-                        self.history_nodes[elemid].add_child(snode)
-                    continue
-                else: 
-                    supertrack += thing
-                    if (self.history_nodes):
-                                self.history_nodes[elemid].add_child(snode)        
+                            self.history_nodes[elemid].add_child(snode)  
+                            
+    #def _make_merged_tracks(self) :
+        #for block in self.blocks.itervalues():
+            #supertrack = None
+            #for elemid in block.element_uniqueids :
+                #thing=self.pfevent.get_object(elemid)
+                #if supertrack is None:
+                    #supertrack = MergedSmearedTrack(thing)
+                    #self.merged[supertrack.uniqueid]=supertrack
+                    #if (self.history_nodes):
+                        #snode = Node(supertrack.uniqueid)
+                        #self.history_nodes[supertrack.uniqueid] = snode
+                        ##now add in the links between the block elements and the block into the history_nodes
+                        #self.history_nodes[elemid].add_child(snode)
+                    #continue
+                #else: 
+                    #supertrack += thing
+                    #if (self.history_nodes):
+                                #self.history_nodes[elemid].add_child(snode)        
 
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items
