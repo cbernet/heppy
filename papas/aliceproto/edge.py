@@ -26,11 +26,11 @@ class Edge(object):
         self.linked = is_linked
         self.edge_type = self._edge_type()
         
-        #should not have ecal/ecal and hcal/hcal(I think) because of merging
-        if self.edge_type=="ecal_ecal" :
-            assert (not is_linked)
-        if self.edge_type=="hcal_hcal" :
-            assert (not is_linked)  
+        ##should not have ecal/ecal and hcal/hcal(I think) because of merging
+        #if self.edge_type=="ecal_ecal" :
+            #assert (not is_linked)
+        #if self.edge_type=="hcal_hcal" :
+            #assert (not is_linked)  
             
         #for reconstruction we do not use ecal-hcal links (may need to be moved if we use these edges for merging)
         if self.edge_type == "ecal_hcal":

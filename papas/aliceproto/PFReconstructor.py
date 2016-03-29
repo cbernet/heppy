@@ -97,9 +97,9 @@ class PFReconstructor(object):
             if block.is_active: # when blocks are split the original gets deactivated                
                 newparticles=self.reconstruct_block(block)                
                 self.insert_particle_history(block,newparticles)                
-                print block, "makes particles"
-                for p in newparticles.itervalues():
-                    print p
+                #print block, "makes particles"
+                #for p in newparticles.itervalues():
+                    #print p
                 self.particles.update(newparticles)
 
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
@@ -384,6 +384,8 @@ class PFReconstructor(object):
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy)
         particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
+        if (pdg_id==22 and particle.p4().M()!=0):
+            print cluster.uniqueid,cluster.energy
         
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
@@ -416,7 +418,7 @@ class PFReconstructor(object):
         #if self.history_nodes!= None :
          #   for block in blocks:
                 
-        theStr = ['Particles:']
+        theStr = ['New Rec Particles:']
         theStr.extend( map(str, self.particles))
         theStr.append('Unused:')
         if len(self.unused)==0:

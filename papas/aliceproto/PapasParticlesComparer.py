@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.aliceproto.ParticlesComparer import ParticlesComparer
+from heppy.papas.aliceproto.Comparer import ParticlesComparer
 
 
 

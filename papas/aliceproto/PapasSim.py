@@ -9,10 +9,12 @@ from heppy.papas.toyevents import particles
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories
+from heppy.papas.pfalgo.distance  import Distance
 
 from heppy.papas.pfalgo.pfinput import PFInput
-
-
+from heppy.papas.aliceproto.MergingBlockBuilder import MergingBlockBuilder
+from heppy.papas.aliceproto.Comparer import ClusterComparer, TrackComparer
+from heppy.papas.aliceproto.pfevent import PFEvent
 from ROOT import TLorentzVector, TVector3
 
 
@@ -82,17 +84,35 @@ class PapasSim(Analyzer):
         origrecparticles = sorted( self.simulator.pfsequence.pfreco.particles,
                                    key = lambda ptc: ptc.e(), reverse=True)
         setattr(event, "orig_rec_particles",origrecparticles)
-
+        
+        
+        #here we merge the simulated clusters and tracks as a separate pre-stage (prior to reconstruction)
+        event.tracks = dict()
+        event.ecal_clusters = dict()
+        event.hcal_clusters = dict() 
+        for element in self.simulator.pfsequence.pfinput.elements["tracker"] :
+            event.tracks[element.uniqueid] = element 
+        for element in self.simulator.pfsequence.pfinput.elements["ecal_in"] :
+            event.ecal_clusters[element.uniqueid] = element 
+        for element in self.simulator.pfsequence.pfinput.elements["hcal_in"] :
+            event.hcal_clusters[element.uniqueid] = element 
+        ruler = Distance()
+        event.tracks = MergingBlockBuilder("tracker",PFEvent(event), ruler).merged
+        event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
+        event.hcal_clusters = MergingBlockBuilder("hcal_in",PFEvent(event), ruler).merged  
+        event.testtracks =event.tracks
+        event.testecal_clusters =  event.ecal_clusters
+        event.testhcal_clusters = event.hcal_clusters          
+        
         #for blockbuilder to get merged clusters and to compare with the non-electron etc by passed particles
         setattr(event,self.simname,simparticles) #check
-        pfinput = PFInput(simparticles) #this is pre cluster merging ....
-        pfinput = PFInput(origrecparticles)
+        event.baseline_particles = origrecparticles
+        event.sim_partciles = simparticles        
+        
+        #for now we use the original reconstructions to provide the ready merged tracks and clusters
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
-        event.baseline_particles = origrecparticles
-        event.sim_partciles=simparticles
-
         for element in self.simulator.pfsequence.elements :
             if element.__class__.__name__ == 'SmearedTrack': 
                 event.tracks[element.uniqueid]=element 
@@ -103,8 +123,11 @@ class PapasSim(Analyzer):
             else :            
                 print element.__class__.__name__ 
                 assert(False)
-        #print "number of elements for papas blocks", len(event.ecal_clusters) , len(event.hcal_clusters),len(event.tracks),len(event.ecal_clusters) + len(event.hcal_clusters) +len(
-        #    event.tracks)        
+         
+        #compare old and new cluster methods 
+        #ClusterComparer(event.testecal_clusters,event.ecal_clusters)
+        #ClusterComparer(event.testhcal_clusters,event.hcal_clusters)
+       
         pass
 
         
