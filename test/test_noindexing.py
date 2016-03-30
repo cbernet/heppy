@@ -15,32 +15,28 @@ class TestNoIndexing(unittest.TestCase):
         self.fname = create_tree()
         rootfile = TFile(self.fname)
         self.nevents = rootfile.Get('test_tree').GetEntries()
+        self.outdir = 'Out_test'
 
     def test_all_events_processed(self):
-        outdir = 'Out_test_all_events_processed'
-        if os.path.isdir(outdir):
-            shutil.rmtree(outdir)
-        loop = Looper( outdir, config,
+        loop = Looper( self.outdir, config,
                        nEvents=None,
                        nPrint=0,
                        timeReport=True)
         loop.loop()
         loop.write()
-        logfile = open('/'.join([outdir, 'log.txt']))
+        logfile = open('/'.join([self.outdir, 'log.txt']))
         nev_processed = None
         for line in logfile:
             if line.startswith('number of events processed:'):
                 nev_processed = int(line.split(':')[1])
+        logfile.close()
         self.assertEqual(nev_processed, self.nevents)
         # checking the looper itself.
         self.assertEqual(loop.nEvProcessed, self.nevents)
 
     def test_skip(self):
-        outdir = 'Out_test_skip'
-        if os.path.isdir(outdir):
-            shutil.rmtree(outdir)
         first = 10 
-        loop = Looper( outdir, config,
+        loop = Looper( self.outdir, config,
                        nEvents=None,
                        firstEvent=first,
                        nPrint=0,
@@ -55,10 +51,7 @@ class TestNoIndexing(unittest.TestCase):
         '''Test that indeed, calling loop.process(iev) raises
         TypeError if the events backend does not support indexing. 
         '''
-        outdir = 'Out_test_process_event'
-        if os.path.isdir(outdir):
-            shutil.rmtree(outdir)
-        loop = Looper( outdir, config,
+        loop = Looper( self.outdir, config,
                        nEvents=None,
                        nPrint=0,
                        timeReport=True)
