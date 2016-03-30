@@ -12,6 +12,7 @@ import pprint
 from math import ceil
 from event import Event
 import timeit
+from exceptions import UserStop
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -205,7 +206,8 @@ Make sure that the configuration object is of class cfg.Analyzer.
                     print self.event
             except UserStop as err:
                 print 'Stopped loop following a UserStop exception:'
-                print err.msg()
+                print err
+                break
 
         warning = self.logger.warning
         warning('')

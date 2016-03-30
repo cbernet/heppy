@@ -1,9 +1,11 @@
 import unittest
 import shutil
-import os 
-from simple_example_cfg import config
+import os
+import copy
+from simple_example_cfg import config, stopper 
 from heppy.utils.testtree import create_tree, remove_tree
 from heppy.framework.looper import Looper
+from heppy.framework.exceptions import UserStop
 from ROOT import TFile
 
 import logging
@@ -62,11 +64,21 @@ class TestSimpleExample(unittest.TestCase):
         loop.process(10)
         self.assertEqual(loop.event.input.var1, 10)
         loop.process(10)
+        
+    def test_userstop(self):
+        outdir = 'Out_test_userstop'
+        if os.path.isdir(outdir):
+            shutil.rmtree(outdir)
+        config_with_stopper = copy.copy(config)
+        config_with_stopper.sequence.insert(1, stopper)
+        loop = Looper( outdir, config_with_stopper,
+                       nEvents=None,
+                       nPrint=0,
+                       timeReport=True)
+        self.assertRaises(UserStop, loop.process, 10)
+  
 
-#    def test_import(self):
-#        from simple_example_cfg import config
-#        del config.events_class.__getitem__
-       
+
 if __name__ == '__main__':
 
     unittest.main()
