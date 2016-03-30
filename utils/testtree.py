@@ -13,9 +13,9 @@ def create_tree(filename=FNAME):
     for i in range(200):
         tree.fill('var1', i)
         tree.tree.Fill()
-    print 'creating a tree', tree.tree.GetName(),\
-        tree.tree.GetEntries(), 'entries in',\
-        outfile.GetName()
+    # print 'creating a tree', tree.tree.GetName(),\
+    #    tree.tree.GetEntries(), 'entries in',\
+    #    outfile.GetName()
     outfile.Write()
     outfile.Close()
     return outfile.GetName()

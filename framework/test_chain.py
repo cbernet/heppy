@@ -12,10 +12,10 @@ testfname = 'test_tree.root'
 class ChainTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.chain = Chain(testfname, 'test_tree')
         self.fname = create_tree()
         rootfile = TFile(self.fname)
         self.nevents = rootfile.Get('test_tree').GetEntries()
+        self.chain = Chain(testfname, 'test_tree')
 
 
     def test_file(self):
@@ -55,5 +55,4 @@ class ChainTestCase(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    create_tree(testfname)
     unittest.main()
