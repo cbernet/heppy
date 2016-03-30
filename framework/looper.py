@@ -203,7 +203,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
                 self.process( iEv )
                 self.nEvProcessed += 1
                 if iEv<self.nPrint:
-                    print self.event
+                    self.logger.info( self.event.__str__() )
             except UserStop as err:
                 print 'Stopped loop following a UserStop exception:'
                 print err
@@ -239,9 +239,8 @@ Make sure that the configuration object is of class cfg.Analyzer.
     def process(self, iEv ):
         """Run event processing for all analyzers in the sequence.
 
-        This function is called by self.loop,
-        but can also be called directly from
-        the python interpreter, to jump to a given event.
+        This function can be called directly from
+        the python interpreter, to jump to a given event and process it.
         """
         if not hasattr(self.events, '__getitem__'):
             msg = '''
@@ -256,6 +255,12 @@ possibly skipping a number of events at the beginning.
         self.event = None
         self.event = Event(iEv, self.events[iEv], self.setup)            
         self.iEvent = iEv
+        return self._run_analyzers_on_event()
+
+    def _run_analyzers_on_event(self):
+        '''Run all analysers on the current event, self.event. 
+        Returns a tuple (success?, last_analyzer_name).
+        '''
         for i,analyzer in enumerate(self.analyzers):
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop(self.setup)
@@ -267,10 +272,9 @@ possibly skipping a number of events at the beginning.
                     self.timeReport[i]['time'] += timeit.default_timer() - start
             if ret == False:
                 return (False, analyzer.name)
-        if iEv<self.nPrint:
-            self.logger.info( self.event.__str__() )
         return (True, analyzer.name)
 
+    
     def write(self):
         """Writes all analyzers.
 
