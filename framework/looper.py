@@ -97,10 +97,15 @@ class Looper(object):
             errmsg = 'please provide at least an input file in the files attribute of this component\n' + str(self.cfg_comp)
             raise ValueError( errmsg )
         if hasattr(config,"preprocessor") and config.preprocessor is not None :
-              self.cfg_comp = config.preprocessor.run(self.cfg_comp,self.outDir,firstEvent,nEvents)
+              self.cfg_comp = config.preprocessor.run(self.cfg_comp,
+                                                      self.outDir,
+                                                      firstEvent,
+                                                      nEvents)
         if hasattr(self.cfg_comp,"options"):
               print self.cfg_comp.files,self.cfg_comp.options
-              self.events = config.events_class(self.cfg_comp.files, tree_name,options=self.cfg_comp.options)
+              self.events = config.events_class(self.cfg_comp.files,
+                                                tree_name,
+                                                options=self.cfg_comp.options)
         else :
               self.events = config.events_class(self.cfg_comp.files, tree_name)
         if hasattr(self.cfg_comp, 'fineSplit'):
@@ -172,8 +177,9 @@ Make sure that the configuration object is of class cfg.Analyzer.
         nEvents = self.nEvents
         firstEvent = self.firstEvent
         iEv = firstEvent
-        if nEvents is None or int(nEvents) > len(self.events) :
-            nEvents = len(self.events)
+        self.nEvProcessed = 0
+        if nEvents is None or int(nEvents)-firstEvent > len(self.events) :
+            nEvents = len(self.events) - firstEvent
         else:
             nEvents = int(nEvents)
         self.logger.info(
@@ -186,7 +192,6 @@ Make sure that the configuration object is of class cfg.Analyzer.
         try:
             for iEv in range(firstEvent, firstEvent+nEvents):
                 if iEv%100 ==0:
-                    # print 'event', iEv
                     if not hasattr(self,'start_time'):
                         self.logger.info( 'event {iEv}'.format(iEv=iEv))
                         self.start_time = timeit.default_timer()
@@ -195,8 +200,10 @@ Make sure that the configuration object is of class cfg.Analyzer.
                         self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
 
                 self.process( iEv )
+                self.nEvProcessed += 1
                 if iEv<self.nPrint:
                     print self.event
+                    
 
         except UserWarning:
             print 'Stopped loop following a UserWarning exception'
@@ -225,7 +232,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
             warning("%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( passev, allev, 1000*totPerProcEv, 1000*totPerAllEv, 100.0, "TOTAL"))
             warning("")
         logfile = open('/'.join([self.name,'log.txt']),'a')
-        logfile.write('number of events processed: {nEv}\n'.format(nEv=iEv+1))
+        logfile.write('number of events processed: {nEv}\n'.format(nEv=self.nEvProcessed))
         logfile.close()
 
     def process(self, iEv ):
