@@ -72,6 +72,10 @@ class Looper(object):
 
         self.name = self._prepareOutput(name)
         self.outDir = self.name
+        # self.logger writes to stdout and to log.txt.
+        # configured in the users cfg by doing:
+        # import logging
+        #   logging.basicConfig(level=logging.ERROR)
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))
@@ -172,26 +176,23 @@ Make sure that the configuration object is of class cfg.Analyzer.
             nEvents = len(self.events)
         else:
             nEvents = int(nEvents)
-        eventSize = nEvents
         self.logger.info(
             'starting loop at event {firstEvent} '\
-                'to process {eventSize} events.'.format(firstEvent=firstEvent,
-                                                        eventSize=eventSize))
+                'to process {nEvents} events.'.format(firstEvent=firstEvent,
+                                                        nEvents=nEvents))
         self.logger.info( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop(self.setup)
         try:
-            for iEv in range(firstEvent, firstEvent+eventSize):
-                # if iEv == nEvents:
-                #     break
+            for iEv in range(firstEvent, firstEvent+nEvents):
                 if iEv%100 ==0:
                     # print 'event', iEv
                     if not hasattr(self,'start_time'):
-                        print 'event', iEv
+                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
                         self.start_time = timeit.default_timer()
                         self.start_time_event = iEv
                     else:
-                        print 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time))
+                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
 
                 self.process( iEv )
                 if iEv<self.nPrint:
@@ -201,8 +202,6 @@ Make sure that the configuration object is of class cfg.Analyzer.
             print 'Stopped loop following a UserWarning exception'
 
         warning = self.logger.warning
-        info = self.logger.info
-        warning('number of events processed: {nEv}'.format(nEv=iEv+1))
         warning('')
         warning( self.cfg_comp )
         warning('')        
@@ -225,6 +224,9 @@ Make sure that the configuration object is of class cfg.Analyzer.
             warning("%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------"))
             warning("%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( passev, allev, 1000*totPerProcEv, 1000*totPerAllEv, 100.0, "TOTAL"))
             warning("")
+        logfile = open('/'.join([self.name,'log.txt']),'a')
+        logfile.write('number of events processed: {nEv}\n'.format(nEv=iEv+1))
+        logfile.close()
 
     def process(self, iEv ):
         """Run event processing for all analyzers in the sequence.
