@@ -1,6 +1,6 @@
 from heppy.papas.aliceproto.identifier import Identifier
 from heppy.papas.aliceproto.DAG import Node
-from heppy.papas.aliceproto.BlockSplitter import BlockSplitter
+from heppy.papas.aliceproto.blocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import Reconstructed_Particle
@@ -48,7 +48,7 @@ class PFReconstructor(object):
          If history_nodes are provided then the particles are linked into the exisiting history
          
          Contains:
-            blocks: the dictionary of blovks to be reconstructed { blockid; block }
+            blocks: the dictionary of blocks to be reconstructed { blockid; block }
             unused: list of unused elements
             particles: list of constructed particles
             history_nodes: optional, desribes links between elements, blocks, particles
@@ -92,6 +92,8 @@ class PFReconstructor(object):
         for b in sorted(self.blocks, key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True):    
             block=self.blocks[b] #must be slicker way (ask Colin)
             if block.is_active: # when blocks are split the original gets deactivated                
+                if block.short_name()=="E1H1T3":
+                    pass
                 newparticles=self.reconstruct_block(block)                
                 self.insert_particle_history(block,newparticles)                
                 #print block, "makes particles"

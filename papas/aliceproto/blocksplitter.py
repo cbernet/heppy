@@ -1,4 +1,4 @@
-from BlockBuilder import BlockBuilder
+from blockbuilder import BlockBuilder
 
 class BlockSplitter(BlockBuilder):
     ''' BlockSplitter takes a block of particle flow element ids (clusters,tracks etc)

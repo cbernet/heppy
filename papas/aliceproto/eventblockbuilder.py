@@ -1,5 +1,5 @@
 import itertools
-from BlockBuilder import BlockBuilder
+from blockbuilder import BlockBuilder
 from edge import Edge
 from DAG import Node
 

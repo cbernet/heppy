@@ -1,9 +1,8 @@
 import itertools
-from BlockBuilder import BlockBuilder
+from blockbuilder import BlockBuilder
 from edge import Edge
 from DAG import Node
-from heppy.papas.pfobjects import MergedSmearedCluster
-from heppy.papas.pfobjects import MergedSmearedTrack
+from heppy.papas.pfobjects import MergedCluster
 
 class MergingBlockBuilder(BlockBuilder):
     ''' MergingBlockBuilder takes particle flow elements of a one type of cluster eg ecal_in
@@ -92,7 +91,7 @@ class MergingBlockBuilder(BlockBuilder):
                 for elemid in block.element_uniqueids :
                     thing = self.pfevent.get_object(elemid)
                     if supercluster is None:
-                        supercluster = MergedSmearedCluster(thing)
+                        supercluster = MergedCluster(thing)
                         self.merged[supercluster.uniqueid] = supercluster
                         if (self.history_nodes):
                             snode = Node(supercluster.uniqueid)

@@ -53,7 +53,7 @@ class Identifier(long):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.TRACK 
     
     @staticmethod  
-    def isBlock ( ident):
+    def is_block ( ident):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.BLOCK     
     
     @staticmethod  

@@ -72,12 +72,27 @@ class Cluster(PFObject):
         return self._angularsize
 
     def is_inside(self, point):
+        #check if the point lies within the "size" circle of each of the subclusters
+        #fixed a bug in which the size was taken from teh cluster and not the
+        # subclusters (this breaks when used with mergedclusters)
+        subdist=[]
+        for subc in self.subclusters:
+            dist=(subc.position - point).Mag()
+            if (dist < subc.size()):
+                subdist.append(dist)
+        if (len(subdist)):
+            return True, min(subdist)
+        
         subdists = [ (subc.position - point).Mag() for subc in self.subclusters ]
-        dist = min(subdists) 
-        if dist < self.size():
-            return True, dist
-        else:
-            return False, dist
+        dist = min(subdists)         
+        return False, dist        
+        
+        #subdists = [ (subc.position - point).Mag() for subc in self.subclusters ]
+        #dist = min(subdists) 
+        #if dist < self.size():
+            #return True, dist
+        #else:
+            #return False, dist
 
     def __iadd__(self, other):
         if other.layer != self.layer:
@@ -119,29 +134,26 @@ class SmearedCluster(Cluster):
         self.mother = mother
         super(SmearedCluster, self).__init__(*args, **kwargs)
 
-class MergedSmearedCluster(Cluster):
-# for the new reconstruction the merged cluster needs to have its own unique id
-# a slightly modified __iadd__ function is also needed
+class MergedCluster(Cluster):
+    '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
+
     def __init__(self, mother ):
         self.mother = mother
-        super(MergedSmearedCluster, self).__init__( mother.energy, mother.position, mother._size, mother.layer, mother.particle)
+        super(MergedCluster, self).__init__( mother.energy, mother.position, mother._size, mother.layer, mother.particle)
         self.subclusters = [mother]  
 
     def __iadd__(self, other):
-            if other.layer != self.layer:
-                raise ValueError('can only add a cluster from the same layer') 
-            position = self.position * self.energy + other.position * other.energy
-            energy = self.energy + other.energy
-            denom  = 1/energy
-            position *= denom
-            self.position = position
-            self.energy = energy
-            #if other.subclusters[0] in self.subclusters:
-           #     pass
-            self.subclusters.extend([other])
-            #print "add ", self.uniqueid, other.uniqueid, len(self.subclusters), len(
-            #todo recalculate the angular size                                                                      other.subclusters)
-            return self
+        if other.layer != self.layer:
+            raise ValueError('can only add a cluster from the same layer') 
+        position = self.position * self.energy + other.position * other.energy
+        energy = self.energy + other.energy
+        denom  = 1/energy
+        position *= denom
+        self.position = position
+        self.energy = energy
+        self.subclusters.extend([other])
+                                                                         
+        return self
         
 class Track(PFObject):
     '''Determines the trajectory in space and time of a particle (charged or neutral).
@@ -171,20 +183,14 @@ class Track(PFObject):
             phi = self.p3.Phi()
         )
         
-
-        
+      
 class SmearedTrack(Track):
 
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
         self.path = mother.path
         super(SmearedTrack, self).__init__(*args, **kwargs)
-
-class MergedSmearedTrack(Track):
-    def __init__(self, mother ):
-        self.mother = mother
-        super(MergedSmearedTrack, self).__init__( mother.p3, mother.charge, mother.path,mother.particle)
-     
+   
         
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge, pdgid=None,ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
@@ -241,7 +247,7 @@ class Particle(BaseParticle):
 
 
 class Reconstructed_Particle(Particle):
-    '''  A reconstruceted Particle sis just like a particle but has a reconstructed particle uniqueid
+    '''  A reconstruceted Particle is just like a particle but has a reconstructed particle uniqueid
     '''
     def __init__(self, tlv, vertex, charge, pdgid=None):
         super(Reconstructed_Particle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)

@@ -1,7 +1,7 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.aliceproto.Comparer import ParticlesComparer
-
-
+from heppy.papas.aliceproto.comparer import ParticlesComparer
+from heppy.papas.aliceproto.history import History
+from heppy.papas.aliceproto.pfevent import PFEvent
 
 class PapasParticlesComparer(Analyzer):
     ''' Unsophisticated testing Module that checks that two lists of sorted particles match
@@ -15,7 +15,10 @@ class PapasParticlesComparer(Analyzer):
             event: must contain baseline_particles (the original reconstruction from simulation)
                    and reconstructed_particles made from the new BlockBuilder approach
         '''
-    
-        ParticlesComparer(event.reconstructed_particle_list,event.baseline_particles)
+        pfevent=PFEvent(event)
+        history=History(event.history_nodes, pfevent)
+        ParticlesComparer(event.reconstructed_particle_list,event.baseline_particles,history)
+        
+        
         pass
         

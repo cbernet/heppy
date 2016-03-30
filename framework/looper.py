@@ -233,6 +233,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         but can also be called directly from
         the python interpreter, to jump to a given event.
         """
+    
         self.event = Event(iEv, self.events[iEv], self.setup)
         self.iEvent = iEv
         for i,analyzer in enumerate(self.analyzers):

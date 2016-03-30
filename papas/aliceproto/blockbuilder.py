@@ -83,8 +83,14 @@ class PFBlock(object):
     def __len__(self) :
         return len(self.element_uniqueids)   
     
-    def linked_edges(self,uniqueid,edgetype=None) :
-        ''' Returns list of all linked edges of a given edge type that are connected to a given id - sorted in order of increasing distance'''
+    def linked_edges(self, uniqueid, edgetype=None) :
+        ''' 
+        Arguments:
+        uniqueid : is the id of item of interest
+        edgetype : is an optional type of edge. If specified only links of the given edgetype will be returned
+        
+        Returns list of all edges of a given edge type that are connected to a given id.
+        The list is sorted in order of increasing distance'''
         linked_edges = []
         for edge in self.edges.itervalues():
             if edge.linked and (edge.id1 == uniqueid or edge.id2 == uniqueid ) :
@@ -95,7 +101,7 @@ class PFBlock(object):
         linked_edges.sort( key = lambda x: (x.distance is None, x.distance))
         return linked_edges
                    
-    def linked_ids(self,uniqueid,edgetype=None) :
+    def linked_ids(self, uniqueid, edgetype=None) :
             ''' Returns list of all linked ids of a given edge type that are connected to a given id - sorted in order of increasing distance'''
             linked_ids = []  
             linked_edges = []
@@ -193,7 +199,7 @@ class PFBlock(object):
     
         return matrixstr   +"      }\n"
     
-    def get_edge(self,id1, id2):
+    def get_edge(self, id1, id2):
         ''' Find the edge corresponding to e1 e2 
             Note that make_key deals with whether it is get_edge(e1, e2) or get_edge(e2, e1) (either order gives same result)
             '''

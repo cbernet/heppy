@@ -1,9 +1,9 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.aliceproto.PFReconstructor import PFReconstructor
+from heppy.papas.aliceproto.pfreconstructor import PFReconstructor
 from heppy.papas.aliceproto.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.aliceproto.getobject import GetObject
-from heppy.papas.aliceproto.History import History
+from heppy.papas.aliceproto.history import History
 
 class PapasPFReconstructor(Analyzer):
 

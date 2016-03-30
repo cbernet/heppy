@@ -3,9 +3,9 @@ from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
 from heppy.papas.aliceproto.identifier import Identifier
 from heppy.papas.aliceproto.getobject import GetObject
 from edge import Edge
-from heppy.papas.aliceproto.EventBlockBuilder import EventBlockBuilder
-from heppy.papas.aliceproto.BlockSplitter import BlockSplitter
-from heppy.papas.aliceproto.BlockBuilder import PFBlock as realPFBlock
+from heppy.papas.aliceproto.eventblockbuilder import EventBlockBuilder
+from heppy.papas.aliceproto.blocksplitter import BlockSplitter
+from heppy.papas.aliceproto.blockbuilder import PFBlock as realPFBlock
 
 
 class Cluster(object):

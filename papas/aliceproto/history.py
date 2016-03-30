@@ -15,29 +15,32 @@ class History(object):
         BFS = BreadthFirstSearch(self.history_nodes[id],"undirected")
         print "history connected to node:", id
         
-        tracks = []
-        ecals = []
-        hcals = []
-        sim_particles = []
-        rec_particles = []
+        track_descrips = []
+        ecal_descrips = []
+        hcal_descrips = []
+        #sim_particle_descrips = []
+        rec_particle_descrips = []
+        block_descrips = []
         for n in BFS.result :
             z = n.get_value()
             descrip = self.pfevent.get_object(z).__str__()
-            if (Identifier.is_particle(z)):
-                sim_particles.append(descrip)
+           # if (Identifier.is_particle(z)):
+            #    sim_particle_descrips.append(descrip)
+            if (Identifier.is_block(z)):
+                block_descrips.append(descrip)            
             if (Identifier.is_track(z)):
-                tracks.append(descrip)         
+                track_descrips.append(descrip)         
             if (Identifier.is_ecal(z)):
-                ecals.append(descrip)  
+                ecal_descrips.append(descrip)  
             if (Identifier.is_hcal(z)):
-                hcals.append(descrip)         
+                hcal_descrips.append(descrip)         
             if (Identifier.is_rec_particle(z)):
-                rec_particles.append(descrip)               
+                rec_particle_descrips.append(descrip)               
         
-        print "sim particles", sim_particles
-        print "       tracks", tracks
-        print "        ecals", ecals
-        print "        hcals", hcals
-        print "rec particles", rec_particles
+        print "block", block_descrips
+        print "       tracks", track_descrips
+        print "        ecals", ecal_descrips
+        print "        hcals", hcal_descrips
+        print "rec particles", rec_particle_descrips
         
         #print "reconstructed particles"

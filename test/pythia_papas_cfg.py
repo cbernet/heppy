@@ -120,8 +120,9 @@ if __name__ == '__main__':
         iev = int(sys.argv[1])
        
     loop = Looper( 'looper', config,
-                   nEvents=100,
+                   nEvents=1000,
                    nPrint=0,
+                   firstEvent=0,
                    timeReport=True)
     simulation = None
     for ana in loop.analyzers: 

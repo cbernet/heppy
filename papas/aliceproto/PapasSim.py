@@ -12,8 +12,8 @@ from heppy.display.pfobjects import GTrajectories
 from heppy.papas.pfalgo.distance  import Distance
 
 from heppy.papas.pfalgo.pfinput import PFInput
-from heppy.papas.aliceproto.MergingBlockBuilder import MergingBlockBuilder
-from heppy.papas.aliceproto.Comparer import ClusterComparer, TrackComparer
+from heppy.papas.aliceproto.mergingblockbuilder import MergingBlockBuilder
+from heppy.papas.aliceproto.comparer import ClusterComparer, TrackComparer
 from heppy.papas.aliceproto.pfevent import PFEvent
 from ROOT import TLorentzVector, TVector3
 
@@ -90,12 +90,15 @@ class PapasSim(Analyzer):
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict() 
-        for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
-            event.tracks[element.uniqueid] = element 
-        for element in self.simulator.pfsequence.pfinput.elements["ecal_in"]:
-            event.ecal_clusters[element.uniqueid] = element 
-        for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
-            event.hcal_clusters[element.uniqueid] = element 
+        if "tracker" in self.simulator.pfsequence.pfinput.elements :
+            for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
+                event.tracks[element.uniqueid] = element 
+        if "ecal_in" in self.simulator.pfsequence.pfinput.elements :        
+            for element in self.simulator.pfsequence.pfinput.elements["ecal_in"]:
+                event.ecal_clusters[element.uniqueid] = element 
+        if "hcal_in" in self.simulator.pfsequence.pfinput.elements :
+            for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
+                event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
         #event.tracks = MergingBlockBuilder("tracker",PFEvent(event), ruler).merged
         event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
@@ -125,8 +128,8 @@ class PapasSim(Analyzer):
                 assert(False)
          
         #compare old and new cluster methods 
-        #ClusterComparer(event.testecal_clusters,event.ecal_clusters)
-        #ClusterComparer(event.testhcal_clusters,event.hcal_clusters)
+        ClusterComparer(event.testecal_clusters,event.ecal_clusters)
+        ClusterComparer(event.testhcal_clusters,event.hcal_clusters)
        
         pass
 

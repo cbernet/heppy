@@ -98,6 +98,4 @@ class PapasSim(Analyzer):
                 print label 
                 assert(False)
 
-                
-        # setattr(event, self.recname, particles)
         
