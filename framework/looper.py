@@ -190,25 +190,52 @@ Make sure that the configuration object is of class cfg.Analyzer.
         self.logger.info( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop(self.setup)
-        for iEv in range(firstEvent, firstEvent+nEvents):
-            if iEv%100 ==0:
-                if not hasattr(self,'start_time'):
-                    self.logger.info( 'event {iEv}'.format(iEv=iEv))
-                    self.start_time = timeit.default_timer()
-                    self.start_time_event = iEv
-                else:
-                    self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
 
-            try:
-                self.process( iEv )
-                self.nEvProcessed += 1
-                if iEv<self.nPrint:
-                    self.logger.info( self.event.__str__() )
-            except UserStop as err:
-                print 'Stopped loop following a UserStop exception:'
-                print err
-                break
-
+        if hasattr(self.events, '__getitem__'):
+            # events backend supports indexing, e.g. CMS, FCC, bare root
+            for iEv in range(firstEvent, firstEvent+nEvents):
+                if iEv%100 == 0:
+                    if not hasattr(self,'start_time'):
+                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
+                        self.start_time = timeit.default_timer()
+                        self.start_time_event = iEv
+                    else:
+                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+                try:
+                    self.process( iEv )
+                    self.nEvProcessed += 1
+                    if iEv<self.nPrint:
+                        self.logger.info( self.event.__str__() )
+                except UserStop as err:
+                    print 'Stopped loop following a UserStop exception:'
+                    print err
+                    break
+        else:
+            # events backend does not support indexing, e.g. LCIO
+            iEv = 0
+            for ii, event in enumerate(self.events):
+                if ii < firstEvent:
+                    continue
+                iEv += 1
+                if iEv%100 == 0:
+                    if not hasattr(self,'start_time'):
+                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
+                        self.start_time = timeit.default_timer()
+                        self.start_time_event = iEv
+                    else:
+                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+                try:
+                    self.event = Event(iEv, event, self.setup)
+                    self.iEvent = iEv
+                    self._run_analyzers_on_event()
+                    self.nEvProcessed += 1
+                    if iEv<self.nPrint:
+                        self.logger.info( self.event.__str__() )
+                except UserStop as err:
+                    print 'Stopped loop following a UserStop exception:'
+                    print err
+                    break            
+            
         warning = self.logger.warning
         warning('')
         warning( self.cfg_comp )
@@ -233,7 +260,9 @@ Make sure that the configuration object is of class cfg.Analyzer.
             warning("%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( passev, allev, 1000*totPerProcEv, 1000*totPerAllEv, 100.0, "TOTAL"))
             warning("")
         logfile = open('/'.join([self.name,'log.txt']),'a')
-        logfile.write('number of events processed: {nEv}\n'.format(nEv=self.nEvProcessed))
+        logfile.write('number of events processed: {nEv}\n'.format(
+            nEv=self.nEvProcessed)
+        )
         logfile.close()
 
     def process(self, iEv ):
@@ -252,7 +281,6 @@ However, you may still iterate on your events using Loop.loop,
 possibly skipping a number of events at the beginning.
 '''.format(evclass=self.events.__class__)
             raise TypeError(msg)
-        self.event = None
         self.event = Event(iEv, self.events[iEv], self.setup)            
         self.iEvent = iEv
         return self._run_analyzers_on_event()
