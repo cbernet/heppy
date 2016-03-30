@@ -189,24 +189,23 @@ Make sure that the configuration object is of class cfg.Analyzer.
         self.logger.info( str( self.cfg_comp ) )
         for analyzer in self.analyzers:
             analyzer.beginLoop(self.setup)
-        try:
-            for iEv in range(firstEvent, firstEvent+nEvents):
-                if iEv%100 ==0:
-                    if not hasattr(self,'start_time'):
-                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
-                        self.start_time = timeit.default_timer()
-                        self.start_time_event = iEv
-                    else:
-                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+        for iEv in range(firstEvent, firstEvent+nEvents):
+            if iEv%100 ==0:
+                if not hasattr(self,'start_time'):
+                    self.logger.info( 'event {iEv}'.format(iEv=iEv))
+                    self.start_time = timeit.default_timer()
+                    self.start_time_event = iEv
+                else:
+                    self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
 
+            try:
                 self.process( iEv )
                 self.nEvProcessed += 1
                 if iEv<self.nPrint:
                     print self.event
-                    
-
-        except UserWarning:
-            print 'Stopped loop following a UserWarning exception'
+            except UserStop as err:
+                print 'Stopped loop following a UserStop exception:'
+                print err.msg()
 
         warning = self.logger.warning
         warning('')
@@ -242,7 +241,18 @@ Make sure that the configuration object is of class cfg.Analyzer.
         but can also be called directly from
         the python interpreter, to jump to a given event.
         """
-        self.event = Event(iEv, self.events[iEv], self.setup)
+        if not hasattr(self.events, '__getitem__'):
+            msg = '''
+Your events backend, of type 
+{evclass}
+does not support indexing. 
+Therefore, you cannot directly access a given event using Loop.process.
+However, you may still iterate on your events using Loop.loop, 
+possibly skipping a number of events at the beginning.
+'''.format(evclass=self.events.__class__)
+            raise TypeError(msg)
+        self.event = None
+        self.event = Event(iEv, self.events[iEv], self.setup)            
         self.iEvent = iEv
         for i,analyzer in enumerate(self.analyzers):
             if not analyzer.beginLoopCalled:

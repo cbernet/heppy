@@ -1,9 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.particles.genbrowser import GenBrowser
 
-class UserWarning(Exception):
-    pass
-
 class GenAnalyzer(Analyzer):
     
     def process(self, event):
@@ -20,4 +17,3 @@ class GenAnalyzer(Analyzer):
                 for a in ancestors:
                     if a.status()==22:
                         print '\t', a
-            import pdb; pdb.set_trace()
