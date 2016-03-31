@@ -79,7 +79,7 @@ class PFReconstructor(object):
         # then recalculate the blocks
         splitblocks=dict() 
         
-        for block in self.sorted_block_keys(): #put big interesting blocks first   
+        for block in self._sorted_block_keys(): #put big interesting blocks first   
             newblocks=self.simplify_blocks(self.blocks[block],event.history_nodes)
             if newblocks != None:
                 splitblocks.update( newblocks)      
@@ -88,7 +88,7 @@ class PFReconstructor(object):
         
             
         #reconstruct each of the resulting blocks        
-        for b in self.sorted_block_keys():  #put big interesting blocks first
+        for b in self._sorted_block_keys():  #put big interesting blocks first
             block=self.blocks[b]            
             if block.is_active: # when blocks are split the original gets deactivated                
                 #ALICE debugging  
@@ -102,11 +102,11 @@ class PFReconstructor(object):
             pass
             
       
-    def sorted_block_keys(self) :
+    def _sorted_block_keys(self) :
         #sort blocks (1) by number of elements (2) by mix of ecal, hcal , tracks (the shortname will look like "H1T2" for a block
         #with one cluster and two tracks)        
         return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
-        #return sorted(self.blocks,)
+        
             
     def simplify_blocks(self, block,history_nodes=None):
         
@@ -228,7 +228,8 @@ class PFReconstructor(object):
             #some parts of the block, there are frequently ambiguities and so for now the particle is
             #linked to everything in the block
             if (newparticle) :
-                self.particles[newparticle.uniqueid] = newparticle            
+                newid = newparticle.uniqueid
+                self.particles[newid] = newparticle            
                 
                 #check if history nodes exists
                 if (self.history_nodes == None):
@@ -238,11 +239,11 @@ class PFReconstructor(object):
                 blocknode = self.history_nodes[block.uniqueid]
                 
                 #find or make a node for the particle            
-                if newparticle  in self.history_nodes :
-                    pnode = self.history_nodes[newparticle]
+                if newid  in self.history_nodes :
+                    pnode = self.history_nodes[newid]
                 else :
-                    pnode = Node(newparticle)
-                    self.history_nodes[newparticle] = pnode
+                    pnode = Node(newid)
+                    self.history_nodes[newid] = pnode
                 
                 #link particle to the block            
                 blocknode.add_child(pnode)
@@ -270,7 +271,8 @@ class PFReconstructor(object):
         '''
         
         return 1. + math.exp(-cluster.energy/100.)
-        
+    
+      
         
     def reconstruct_hcal(self, block, hcalid):
         '''
@@ -298,8 +300,8 @@ class PFReconstructor(object):
         hcal =block.pfevent.hcal_clusters[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
-               
-        for trackid in block.linked_ids(hcalid, "hcal_track"):
+        trackids =    block.sort_distance_energy(hcalid, block.linked_ids(hcalid, "hcal_track") )
+        for trackid in  trackids:
             tracks.append(block.pfevent.tracks[trackid])
             for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
@@ -423,10 +425,7 @@ class PFReconstructor(object):
 
     def __str__(self):
         
-        #TODO make this use the history information 
-        #if self.history_nodes!= None :
-         #   for block in blocks:
-                
+        
         theStr = ['New Rec Particles:']
         theStr.extend( map(str, self.particles))
         theStr.append('Unused:')

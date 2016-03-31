@@ -102,6 +102,7 @@ class PFReconstructor(object):
                 particles.extend(self.reconstruct_hcal(hcal))
             tracks = [elem for elem in group if elem.layer=='tracker'
                       and not elem.locked]
+            print tracks
             for track in tracks:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.

@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     files = [
-        'ee_ZH_Zmumu_Hbb.root'
+        'ee_ZH_Zmumu_Hbb_50000.root'
     ]
 )
 selectedComponents = [comp]
@@ -120,7 +120,7 @@ if __name__ == '__main__':
         iev = int(sys.argv[1])
        
     loop = Looper( 'looper', config,
-                   nEvents=1000,
+                   nEvents=30000,
                    nPrint=0,
                    firstEvent=0,
                    timeReport=True)
@@ -134,11 +134,8 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        #for j in range(10000) :
             process(iev)
-            #process(iev) #alice_debug
-            #process(iev) #alice_debug
-            #process(iev) #alice_debug
+            
     else:
         loop.loop()
         loop.write()

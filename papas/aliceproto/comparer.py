@@ -35,7 +35,8 @@ class ParticlesComparer(object):
             except AssertionError:
                 print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
                 print self.A[i].p4().M(),self.B[i].p4().M()
-                pass
+                assert(false)
+                #pass
             
         
 class ClusterComparer(object):

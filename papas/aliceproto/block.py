@@ -43,6 +43,8 @@ class PFBlock(object):
         
         #order the elements by element type (ecal, hcal, track) and then by energy
         #eg E1 E2 H3
+        #this is a bit yucky but need to make sure the order returned is consistent
+        # maybe should live outside of this class        
         self.element_uniqueids = sorted(element_ids, key = lambda  x: (Identifier.type_short_code(x),-self.pfevent.get_object(x).energy) )
         
         #extract the relevant parts of the complete set of edges and store this within the block
@@ -91,10 +93,12 @@ class PFBlock(object):
         linked_edges = []
         for edge in self.edges.itervalues():
             if edge.linked and (edge.id1 == uniqueid or edge.id2 == uniqueid ) :
-                if (edgetype != None) and (edge.edge_type == edgetype ):
+                if edgetype == None or ((edgetype != None) and (edge.edge_type == edgetype )):
                     linked_edges.append(edge)
-                elif edgetype == None :
-                    linked_edges.append(edge)
+                    
+                
+        #this is a bit yucky and temporary solution as need to make sure the order returned is consistent
+        # maybe should live outside of this class
         linked_edges.sort( key = lambda x: (x.distance is None, x.distance))
         return linked_edges
                    
@@ -110,6 +114,11 @@ class PFBlock(object):
                     else:
                         linked_ids.append(edge.id1)
             return linked_ids
+    
+    def sort_distance_energy( self, uniqueid, otherids):
+        return sorted(otherids, key = lambda x: (self.get_edge(x,uniqueid).distance is None, 
+                                                 self.get_edge(x,uniqueid).distance, 
+                                                 -self.pfevent.get_object(x).energy))
     
     def elements_string(self): 
         ''' Construct a string descrip of each of the elements in a block
