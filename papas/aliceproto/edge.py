@@ -25,16 +25,10 @@ class Edge(object):
         self.distance = distance
         self.linked = is_linked
         self.edge_type = self._edge_type()
-        
-        ##should not have ecal/ecal and hcal/hcal(I think) because of merging
-        #if self.edge_type=="ecal_ecal" :
-            #assert (not is_linked)
-        #if self.edge_type=="hcal_hcal" :
-            #assert (not is_linked)  
             
         #for reconstruction we do not use ecal-hcal links (may need to be moved if we use these edges for merging)
         if self.edge_type == "ecal_hcal":
-            self.is_linked =False
+            self.is_linked = False
         self.key = Edge.make_key(id1,id2)
     
     def _edge_type(self):
@@ -56,7 +50,7 @@ class Edge(object):
             return "hcal_track"
         elif (shortid1=="e" and shortid2=="t" or shortid1=="t" and shortid2=="e"):
             return "ecal_track"  
-        elif (shortid1=="e" and shortid2=="h" or shortid1=="h" and shortid2=="h"):
+        elif (shortid1=="e" and shortid2=="h" or shortid1=="h" and shortid2=="e"):
             return "ecal_hcal"  
         
         return "unknown"

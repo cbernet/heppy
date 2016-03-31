@@ -5,7 +5,7 @@ from heppy.papas.aliceproto.identifier import Identifier
 class PFEvent(object):
     '''PFEvent is used to  allow addition of a function get_object to an Event class
        get_object() allows a cluster or track to be found from its id
-         
+       May want to merge this with the history class
        
        attributes:
           tracks is a dictionary : {id1:track1, id2:track2, ...}

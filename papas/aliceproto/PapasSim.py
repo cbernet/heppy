@@ -100,36 +100,42 @@ class PapasSim(Analyzer):
             for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
                 event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
-        #event.tracks = MergingBlockBuilder("tracker",PFEvent(event), ruler).merged
         event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
         event.hcal_clusters = MergingBlockBuilder("hcal_in",PFEvent(event), ruler).merged  
-        event.testtracks =event.tracks
-        event.testecal_clusters =  event.ecal_clusters
-        event.testhcal_clusters = event.hcal_clusters          
         
         #for blockbuilder to get merged clusters and to compare with the non-electron etc by passed particles
         setattr(event,self.simname,simparticles) #check
         event.baseline_particles = origrecparticles
         event.sim_partciles = simparticles        
         
+        ###if uncommented we will use the original reconstructions to provide the ready merged tracks and clusters
+        #event.tracks = dict()
+        #event.ecal_clusters = dict()
+        #event.hcal_clusters = dict()
+        #for element in self.simulator.pfsequence.elements :
+            #if element.__class__.__name__ == 'SmearedTrack': 
+                #event.tracks[element.uniqueid] = element 
+            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
+                #event.ecal_clusters[element.uniqueid] = element
+            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
+                #event.hcal_clusters[element.uniqueid] = element
+            #else :            
+                #print element.__class__.__name__ 
+                #assert(False)
         #for now we use the original reconstructions to provide the ready merged tracks and clusters
-        event.tracks = dict()
-        event.ecal_clusters = dict()
-        event.hcal_clusters = dict()
+        
+        event.origecal_clusters = dict()
+        event.orighcal_clusters = dict()
         for element in self.simulator.pfsequence.elements :
-            if element.__class__.__name__ == 'SmearedTrack': 
-                event.tracks[element.uniqueid] = element 
-            elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
-                event.ecal_clusters[element.uniqueid] = element
+            if element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
+                event.origecal_clusters[element.uniqueid] = element
             elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
-                event.hcal_clusters[element.uniqueid] = element
-            else :            
-                print element.__class__.__name__ 
-                assert(False)
+                event.orighcal_clusters[element.uniqueid] = element
+               
          
         #compare old and new cluster methods 
-        ClusterComparer(event.testecal_clusters,event.ecal_clusters)
-        ClusterComparer(event.testhcal_clusters,event.hcal_clusters)
+        ClusterComparer(event.origecal_clusters,event.ecal_clusters)
+        ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
        
         pass
 

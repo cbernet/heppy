@@ -7,7 +7,7 @@ from heppy.papas.pfobjects import MergedCluster
 class MergingBlockBuilder(BlockBuilder):
     ''' MergingBlockBuilder takes particle flow elements of a one type of cluster eg ecal_in
         and uses the distances between clusters to construct a set of blocks (connected clusters)
-        The blocks will be used to merge clusters
+        The blocks will contain overlapping cluster and then be used to merge the clusters
         
         
         attributes:
@@ -48,10 +48,7 @@ class MergingBlockBuilder(BlockBuilder):
         # the merged clusters will be stored here
         self.merged =dict()
 
-        # collate ids of cluster/tracks etc
-        #if layer=="tracker":
-        #    uniqueids = list(pfevent.tracks.keys()) 
-        #el
+        # collate ids of clusters
         if layer=="ecal_in":
             uniqueids = list(pfevent.ecal_clusters.keys())         
         elif layer=="hcal_in":
@@ -74,10 +71,7 @@ class MergingBlockBuilder(BlockBuilder):
         if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )             
         
-        #if layer=="tracker":
-            #self._make_merged_tracks()
-        #else: 
-            self._make_merged_clusters()
+        self._make_merged_clusters()
         
     def _make_merged_clusters(self):
         #carried out the merging of linked clusters
@@ -103,26 +97,7 @@ class MergingBlockBuilder(BlockBuilder):
                         supercluster += thing
                         if (self.history_nodes):
                             self.history_nodes[elemid].add_child(snode)  
-                            
-    #was this just enthusiasm?                        
-    #def _make_merged_tracks(self):
-        #for block in self.blocks.itervalues():
-            #supertrack = None
-            #for elemid in block.element_uniqueids :
-                #thing=self.pfevent.get_object(elemid)
-                #if supertrack is None:
-                    #supertrack = MergedSmearedTrack(thing)
-                    #self.merged[supertrack.uniqueid]=supertrack
-                    #if (self.history_nodes):
-                        #snode = Node(supertrack.uniqueid)
-                        #self.history_nodes[supertrack.uniqueid] = snode
-                        ##now add in the links between the block elements and the block into the history_nodes
-                        #self.history_nodes[elemid].add_child(snode)
-                    #continue
-                #else: 
-                    #supertrack += thing
-                    #if (self.history_nodes):
-                                #self.history_nodes[elemid].add_child(snode)        
+                        
 
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items

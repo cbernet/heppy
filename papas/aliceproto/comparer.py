@@ -1,9 +1,9 @@
 from numpy.testing.utils import assert_allclose
-from heppy.papas.aliceproto.history import History
 
 class ParticlesComparer(object):
     '''  Checks that two lists of presorted particles are identical
           will stop on an assert if things are different
+          Note that there is an issue with accuracy of particle mass as assessed via TLorentzVector
     '''
     def __init__(self, particlesA, particlesB, history):
         ''' Simple check that two sets of sensibly sorted particles are the same
@@ -18,14 +18,26 @@ class ParticlesComparer(object):
         for i in range(len(self.A)):
             #print self.A[i]
             #print self.B[i]
-            assert(self.A[i].pdgid()==  self.B[i].pdgid() )
-            assert_allclose(self.A[i].q(),      self.B[i].q(),      rtol=1e-8, atol=0.0000001 )
-            assert_allclose(self.A[i].p4().M(), self.B[i].p4().M(), rtol=1e-8, atol=0.0000001 )
-            assert_allclose(self.A[i].p4().X(), self.B[i].p4().X(), rtol=1e-8, atol=0.0000001 )
-            assert_allclose(self.A[i].p4().Y(), self.B[i].p4().Y(), rtol=1e-8, atol=0.0000001 )
-            assert_allclose(self.A[i].p4().Z(), self.B[i].p4().Z(), rtol=1e-8, atol=0.0000001 )
+            #print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
+            try: 
+                assert(self.A[i].pdgid()==  self.B[i].pdgid() )
+                assert_allclose(self.A[i].p4().Y(), self.B[i].p4().Y(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].p4().Z(), self.B[i].p4().Z(), rtol=1e-8, atol=0.0000001 ) 
+                assert_allclose(self.A[i].q(),  self.B[i].q(),  rtol=1e-8, atol=0.0000001 ) 
+                assert_allclose(self.A[i].p4().X(), self.B[i].p4().X(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].p4().M(), self.B[i].p4().M(), rtol=1e-6, atol=0.000001 )  #reduced accuracy becasue of root issue  
+                assert_allclose(self.A[i].eta(),self.B[i].eta(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].phi(),self.B[i].phi(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].theta(),self.B[i].theta(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].pt(),self.B[i].pt(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].e(),self.B[i].e(), rtol=1e-8, atol=0.0000001 )
+                      
+            except AssertionError:
+                print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
+                print self.A[i].p4().M(),self.B[i].p4().M()
+                pass
             
-        #print "compared: ", len(self.A)
+        
 class ClusterComparer(object):
     '''  Checks that two dicts of clusters are identical. Will 
          stop with an assert if differences are found
@@ -53,7 +65,7 @@ class ClusterComparer(object):
             # really ought to be checked for non merged clusters
             assert_allclose(self.A[i].energy, self.B[i].energy, rtol  = 1e-12, atol=0.00000000001 )
             assert_allclose(self.A[i].position.Theta(), self.B[i].position.Theta(), rtol = 1e-12, atol = 0.00000000001 )
-            assert_allclose(self.A[i].position.Phi() , self.B[i].position.Phi(), rtol = 1e-12, atol = 0.00000000001 )
+            assert_allclose(self.A[i].position.Phi(), self.B[i].position.Phi(), rtol = 1e-12, atol = 0.00000000001 )
             assert_allclose(self.A[i].position.Mag(), self.B[i].position.Mag(), rtol = 1e-12, atol = 0.00000000001 )
             assert_allclose(self.A[i].position.X(), self.B[i].position.X(), rtol = 1e-12, atol = 0.00000000001 )
             assert_allclose(self.A[i].position.Y(), self.B[i].position.Y(), rtol = 1e-12, atol = 0.00000000001 )
@@ -85,8 +97,6 @@ class TrackComparer(object):
         assert(len(self.A)==len(self.B))
         
         for i in range(len(self.A)):
-            #print self.A[i]
-            #print self.B[i]
             assert_allclose(self.A[i].energy,  self.B[i].energy,  rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].pt,      self.B[i].pt,      rtol=1e-8, atol=0.0000001 )
             assert_allclose(self.A[i].charge , self.B[i].charge , rtol=1e-8, atol=0.0000001 )

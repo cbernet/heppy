@@ -121,8 +121,9 @@ class Cluster(PFObject):
     #     self.__dict__[name] = value
 #AJR added \n need to remove
     def __str__(self):
-        return '{classname:15}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
+        return '{classname:15}:uid={uniqueid}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             classname = self.__class__.__name__,
+            uniqueid = self.uniqueid,
             layer = self.layer,
             energy = self.energy,
             theta = math.pi/2. - self.position.Theta(),
@@ -175,8 +176,9 @@ class Track(PFObject):
         self.layer = 'tracker'
 
     def __str__(self):
-        return '{classname:15}: {e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
+        return '{classname:15}:uid={uniqueid}: {e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             classname = self.__class__.__name__,
+            uniqueid = self.uniqueid,
             pt = self.pt,
             e = self.energy, 
             theta = math.pi/2. - self.p3.Theta(),

@@ -19,7 +19,7 @@ class PapasPFBlockBuilder(Analyzer):
         distance = Distance()
     
         blockbuilder = EventBlockBuilder(pfevent, distance)
-        print blockbuilder
+        #print blockbuilder
             
         event.blocks = blockbuilder.blocks
         event.history_nodes = blockbuilder.history_nodes

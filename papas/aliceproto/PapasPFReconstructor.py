@@ -19,9 +19,9 @@ class PapasPFReconstructor(Analyzer):
         #for history to work we want a dict of particles
         event.reconstructed_particles=reconstructed.particles
         
-        hist = History(event.history_nodes,PFEvent(event))
-        for block in event.blocks:
-            hist.summary_of_links(block)
+        #hist = History(event.history_nodes,PFEvent(event))
+        #for block in event.blocks:
+        #    hist.summary_of_links(block)
         
         #for particle comparison we want a list of particles so that we can sort and compare
         event.reconstructed_particle_list = sorted( reconstructed.particles.values(),

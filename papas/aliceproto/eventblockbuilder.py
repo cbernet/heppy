@@ -30,19 +30,19 @@ class EventBlockBuilder(BlockBuilder):
     '''
     def __init__(self,  pfevent, ruler, history_nodes = None):
         '''
-       pfevent is event structure inside which we find
+        pfevent is event structure inside which we find
          tracks is a dictionary : {id1:track1, id2:track2, ...}
          ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
          hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
          get_object() which allows a cluster or track to be found from its id
-       ruler is something that measures distance between two objects eg track and hcal
+        ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)
             it should take the two objects as arguments and return a tuple
             of the form
                 link_type = 'ecal_ecal', 'ecal_track' etc
                 is_link = true/false
                 distance = float
-        hist_nodes is an optional dictionary of Nodes : { id:Node1, id: Node2 etc}
+        history_nodes is an optional dictionary of Nodes : { id:Node1, id: Node2 etc}
             it could for example contain the simulation history nodes
             A Node contains the id of an item (cluster, track, particle etc)
             and says what it is linked to (its parents and children)
@@ -70,6 +70,7 @@ class EventBlockBuilder(BlockBuilder):
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
             
+        #use the underlying BlockBuilder to construct the blocks        
         super(EventBlockBuilder, self).__init__(uniqueids,edges,self.history_nodes, pfevent)
 
     
@@ -92,6 +93,10 @@ class EventBlockBuilder(BlockBuilder):
         link_type, is_linked, distance = ruler(obj1,obj2) #some redundancy in link_type as both distance and Edge make link_type
                                                           #not sure which to get rid of
         
+        #for the event we do not want ehal_hcal links
+        if link_type == "ecal_hcal":
+            is_linked = False
+            
         #make the edge and add the edge into the dict 
         return Edge(id1,id2, is_linked, distance) 
         
