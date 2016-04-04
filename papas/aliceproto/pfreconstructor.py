@@ -92,8 +92,8 @@ class PFReconstructor(object):
             block=self.blocks[b]            
             if block.is_active: # when blocks are split the original gets deactivated                
                 #ALICE debugging  
-                if len(block.element_uniqueids)<6:
-                    continue
+                #if len(block.element_uniqueids)<6:
+                #    continue
                 self.reconstruct_block(block)                
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
@@ -167,11 +167,11 @@ class PFReconstructor(object):
         for id in ids:
             self.locked[id] = False
         
-        self.debugprint = False
-        if len(block.element_uniqueids)>5:
-            self.debugprint = True
+        self.debugprint = True #False
+        #if len(block.element_uniqueids)>5:
+        #    self.debugprint = True
         
-        if (self.debugprint):
+        if (self.debugprint and len(block.element_uniqueids)>5):
             print block
         
        
@@ -387,9 +387,9 @@ class PFReconstructor(object):
             momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy)
-        if (pdg_id==22):
-            print "22", momentum, energy, p4.M(), energy-momentum 
-            pass   
+        #if (pdg_id==22):
+        #    print "22", momentum, energy, p4.M(), energy-momentum 
+        #    pass   
              
         if (pdg_id==22 and p4.M()>1e-7):
             pass

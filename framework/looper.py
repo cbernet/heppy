@@ -184,7 +184,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
             for iEv in range(firstEvent, firstEvent+eventSize):
                 # if iEv == nEvents:
                 #     break
-                if iEv%10 ==0:
+                if iEv%100 ==0:
                     # print 'event', iEv
                     if not hasattr(self,'start_time'):
                         print 'event', iEv

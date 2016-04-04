@@ -34,8 +34,8 @@ class PFReconstructor(object):
             self.log.info( "group {group_id} {group}".format(
                 group_id = group_id,
                 group = group) )
-            if len(group)<6: #ALICE debugging TODO REMOVE when finished means we only process bigger groups
-                continue  
+            #if len(group)<6: #ALICE debugging  means we only process bigger groups
+            #    continue  
             self.particles.extend( self.reconstruct_group(group) )
         self.unused = [elem for elem in links.elements if not elem.locked]
         self.log.info("Particles:")
@@ -76,17 +76,17 @@ class PFReconstructor(object):
         particles = []
         
         #debugging
-        self.debugprint=False
-        if len(group)>5:
-            self.debugprint=True 
-        if self.debugprint:
-            print self.links        
+        self.debugprint = True #False
+        #if len(group)>5:
+        #    self.debugprint=True 
+        #if self.debugprint:
+        #    print self.links        
         
         #impose additional sorting on elements to allow cross cehcking between two methods
         #most likely it is not the optimal sorting
         group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
-        if (len(group)>6) :
-            print group
+        if (self.debugprint and len(group)>5) :
+            print "Group: ", group
            
         if len(group)==1: #TODO WARNING!!! LOTS OF MISSING CASES
             elem = group[0]
