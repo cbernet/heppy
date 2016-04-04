@@ -15,6 +15,7 @@ class PapasParticlesComparer(Analyzer):
             event: must contain baseline_particles (the original reconstruction from simulation)
                    and reconstructed_particles made from the new BlockBuilder approach
         '''
+        #may well change how pfevent and history are organised
         pfevent=PFEvent(event)
         history=History(event.history_nodes, pfevent)
         ParticlesComparer(event.reconstructed_particle_list,event.baseline_particles,history)

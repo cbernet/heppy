@@ -23,7 +23,7 @@ class PapasPFReconstructor(Analyzer):
         #for block in event.blocks:
         #    hist.summary_of_links(block)
         
-        #for particle comparison we want a list of particles so that we can sort and compare
+        #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
         event.reconstructed_particle_list = sorted( reconstructed.particles.values(),
                                                    key = lambda ptc: ptc.e(), reverse=True)
         event.history_nodes=reconstructed.history_nodes

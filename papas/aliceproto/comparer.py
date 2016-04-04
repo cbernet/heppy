@@ -16,26 +16,31 @@ class ParticlesComparer(object):
         assert(len(self.A)==len(self.B))
         
         for i in range(len(self.A)):
-            #print self.A[i]
-            #print self.B[i]
-            #print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
+            
             try: 
                 assert(self.A[i].pdgid()==  self.B[i].pdgid() )
                 assert_allclose(self.A[i].p4().Y(), self.B[i].p4().Y(), rtol=1e-8, atol=0.0000001 )
                 assert_allclose(self.A[i].p4().Z(), self.B[i].p4().Z(), rtol=1e-8, atol=0.0000001 ) 
                 assert_allclose(self.A[i].q(),  self.B[i].q(),  rtol=1e-8, atol=0.0000001 ) 
                 assert_allclose(self.A[i].p4().X(), self.B[i].p4().X(), rtol=1e-8, atol=0.0000001 )
-                assert_allclose(self.A[i].p4().M(), self.B[i].p4().M(), rtol=1e-6, atol=0.000001 )  #reduced accuracy becasue of root issue  
                 assert_allclose(self.A[i].eta(),self.B[i].eta(), rtol=1e-8, atol=0.0000001 )
                 assert_allclose(self.A[i].phi(),self.B[i].phi(), rtol=1e-8, atol=0.0000001 )
                 assert_allclose(self.A[i].theta(),self.B[i].theta(), rtol=1e-8, atol=0.0000001 )
                 assert_allclose(self.A[i].pt(),self.B[i].pt(), rtol=1e-8, atol=0.0000001 )
                 assert_allclose(self.A[i].e(),self.B[i].e(), rtol=1e-8, atol=0.0000001 )
+                assert_allclose(self.A[i].p4().M(), self.B[i].p4().M(), rtol=1e-5, atol=0.00001 )  #reduced accuracy becasue of root issue  
+                
                       
             except AssertionError:
+                print i
                 print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
+                print self.A[i].p4().X(), self.B[i].p4().X()
+                print self.A[i].p4().Y(), self.B[i].p4().Y()
+                print self.A[i].p4().Z(), self.B[i].p4().Z()
+                print self.A[i].p4().e(),self.B[i].p4().e()
+                print self.A[i].pt().pt(),self.B[i].p4().pt()
                 print self.A[i].p4().M(),self.B[i].p4().M()
-                assert(false)
+                assert(False)
                 #pass
             
         

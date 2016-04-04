@@ -46,6 +46,7 @@ class PapasSim(Analyzer):
                    Same comments as for the sim_particles parameter above. 
     display      : Enable the event display
     verbose      : Enable the detailed printout.
+
     '''
 
     def __init__(self, *args, **kwargs):
@@ -66,6 +67,18 @@ class PapasSim(Analyzer):
         self.is_display = True
 
     def process(self, event):
+        '''
+           event must contain
+           
+           event will gain
+             ecal_clusters:- smeared merged clusters from simulation)
+             hcal_clusters:- 
+             tracks:       - smeared tracks from simulation
+             baseline_particles:- simulated particles (excluding electrons and muons)
+             sim_particles - simulated particles including electrons and muons
+             
+             
+        '''
         event.simulator = self 
         if self.is_display:
             self.display.clear()
@@ -86,7 +99,7 @@ class PapasSim(Analyzer):
         setattr(event, "orig_rec_particles",origrecparticles)
         
         
-        #here we merge the simulated clusters and tracks as a separate pre-stage (prior to reconstruction)
+        #extract the tracks and clusters (prior to Colins merging step)
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict() 
@@ -100,15 +113,19 @@ class PapasSim(Analyzer):
             for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
                 event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
+        
+        #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
+        # and set the event to point to the merged clusters
         event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
         event.hcal_clusters = MergingBlockBuilder("hcal_in",PFEvent(event), ruler).merged  
         
-        #for blockbuilder to get merged clusters and to compare with the non-electron etc by passed particles
-        setattr(event,self.simname,simparticles) #check
+        #keep track of the simulated particles (select these so they avoid electrons and muons)
         event.baseline_particles = origrecparticles
-        event.sim_partciles = simparticles        
         
-        ###if uncommented we will use the original reconstructions to provide the ready merged tracks and clusters
+        setattr(event,self.simname,simparticles) #check
+        event.sim_particles = simparticles        
+        
+        ###if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
         #event.tracks = dict()
         #event.ecal_clusters = dict()
         #event.hcal_clusters = dict()
@@ -124,18 +141,19 @@ class PapasSim(Analyzer):
                 #assert(False)
         #for now we use the original reconstructions to provide the ready merged tracks and clusters
         
-        event.origecal_clusters = dict()
-        event.orighcal_clusters = dict()
-        for element in self.simulator.pfsequence.elements :
-            if element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
-                event.origecal_clusters[element.uniqueid] = element
-            elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
-                event.orighcal_clusters[element.uniqueid] = element
+        ##if uncommetned will check that cluster merging is OK   (compare new merging module with Colins merging)    
+        #event.origecal_clusters = dict()
+        #event.orighcal_clusters = dict()
+        #for element in self.simulator.pfsequence.elements :
+            #if element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
+                #event.origecal_clusters[element.uniqueid] = element
+            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
+                #event.orighcal_clusters[element.uniqueid] = element
                
          
-        #compare old and new cluster methods 
-        ClusterComparer(event.origecal_clusters,event.ecal_clusters)
-        ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
+        ##compare old and new cluster methods 
+        #ClusterComparer(event.origecal_clusters,event.ecal_clusters)
+        #ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
        
         pass
 

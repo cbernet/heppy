@@ -25,6 +25,7 @@ class Cluster(object):
             assert false
         self.layer = layer
         self.id = id
+        self.energy=0
 
     def __repr__(self):
         return "cluster:" +  str(self.id) + " :" + str(self.uniqueid)
@@ -39,6 +40,7 @@ class Track(object):
         self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.TRACK)
         self.id = id
         self.layer = 'tracker'
+        self.energy=0
         
     def __repr__(self):
         return "track:"+  str(self.id) + " :"+  str(self.uniqueid)
@@ -340,7 +342,7 @@ class TestBlockReconstruction(unittest.TestCase):
         #1b WHAT BLOCK Does it belong to   
         x = None
         for id in ids:
-            if Identifier.isBlock(id) and event.blocks[id].short_name()== "E1H1T1":
+            if Identifier.is_block(id) and event.blocks[id].short_name()== "E1H1T1":
                 x =  event.blocks[id]
         print x       
                 

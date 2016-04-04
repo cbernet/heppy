@@ -85,8 +85,8 @@ class PFReconstructor(object):
         #impose additional sorting on elements to allow cross cehcking between two methods
         #most likely it is not the optimal sorting
         group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
-      
-        
+        if (len(group)>6) :
+            print group
            
         if len(group)==1: #TODO WARNING!!! LOTS OF MISSING CASES
             elem = group[0]
@@ -102,7 +102,7 @@ class PFReconstructor(object):
                 particles.extend(self.reconstruct_hcal(hcal))
             tracks = [elem for elem in group if elem.layer=='tracker'
                       and not elem.locked]
-            print tracks
+          
             for track in tracks:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -165,11 +165,20 @@ class PFReconstructor(object):
                 # hcal should be the only remaining linked hcal cluster (closest one)
                 thcals = [th for th in elem.linked if th.layer=='hcal_in']
                 assert(thcals[0]==hcal)
+        
         self.log.info( hcal )
         self.log.info( '\tT {tracks}'.format(tracks=tracks) )
         self.log.info( '\tE {ecals}'.format(ecals=ecals) )
         hcal_energy = hcal.energy
-        if len(tracks):
+        
+          
+        #print tracks
+        #want tracks to be in order of distance and then in order of high energy to low energy
+        #this is an arbitrary decision but allow consistency for method comparisons consistent 
+        if len(tracks)>1:
+            tracks.sort( key = lambda  x: ( self.links.info(x,hcal) ,(-x.energy)))
+            
+        if len(tracks):    
             ecal_energy = sum(ecal.energy for ecal in ecals)
             track_energy = sum(track.energy for track in tracks)
             for track in tracks:

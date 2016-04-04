@@ -73,8 +73,9 @@ class Cluster(PFObject):
 
     def is_inside(self, point):
         #check if the point lies within the "size" circle of each of the subclusters
-        #fixed a bug in which the size was taken from teh cluster and not the
-        # subclusters (this breaks when used with mergedclusters)
+        #fixed a bug in which the ""size"" was taken from the initial cluster and not the
+        # individual sizes of each of the subclusters (this 'breaks' when used with mergedclusters)
+        # does this function want to be moved to MergedCluster class perhaps 
         subdist=[]
         for subc in self.subclusters:
             dist=(subc.position - point).Mag()

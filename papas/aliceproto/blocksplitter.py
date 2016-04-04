@@ -10,6 +10,11 @@ class BlockSplitter(BlockBuilder):
             splitter = BlockSplitter(block, unlink_edges)
             for b in splitter.blocks.itervalues():
                 print b
+            
+        Notes: (to be extended)
+           if a block is split it will be marked as block.is_active=false
+           as it will effectively be replaced by the new blocks after the split.
+           ** explain how old block fits into history node ** 
     '''
     def __init__(self,  block, unlink_edges, history_nodes=None):
         '''arguments:

@@ -1,5 +1,5 @@
 from DAG import Node,  BreadthFirstSearchIterative, BreadthFirstSearch
-
+import unittest 
 
 class TreeTestCase( unittest.TestCase ):
 
@@ -46,18 +46,27 @@ class TreeTestCase( unittest.TestCase ):
     def test_BFS_visitor_pattern_iterative_undirected(self):
         BFS = BreadthFirstSearchIterative(self.nodes[0],"undirected")
         # the result is equal to [0, 1, 2, 3, 4, 5, 6, 9, 7, 8]
-        self.assertEqual(BFS.result, [0, 1, 2, 3, 4, 5, 6, 9, 7, 8] )
+        values=[]
+        for x in BFS.result:
+            values.append(x.value)        
+        self.assertEqual(values, [0, 1, 2, 3, 4, 5, 6, 9, 7, 8] )
         
     def test_BFS_visitor_pattern_children(self):
         BFS = BreadthFirstSearch(self.nodes[0],"children")
           # the result is equal to [0, 1, 2, 3, 4, 5, 6, 7]
-        self.assertEqual(BFS.result, range(8) )
+        values=[]
+        for x in BFS.result:
+            values.append(x.value)
+        self.assertEqual(values, range(8) )
 
     def test_BFS_visitor_pattern_undirected(self):
             
         BFS = BreadthFirstSearch(self.nodes[0],"undirected")
         # the result is equal to [0, 1, 2, 3, 4, 5, 6, 9, 7, 8]
-        self.assertEqual(BFS.result, [0, 1, 2, 3, 4, 5, 6, 9, 7, 8] )
+        values=[]
+        for x in BFS.result:
+            values.append(x.value)        
+        self.assertEqual(values, [0, 1, 2, 3, 4, 5, 6, 9, 7, 8] )
     
    
 if __name__ == '__main__':
