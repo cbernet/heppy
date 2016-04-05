@@ -1,6 +1,8 @@
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import Particle
+from heppy.papas.aliceproto.identifier import Identifier
+
 
 from ROOT import TVector3, TLorentzVector
 import math
@@ -14,6 +16,7 @@ class PFReconstructor(object):
         self.log = logger
         self.reconstruct(links)
         
+        
     def reconstruct(self, links):
         self.unused = []
         self.particles = []
@@ -26,10 +29,13 @@ class PFReconstructor(object):
         for group_id, subgroups in all_subgroups.iteritems():
             del links.groups[group_id]
             links.groups.update(subgroups)
+        
         for group_id, group in links.groups.iteritems():
             self.log.info( "group {group_id} {group}".format(
                 group_id = group_id,
-                group = group) ) 
+                group = group) )
+            #if len(group)<6: #ALICE debugging  means we only process bigger groups
+            #    continue  
             self.particles.extend( self.reconstruct_group(group) )
         self.unused = [elem for elem in links.elements if not elem.locked]
         self.log.info("Particles:")
@@ -68,6 +74,20 @@ class PFReconstructor(object):
             
     def reconstruct_group(self, group):
         particles = []
+        
+        #debugging
+        self.debugprint = True #False
+        #if len(group)>5:
+        #    self.debugprint=True 
+        #if self.debugprint:
+        #    print self.links        
+        
+        #impose additional sorting on elements to allow cross cehcking between two methods
+        #most likely it is not the optimal sorting
+        group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
+        if (self.debugprint and len(group)>5) :
+            print "Group: ", group
+           
         if len(group)==1: #TODO WARNING!!! LOTS OF MISSING CASES
             elem = group[0]
             layer = elem.layer
@@ -82,6 +102,7 @@ class PFReconstructor(object):
                 particles.extend(self.reconstruct_hcal(hcal))
             tracks = [elem for elem in group if elem.layer=='tracker'
                       and not elem.locked]
+          
             for track in tracks:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -123,7 +144,7 @@ class PFReconstructor(object):
         return 1. + math.exp(-cluster.energy/100.)
         
         
-    def reconstruct_hcal(self, hcal):
+    def reconstruct_hcal(self, hcal):      
         particles = []
         tracks = []
         ecals = []
@@ -144,11 +165,20 @@ class PFReconstructor(object):
                 # hcal should be the only remaining linked hcal cluster (closest one)
                 thcals = [th for th in elem.linked if th.layer=='hcal_in']
                 assert(thcals[0]==hcal)
+        
         self.log.info( hcal )
         self.log.info( '\tT {tracks}'.format(tracks=tracks) )
         self.log.info( '\tE {ecals}'.format(ecals=ecals) )
         hcal_energy = hcal.energy
-        if len(tracks):
+        
+          
+        #print tracks
+        #want tracks to be in order of distance and then in order of high energy to low energy
+        #this is an arbitrary decision but allow consistency for method comparisons consistent 
+        if len(tracks)>1:
+            tracks.sort( key = lambda  x: ( self.links.info(x,hcal) ,(-x.energy)))
+            
+        if len(tracks):    
             ecal_energy = sum(ecal.energy for ecal in ecals)
             track_energy = sum(track.energy for track in tracks)
             for track in tracks:
@@ -201,15 +231,22 @@ class PFReconstructor(object):
             energy = cluster.energy
         if energy < mass: 
             return None 
-        momentum = math.sqrt(energy**2 - mass**2)
+        
+        if (mass==0):
+            momentum= energy #avoid sqrt for zero mass
+        else:
+            momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
-        p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy)
+        p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
         particle = Particle(p4, vertex, charge, pdg_id)
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position
         particle.set_path(path)
         particle.clusters[layer] = cluster
         cluster.locked = True
+        if self.debugprint:
+            print "made particle from cluster ",pdg_id,  cluster, particle        
+        
         return particle
         
     def reconstruct_track(self, track, clusters=None):
@@ -222,6 +259,9 @@ class PFReconstructor(object):
         particle.set_path(track.path)
         particle.clusters = clusters
         track.locked = True
+        if self.debugprint:
+            print "made particle from track ",pdg_id,  track, particle        
+        
         return particle
 
 
