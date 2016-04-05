@@ -13,7 +13,7 @@ class TestCluster(unittest.TestCase):
 
     def test_pt(self):
         '''Test that pT is correctly set.'''
-        cluster = Cluster(10., TVector3(1,0,0), 1, 1)
+        cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer
         self.assertAlmostEqual(cluster.pt, 10.)
         cluster.set_energy(5.)
         self.assertAlmostEqual(cluster.pt, 5.)
@@ -22,7 +22,7 @@ class TestCluster(unittest.TestCase):
         rootfile = TFile('test_cluster_smear.root', 'recreate')
         h_e = TH1F('h_e','cluster energy', 200, 5, 15.)
         energy = 10.
-        cluster = Cluster(energy, TVector3(1,0,0), 1, 1)
+        cluster = Cluster(energy, TVector3(1,0,0), 1) #alice made this use default layer
         ecal = cms.elements['ecal']
         energies = []
         for i in range(10000):
@@ -51,7 +51,7 @@ class TestCluster(unittest.TestCase):
         sinthetas = np.sin(thetas)
         clusters = []
         for energy, cos, sin in zip(energies, costhetas, sinthetas):
-            clusters.append(Cluster(energy, TVector3(sin,0,cos), 1, 1))
+            clusters.append(Cluster(energy, TVector3(sin,0,cos), 1))  #alice made this use default layer
         ecal = cms.elements['ecal']
         smeared_clusters = []
         min_energy = -999.

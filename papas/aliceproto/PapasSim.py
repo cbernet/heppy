@@ -96,8 +96,9 @@ class PapasSim(Analyzer):
         #excludes muons and electrons         
         origrecparticles = sorted( self.simulator.pfsequence.pfreco.particles,
                                    key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, "orig_rec_particles",origrecparticles)
-        
+        setattr(event, "orig_rec_particles",origrecparticles) #cludgy for alices testing (yes must be neater way)
+        setattr(event, self.recname,origrecparticles)
+                     
         
         #extract the tracks and clusters (prior to Colins merging step)
         event.tracks = dict()

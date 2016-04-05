@@ -41,7 +41,7 @@ class Cluster(PFObject):
     #TODO: not sure this plays well with SmearedClusters
     max_energy = 0.
     
-    def __init__(self, energy, position, size_m, layer, particle=None):
+    def __init__(self, energy, position, size_m, layer='ecal_in', particle=None):
         
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
         if (layer=='ecal_in') :
