@@ -81,17 +81,22 @@ class PapasSim(Analyzer):
         setattr(event, self.simname, simparticles)
         pfinput = PFInput(simparticles)
         event.tracks = dict()
-        event.ECALclusters = dict()
-        event.HCALclusters = dict()
-        for label, element in pfinput.elements.iteritems():
+        event.ecal_clusters = dict()
+        event.hcal_clusters = dict()
+        event.baseline_particles = particles
+        for label, element in pfinput.elements.iteritems() :
             if label == 'tracker':
-                event.tracks[0,id(element)]=element
+                for e in element: 
+                    event.tracks[e.uniqueid]=e 
             elif label == 'ecal_in':
-                event.ECALclusters[1,id(element)]=element
+                for e in element: 
+                    event.ecal_clusters[e.uniqueid]=e
             elif label == 'hcal_in':
-                event.HCALclusters[2,id(element)]=element
-            else:
+                for e in element: 
+                    event.hcal_clusters[e.uniqueid]=e
+            else :            
                 print label 
                 assert(False)        
         setattr(event, self.recname, particles)
+
         

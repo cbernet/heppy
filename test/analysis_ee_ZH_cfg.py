@@ -275,6 +275,7 @@ if __name__ == '__main__':
                    nEvents=10,
                    nPrint=1,
                    timeReport=True)
+    
     simulation = None
     for ana in loop.analyzers: 
         if hasattr(ana, 'display'):
@@ -284,6 +285,8 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        process(iev)
+        process(iev)
         process(iev)
     else:
         loop.loop()

@@ -18,6 +18,9 @@ class PFSequence(object):
         elements = merge_clusters(elements, 'hcal_in')
         elements = merge_clusters(elements, 'ecal_in')
         self.links = Links(elements, distance)
+        
+        self.elements=elements #alice added this is so that the new reconstruction algorithms can start with 
+                                # the merged cluster
         self.pfreco = PFReconstructor( self.links, detector, self.logger)
 
 

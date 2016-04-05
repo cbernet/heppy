@@ -213,9 +213,17 @@ class Simulator(object):
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
+        
+        
         self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
         self.particles = copy.copy(self.pfsequence.pfreco.particles)
         self.particles.extend(smeared)
+        
+        #print "number of gen particles: ", len(ptcs)
+        #print "number of smeared particles: ", len(smeared)
+        #print "number of sim particles: ", len(self.ptcs)        
+        #print "number of rec (no smeared) particles: ", len(self.pfsequence.pfreco.particles)
+        #print "number of rec original inc smeared particles: ", len(self.particles)
         
 if __name__ == '__main__':
 
