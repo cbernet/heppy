@@ -10,6 +10,10 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
+
+make_tree = True
+
+
 comp = cfg.Component(
     'example',
     # files = 'example.root'
@@ -19,24 +23,42 @@ selectedComponents = [comp]
 
 
 #TODO colin debug this! 
-#from heppy.analyzers.Gun import Gun
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 211,
+    pdgid = 130,
     thetamin = -0.5,
     thetamax = 0.5,
     ptmin = 10,
     ptmax = 10,
     flat_pt = True,
-)  
+) 
+#source = cfg.Analyzer(
+    #Gun,
+    #pdgid = 211,
+    #thetamin = -0.5,
+    #thetamax = 0.5,
+    #ptmin = 10,
+    #ptmax = 10,
+    #flat_pt = True,
+#) 
+
+#source = cfg.Analyzer(
+    #Gun,
+    #pdgid = 22,
+    #thetamin = -0.5,
+    #thetamax = 0.5,
+    #ptmin = 10,
+    #ptmax = 10,
+    #flat_pt = True,
+#) 
 
 from ROOT import gSystem
 # gSystem.Load("libdatamodelDict")
 # from EventStore import EventStore as Events
 from heppy.framework.eventsgen import Events
 
-from heppy.analyzers.PapasSim import PapasSim
+from heppy.papas.aliceproto.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
     PapasSim,
@@ -54,7 +76,19 @@ pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder
 )
 
+
+from heppy.papas.aliceproto.PapasPFReconstructor import PapasPFReconstructor
+pfreconstruct = cfg.Analyzer(
+    PapasPFReconstructor
+)
+
+from heppy.papas.aliceproto.PapasParticlesComparer import PapasParticlesComparer 
+particlescomparer = cfg.Analyzer(
+    PapasParticlesComparer 
+)
+
 # and then particle reconstruction from blocks 
+
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -62,8 +96,15 @@ sequence = cfg.Sequence( [
     source,
     papas,
     pfblocks,
+    pfreconstruct,
+    particlescomparer
     ] )
- 
+if make_tree:
+    from jet_tree_cff import jet_tree_sequence
+    sequence.extend( jet_tree_sequence('gen_particles_stable', 
+                                       'papas_rec_particles') ) 
+
+
 config = cfg.Config(
     components = selectedComponents,
     sequence = sequence,
@@ -108,7 +149,12 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+       #for j in range(10000) :
         process(iev)
+        pass
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

@@ -5,8 +5,8 @@ from ROOT import TLorentzVector
 
 class Jet(BaseJet):
     def __init__(self, candidate):
+        super(Jet, self).__init__()
         self.candidate = candidate
-        self._pid = candidate.pdgId()
         self._tlv = TLorentzVector()
         p4 = candidate.p4()
         self._tlv.SetPtEtaPhiM(p4.pt(), p4.eta(), p4.phi(), p4.mass())

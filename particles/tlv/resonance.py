@@ -1,7 +1,8 @@
 from heppy.particles.tlv.particle import Particle
 from ROOT import TLorentzVector
+from rootobj import RootObj
 
-class Resonance(Particle):
+class Resonance(Particle, RootObj):
     """Resonance decaying to two or more particles (legs).
     
     A leg is a particle-like object with the following methods:
@@ -12,13 +13,12 @@ class Resonance(Particle):
     
     def __init__(self, legs, pid):
         self.legs = legs
-        self._pid = pid
-        self._charge = 0
-        self._status = 3 
-        self._tlv = TLorentzVector()
+        tlv = TLorentzVector()
+        charge = 0
         for leg in legs:
-            self._charge += leg.q()
-            self._tlv += leg.p4()
+            charge += leg.q()
+            tlv += leg.p4()
+        super(Resonance, self).__init__(pid, charge, tlv, status=3)
 
             
 class Resonance2(Resonance):

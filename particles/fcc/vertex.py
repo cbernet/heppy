@@ -1,13 +1,11 @@
+from pod import POD
 
-class Vertex(object):
+class Vertex(POD):
 
-    def __init__(self, fccvertex):
-        self.fccvertex = fccvertex
+    def __init__(self, fccobj):
+        self.fccobj = fccobj
         self.incoming = []
         self.outgoing = []
 
-    def __hash__(self):
-        return hash( (self.fccvertex.containerID(), self.fccvertex.index()) )
-
-    def __eq__(self, other):
-        return self.fccvertex ==other.fccvertex
+    # def __eq__(self, other):
+    #     return self.fccvertex ==other.fccvertex

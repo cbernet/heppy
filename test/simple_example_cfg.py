@@ -1,3 +1,4 @@
+
 import os
 import heppy.framework.config as cfg
 from heppy.framework.chain import Chain as Events
@@ -16,31 +17,36 @@ inputSample = cfg.Component(
 
 selectedComponents  = [inputSample]
 
-from heppy.analyzers.Printer import Printer
+# just prints a variable in the input test tree
+from heppy.analyzers.examples.simple.Printer import Printer
 printer = cfg.Analyzer(
     Printer
     )
 
-from heppy.analyzers.SimpleTreeProducer import SimpleTreeProducer
+# illustrates how to use an exception to stop processing at event 10
+# for debugging purposes.
+from heppy.analyzers.examples.simple.Stopper import Stopper
+stopper = cfg.Analyzer(
+    Stopper,
+    iEv = 10
+    )
+
+# creating a simple output tree
+from heppy.analyzers.examples.simple.SimpleTreeProducer import SimpleTreeProducer
 tree = cfg.Analyzer(
     SimpleTreeProducer,
     tree_name = 'tree',
     tree_title = 'A test tree'
     )
 
-from heppy.analyzers.Histogrammer import Histogrammer
-histos = cfg.Analyzer(
-    Histogrammer,
-    file_label = 'myhists'
-)
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     printer,
+    # stopper,
     tree,
-    histos
-    ] )
+] )
 
 from heppy.framework.services.tfile import TFileService
 output_rootfile = cfg.Service(

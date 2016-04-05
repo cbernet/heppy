@@ -34,7 +34,7 @@ def inConeCollection(pivot, particles, deltaRMax, deltaRMin=1e-5):
     results = []
     for ptc in particles:
         dR2 = deltaR2(pivot.eta(), pivot.phi(), ptc.eta(), ptc.phi()) 
-        if dR2Min < dR2 < dR2Max:
+        if dR2Min <= dR2 < dR2Max:
             results.append(ptc)
     return results
 

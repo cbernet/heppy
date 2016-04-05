@@ -81,19 +81,22 @@ class PapasSim(Analyzer):
         setattr(event, self.simname, simparticles)
         pfinput = PFInput(simparticles)
         event.tracks = dict()
-        event.ECALclusters = dict()
-        event.HCALclusters = dict()
+        event.ecal_clusters = dict()
+        event.hcal_clusters = dict()
+        event.baseline_particles = particles
         for label, element in pfinput.elements.iteritems() :
             if label == 'tracker':
-                event.tracks[element[0].uniqueid]=element[0] #alice for some reason element seems tobe a dictionary although it is just one "thing"
+                for e in element: 
+                    event.tracks[e.uniqueid]=e 
             elif label == 'ecal_in':
-                event.ECALclusters[element[0].uniqueid]=element[0]
+                for e in element: 
+                    event.ecal_clusters[e.uniqueid]=e
             elif label == 'hcal_in':
-                event.HCALclusters[element[0].uniqueid]=element[0]
-            else:
+                for e in element: 
+                    event.hcal_clusters[e.uniqueid]=e
+            else :            
                 print label 
-                assert(False)
+                assert(False)        
+        setattr(event, self.recname, particles)
 
-                
-        # setattr(event, self.recname, particles)
         

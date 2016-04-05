@@ -1,6 +1,7 @@
 import unittest
+import pprint
 from tlv.jet import Jet
-from jet import JetConstituents
+from jet import JetConstituents, JetTags
 from tlv.particle import Particle
 from ROOT import TLorentzVector
 
@@ -30,6 +31,15 @@ class TestJet(unittest.TestCase):
         self.assertEqual(jet_const[22].pdgid(), 22)
         self.assertEqual(jet_const[211].pdgid(), 211)
         self.assertRaises(ValueError, jet_const[211].append, ptcs[2])
+        
+    def test_jet_tags(self):
+        tags = JetTags()
+        tags['btag'] = 0.32341234
+        tags['longfloat'] = 32341234.1
+        tags['b'] = tags['btag']>0.
+        tags['flavour'] = Particle(5, 0, TLorentzVector(5,0,0,5))
+        # print tags.summary()
+        self.assertTrue(True)
         
         
 if __name__ == '__main__':
