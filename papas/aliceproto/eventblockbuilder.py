@@ -31,10 +31,10 @@ class EventBlockBuilder(BlockBuilder):
     def __init__(self,  pfevent, ruler, history_nodes = None):
         '''
         pfevent is event structure inside which we find
-         tracks is a dictionary : {id1:track1, id2:track2, ...}
-         ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
-         hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
-         get_object() which allows a cluster or track to be found from its id
+            tracks is a dictionary : {id1:track1, id2:track2, ...}
+            ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
+            hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
+            get_object() which allows a cluster or track to be found from its id
         ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)
             it should take the two objects as arguments and return a tuple

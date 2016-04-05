@@ -96,6 +96,7 @@ class PapasSim(Analyzer):
                     event.hcal_clusters[e.uniqueid]=e
             else :            
                 print label 
-                assert(False)
+                assert(False)        
+        setattr(event, self.recname, particles)
 
         

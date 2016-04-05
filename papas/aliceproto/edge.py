@@ -40,7 +40,7 @@ class Edge(object):
         shortid1=Identifier.type_short_code(self.id1);
         shortid2=Identifier.type_short_code(self.id2);
         if shortid1 == shortid2:
-            if shortid1 == "f":
+            if shortid1 == "h":
                 return "hcal_hcal"
             elif shortid1 == "e":
                 return "ecal_ecal"

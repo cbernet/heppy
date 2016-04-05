@@ -10,6 +10,10 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
+
+make_tree = True
+
+
 comp = cfg.Component(
     'example',
     # files = 'example.root'
@@ -72,6 +76,7 @@ pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder
 )
 
+
 from heppy.papas.aliceproto.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor
@@ -84,6 +89,7 @@ particlescomparer = cfg.Analyzer(
 
 # and then particle reconstruction from blocks 
 
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
@@ -93,7 +99,12 @@ sequence = cfg.Sequence( [
     pfreconstruct,
     particlescomparer
     ] )
- 
+if make_tree:
+    from jet_tree_cff import jet_tree_sequence
+    sequence.extend( jet_tree_sequence('gen_particles_stable', 
+                                       'papas_rec_particles') ) 
+
+
 config = cfg.Config(
     components = selectedComponents,
     sequence = sequence,
@@ -138,11 +149,11 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-       for j in range(10000) :
+       #for j in range(10000) :
         process(iev)
-        process(iev) #alice_debug
-        process(iev) #alice_debug
-        process(iev) #alice_debug
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

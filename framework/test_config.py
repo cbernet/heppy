@@ -60,7 +60,7 @@ class ConfigTestCase(unittest.TestCase):
         ana2 = copy.copy(ana1)
         ana2.instance_label = 'inst2'
         ana2.toto2 = '2'
-        self.assertEqual(ana2.name, '__main__.Ana1_inst2')
+        self.assertEqual(ana2.name, 'framework.test_config.Ana1_inst2')
         self.assertEqual(ana2.toto2, '2')
 
 if __name__ == '__main__':
