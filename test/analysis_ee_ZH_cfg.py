@@ -21,7 +21,9 @@ logging.basicConfig(level=logging.WARNING)
 # input definition
 comp = cfg.Component(
     'example',
-    files = ['example.root']
+    files = [
+        'ee_ZH_Zmumu_Hbb.root'
+    ]
 )
 selectedComponents = [comp]
 
@@ -57,6 +59,7 @@ papas = cfg.Analyzer(
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
     rec_particles = 'particles',
+    display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
 )
@@ -72,6 +75,7 @@ leptons_true = cfg.Analyzer(
     Filter,
     'sel_leptons',
     output = 'leptons_true',
+    # output = 'leptons',
     input_objects = 'particles',
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )

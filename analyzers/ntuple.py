@@ -6,10 +6,9 @@ def var( tree, varName, type=float ):
 def fill( tree, varName, value ):
     tree.fill( varName, value )
 
-# simple particle
+# simple p4
 
-def bookParticle( tree, pName ):
-    var(tree, '{pName}_pdgid'.format(pName=pName))
+def bookP4( tree, pName ):
     var(tree, '{pName}_e'.format(pName=pName))
     var(tree, '{pName}_pt'.format(pName=pName))
     var(tree, '{pName}_theta'.format(pName=pName))
@@ -17,14 +16,23 @@ def bookParticle( tree, pName ):
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_m'.format(pName=pName))
 
+def fillP4( tree, pName, p4 ):
+    fill(tree, '{pName}_e'.format(pName=pName), p4.e() )
+    fill(tree, '{pName}_pt'.format(pName=pName), p4.pt() )
+    fill(tree, '{pName}_theta'.format(pName=pName), p4.theta() )
+    fill(tree, '{pName}_eta'.format(pName=pName), p4.eta() )
+    fill(tree, '{pName}_phi'.format(pName=pName), p4.phi() )
+    fill(tree, '{pName}_m'.format(pName=pName), p4.m() )
+
+# simple particle
+
+def bookParticle( tree, pName ):
+    var(tree, '{pName}_pdgid'.format(pName=pName))
+    bookP4(tree, pName)
+
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid() )
-    fill(tree, '{pName}_e'.format(pName=pName), particle.e() )
-    fill(tree, '{pName}_pt'.format(pName=pName), particle.pt() )
-    fill(tree, '{pName}_theta'.format(pName=pName), particle.theta() )
-    fill(tree, '{pName}_eta'.format(pName=pName), particle.eta() )
-    fill(tree, '{pName}_phi'.format(pName=pName), particle.phi() )
-    fill(tree, '{pName}_m'.format(pName=pName), particle.m() )
+    fillP4(tree, pName, particle )
 
 
 def bookCluster( tree, name ):
@@ -56,13 +64,13 @@ def fillComponent(tree, pName, component):
 pdgids = [211, 22, 130, 11, 13]
     
 def bookJet( tree, pName ):
-    bookParticle(tree, pName )
+    bookP4(tree, pName )
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
     # var(tree, '{pName}_npart'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
-    fillParticle(tree, pName, jet )
+    fillP4(tree, pName, jet )
     for pdgid in pdgids:
         component = jet.constituents.get(pdgid, None)
         if component is not None:

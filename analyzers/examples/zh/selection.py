@@ -13,7 +13,7 @@ class Selection(Analyzer):
     def process(self, event):
         self.counters['cut_flow'].inc('All events')
         if len(event.sel_iso_leptons)<2:
-            return False
+            return True # could return False to stop processing
         self.counters['cut_flow'].inc('At least 2 leptons')
         if event.sel_iso_leptons[1].e()>30.:
             self.counters['cut_flow'].inc('Both leptons e>30')

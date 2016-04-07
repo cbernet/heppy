@@ -1,12 +1,15 @@
 import copy
 
 from p4 import P4
+from tlv.rootobj import RootObj
 
-class Particle(P4):
+class Particle(P4, RootObj):
     '''Interface for particles. 
     Make sure your code satisfies this interface.
     Specializations in cms, fcc, and tlv packages
     '''
+    def __init__(self, *args, **kwargs):
+        super(Particle, self).__init__(*args, **kwargs)
     
     def pdgid(self):
         '''particle type'''

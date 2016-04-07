@@ -1,4 +1,4 @@
-import numpy as np
+import random
 import sys
 
 class Material(object):
@@ -13,13 +13,13 @@ class Material(object):
         if freepath == 0.0:
             return sys.float_info.max
         else: 
-            return np.random.exponential(freepath)
+            return random.expovariate(1./freepath)
 
 void = Material('void', 0, 0)
 
 
 if __name__ == '__main__':
-    import matplotlib.pyplot as plt 
-    a = np.random.exponential(25., 10000)
+    import matplotlib.pyplot as plt
+    a = [random.expovariate(25.) for i in range(10000)]
     n, bins, patches = plt.hist(a, 50, normed=1, facecolor='green', alpha=0.75)
     plt.show()
