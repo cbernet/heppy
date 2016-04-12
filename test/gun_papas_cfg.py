@@ -25,11 +25,11 @@ selectedComponents = [comp]
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 130,
-    thetamin = -0.5,
-    thetamax = 0.5,
-    ptmin = 10,
-    ptmax = 100,
+    pdgid = 211,
+    thetamin = -1.5,
+    thetamax = 1.5,
+    ptmin = 0.1,
+    ptmax = 10,
     flat_pt = True,
 )
 
