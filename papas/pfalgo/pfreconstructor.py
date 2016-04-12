@@ -38,6 +38,8 @@ class PFReconstructor(object):
             #    continue  
             self.particles.extend( self.reconstruct_group(group) )
         self.unused = [elem for elem in links.elements if not elem.locked]
+        if len(self.unused):
+            self.log.warning(str(self.unused))
         self.log.info("Particles:")
         self.log.info(str(self))
             
@@ -76,7 +78,7 @@ class PFReconstructor(object):
         particles = []
         
         #debugging
-        self.debugprint = True #False
+        self.debugprint = False
         #if len(group)>5:
         #    self.debugprint=True 
         #if self.debugprint:
