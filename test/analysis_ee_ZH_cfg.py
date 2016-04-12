@@ -17,6 +17,9 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
+# setting the random seed for reproducible results
+import random
+random.seed(0xdeadbeef)
 
 # input definition
 comp = cfg.Component(

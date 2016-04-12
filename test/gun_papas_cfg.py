@@ -10,9 +10,11 @@ logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
+# setting the random seed for reproducible results
+import random
+random.seed(0xdeadbeef)
 
 make_tree = True
-
 
 comp = cfg.Component(
     'example',
@@ -73,9 +75,6 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    import random
-    random.seed(0xdeadbeef)
-
     def process(iev=None):
         if iev is None:
             iev = loop.iEvent
@@ -94,7 +93,7 @@ if __name__ == '__main__':
         iev = int(sys.argv[1])
        
     loop = Looper( 'looper', config,
-                   nEvents=100,
+                   nEvents=1000,
                    nPrint=0,
                    timeReport=True)
     simulation = None
