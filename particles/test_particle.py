@@ -10,7 +10,6 @@ class TestParticle(unittest.TestCase):
         ptc = TlvParticle(1, 1, TLorentzVector())
         ptc2 = copy.deepcopy(ptc)
         self.assertEqual(ptc, ptc2)
-        import pdb; pdb.set_trace()
 
 if __name__ == '__main__':
     unittest.main()
