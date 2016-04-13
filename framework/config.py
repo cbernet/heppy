@@ -95,7 +95,12 @@ class Analyzer( CFG ):
         if type(class_object) is not type: 
             errmsg = 'The first argument should be a class'
         elif not analyzer.Analyzer in class_object.__mro__:
-            errmsg = 'The first argument should be a class inheriting from {anaclass}'.format(anaclass=analyzer.Analyzer)
+            try: 
+                from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer as CMSBaseAnalyzer
+                if CMSBaseAnalyzer in class_object.__mro__:
+                    errmsg = None
+            except: 
+                errmsg = 'The first argument should be a class inheriting from {anaclass}'.format(anaclass=analyzer.Analyzer)
         if errmsg: 
             msg = 'Error creating {selfclass} object. {errmsg}. Instead, you gave {classobjectclass}'.format( 
                 selfclass=self.__class__,
