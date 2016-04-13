@@ -38,6 +38,10 @@ class TreeTestCase(unittest.TestCase):
         tr.fill('nvals', 10)
         tr.vfill('x', range(10))
         tr.tree.Fill()
+        tr.reset()
+        tr.fill('nvals', 5)
+        tr.vfill('x', range(5))
+        tr.tree.Fill()        
         fi.Write()
         fi.Close()
         
