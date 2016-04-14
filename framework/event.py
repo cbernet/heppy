@@ -34,8 +34,13 @@ class Event(object):
         stripped_attrs.pop('input')
         for name, value in stripped_attrs.iteritems():
             if hasattr(value, '__len__') and len(value)>10:
-                stripped_attrs[name] = value[:10]
-                stripped_attrs[name].append('...')
-                stripped_attrs[name].append(value[-1])                
+                # taking the first 10 elements and converting to a python list 
+                # note that value could be a wrapped C++ vector
+                stripped_attrs[name] = [ val for val in value[:10] ]
+                try:
+                    stripped_attrs[name].append('...')
+                    stripped_attrs[name].append(value[-1])
+                except AttributeError as err: 
+                    import pdb; pdb.set_trace()
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])
