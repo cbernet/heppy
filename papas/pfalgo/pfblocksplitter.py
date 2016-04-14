@@ -1,5 +1,7 @@
 from blockbuilder import BlockBuilder
 
+#remove pfevent once we have helper classes to produce good printouts
+
 class BlockSplitter(BlockBuilder):
     ''' BlockSplitter takes an exisiting block of particle flow element ids (clusters,tracks etc)
         and unlinks any specified edges. It then recalculates a new set of sub-blocks

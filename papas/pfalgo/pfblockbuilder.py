@@ -1,10 +1,10 @@
 import itertools
 from blockbuilder import BlockBuilder
-from edge import Edge
-from DAG import Node
+from heppy.papas.graphtools.edge import Edge
+from heppy.papas.graphtools.DAG import Node
 
-class EventBlockBuilder(BlockBuilder):
-    ''' EventBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
+class PFBlockBuilder(BlockBuilder):
+    ''' PFBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
         and uses the distances between elements to construct a set of blocks
         Each element will end up in one (and only one block)
         Blocks retain information of the elements and the distances between elements
@@ -24,7 +24,7 @@ class EventBlockBuilder(BlockBuilder):
         
         Usage example:
 
-            builder = EventBlockBuilder(pfevent, ruler)
+            builder = PFBlockBuilder(pfevent, ruler)
             for b in builder.blocks.itervalues() :
                 print b
     '''
@@ -71,7 +71,7 @@ class EventBlockBuilder(BlockBuilder):
             edges[edge.key] = edge
             
         #use the underlying BlockBuilder to construct the blocks        
-        super(EventBlockBuilder, self).__init__(uniqueids,edges,self.history_nodes, pfevent)
+        super(PFBlockBuilder, self).__init__(uniqueids,edges,self.history_nodes, pfevent)
 
     
     
@@ -97,7 +97,7 @@ class EventBlockBuilder(BlockBuilder):
         if link_type == "ecal_hcal":
             is_linked = False
             
-        #make the edge and add the edge into the dict 
+        #make the edge 
         return Edge(id1,id2, is_linked, distance) 
         
     

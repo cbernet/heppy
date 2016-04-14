@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.aliceproto.eventblockbuilder import EventBlockBuilder
-from heppy.papas.aliceproto.pfevent import PFEvent
+from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
+from heppy.papas.data.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 
 
@@ -17,7 +17,7 @@ class PapasPFBlockBuilder(Analyzer):
         
         distance = Distance()
     
-        blockbuilder = EventBlockBuilder(pfevent, distance)
+        blockbuilder = PFBlockBuilder(pfevent, distance)
         #print blockbuilder
             
         event.blocks = blockbuilder.blocks

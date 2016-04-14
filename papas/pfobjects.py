@@ -1,7 +1,7 @@
 from vectors import Point
 from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.data.identifier import Identifier
 import math
 
 
@@ -258,7 +258,7 @@ class Reconstructed_Particle(Particle):
   
 if __name__ == '__main__':
     from ROOT import TVector3
-    cluster = Cluster(10., TVector3(1,0,0), 1, 1)
+    cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer
     print cluster.pt
     cluster.set_energy(5.)
     print cluster.pt

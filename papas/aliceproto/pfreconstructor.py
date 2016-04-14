@@ -1,6 +1,6 @@
-from heppy.papas.aliceproto.identifier import Identifier
-from heppy.papas.aliceproto.DAG import Node
-from heppy.papas.aliceproto.blocksplitter import BlockSplitter
+from heppy.papas.data.identifier import Identifier
+from heppy.papas.graphtools.DAG import Node
+from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import Reconstructed_Particle
@@ -10,6 +10,8 @@ import math
 import pprint
 
 #Discuss with colin self.locked vs ecal.locked
+#209 in reconstruct_block extra ecals to be added in
+#remove sort
 
 
 class PFReconstructor(object):

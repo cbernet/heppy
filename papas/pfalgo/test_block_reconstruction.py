@@ -1,10 +1,10 @@
 import unittest
 from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.data.identifier import Identifier
 from edge import Edge
-from heppy.papas.aliceproto.eventblockbuilder import EventBlockBuilder
-from heppy.papas.aliceproto.blocksplitter import BlockSplitter
-from heppy.papas.aliceproto.blockbuilder import PFBlock as realPFBlock
+from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
+from heppy.papas.pfalgo.pfblockbuilder import BlockSplitter
+from heppy.papas.pfalgo.pfblock import PFBlock as realPFBlock
 
 
 class Cluster(object):
@@ -319,7 +319,7 @@ class TestBlockReconstruction(unittest.TestCase):
         sim  =  Simulator(event)
         event=sim.event
         
-        pfblocker = EventBlockBuilder( event, distance, event.history_nodes)
+        pfblocker = PFBlockBuilder( event, distance, event.history_nodes)
         
         event.blocks = pfblocker.blocks
         #event.history_nodes = pfblocker.history_nodes

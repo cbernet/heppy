@@ -1,10 +1,10 @@
 import itertools
-from blockbuilder import BlockBuilder
-from edge import Edge
-from DAG import Node
+from heppy.papas.graphtools.graphbuilder import GraphBuilder
+from heppy.papas.graphtools.edge import Edge
+from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfobjects import MergedCluster
 
-class MergingBlockBuilder(BlockBuilder):
+class MergedClusterBuilder(GraphBuilder):
     ''' MergingBlockBuilder takes particle flow elements of one cluster type eg ecal_in
         and uses the distances between elements to construct a set of blocks ( of connected clusters)
         The blocks will contain overlapping clusters and then be used to merge the clusters
@@ -60,10 +60,9 @@ class MergingBlockBuilder(BlockBuilder):
             edge = self._make_edge(id1,id2, ruler)
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
-        
-        #note we do note want the merging blocks to be part of the history, they
-        #are just temporary objects (3rd argument below is set to None)
-        super(MergingBlockBuilder, self).__init__(uniqueids,edges,None, pfevent)
+            
+        #make he subgraphs of clusters
+        super(MergedClusterBuilder, self).__init__(uniqueids,edges)
         
         #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
@@ -74,14 +73,14 @@ class MergingBlockBuilder(BlockBuilder):
         
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
-        for block in self.blocks.itervalues():
-            if len(block.element_uniqueids)==1 : 
+        for subgraphids in self.subgraphs:
+            if len(subgraphids)==1 : 
                 #no overlapping cluster so no merging needed
-                self.merged[block.element_uniqueids[0]] = self.pfevent.get_object(block.element_uniqueids[0])
+                self.merged[subgraphids[0]] = self.pfevent.get_object(subgraphids[0])
             else: 
                 #make a merged "supercluster" and then add each of the linked clusters into it                
                 supercluster = None
-                for elemid in block.element_uniqueids :
+                for elemid in subgraphids :
                     thing = self.pfevent.get_object(elemid)
                     if supercluster is None:
                         supercluster = MergedCluster(thing)
@@ -100,7 +99,7 @@ class MergingBlockBuilder(BlockBuilder):
                             self.history_nodes[elemid].add_child(snode)  
                         
 
-    def _make_edge(self,id1,id2, ruler): # should I put this in blockbuilder as is used here and in eventblockbuilder
+    def _make_edge(self,id1,id2, ruler): # should I put this in blockbuilder as is used here and in PFBlockBuilder
         ''' id1, id2 are the unique ids of the two items
             ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)

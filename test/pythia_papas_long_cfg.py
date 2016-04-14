@@ -62,12 +62,12 @@ pfblocks = cfg.Analyzer(
 )
 
 
-from heppy.papas.aliceproto.PapasPFReconstructor import PapasPFReconstructor
+from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor
 )
 
-from heppy.papas.aliceproto.PapasParticlesComparer import PapasParticlesComparer 
+from heppy.analyzers.PapasParticlesComparer import PapasParticlesComparer 
 particlescomparer = cfg.Analyzer(
     PapasParticlesComparer 
 )

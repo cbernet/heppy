@@ -12,9 +12,9 @@ from heppy.display.pfobjects import GTrajectories
 from heppy.papas.pfalgo.distance  import Distance
 
 from heppy.papas.pfalgo.pfinput import PFInput
-from heppy.papas.aliceproto.mergingblockbuilder import MergingBlockBuilder
-from heppy.papas.aliceproto.comparer import ClusterComparer, TrackComparer
-from heppy.papas.aliceproto.pfevent import PFEvent
+from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
+from heppy.papas.data.comparer import ClusterComparer, TrackComparer
+from heppy.papas.data.pfevent import PFEvent
 from ROOT import TLorentzVector, TVector3
 
 
@@ -117,8 +117,8 @@ class PapasSim(Analyzer):
         
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
         # and set the event to point to the merged clusters
-        event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
-        event.hcal_clusters = MergingBlockBuilder("hcal_in",PFEvent(event), ruler).merged  
+        event.ecal_clusters =  MergedClusterBuilder("ecal_in",PFEvent(event), ruler).merged
+        event.hcal_clusters =  MergedClusterBuilder("hcal_in",PFEvent(event), ruler).merged  
         
         #keep track of the simulated particles (select these so they avoid electrons and muons)
         event.baseline_particles = origrecparticles

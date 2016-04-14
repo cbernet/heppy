@@ -1,6 +1,8 @@
 import itertools
-from edge import Edge
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.graphtools.edge import Edge
+from heppy.papas.data.identifier import Identifier
+
+#todo remove pfevent from this class once we have written a helper class to print the block and its elements
 
 class PFBlock(object):
     
