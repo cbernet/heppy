@@ -42,7 +42,7 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 #from heppy.framework.eventsgen import Events
 
-from heppy.papas.aliceproto.PapasSim import PapasSim
+from heppy.analyzers.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
     PapasSim,

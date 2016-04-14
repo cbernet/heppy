@@ -14,7 +14,7 @@ import pprint
 #remove sort
 
 
-class PFReconstructor(object):
+class AlicePFReconstructor(object):
     ''' The reconstructor takes an event containing blocks of elements
         and attempts to reconstruct particles
         The following strategy is used (to be checked with Colin)

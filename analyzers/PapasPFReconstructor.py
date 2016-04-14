@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.aliceproto.pfreconstructor import PFReconstructor
+from heppy.papas.pfalgo.alicepfreconstructor import AlicePFReconstructor as PFReconstructor
 from heppy.papas.data.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.history import History

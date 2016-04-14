@@ -18,6 +18,12 @@ from heppy.papas.data.pfevent import PFEvent
 from ROOT import TLorentzVector, TVector3
 
 
+#todo following Alices merge and reconstruction work
+# - add muons and electrons back into the particles, these
+#   particles are not yet handled by alices reconstruction
+#   they are (for the time being) excluded from the simulation rec particles in order that particle
+#   comparisons can be made (eg # no of particles)
+
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
 
@@ -46,7 +52,6 @@ class PapasSim(Analyzer):
                    Same comments as for the sim_particles parameter above. 
     display      : Enable the event display
     verbose      : Enable the detailed printout.
-
     '''
 
     def __init__(self, *args, **kwargs):
@@ -73,7 +78,7 @@ class PapasSim(Analyzer):
            event will gain
              ecal_clusters:- smeared merged clusters from simulation)
              hcal_clusters:- 
-             tracks:       - smeared tracks from simulation
+             tracks:       - tracks from simulation
              baseline_particles:- simulated particles (excluding electrons and muons)
              sim_particles - simulated particles including electrons and muons
              
@@ -89,21 +94,23 @@ class PapasSim(Analyzer):
         if self.is_display:
             self.display.register( GTrajectories(pfsim_particles),
                                    layer=1)
+        #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)
+        #these are the reconstructed (via simulation) particles  including electrons and muons
         particles = sorted( self.simulator.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
-        #excludes muons and electrons         
+        
+        #these are the reconstructed (via simulation) particles excluding muons and electrons         
         origrecparticles = sorted( self.simulator.pfsequence.pfreco.particles,
                                    key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, "orig_rec_particles",origrecparticles) #cludgy for alices testing (yes must be neater way)
         setattr(event, self.recname,origrecparticles)
                      
         
-        #extract the tracks and clusters (prior to Colins merging step)
+        #extract the tracks and clusters (extraction is prior to Colins merging step)
         event.tracks = dict()
         event.ecal_clusters = dict()
-        event.hcal_clusters = dict() 
+        event.hcal_clusters = dict()
         if "tracker" in self.simulator.pfsequence.pfinput.elements :
             for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element 
@@ -150,9 +157,6 @@ class PapasSim(Analyzer):
                 #event.origecal_clusters[element.uniqueid] = element
             #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
                 #event.orighcal_clusters[element.uniqueid] = element
-               
-         
-        ##compare old and new cluster methods 
         #ClusterComparer(event.origecal_clusters,event.ecal_clusters)
         #ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
        

@@ -9,13 +9,21 @@ from heppy.papas.toyevents import particles
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories
+from heppy.papas.pfalgo.distance  import Distance
 
 from heppy.papas.pfalgo.pfinput import PFInput
-
-
+from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
+from heppy.papas.data.comparer import ClusterComparer, TrackComparer
+from heppy.papas.data.pfevent import PFEvent
 from ROOT import TLorentzVector, TVector3
 
-        
+
+#todo following Alices merge and reconstruction work
+# - add muons and electrons back into the particles, these
+#   particles are not yet handled by alices reconstruction
+#   they are (for the time being) excluded from the simulation rec particles in order that particle
+#   comparisons can be made (eg # no of particles)
+
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
 
@@ -56,14 +64,26 @@ class PapasSim(Analyzer):
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
-        
+
     def init_display(self):
         self.display = Display(['xy','yz'])
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
-        
+
     def process(self, event):
+        '''
+           event must contain
+           
+           event will gain
+             ecal_clusters:- smeared merged clusters from simulation)
+             hcal_clusters:- 
+             tracks:       - tracks from simulation
+             baseline_particles:- simulated particles (excluding electrons and muons)
+             sim_particles - simulated particles including electrons and muons
+             
+             
+        '''
         event.simulator = self 
         if self.is_display:
             self.display.clear()
@@ -74,29 +94,72 @@ class PapasSim(Analyzer):
         if self.is_display:
             self.display.register( GTrajectories(pfsim_particles),
                                    layer=1)
+        #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)
+        #these are the reconstructed (via simulation) particles  including electrons and muons
         particles = sorted( self.simulator.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, self.simname, simparticles)
-        pfinput = PFInput(simparticles)
+        
+        #these are the reconstructed (via simulation) particles excluding muons and electrons         
+        origrecparticles = sorted( self.simulator.pfsequence.pfreco.particles,
+                                   key = lambda ptc: ptc.e(), reverse=True)
+        setattr(event, self.recname,origrecparticles)
+                     
+        
+        #extract the tracks and clusters (extraction is prior to Colins merging step)
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
-        event.baseline_particles = particles
-        for label, element in pfinput.elements.iteritems() :
-            if label == 'tracker':
-                for e in element: 
-                    event.tracks[e.uniqueid]=e 
-            elif label == 'ecal_in':
-                for e in element: 
-                    event.ecal_clusters[e.uniqueid]=e
-            elif label == 'hcal_in':
-                for e in element: 
-                    event.hcal_clusters[e.uniqueid]=e
-            else :            
-                print label 
-                assert(False)        
-        setattr(event, self.recname, particles)
+        if "tracker" in self.simulator.pfsequence.pfinput.elements :
+            for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
+                event.tracks[element.uniqueid] = element 
+        if "ecal_in" in self.simulator.pfsequence.pfinput.elements :        
+            for element in self.simulator.pfsequence.pfinput.elements["ecal_in"]:
+                event.ecal_clusters[element.uniqueid] = element 
+        if "hcal_in" in self.simulator.pfsequence.pfinput.elements :
+            for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
+                event.hcal_clusters[element.uniqueid] = element 
+        ruler = Distance()
+        
+        #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
+        # and set the event to point to the merged clusters
+        event.ecal_clusters =  MergedClusterBuilder("ecal_in",PFEvent(event), ruler).merged
+        event.hcal_clusters =  MergedClusterBuilder("hcal_in",PFEvent(event), ruler).merged  
+        
+        #keep track of the simulated particles (select these so they avoid electrons and muons)
+        event.baseline_particles = origrecparticles
+        
+        setattr(event,self.simname,simparticles) #check
+        event.sim_particles = simparticles        
+        
+        ###if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
+        #event.tracks = dict()
+        #event.ecal_clusters = dict()
+        #event.hcal_clusters = dict()
+        #for element in self.simulator.pfsequence.elements :
+            #if element.__class__.__name__ == 'SmearedTrack': 
+                #event.tracks[element.uniqueid] = element 
+            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
+                #event.ecal_clusters[element.uniqueid] = element
+            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
+                #event.hcal_clusters[element.uniqueid] = element
+            #else :            
+                #print element.__class__.__name__ 
+                #assert(False)
+        #for now we use the original reconstructions to provide the ready merged tracks and clusters
+        
+        ##if uncommetned will check that cluster merging is OK   (compare new merging module with Colins merging)    
+        #event.origecal_clusters = dict()
+        #event.orighcal_clusters = dict()
+        #for element in self.simulator.pfsequence.elements :
+            #if element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
+                #event.origecal_clusters[element.uniqueid] = element
+            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
+                #event.orighcal_clusters[element.uniqueid] = element
+        #ClusterComparer(event.origecal_clusters,event.ecal_clusters)
+        #ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
+       
+        pass
 
         
