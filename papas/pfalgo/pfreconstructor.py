@@ -79,16 +79,13 @@ class PFReconstructor(object):
         
         #debugging
         self.debugprint = False
-        #if len(group)>5:
-        #    self.debugprint=True 
-        #if self.debugprint:
-        #    print self.links        
+       
         
         #impose additional sorting on elements to allow cross cehcking between two methods
         #most likely it is not the optimal sorting
         group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
         if (self.debugprint and len(group)>5) :
-            print "Group: ", group
+            self.log.info(  "Group: ", group)
            
         if len(group)==1: #TODO WARNING!!! LOTS OF MISSING CASES
             elem = group[0]
@@ -247,7 +244,7 @@ class PFReconstructor(object):
         particle.clusters[layer] = cluster
         cluster.locked = True
         if self.debugprint:
-            print "made particle from cluster ",pdg_id,  cluster, particle        
+            self.log.info( "made particle from cluster ",pdg_id,  cluster, particle  )     
         
         return particle
         
@@ -262,7 +259,7 @@ class PFReconstructor(object):
         particle.clusters = clusters
         track.locked = True
         if self.debugprint:
-            print "made particle from track ",pdg_id,  track, particle        
+            self.log.info( "made particle from track ",pdg_id,  track, particle  )      
         
         return particle
 

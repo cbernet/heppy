@@ -1,7 +1,6 @@
 import unittest
 from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
 from heppy.papas.aliceproto.identifier import Identifier
-from heppy.papas.aliceproto.getobject import GetObject
 from edge import Edge
 from heppy.papas.aliceproto.eventblockbuilder import EventBlockBuilder
 from heppy.papas.aliceproto.blocksplitter import BlockSplitter
@@ -76,6 +75,8 @@ class ReconstructedParticle(Particle):
     def __repr__(self):
         return "reconstructed particle:"+  str(self.id) + " :"+  str(self.uniqueid)    
 
+
+            
 class Event(object):
     ''' Simple Event class for test case
         Used to contains the tracks, clusters, particles
@@ -92,9 +93,26 @@ class Event(object):
         self.nodes = dict()          #Contains links/ distances between nodes
         self.blocks = dict()         #Blocks to be made for use in reconstuction
         self.ruler = distance
-        self.get_object=GetObject(self)
+        #self.get_object=GetObject(self)
     
-   
+    def get_object(self, uniqueid):
+        ''' given a uniqueid return the underlying obejct
+        '''
+        type = Identifier.get_type(uniqueid)
+        if type == Identifier.PFOBJECTTYPE.TRACK:
+            return self.tracks[uniqueid]       
+        elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
+            return self.ecal_clusters[uniqueid] 
+        elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
+            return self.hcal_clusters[uniqueid]            
+        elif type == Identifier.PFOBJECTTYPE.PARTICLE:
+            return self.sim_particles[uniqueid]   
+        elif type == Identifier.PFOBJECTTYPE.RECPARTICLE:
+            return self.reconstructed_particles[uniqueid]               
+        elif type == Identifier.PFOBJECTTYPE.BLOCK:
+            return self.blocks[uniqueid]               
+        else:
+            assert(False)   
 
 class Simulator(object):
     ''' Simplified simulator for testing

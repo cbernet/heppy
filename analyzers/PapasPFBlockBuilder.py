@@ -2,7 +2,6 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.aliceproto.eventblockbuilder import EventBlockBuilder
 from heppy.papas.aliceproto.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
-from heppy.papas.aliceproto.getobject import GetObject
 
 
 class PapasPFBlockBuilder(Analyzer):

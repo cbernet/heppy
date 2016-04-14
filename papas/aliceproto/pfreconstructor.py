@@ -60,11 +60,15 @@ class PFReconstructor(object):
               event.history_nodes=reconstructed.history_nodes
         ''' 
     
-    def __init__(self,event): # not sure about if this is the best choice of argument
-        '''arguments
-              event: should contain blocks and optionally history_nodes'''
-        
-        self.blocks=event.blocks
+    def __init__(self,  detector, logger):
+        self.detector = detector
+        self.log = logger
+    #self.reconstruct(links)
+
+
+    def reconstruct(self, event):
+        '''arguments event: should contain blocks and optionally history_nodes'''
+        self.blocks = event.blocks
         self.unused = []
         self.particles = dict()
         
