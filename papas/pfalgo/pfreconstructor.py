@@ -244,7 +244,7 @@ class PFReconstructor(object):
         particle.clusters[layer] = cluster
         cluster.locked = True
         if self.debugprint:
-            self.log.info( "made particle from cluster ",pdg_id,  cluster, particle  )     
+            self.log.info("made particle from cluster ",pdg_id,  cluster, particle)     
         
         return particle
         
@@ -259,8 +259,7 @@ class PFReconstructor(object):
         particle.clusters = clusters
         track.locked = True
         if self.debugprint:
-            self.log.info( "made particle from track ",pdg_id,  track, particle  )      
-        
+            self.log.info("made particle from track ", pdg_id, track, particle)
         return particle
 
 

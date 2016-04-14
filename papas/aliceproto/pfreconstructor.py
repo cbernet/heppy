@@ -9,6 +9,8 @@ from ROOT import TVector3, TLorentzVector
 import math
 import pprint
 
+#Discuss with colin self.locked vs ecal.locked
+
 
 class PFReconstructor(object):
     ''' The reconstructor takes an event containing blocks of elements
@@ -103,7 +105,9 @@ class PFReconstructor(object):
                 
         #check if anything is unused
         if len(self.unused):
-            pass
+            self.log.warning(str(self.unused))
+        self.log.info("Particles:")
+        self.log.info(str(self))        
             
       
     def _sorted_block_keys(self) :
@@ -171,12 +175,10 @@ class PFReconstructor(object):
         for id in ids:
             self.locked[id] = False
         
-        self.debugprint = True #False
-        #if len(block.element_uniqueids)>5:
-        #    self.debugprint = True
+        self.debugprint = False
         
         if (self.debugprint and len(block.element_uniqueids)>5):
-            print block
+            self.log.info( block)
         
        
         if len(ids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
@@ -295,8 +297,6 @@ class PFReconstructor(object):
                 -> each hcal is treated using rules above
         '''
         
-        if self.debugprint:
-            "reconstruct hcal"
         
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
@@ -318,9 +318,9 @@ class PFReconstructor(object):
                 # hcal should be the only remaining linked hcal cluster (closest one)
                 #thcals = [th for th in elem.linked if th.layer=='hcal_in']
                 #assert(thcals[0]==hcal)
-        #print( 'Reconstruct Hcal {hcal}'.format(hcal=hcal) )
-        #print( '\tT {tracks}'.format(tracks=tracks) )
-        #print( '\tE {ecals}'.format(ecals=ecals) )
+        self.log.info( hcal )
+        self.log.info( '\tT {tracks}'.format(tracks=tracks) )
+        self.log.info( '\tE {ecals}'.format(ecals=ecals) )
         hcal_energy = hcal.energy
         if len(tracks):
             ecal_energy = sum(ecal.energy for ecal in ecals)
@@ -333,9 +333,9 @@ class PFReconstructor(object):
             # WARNING
             # calo_eres = self.detector.elements['hcal'].energy_resolution(track_energy)
             calo_eres = self.neutral_hadron_energy_resolution(hcal)
-            #print( 'dE/p, res = {derel}, {res} '.format(
-                #derel = delta_e_rel,
-                #res = calo_eres ))
+            self.log.info( 'dE/p, res = {derel}, {res} '.format(
+                derel = delta_e_rel,
+                res = calo_eres ))
             if delta_e_rel > self.nsigma_hcal(hcal) * calo_eres: # approx means hcal energy + ecal energies > track energies
                 
                 excess = delta_e_rel * track_energy # energy in excess of track energies
@@ -386,26 +386,20 @@ class PFReconstructor(object):
         if energy < mass: 
             return None 
         if (mass==0):
-            momentum= energy
+            momentum= energy #avoid sqrt for zero mass
         else:
             momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
-        p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy)
-        #if (pdg_id==22):
-        #    print "22", momentum, energy, p4.M(), energy-momentum 
-        #    pass   
-             
-        if (pdg_id==22 and p4.M()>1e-7):
-            pass
+        p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
         particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
-        if self.debugprint:
-            print "made particle from cluster ",pdg_id,  cluster, particle
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
                                             # nb this only is problem if the cluster and the assigned layer are different
         particle.set_path(path)
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
+        if self.debugprint:
+            self.log.info("made particle from cluster ",pdg_id,  cluster, particle)        
         return particle
         
     def reconstruct_track(self, track, clusters = None): # cluster argument does not ever seem to be used at present
@@ -417,19 +411,15 @@ class PFReconstructor(object):
         p4 = TLorentzVector()
         p4.SetVectM(track.p3, mass)
         particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
-        
         particle.set_path(track.path)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
-        
         if self.debugprint:
-                    print "made particle from track ",pdg_id,  track, particle        
+            self.log.info("made particle from track ", pdg_id, track, particle )       
         return particle
 
 
     def __str__(self):
-        
-        
         theStr = ['New Rec Particles:']
         theStr.extend( map(str, self.particles))
         theStr.append('Unused:')
