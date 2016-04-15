@@ -135,7 +135,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        for j in range(10000) :
+        #for j in range(10000) :
             process(iev)
             pass
             #process(iev) #alice_debug
