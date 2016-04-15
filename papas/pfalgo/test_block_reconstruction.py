@@ -1,9 +1,9 @@
 import unittest
-from DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
+from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
 from heppy.papas.data.identifier import Identifier
-from edge import Edge
+from heppy.papas.graphtools.edge import Edge
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-from heppy.papas.pfalgo.pfblockbuilder import BlockSplitter
+#from heppy.papas.pfalgo.pfblockbuilder import BlockSplitter
 from heppy.papas.pfalgo.pfblock import PFBlock as realPFBlock
 
 
@@ -53,7 +53,7 @@ class Particle(object):
             pdgid is particle id eg 22 for photon
         '''
         self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.PARTICLE)
-        print "particle: ",self.uniqueid," ",id
+        #print "particle: ",self.uniqueid," ",id
         self.pdgid = pdgid
         self.id = id
         #self.type = PFType.PARTICLE
@@ -226,15 +226,15 @@ class Reconstructor(object):
         parents = block.element_uniqueids
         
         if  (len(parents) == 1) & (Identifier.is_ecal(parents[0])):
-            print "make photon"
+            #print "make photon"
             self.make_photon(parents)
             
         elif ( (len(parents) == 2)  & (block.count_ecal() == 1 ) & (block.count_tracks() == 1)):
-            print "make hadron" 
+            #print "make hadron" 
             self.make_hadron(parents)
             
         elif  ((len(parents) == 3)  & (block.count_ecal() == 1) & (block.count_tracks() == 1) & (block.count_hcal() == 1)):
-                print "make hadron and photon"
+                #print "make hadron and photon"
                 #probably not right but illustrates splitting of parents for more than one particle
                 hparents = [] # will contain parents for the Hadron which gets everything except the 
                               #hcal which is used for the photom
@@ -246,7 +246,8 @@ class Reconstructor(object):
                 self.make_hadron(hparents)
     
         else :
-            print "particle TODO"  
+            pass
+            #print "particle TODO"  
          
     def make_photon(self, parents):
         return self.add_particle(self.new_id(), 22,parents)
@@ -362,7 +363,7 @@ class TestBlockReconstruction(unittest.TestCase):
         for id in ids:
             if Identifier.is_block(id) and event.blocks[id].short_name()== "E1H1T1":
                 x =  event.blocks[id]
-        print x       
+        #print x       
                 
         #1c #check that the block contains the expected list of suspects    
         pids = [] 
@@ -381,24 +382,25 @@ class TestBlockReconstruction(unittest.TestCase):
         self.assertEqual(sorted(ids), expected_ids)
         
         #(3) Give me all blocks with  one track:
-        blockids = []
-        for b in event.blocks.itervalues():
-            if b.count_tracks():        
-                print b
+        #blockids = []
+        #for b in event.blocks.itervalues():
+            #if b.count_tracks():        
+                #print b
         
         #(4) Give me all simulation particles attached to each reconstructed particle
         
         for rp in event.reconstructed_particles :
             ids=[]
             BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"parents")
-            print "Rec particle: ", event.reconstructed_particles[rp], " from "            
+            #print "Rec particle: ", event.reconstructed_particles[rp], " from "            
                   
             for n in BFS.result :
                 z=n.get_value()
                 if (Identifier.is_particle(z)):
-                    print "      sim particle: ", event.sim_particles[z]
+                    pass
+                    #print "      sim particle: ", event.sim_particles[z]
         
-        pass       
+        #pass       
         # Give me all rec particles attached to each sim particle
        # for rp in event.sim_particles :
        #     BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"children")
@@ -411,7 +413,7 @@ class TestBlockReconstruction(unittest.TestCase):
        #             print "     rec particle: ", event.reconstructed_particles[n.getValue()].pdgid 
     
                 
-        print("end")
+        #print("end")
         
 if __name__  ==  '__main__':        
     unittest.main()

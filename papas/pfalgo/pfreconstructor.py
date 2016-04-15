@@ -23,6 +23,7 @@ class PFReconstructor(object):
         all_subgroups = dict()
         # pprint.pprint( links.groups )
         # import pdb; pdb.set_trace()
+        
         for groupid, group in links.groups.iteritems():
             if self.simplify_group(group):
                 all_subgroups[groupid] = links.subgroups(groupid)
@@ -30,15 +31,19 @@ class PFReconstructor(object):
             del links.groups[group_id]
             links.groups.update(subgroups)
         
-        for group_id, group in links.groups.iteritems():
+        #ordering of groups to help with matching reconstruction methods        
+        groups =  sorted(links.groups.iteritems(), key = lambda g: len(g), reverse=True )           
+        
+        for group_id, group in groups:
             self.log.info( "group {group_id} {group}".format(
                 group_id = group_id,
                 group = group) )
-            #if len(group)<6: #ALICE debugging  means we only process bigger groups
+            #if len(group)< 6: #ALICE debugging  means we only process bigger groups
             #    continue  
             self.particles.extend( self.reconstruct_group(group) )
         self.unused = [elem for elem in links.elements if not elem.locked]
         if len(self.unused):
+            pass
             self.log.warning(str(self.unused))
         self.log.info("Particles:")
         self.log.info(str(self))
@@ -84,8 +89,9 @@ class PFReconstructor(object):
         #impose additional sorting on elements to allow cross cehcking between two methods
         #most likely it is not the optimal sorting
         group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
-        if (self.debugprint and len(group)>5) :
-            self.log.info(  "Group: ", group)
+        if (self.debugprint  and len(group)> 5) :
+            print  "Group: ", len(group) , " **** " #, group
+            print self.links
            
         if len(group)==1: #TODO WARNING!!! LOTS OF MISSING CASES
             elem = group[0]
@@ -244,7 +250,7 @@ class PFReconstructor(object):
         particle.clusters[layer] = cluster
         cluster.locked = True
         if self.debugprint:
-            self.log.info("made particle from cluster ",pdg_id,  cluster, particle)     
+            print  "made particle from cluster ",pdg_id,  cluster, particle     
         
         return particle
         
@@ -259,7 +265,7 @@ class PFReconstructor(object):
         particle.clusters = clusters
         track.locked = True
         if self.debugprint:
-            self.log.info("made particle from track ", pdg_id, track, particle)
+            print "made particle from track ", pdg_id, track, particle
         return particle
 
 

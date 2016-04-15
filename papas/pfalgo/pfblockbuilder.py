@@ -69,7 +69,7 @@ class PFBlockBuilder(BlockBuilder):
             edge=self._make_edge(id1,id2, ruler)
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
-            
+      
         #use the underlying BlockBuilder to construct the blocks        
         super(PFBlockBuilder, self).__init__(uniqueids,edges,self.history_nodes, pfevent)
 

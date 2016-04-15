@@ -4,6 +4,10 @@ from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 import math
 
+#add angular size needs to be fixed since at the moment the angluar size is set by the first element
+#in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
+
+
 
 class PFObject(object):
     '''Base class for all particle flow objects (tracks, clusters, etc).
@@ -69,7 +73,35 @@ class Cluster(PFObject):
         return self._size
 
     def angular_size(self):
+        #angular_size is only properly specified for single (unmerged) clusters
         return self._angularsize
+    
+    def is_inside_clusters(self,  other):
+        #see if two clusters overlap (allowing for merged clusters which contain subclusters)
+        subdists =  []
+        alldists = []
+        for c in self.subclusters:
+            for o in  other.subclusters:
+                is_link,  dist =  c.is_inside_cluster(o)
+                alldists.append(dist)
+                if (is_link) :
+                    subdists.append(dist)
+                    
+        if len(subdists) >  0:
+            return True, min(subdists)
+        else:
+            return  False,  min(alldists)
+        
+            
+    def is_inside_cluster(self, other):
+        #now we have original unmerged clusters so we can compare directly to see if they overlap
+        dR = deltaR(self.position.Theta(),
+                    self.position.Phi(),
+                    other.position.Theta(),
+                    other.position.Phi())
+        link_ok = dR < self.angular_size() + other.angular_size()
+        return link_ok,  dR
+            
 
     def is_inside(self, point):
         #check if the point lies within the "size" circle of each of the subclusters
@@ -104,7 +136,9 @@ class Cluster(PFObject):
         position *= denom
         self.position = position
         self.energy = energy
+        assert (len(other.subclusters) == 1)
         self.subclusters.extend(other.subclusters)
+     
         #todo recalculate the angular size
         return self
 

@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     files = [
-        'ee_ZH_Zmumu_Hbb_50000.root'
+        '/Users/alice/fcc/pythiafiles/ee_ZH_Zmumu_Hbb_50000.root'
     ]
 )
 selectedComponents = [comp]
@@ -42,7 +42,7 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 #from heppy.framework.eventsgen import Events
 
-from heppy.analysers.PapasSim import PapasSim
+from heppy.analyzers.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
     PapasSim,
@@ -64,7 +64,8 @@ pfblocks = cfg.Analyzer(
 
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
-    PapasPFReconstructor
+    PapasPFReconstructor,
+    detector = CMS()
 )
 
 from heppy.analyzers.PapasParticlesComparer import PapasParticlesComparer 
@@ -134,7 +135,9 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        #for i in  range(5000):
             process(iev)
+            
             
     else:
         loop.loop()

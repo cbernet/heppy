@@ -111,6 +111,7 @@ class PapasSim(Analyzer):
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
+        
         if "tracker" in self.simulator.pfsequence.pfinput.elements :
             for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element 
@@ -121,7 +122,7 @@ class PapasSim(Analyzer):
             for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
                 event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
-        
+       
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
         # and set the event to point to the merged clusters
         event.ecal_clusters =  MergedClusterBuilder("ecal_in",PFEvent(event), ruler).merged
@@ -133,13 +134,10 @@ class PapasSim(Analyzer):
         setattr(event,self.simname,simparticles) #check
         event.sim_particles = simparticles        
         
-        ###if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
-        #event.tracks = dict()
+        ####if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
         #event.ecal_clusters = dict()
-        #event.hcal_clusters = dict()
+        #event.hcal_clusters = dict()        
         #for element in self.simulator.pfsequence.elements :
-            #if element.__class__.__name__ == 'SmearedTrack': 
-                #event.tracks[element.uniqueid] = element 
             #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
                 #event.ecal_clusters[element.uniqueid] = element
             #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
@@ -147,9 +145,8 @@ class PapasSim(Analyzer):
             #else :            
                 #print element.__class__.__name__ 
                 #assert(False)
-        #for now we use the original reconstructions to provide the ready merged tracks and clusters
-        
-        ##if uncommetned will check that cluster merging is OK   (compare new merging module with Colins merging)    
+       
+        ###if uncommented will check that cluster merging is OK   (compare new merging module with Colins merging)    
         #event.origecal_clusters = dict()
         #event.orighcal_clusters = dict()
         #for element in self.simulator.pfsequence.elements :
@@ -159,6 +156,11 @@ class PapasSim(Analyzer):
                 #event.orighcal_clusters[element.uniqueid] = element
         #ClusterComparer(event.origecal_clusters,event.ecal_clusters)
         #ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
+        #event.othertracks =  dict()
+        #for element in self.simulator.pfsequence.elements :
+            #if element.__class__.__name__ == 'SmearedTrack': 
+                #event.othertracks[element.uniqueid] = element        
+        #assert (len(event.tracks) == len(event.othertracks))
        
         pass
 

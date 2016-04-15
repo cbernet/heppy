@@ -87,7 +87,8 @@ class AlicePFReconstructor(object):
         # then recalculate the blocks
         splitblocks=dict() 
         
-        for block in self._sorted_block_keys(): #put big interesting blocks first   
+        for block in self._sorted_block_keys(): #put big interesting blocks first
+            #print "block: ", len(self.blocks[block]),  self.blocks[block].short_name();
             newblocks=self.simplify_blocks(self.blocks[block],event.history_nodes)
             if newblocks != None:
                 splitblocks.update( newblocks)      
@@ -97,9 +98,9 @@ class AlicePFReconstructor(object):
             
         #reconstruct each of the resulting blocks        
         for b in self._sorted_block_keys():  #put big interesting blocks first
-            block=self.blocks[b]            
+            block=self.blocks[b]
             if block.is_active: # when blocks are split the original gets deactivated                
-                #ALICE debugging  
+                #ALICE debugging
                 #if len(block.element_uniqueids)<6:
                 #    continue
                 self.reconstruct_block(block)                
@@ -178,10 +179,9 @@ class AlicePFReconstructor(object):
             self.locked[id] = False
         
         self.debugprint = False
-        
-        if (self.debugprint and len(block.element_uniqueids)>5):
-            self.log.info( block)
-        
+        if (self.debugprint  and len(block.element_uniqueids)> 4):
+            print  block
+            
        
         if len(ids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
             id = ids[0]
@@ -223,8 +223,7 @@ class AlicePFReconstructor(object):
             #     self.log.warning( 'DEAL WITH ELECTRONS!' ) 
             #     particles.append(self.reconstruct_cluster(ecal, 'ecal_in'))
             #TODO deal with track-ecal
-        
-    
+          
     
        
     def insert_particle(self, block, newparticle):
@@ -401,7 +400,7 @@ class AlicePFReconstructor(object):
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
         if self.debugprint:
-            self.log.info("made particle from cluster ",pdg_id,  cluster, particle)        
+            print "made particle from cluster ",pdg_id,  cluster, particle        
         return particle
         
     def reconstruct_track(self, track, clusters = None): # cluster argument does not ever seem to be used at present
@@ -417,7 +416,7 @@ class AlicePFReconstructor(object):
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
         if self.debugprint:
-            self.log.info("made particle from track ", pdg_id, track, particle )       
+            print "made particle from track ", pdg_id, track, particle        
         return particle
 
 
