@@ -2,7 +2,7 @@ from heppy.framework.analyzer import Analyzer
 
 class Counter(Analyzer):
     '''Counts the number of objects in the input_objects collection
-    and pass the event if this number is strictly inferior to min_number
+    and skip the event if this number is strictly inferior to min_number
 
     Example: 
 
@@ -15,7 +15,7 @@ class Counter(Analyzer):
 
     * input_objects : the input collection 
 
-    * min_number : the minimum amount of object in input_object to not pass the event
+    * min_number : the minimum amount of object in input_object to not skip the event
     '''
 
     def process(self, event):
