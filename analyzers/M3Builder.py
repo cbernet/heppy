@@ -8,13 +8,16 @@ class M3Builder(Analyzer):
     
     def process(self, event):
         jets = getattr(event, self.cfg_ana.jets)
-        jets = [jet for jet in jets if self.cfg_ana.filter_func(jet)]
+        #jets = [jet for jet in jets if self.cfg_ana.filter_func(jet)]
 
         m3 = None
         pt3max=0
         seljets=None
+        #print jets
+
         if len(jets)>=3:
             for l in list(itertools.permutations(jets,3)):
+                #ntag=sum([l[0].tags['b'],l[1].tags['b'],l[2].tags['b']])
                 pt3=(l[0].p4()+l[1].p4()+l[2].p4()).Pt()
                 if pt3>pt3max:
                     ptmax=pt3

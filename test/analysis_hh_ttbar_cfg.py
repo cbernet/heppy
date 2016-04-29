@@ -12,9 +12,9 @@ comp = cfg.Component(
     'example',
     #files = ['example.root']
     files = ['root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_1.root',
-             #'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_2.root',
-             #'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_3.root',
-             #'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_4.root',
+             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_2.root',
+             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_3.root',
+             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_4.root',
 
         #'/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput.root'
              ]
@@ -99,7 +99,8 @@ jets_30 = cfg.Analyzer(
 from heppy.analyzers.Matcher import Matcher
 match_jet_electrons = cfg.Analyzer(
     Matcher,
-    delta_r = 0.4,
+    'electron_jets',
+    delta_r = 0.2,
     match_particles = 'sel_iso_electrons',
     particles = 'jets_30'
 )
@@ -116,14 +117,15 @@ sel_jets_electron = cfg.Analyzer(
 from heppy.analyzers.Matcher import Matcher
 match_muon_jets = cfg.Analyzer(
     Matcher,
-    delta_r = 0.4,
+    'muon_jets',
+    delta_r = 0.2,
     match_particles = 'sel_iso_muons',
     particles = 'sel_jets_noelectron_30'
 )
 
 sel_jets_muon = cfg.Analyzer(
     Filter,
-    'sel_iso_muons_nojets_30',
+    'sel_jets_nomuon_30',
     output = 'sel_jets_noelectronnomuon_30',
     input_objects = 'sel_jets_noelectron_30',
     filter_func = lambda jet: jet.match is None
@@ -154,7 +156,7 @@ mtw = cfg.Analyzer(
     instance_label = 'mtw',
     met = 'met',
     electron = 'sel_iso_electrons',
-    muon = 'sel_iso_muons_nojets_30'
+    muon = 'sel_iso_muons'
 )
 
 
@@ -172,7 +174,7 @@ gen_tree = cfg.Analyzer(
     m3 = 'm3',
     met = 'met',
     mtw= 'mtw',
-    muons = 'sel_iso_muons_nojets_30',
+    muons = 'sel_iso_muons',
     electrons = 'sel_iso_electrons'
 )
 

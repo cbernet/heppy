@@ -16,10 +16,9 @@ class Selection(Analyzer):
         self.counters['cut_flow'].inc('All events')
         
         #select events with at least 4 jets
-        if len(event.sel_jets_noelectron_30)<3:
+        if len(event.sel_jets_noelectronnomuon_30)<4:
             return False
         self.counters['cut_flow'].inc('At least 4 jets')
-
 
         #select events with at least 1 b-jet
         if len(event.b_jets_30)<1:
@@ -27,12 +26,13 @@ class Selection(Analyzer):
         self.counters['cut_flow'].inc('At least 1 b-jet')
 
         #select events with exactly 1 lepton
-        if (len(event.sel_iso_electrons) + len(event.sel_iso_muons_nojets_30) != 1):
+        if (len(event.sel_iso_electrons) + len(event.sel_iso_muons) != 1):
             return False
         self.counters['cut_flow'].inc('Exactly 1 lepton')
 
         #select events with MET>20GeV
-        if event.met.pt()>20.:
-            self.counters['cut_flow'].inc('MET > 20GeV')
+        if event.met.pt()<20.:
+            return False
+        self.counters['cut_flow'].inc('MET > 20GeV')
             
         return True
