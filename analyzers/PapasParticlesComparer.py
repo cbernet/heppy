@@ -8,6 +8,8 @@ class PapasParticlesComparer(Analyzer):
     '''
     def __init__(self, *args, **kwargs):
         super(PapasParticlesComparer, self).__init__(*args, **kwargs)
+        self.particlesA_name =  self.cfg_ana.particlesA
+        self.particlesB_name =  self.cfg_ana.particlesB
                 
     def process(self, event): #think about if argument is correct
         ''' calls a particle comparer to compare two lists of pre-sorted particles
@@ -16,10 +18,9 @@ class PapasParticlesComparer(Analyzer):
                    and reconstructed_particles made from the new BlockBuilder approach
         '''
         #may well change how pfevent and history are organised
-        pfevent=PFEvent(event)
-        history=History(event.history_nodes, pfevent)
-        ParticlesComparer(event.reconstructed_particle_list,event.baseline_particles,history)
-        
-        
+        #pfevent=PFEvent(event)
+        #history=History(event.history_nodes, pfevent)
+        ParticlesComparer(getattr(event,  self.particlesA_name),  getattr(event, self.particlesB_name))
+                        
         pass
         

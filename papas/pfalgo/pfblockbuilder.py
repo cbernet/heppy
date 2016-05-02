@@ -59,7 +59,7 @@ class PFBlockBuilder(BlockBuilder):
         uniqueids = []
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
         
-        self.history_nodes=history_nodes
+        self.history_nodes = history_nodes
         if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
@@ -71,7 +71,7 @@ class PFBlockBuilder(BlockBuilder):
             edges[edge.key] = edge
       
         #use the underlying BlockBuilder to construct the blocks        
-        super(PFBlockBuilder, self).__init__(uniqueids,edges,self.history_nodes, pfevent)
+        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes, pfevent)
 
     
     

@@ -1,6 +1,7 @@
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
+from heppy.papas.pfalgo.pfinput import  PFInput
 
 from pfalgo.sequence import PFSequence
 import random
@@ -189,7 +190,7 @@ class Simulator(object):
         smeared = copy.deepcopy(ptc)
         return smeared
     
-    def simulate(self, ptcs):
+    def simulate(self, ptcs,  do_reconstruct = True):
         self.reset()
         self.ptcs = []
         smeared = []
@@ -213,11 +214,14 @@ class Simulator(object):
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
+            self.smeared =  smeared
+            self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction
         
+        if  do_reconstruct : #now optional, defaults to run this for backwards compatibility
+            self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
+            self.particles = copy.copy(self.pfsequence.pfreco.particles)
+            self.particles.extend(smeared)
         
-        self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
-        self.particles = copy.copy(self.pfsequence.pfreco.particles)
-        self.particles.extend(smeared)
         
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)

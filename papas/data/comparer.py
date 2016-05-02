@@ -5,13 +5,13 @@ class ParticlesComparer(object):
           will stop on an assert if things are different
           Note that there is an issue with accuracy of particle mass as assessed via TLorentzVector
     '''
-    def __init__(self, particlesA, particlesB, history):
+    def __init__(self, particlesA, particlesB):
         ''' Simple check that two sets of sensibly sorted particles are the same
             is relatively naive but sufficient so far
         '''
         self.A = particlesA
         self.B = particlesB
-        self.history = history
+        #self.history = history
         
         assert(len(self.A)==len(self.B))
         
@@ -33,7 +33,7 @@ class ParticlesComparer(object):
                       
             except AssertionError:
                 print i
-                print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
+                #print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
                 print self.A[i].p4().X(), self.B[i].p4().X()
                 print self.A[i].p4().Y(), self.B[i].p4().Y()
                 print self.A[i].p4().Z(), self.B[i].p4().Z()

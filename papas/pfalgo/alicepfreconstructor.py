@@ -70,15 +70,16 @@ class AlicePFReconstructor(object):
     #self.reconstruct(links)
 
 
-    def reconstruct(self, event):
+    def reconstruct(self, event,  blocksname, historyname):
         '''arguments event: should contain blocks and optionally history_nodes'''
-        self.blocks = event.blocks
+        self.blocks = getattr(event,  blocksname)
         self.unused = []
         self.particles = dict()
         
+        
         # history nodes will be used to connect reconstructed particles into the history
         # its optional at the moment
-        if hasattr(event, "history_nodes"):
+        if hasattr(event, historyname):
             self.history_nodes = event.history_nodes
         else : 
             self.history_nodes = None

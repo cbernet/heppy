@@ -37,7 +37,11 @@ class PapasSim(Analyzer):
         detector = CMS(),
         gen_particles = 'gen_particles_stable',
         sim_particles = 'sim_particles',
-        rec_particles = 'rec_particles',
+        ecal_clusters = 'ecal_clusters',
+        hcal_clusters = 'hcal_clusters',
+        tracks = 'tracks',
+        rec_particles = 'rec_particles', 
+        rec_particles_no_muons_electrons = 'rec_particles_no_muons_electrons', 
         display = False,                   
         verbose = False
     )
@@ -48,7 +52,16 @@ class PapasSim(Analyzer):
                    Note that the instance label is prepended to this name. 
                    Therefore, in this particular case, the name of the output 
                    sim particle collection is "papas_sim_particles".
-    rec_particles: Name extension for the output reconstructed particle collection.
+    ecal_clusters: Name extension for the merged clusters created by simulator              
+    hcal_clusters: Name extension for the merged clusters created by simulator             
+    tracks: Name extension for the tracks created by simulator              
+    
+    rec_particles: Name extension for the reconstructed particles created by simulator
+                   This is retained for the time being to allow two reconstructions to be compared
+                   Same comments as for the sim_particles parameter above.
+    rec_particles_no_muons_electrons: Name extension for the reconstructed particles created by simulator
+                   without electrons and muons
+                   This is retained for the time being to allow two reconstructions to be compared
                    Same comments as for the sim_particles parameter above. 
     display      : Enable the event display
     verbose      : Enable the detailed printout.
@@ -60,7 +73,17 @@ class PapasSim(Analyzer):
         self.simulator = Simulator(self.detector,
                                    self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        self.recname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles])
+        
+        self.do_reconstruct = False
+        if hasattr(self.cfg_ana, 'rec_particles') :
+            self.do_reconstruct = True
+            self.recname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles])
+        self.rec_noleptonsname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles_no_leptons])
+        self.smearedname =  '_'.join([self.instance_label,  self.cfg_ana.smeared])
+        self.tracksname =  self.cfg_ana.tracks  
+        self.mergedecalsname = self.cfg_ana.merged_ecals
+        self.mergedhcalsname = self.cfg_ana.merged_hcals
+        
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
@@ -89,7 +112,7 @@ class PapasSim(Analyzer):
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        self.simulator.simulate( gen_particles )
+        self.simulator.simulate( gen_particles , self.do_reconstruct)
         pfsim_particles = self.simulator.ptcs
         if self.is_display:
             self.display.register( GTrajectories(pfsim_particles),
@@ -97,42 +120,49 @@ class PapasSim(Analyzer):
         #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)
-        #these are the reconstructed (via simulation) particles  including electrons and muons
-        particles = sorted( self.simulator.particles,
+        smearedparticles = sorted( self.simulator.smeared,
+                                   key = lambda ptc: ptc.e(), reverse=True)        
+        setattr(event, self.simname, simparticles)
+        setattr(event, self.smearedname, smearedparticles) # leptons
+
+        
+        if self.do_reconstruct:
+            #these are the reconstructed (via simulation) particles  including electrons and muons
+            particles = sorted( self.simulator.particles,
                             key = lambda ptc: ptc.e(), reverse=True)
         
-        #these are the reconstructed (via simulation) particles excluding muons and electrons         
-        origrecparticles = sorted( self.simulator.pfsequence.pfreco.particles,
+            #these are the reconstructed (via simulation) particles excluding muons and electrons         
+            origparticles = sorted( self.simulator.pfsequence.pfreco.particles,
                                    key = lambda ptc: ptc.e(), reverse=True)
-        setattr(event, self.recname,origrecparticles)
-                     
+            setattr(event, self.recname, particles)          
+            setattr(event, self.rec_noleptonsname, origparticles)
+                
+            
         
+       
         #extract the tracks and clusters (extraction is prior to Colins merging step)
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
         
-        if "tracker" in self.simulator.pfsequence.pfinput.elements :
-            for element in self.simulator.pfsequence.pfinput.elements["tracker"]:
+        if "tracker" in self.simulator.pfinput.elements :
+            for element in self.simulator.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element 
-        if "ecal_in" in self.simulator.pfsequence.pfinput.elements :        
-            for element in self.simulator.pfsequence.pfinput.elements["ecal_in"]:
+        if "ecal_in" in self.simulator.pfinput.elements :        
+            for element in self.simulator.pfinput.elements["ecal_in"]:
                 event.ecal_clusters[element.uniqueid] = element 
-        if "hcal_in" in self.simulator.pfsequence.pfinput.elements :
-            for element in self.simulator.pfsequence.pfinput.elements["hcal_in"]:
+        if "hcal_in" in self.simulator.pfinput.elements :
+            for element in self.simulator.pfinput.elements["hcal_in"]:
                 event.hcal_clusters[element.uniqueid] = element 
         ruler = Distance()
        
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
-        # and set the event to point to the merged clusters
-        event.ecal_clusters =  MergedClusterBuilder("ecal_in",PFEvent(event), ruler).merged
-        event.hcal_clusters =  MergedClusterBuilder("hcal_in",PFEvent(event), ruler).merged  
-        
-        #keep track of the simulated particles (select these so they avoid electrons and muons)
-        event.baseline_particles = origrecparticles
-        
-        setattr(event,self.simname,simparticles) #check
-        event.sim_particles = simparticles        
+        # and set the event to point to the merged cluster
+        pfevent =  PFEvent(event, 'tracks', 'ecal_clusters', 'hcal_clusters')
+        merged_ecals = MergedClusterBuilder("ecal_in", pfevent, ruler).merged
+        setattr(event, self.mergedecalsname, merged_ecals)
+        merged_hcals = MergedClusterBuilder("hcal_in", pfevent, ruler).merged
+        setattr(event, self.mergedhcalsname, merged_hcals)        
         
         ####if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
         #event.ecal_clusters = dict()

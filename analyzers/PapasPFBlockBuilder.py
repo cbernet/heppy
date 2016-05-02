@@ -10,18 +10,28 @@ class PapasPFBlockBuilder(Analyzer):
     '''
     def __init__(self, *args, **kwargs):
         super(PapasPFBlockBuilder, self).__init__(*args, **kwargs)
+        
+        self.tracksname =    self.cfg_ana.tracks;    
+        self.ecalsname = self.cfg_ana.ecals; 
+        self.hcalsname = self.cfg_ana.hcals;
+        self.blocksname = self.cfg_ana.output_blocks;
+        self.historyname = self.cfg_ana.input_history;
+        self.outhistoryname = self.cfg_ana.output_history;
                 
     def process(self, event):
         
-        pfevent=PFEvent(event) #or instead pass hcal, ecal ,track visibly? or somehow add the get_object to event?
+        pfevent=PFEvent(event, self.tracksname,  self.ecalsname,  self.hcalsname,  self.blocksname) #or instead pass hcal, ecal ,track visibly? or somehow add the get_object to event?
         
         distance = Distance()
-    
-        blockbuilder = PFBlockBuilder(pfevent, distance)
+        
+        history_nodes =  None
+        if hasattr(event, self.historyname) :
+            history_nodes = getattr(event,  self.historyname)
+        blockbuilder = PFBlockBuilder(pfevent, distance, history_nodes )
         #print blockbuilder
             
-        event.blocks = blockbuilder.blocks
-        event.history_nodes = blockbuilder.history_nodes
+        setattr(event, self.blocksname, blockbuilder.blocks)
+        setattr(event,  self.outhistoryname,  blockbuilder.history_nodes)
         
         
         

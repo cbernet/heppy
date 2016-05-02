@@ -50,7 +50,13 @@ papas = cfg.Analyzer(
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    rec_particles = 'rec_particles',
+    merged_ecals = 'ecal_clusters',
+    merged_hcals = 'hcal_clusters',
+    tracks = 'tracks',
+    rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a anme is provided
+    rec_particles_no_leptons = 'rec_particles_no_leptons', #only there for verification purposes #TODO make optional
+    smeared = 'sim_leptons', 
+    history = 'history_nodes',     
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
@@ -58,19 +64,33 @@ papas = cfg.Analyzer(
 
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
-    PapasPFBlockBuilder
+    PapasPFBlockBuilder,
+    tracks = 'tracks', 
+    ecals = 'ecal_clusters', 
+    hcals = 'hcal_clusters', 
+    input_history = 'history_nodes', 
+    output_history = 'history_nodes', 
+    output_blocks = 'reconstruction_blocks'    
 )
 
 
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
-    detector = CMS()
+    instance_label = 'papas_PFreconstruction', 
+    detector = CMS(),
+    input_blocks = 'reconstruction_blocks',
+    input_history = 'history_nodes', 
+    output_history = 'history_nodes',     
+    output_particles_dict = 'particles_dict', 
+    output_particles_list = 'particles_list'    
 )
 
 from heppy.analyzers.PapasParticlesComparer import PapasParticlesComparer 
 particlescomparer = cfg.Analyzer(
-    PapasParticlesComparer 
+    PapasParticlesComparer ,
+    particlesA = 'papas_PFreconstruction_particles_list',
+    particlesB = 'papas_rec_particles_no_leptons'
 )
 
 # and then particle reconstruction from blocks 
@@ -135,7 +155,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        #for i in  range(5000):
+        for i in  range(5000):
             process(iev)
             
             
