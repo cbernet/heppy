@@ -155,7 +155,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        for i in  range(5000):
+        #for i in  range(5000):
             process(iev)
             
             

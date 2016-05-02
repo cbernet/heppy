@@ -33,36 +33,43 @@ class PapasSim(Analyzer):
     from heppy.papas.detectors.CMS import CMS
     papas = cfg.Analyzer(
         PapasSim,
-        instance_label = 'papas',              
+        instance_label = 'papas',
         detector = CMS(),
         gen_particles = 'gen_particles_stable',
         sim_particles = 'sim_particles',
-        ecal_clusters = 'ecal_clusters',
-        hcal_clusters = 'hcal_clusters',
+        merged_ecals = 'ecal_clusters',
+        merged_hcals = 'hcal_clusters',
         tracks = 'tracks',
-        rec_particles = 'rec_particles', 
-        rec_particles_no_muons_electrons = 'rec_particles_no_muons_electrons', 
-        display = False,                   
-        verbose = False
+        #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a name is provided
+        rec_particles_no_leptons = 'rec_particles_no_leptons', #only there for verification purposes #TODO make optional
+        smeared = 'sim_leptons', 
+        history = 'history_nodes', 
+        display_filter_func = lambda ptc: ptc.e()>1.,
+        display = False,
+        verbose = True
     )
-
+    
     detector:      Detector model to be used. 
     gen_particles: Name of the input gen particle collection
     sim_particles: Name extension for the output sim particle collection. 
                    Note that the instance label is prepended to this name. 
                    Therefore, in this particular case, the name of the output 
                    sim particle collection is "papas_sim_particles".
-    ecal_clusters: Name extension for the merged clusters created by simulator              
-    hcal_clusters: Name extension for the merged clusters created by simulator             
-    tracks: Name extension for the tracks created by simulator              
+    merged_ecals: Name for the merged clusters created by simulator              
+    merged_hcals: Name for the merged clusters created by simulator             
+    tracks:       Name for smeared tracks created by simulator              
     
-    rec_particles: Name extension for the reconstructed particles created by simulator
+    rec_particles: Optional. Name extension for the reconstructed particles created by simulator
+                   This is retained for the time being to allow two reconstructions to be compared
+                   Reconstruction will occur iff this parameter is provided
+                   Same comments as for the sim_particles parameter above.
+    rec_particles_no_leptons: Name extension for the reconstructed particles created by simulator
+                   without electrons and muons
+                   Will only be produced if the rec_particles is provided
                    This is retained for the time being to allow two reconstructions to be compared
                    Same comments as for the sim_particles parameter above.
-    rec_particles_no_muons_electrons: Name extension for the reconstructed particles created by simulator
-                   without electrons and muons
-                   This is retained for the time being to allow two reconstructions to be compared
-                   Same comments as for the sim_particles parameter above. 
+    smeared: Name for smeared leptons 
+    history: Optional name for the history node, set to None if not needed
     display      : Enable the event display
     verbose      : Enable the detailed printout.
     '''

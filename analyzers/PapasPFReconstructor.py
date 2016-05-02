@@ -1,14 +1,33 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.pfalgo.alicepfreconstructor import AlicePFReconstructor as PFReconstructor
+from heppy.papas.pfalgo.pfreconstructor import PFReconstructor as PFReconstructor
 from heppy.papas.data.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.history import History
 
 class PapasPFReconstructor(Analyzer):
-
+    ''' Module to reconstruct particles from blocks of events
+         
+        Usage:
+        pfreconstruct = cfg.Analyzer(
+            PapasPFReconstructor,
+            instance_label = 'papas_PFreconstruction', 
+            detector = CMS(),
+            input_blocks = 'reconstruction_blocks',
+            input_history = 'history_nodes', 
+            output_history = 'history_nodes',     
+            output_particles_dict = 'particles_dict', 
+            output_particles_list = 'particles_list'
+        )
+        
+        input_blocks: Name of the the blocks dict in the event
+        input_history: Name of history_nodes
+        output_history: Name to be used for new/ updated history_nodes (can be the same as input_history)
+        output_particles_dict = Name for recosntructed particles (as dict), 
+        output_particles_list =  Name for recosntructed particles (as list)
+    '''
+    
     def __init__(self, *args, **kwargs):
-        super(PapasPFReconstructor, self).__init__(*args, **kwargs)
-        #self.instance_label =  
+        super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
         self.detector = self.cfg_ana.detector
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
         self.blocksname =  self.cfg_ana.input_blocks
@@ -25,8 +44,8 @@ class PapasPFReconstructor(Analyzer):
         
         self.reconstructed.reconstruct(event,  self.blocksname, self.input_historyname)
         
-        setattr(event, self.output_historyname, self.reconstructed.history_nodes )
-        setattr(event, self.output_particlesdictname, self.reconstructed.particles )
+        setattr(event, self.output_historyname, self.reconstructed.history_nodes)
+        setattr(event, self.output_particlesdictname, self.reconstructed.particles)
         
         #hist = History(event.history_nodes,PFEvent(event))
         #for block in event.blocks:

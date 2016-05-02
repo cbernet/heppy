@@ -2,7 +2,7 @@ from pfinput import PFInput
 from merger import merge_clusters
 from links import Links
 from distance import distance
-from pfreconstructor import PFReconstructor
+from simulation_pfreconstructor import PFReconstructor
 
 #TODO: this class and PFInput should probably be in the papas module, to try to keep the pfalgo package independent from the dataformat in use. 
 

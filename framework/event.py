@@ -33,7 +33,7 @@ class Event(object):
         stripped_attrs.pop('setup')
         stripped_attrs.pop('input')
         for name, value in stripped_attrs.iteritems():
-            if hasattr(value, '__len__') and len(value)>10:
+            if hasattr(value, '__len__') and len(value)>10 and not isinstance(value, dict):
                 stripped_attrs[name] = value[:10]
                 stripped_attrs[name].append('...')
                 stripped_attrs[name].append(value[-1])                

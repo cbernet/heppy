@@ -14,7 +14,7 @@ class PFEvent(object):
           blocks = optional dictionary of blocks : {id1:block1, id2:block2, ...}
        
        usage: 
-          pfevent = PFEvent(event)
+          pfevent=PFEvent(event, self.tracksname,  self.ecalsname,  self.hcalsname,  self.blocksname) 
           obj1 = pfevent.get_object(id1)
     ''' 
     def __init__(self, event,  tracksname = 'tracks', ecalsname = 'ecal_clusters',  hcalsname = 'hcal_clusters',  blocksname = 'blocks',
@@ -24,6 +24,9 @@ class PFEvent(object):
                   tracks dictionary : {id1:track1, id2:track2, ...}
                   ecal dictionary : {id1:ecal1, id2:ecal2, ...}
                   hcal dictionary : {id1:hcal1, id2:hcal2, ...}
+                  
+                  and these must be names according to ecalsname etc
+                  blocks, sim_particles and rec_particles are optional
                   '''            
         self.tracks = getattr(event, tracksname)
         self.ecal_clusters = getattr(event, ecalsname)
