@@ -78,19 +78,21 @@ class Cluster(PFObject):
     
     def is_inside_clusters(self,  other):
         #see if two clusters overlap (allowing for merged clusters which contain subclusters)
-        subdists =  []
-        alldists = []
+        #we have a link if any of the subclusters overlap
+        #the distance is the distance betewen the weighted centres of each (merged) cluster
+        
+        dist =  deltaR(self.position.Theta(),
+                       self.position.Phi(),
+                       other.position.Theta(),
+                       other.position.Phi())
+       
         for c in self.subclusters:
             for o in  other.subclusters:
-                is_link,  dist =  c.is_inside_cluster(o)
-                alldists.append(dist)
-                if (is_link) :
-                    subdists.append(dist)
-                    
-        if len(subdists) >  0:
-            return True, min(subdists)
-        else:
-            return  False,  min(alldists)
+                is_link,  innerdist =  c.is_inside_cluster(o)
+                if is_link:
+                    return True,  dist
+            
+        return False,  dist
         
             
     def is_inside_cluster(self, other):
