@@ -16,16 +16,14 @@ class PapasPFBlockBuilder(Analyzer):
             tracks = 'tracks', 
             ecals = 'ecal_clusters', 
             hcals = 'hcal_clusters', 
-            input_history = 'history_nodes', 
-            output_history = 'history_nodes', 
+            history = 'history_nodes', 
             output_blocks = 'reconstruction_blocks'
         )
         
         tracks: Name of dict in Event where tracks are stored
         ecals: Name of dict in Event where ecals are stored
         hcals: Name of dict in Event where hcals are stored
-        input_history: Name of history_nodes, can be set to None.
-        output_history: Name to be used for new/ updated history_nodes (can be the same as input_history)
+        history: Name of history_nodes, can be set to None.
         output_blocks: Name to be used for the blocks dict
         
     '''
@@ -36,8 +34,8 @@ class PapasPFBlockBuilder(Analyzer):
         self.ecalsname = self.cfg_ana.ecals; 
         self.hcalsname = self.cfg_ana.hcals;
         self.blocksname = self.cfg_ana.output_blocks;
-        self.historyname = self.cfg_ana.input_history;
-        self.outhistoryname = self.cfg_ana.output_history;
+        self.historyname = self.cfg_ana.history;
+        
                 
     def process(self, event):
         
@@ -52,7 +50,7 @@ class PapasPFBlockBuilder(Analyzer):
         #print blockbuilder
             
         setattr(event, self.blocksname, blockbuilder.blocks)
-        setattr(event, self.outhistoryname, blockbuilder.history_nodes)
+        #setattr(event, self.outhistoryname, blockbuilder.history_nodes)
         
         
         

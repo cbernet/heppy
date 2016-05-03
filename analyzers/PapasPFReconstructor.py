@@ -20,8 +20,7 @@ class PapasPFReconstructor(Analyzer):
         )
         
         input_blocks: Name of the the blocks dict in the event
-        input_history: Name of history_nodes
-        output_history: Name to be used for new/ updated history_nodes (can be the same as input_history)
+        history: Name of history_nodes
         output_particles_dict = Name for recosntructed particles (as dict), 
         output_particles_list =  Name for recosntructed particles (as list)
     '''
@@ -31,8 +30,7 @@ class PapasPFReconstructor(Analyzer):
         self.detector = self.cfg_ana.detector
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
         self.blocksname =  self.cfg_ana.input_blocks
-        self.input_historyname = self.cfg_ana.input_history
-        self.output_historyname = self.cfg_ana.output_history   
+        self.historyname = self.cfg_ana.history   
         self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
                 
@@ -42,9 +40,9 @@ class PapasPFReconstructor(Analyzer):
            arguments:
                     event must contain blocks made using BlockBuilder'''
         
-        self.reconstructed.reconstruct(event,  self.blocksname, self.input_historyname)
+        self.reconstructed.reconstruct(event,  self.blocksname, self.historyname)
         
-        setattr(event, self.output_historyname, self.reconstructed.history_nodes)
+        #setattr(event, self.historyname, self.reconstructed.history_nodes)
         setattr(event, self.output_particlesdictname, self.reconstructed.particles)
         
         #hist = History(event.history_nodes,PFEvent(event))

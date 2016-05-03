@@ -66,8 +66,7 @@ class MergedClusterBuilder(GraphBuilder):
         
         #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
-        if history_nodes is None:
-            self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )             
+                 
         
         self._make_merged_clusters()
         

@@ -53,6 +53,7 @@ gen_particles_stable = cfg.Analyzer(
 
 # configure the papas fast simulation with the CMS detector
 # help(Papas) for more information
+# history nodes keep strack of which particles produced which tracks, clusters 
 from heppy.analyzers.PapasSim import PapasSim
 from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
@@ -65,71 +66,56 @@ papas = cfg.Analyzer(
     merged_ecals = 'ecal_clusters',
     merged_hcals = 'hcal_clusters',
     tracks = 'tracks',
-    #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a name is provided
-    rec_particles_no_leptons = 'rec_particles_no_leptons', #only there for verification purposes #TODO make optional
     smeared = 'sim_leptons', 
-    history = 'history_nodes', 
+    output_history = 'history_nodes', 
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
 )
-#papas = cfg.Analyzer(
-    #Papas,
-    #instance_label = 'papas',
-    #detector = CMS(),
-    #gen_particles = 'gen_particles_stable',
-    #sim_particles = 'sim_particles',
-    #rec_particles = 'particles',
-    #display_filter_func = lambda ptc: ptc.e()>1.,
-    #display = False,
-    #verbose = True
-#)
 
 
-# group items into block ready for reconstruction
+# group the clusters, tracks from simulation of non-leptons into connected blocks ready for reconstruction
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
     tracks = 'tracks', 
     ecals = 'ecal_clusters', 
     hcals = 'hcal_clusters', 
-    input_history = 'history_nodes', 
-    output_history = 'history_nodes', 
+    history = 'history_nodes',  
     output_blocks = 'reconstruction_blocks'
 )
 
 
-#reconstruct particles from blocks
+#reconstruct non-lepton particles from blocks
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
     instance_label = 'papas_PFreconstruction', 
     detector = CMS(),
     input_blocks = 'reconstruction_blocks',
-    input_history = 'history_nodes', 
-    output_history = 'history_nodes',     
+    history = 'history_nodes',     
     output_particles_dict = 'particles_dict', 
     output_particles_list = 'particles_list'
 )
 
 
-#TODO ALICE this should do nothing as I have extracted the leptons direct from
-# the simulation, leave for now and discuss with Colin
+##TODO remove next chunk this should do nothing as I have extracted the leptons direct from
+## the simulation, leave for now and discuss with Colin
 
-# Use a Filter to select leptons from the output of papas.
-# Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
-# to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
-leptons_true = cfg.Analyzer(
-    Filter,
-    'sel_leptons',
-    output = 'leptons_true',
-    # output = 'leptons',
-    input_objects = 'papas_sim_leptons',
-    filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
-)
+## Use a Filter to select leptons from the output of papas.
+## Currently, we're treating electrons and muons transparently.
+## we could use two different instances for the Filter module
+## to get separate collections of electrons and muons
+## help(Filter) for more information
+#from heppy.analyzers.Filter import Filter
+#leptons_true = cfg.Analyzer(
+    #Filter,
+    #'sel_leptons',
+    #output = 'leptons_true',
+    ## output = 'leptons',
+    #input_objects = 'papas_sim_leptons',
+    #filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
+#)
 
 # Applying a simple resolution and efficiency model to electrons and muons.
 # Indeed, papas simply copies generated electrons and muons
@@ -143,7 +129,8 @@ leptons = cfg.Analyzer(
     LeptonSmearer,
     'leptons',
     output = 'leptons',
-    input_objects = 'leptons_true',
+    #input_objects = 'leptons_true',
+    input_objects = 'papas_sim_leptons',
 )
 
 # Compute lepton isolation w/r other particles in the event.
@@ -261,7 +248,7 @@ sequence = cfg.Sequence( [
     papas,
     pfblocks,
     pfreconstruct,
-    leptons_true,
+    #leptons_true,
     leptons,
     iso_leptons,
     sel_iso_leptons,

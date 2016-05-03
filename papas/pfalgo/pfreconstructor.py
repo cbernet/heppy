@@ -90,7 +90,7 @@ class PFReconstructor(object):
         
         for block in self._sorted_block_keys(): #put big interesting blocks first
             #print "block: ", len(self.blocks[block]),  self.blocks[block].short_name();
-            newblocks=self.simplify_blocks(self.blocks[block],event.history_nodes)
+            newblocks=self.simplify_blocks(self.blocks[block], self.history_nodes)
             if newblocks != None:
                 splitblocks.update( newblocks)      
         if len(splitblocks):
@@ -120,7 +120,7 @@ class PFReconstructor(object):
         return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
         
             
-    def simplify_blocks(self, block,history_nodes=None):
+    def simplify_blocks(self, block, history_nodes=None):
         
         ''' Block: a block which contains list of element ids and set of edges that connect them
             history_nodes: optional dictionary of Nodes with element identifiers in each node
@@ -166,7 +166,7 @@ class PFReconstructor(object):
         #if there is something to unlink then use the BlockSplitter        
         splitblocks=None        
         if len(to_unlink):
-            splitblocks= BlockSplitter(block,to_unlink,history_nodes).blocks
+            splitblocks= BlockSplitter(block, to_unlink, history_nodes).blocks
         
         return splitblocks
             

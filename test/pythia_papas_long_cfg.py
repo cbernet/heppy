@@ -53,10 +53,10 @@ papas = cfg.Analyzer(
     merged_ecals = 'ecal_clusters',
     merged_hcals = 'hcal_clusters',
     tracks = 'tracks',
-    rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a anme is provided
-    rec_particles_no_leptons = 'rec_particles_no_leptons', #only there for verification purposes #TODO make optional
+    #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a name is provided
+    rec_particles_no_leptons = 'rec_particles_no_leptons', #only there for verification purposes - optional
     smeared = 'sim_leptons', 
-    history = 'history_nodes',     
+    output_history = 'history_nodes',     
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
@@ -68,8 +68,7 @@ pfblocks = cfg.Analyzer(
     tracks = 'tracks', 
     ecals = 'ecal_clusters', 
     hcals = 'hcal_clusters', 
-    input_history = 'history_nodes', 
-    output_history = 'history_nodes', 
+    history = 'history_nodes', 
     output_blocks = 'reconstruction_blocks'    
 )
 
@@ -80,8 +79,7 @@ pfreconstruct = cfg.Analyzer(
     instance_label = 'papas_PFreconstruction', 
     detector = CMS(),
     input_blocks = 'reconstruction_blocks',
-    input_history = 'history_nodes', 
-    output_history = 'history_nodes',     
+    history = 'history_nodes',      
     output_particles_dict = 'particles_dict', 
     output_particles_list = 'particles_list'    
 )
@@ -155,7 +153,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        #for i in  range(5000):
+        for i in  range(5000):
             process(iev)
             
             

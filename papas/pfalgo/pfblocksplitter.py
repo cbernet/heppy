@@ -18,7 +18,7 @@ class BlockSplitter(BlockBuilder):
            as it will effectively be replaced by the new blocks after the split.
            ** explain how old block fits into history node ** 
     '''
-    def __init__(self,  block, unlink_edges, history_nodes=None):
+    def __init__(self,  block, unlink_edges, history_nodes = None):
         '''arguments:
         
         blocks  : dictionary of blocks {id1:block1, id2:block2, ...}
