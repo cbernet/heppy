@@ -190,6 +190,17 @@ class Simulator(object):
         smeared = copy.deepcopy(ptc)
         return smeared
     
+    def extend_muon(self, ptc):
+            self.propagate(ptc)
+            return 
+    
+    def extend_electron(self, ptc):
+            ecal = self.detector.elements['ecal']
+            self.prop_helix.propagate_one(ptc,
+                                          ecal.volume.inner,
+                                          self.detector.elements['field'].magnitude )
+            return    
+    
     def simulate(self, ptcs,  do_reconstruct = True):
         self.reset()
         self.ptcs = []
@@ -199,12 +210,14 @@ class Simulator(object):
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                smeared_ptc = self.smear_electron(ptc)
-                smeared.append(smeared_ptc)
+                self.extend_electron(ptc)
+                #smeared_ptc = self.smear_electron(ptc)
+                #smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                smeared_ptc = self.smear_muon(ptc)
-                smeared.append(smeared_ptc)
+                self.extend_muon(ptc)
+                #smeared_ptc = self.smear_muon(ptc)
+                #smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12,14,16]:
                 self.simulate_neutrino(ptc)
@@ -214,13 +227,12 @@ class Simulator(object):
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            self.smeared =  smeared
-            self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction
-        
+            #self.smeared =  smeared
+            self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
         if  do_reconstruct : #now optional, defaults to run this for backwards compatibility
             self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
             self.particles = copy.copy(self.pfsequence.pfreco.particles)
-            self.particles.extend(smeared)
+            #self.particles.extend(smeared)
         
         
         #print "number of gen particles: ", len(ptcs)

@@ -41,7 +41,6 @@ class PapasSim(Analyzer):
         merged_hcals = 'hcal_clusters',
         tracks = 'tracks',
         #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a name is provided
-        #rec_particles_no_leptons = 'rec_particles_no_leptons', #optional used for verification purposes
         output_history = 'history_nodes', 
         display_filter_func = lambda ptc: ptc.e()>1.,
         display = False,
@@ -78,7 +77,6 @@ class PapasSim(Analyzer):
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        self.smearedname =  '_'.join([self.instance_label,  self.cfg_ana.smeared])
         self.tracksname =  self.cfg_ana.tracks  
         self.mergedecalsname = self.cfg_ana.merged_ecals
         self.mergedhcalsname = self.cfg_ana.merged_hcals
@@ -88,9 +86,9 @@ class PapasSim(Analyzer):
         if hasattr(self.cfg_ana, 'rec_particles') :
             self.do_reconstruct = True
             self.recname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles])
-        if hasattr(self.cfg_ana, 'rec_particles_no_leptons') :
-            self.do_reconstruct = True
-            self.rec_noleptonsname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles_no_leptons])        
+        #if hasattr(self.cfg_ana, 'rec_particles_no_leptons') :
+        #    self.do_reconstruct = True
+        #    self.rec_noleptonsname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles_no_leptons])        
         
         self.is_display = self.cfg_ana.display
         if self.is_display:
@@ -127,12 +125,8 @@ class PapasSim(Analyzer):
                                    layer=1)
         #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
-                               key = lambda ptc: ptc.e(), reverse=True)
-        smearedparticles = sorted( self.simulator.smeared,
-                                   key = lambda ptc: ptc.e(), reverse=True)        
+                               key = lambda ptc: ptc.e(), reverse=True)     
         setattr(event, self.simname, simparticles)
-        setattr(event, self.smearedname, smearedparticles) # leptons
-
         
         if self.do_reconstruct: # used for verification/ comparison of reconstruction methods
             #these are the reconstructed (via simulation) particles  including electrons and muons
@@ -140,12 +134,12 @@ class PapasSim(Analyzer):
                             key = lambda ptc: ptc.e(), reverse=True)
         
             #these are the reconstructed (via simulation) particles excluding muons and electrons         
-            origparticles = sorted( self.simulator.pfsequence.pfreco.particles,
-                                   key = lambda ptc: ptc.e(), reverse=True)
+            #origparticles = sorted( self.simulator.pfsequence.pfreco.particles,
+            #                       key = lambda ptc: ptc.e(), reverse=True)
             if hasattr(self, 'recname')  :
                 setattr(event, self.recname, particles)          
-            if hasattr(self, 'rec_noleptonsname')  :
-                setattr(event, self.rec_noleptonsname, origparticles)
+            #if hasattr(self, 'rec_noleptonsname')  :
+            #    setattr(event, self.rec_noleptonsname, origparticles)
                 
 
         #extract the tracks and clusters (extraction is prior to Colins merging step)

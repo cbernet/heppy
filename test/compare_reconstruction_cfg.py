@@ -53,9 +53,7 @@ papas = cfg.Analyzer(
     merged_ecals = 'ecal_clusters',
     merged_hcals = 'hcal_clusters',
     tracks = 'tracks',
-    #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a anme is provided
-    rec_particles_no_leptons = 'rec_particles_no_leptons', #only there for verification purposes (optional)
-    smeared = 'sim_leptons',
+    rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a anme is provided
     output_history = 'history_nodes',     
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
@@ -84,11 +82,21 @@ pfreconstruct = cfg.Analyzer(
     output_particles_list = 'particles_list'    
 )
 
+from heppy.analyzers.Filter import Filter
+select_non_leptons = cfg.Analyzer(
+    Filter,
+    'sel_non_leptons',
+    output = 'sim_no_leptons',
+    input_objects = 'papas_sim_particles',
+    filter_func = lambda ptc: abs(ptc.pdgid()) not in [11, 13]
+)
+
+
 from heppy.analyzers.PapasParticlesComparer import PapasParticlesComparer 
 particlescomparer = cfg.Analyzer(
     PapasParticlesComparer ,
     particlesA = 'papas_PFreconstruction_particles_list',
-    particlesB = 'papas_rec_particles_no_leptons'
+    particlesB = 'papas_sim_rec_particles'
 )
 
 # and then particle reconstruction from blocks 
@@ -101,6 +109,7 @@ sequence = cfg.Sequence( [
     papas,
     pfblocks,
     pfreconstruct,
+    select_non_leptons, 
     particlescomparer
     ] )
  

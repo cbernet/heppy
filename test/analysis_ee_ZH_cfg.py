@@ -51,6 +51,7 @@ gen_particles_stable = cfg.Analyzer(
     filter_func = lambda x : x.status()==1 and x.pdgid() not in [12,14,16] and x.pt()>0.1
 )
 
+
 # configure the papas fast simulation with the CMS detector
 # help(Papas) for more information
 # history nodes keep strack of which particles produced which tracks, clusters 
@@ -65,8 +66,7 @@ papas = cfg.Analyzer(
     sim_particles = 'sim_particles',
     merged_ecals = 'ecal_clusters',
     merged_hcals = 'hcal_clusters',
-    tracks = 'tracks',
-    smeared = 'sim_leptons', 
+    tracks = 'tracks', 
     output_history = 'history_nodes', 
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
@@ -99,23 +99,20 @@ pfreconstruct = cfg.Analyzer(
 )
 
 
-##TODO remove next chunk this should do nothing as I have extracted the leptons direct from
-## the simulation, leave for now and discuss with Colin
 
-## Use a Filter to select leptons from the output of papas.
-## Currently, we're treating electrons and muons transparently.
-## we could use two different instances for the Filter module
-## to get separate collections of electrons and muons
-## help(Filter) for more information
-#from heppy.analyzers.Filter import Filter
-#leptons_true = cfg.Analyzer(
-    #Filter,
-    #'sel_leptons',
-    #output = 'leptons_true',
-    ## output = 'leptons',
-    #input_objects = 'papas_sim_leptons',
-    #filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
-#)
+# Use a Filter to select leptons from the output of papas simulation.
+# Currently, we're treating electrons and muons transparently.
+# we could use two different instances for the Filter module
+# to get separate collections of electrons and muons
+# help(Filter) for more information
+from heppy.analyzers.Filter import Filter
+select_leptons = cfg.Analyzer(
+    Filter,
+    'sel_all_leptons',
+    output = 'sim_leptons',
+    input_objects = 'papas_sim_particles',
+    filter_func = lambda ptc: abs(ptc.pdgid()) in [11, 13]
+)
 
 # Applying a simple resolution and efficiency model to electrons and muons.
 # Indeed, papas simply copies generated electrons and muons
@@ -125,13 +122,41 @@ pfreconstruct = cfg.Analyzer(
 # and the LeptonSmearer is just an example
 # help(LeptonSmearer) for more information
 from heppy.analyzers.examples.zh.LeptonSmearer import LeptonSmearer
-leptons = cfg.Analyzer(
+smear_leptons = cfg.Analyzer(
     LeptonSmearer,
-    'leptons',
-    output = 'leptons',
-    #input_objects = 'leptons_true',
-    input_objects = 'papas_sim_leptons',
+    'smear_leptons',
+    output = 'smeared_leptons',
+    input_objects = 'sim_leptons',
 )
+
+
+
+
+#merge smeared leptons with reconstructed particles
+from heppy.analyzers.Merger import Merger
+merge_particles = cfg.Analyzer(
+    Merger,
+    instance_label = 'merge_particles', 
+    inputA = 'papas_PFreconstruction_particles_list',
+    inputB = 'smeared_leptons',
+    output = 'rec_particles', 
+)
+
+
+# Use a Filter to select leptons from the output of papas simulation.
+# Currently, we're treating electrons and muons transparently.
+# we could use two different instances for the Filter module
+# to get separate collections of electrons and muons
+# help(Filter) for more information
+from heppy.analyzers.Filter import Filter
+leptons_true = cfg.Analyzer(
+    Filter,
+    'sel_leptons',
+    output = 'leptons_true',
+    input_objects = 'rec_particles',
+    filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
+)
+
 
 # Compute lepton isolation w/r other particles in the event.
 # help(LeptonAnalyzer) for more information
@@ -139,8 +164,8 @@ from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     LeptonAnalyzer,
-    leptons = 'leptons',
-    particles = 'papas_PFreconstruction_particles_list',
+    leptons = 'leptons_true',
+    particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
 
@@ -155,7 +180,7 @@ sel_iso_leptons = cfg.Analyzer(
     Filter,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
-    input_objects = 'leptons',
+    input_objects = 'leptons_true',
     # filter_func = relative_isolation
     filter_func = lambda lep : lep.iso.sumpt/lep.pt()<0.3 # fairly loose
 )
@@ -186,8 +211,7 @@ from heppy.analyzers.Masker import Masker
 particles_not_zed = cfg.Analyzer(
     Masker,
     output = 'particles_not_zed',
-    input = 'papas_PFreconstruction_particles_list',
-    #input = 'papas_sim_rec_particles',
+    input = 'rec_particles',
     mask = 'zeds_legs',
 
 )
@@ -248,8 +272,10 @@ sequence = cfg.Sequence( [
     papas,
     pfblocks,
     pfreconstruct,
-    #leptons_true,
-    leptons,
+    select_leptons,
+    smear_leptons, 
+    merge_particles, 
+    leptons_true,
     iso_leptons,
     sel_iso_leptons,
     zeds,
