@@ -200,12 +200,12 @@ Make sure that the configuration object is of class cfg.Analyzer.
                         self.start_time = timeit.default_timer()
                         self.start_time_event = iEv
                     else:
-                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+                        self.logger.warning( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
                 try:
                     self.process( iEv )
                     self.nEvProcessed += 1
                     if iEv<self.nPrint:
-                        self.logger.info( self.event.__str__() )
+                        print self.event.__str__() 
                 except UserStop as err:
                     print 'Stopped loop following a UserStop exception:'
                     print err
@@ -219,7 +219,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
                 iEv += 1
                 if iEv%100 == 0:
                     if not hasattr(self,'start_time'):
-                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
+                        self.logger.warning( 'event {iEv}'.format(iEv=iEv))
                         self.start_time = timeit.default_timer()
                         self.start_time_event = iEv
                     else:
@@ -230,7 +230,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
                     self._run_analyzers_on_event()
                     self.nEvProcessed += 1
                     if iEv<self.nPrint:
-                        self.logger.info( self.event.__str__() )
+                        print self.event.__str__() 
                 except UserStop as err:
                     print 'Stopped loop following a UserStop exception:'
                     print err

@@ -123,8 +123,8 @@ def main( options, args ):
     selComps = split(selComps)
     # for comp in selComps:
     #    print comp
-    if len(selComps)>14:
-        raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
+    # if len(selComps)>14:
+    #     raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
     if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
         sys.exit(0)
