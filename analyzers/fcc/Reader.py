@@ -109,9 +109,9 @@ class Reader(Analyzer):
 
         class Iso(object):
             def __init__(self):
-                self.sumpt=1
-                self.sume=2
-                self.num=3
+                self.sumpt=-9999
+                self.sume=-9999
+                self.num=-9999
 
         electrons = dict()
         if hasattr(self.cfg_ana, 'electrons'):
@@ -122,6 +122,7 @@ class Reader(Analyzer):
                 electrons[ele]=ele
         if  hasattr(self.cfg_ana, 'electronsToITags') and hasattr(self.cfg_ana, 'electronITags'):
             for ele in store.get(self.cfg_ana.electronsToITags):
+                electrons[Particle(ele.Particle())].iso = Iso()
                 electrons[Particle(ele.Particle())].iso.sumpt = electrons[Particle(ele.Particle())].pt()*ele.Tag().Value()
                     
 
@@ -135,9 +136,9 @@ class Reader(Analyzer):
         if  hasattr(self.cfg_ana, 'muonsToITags') and hasattr(self.cfg_ana, 'muonITags'):
             for mu in store.get(self.cfg_ana.muonsToITags):
                 #import pdb; pdb.set_trace()
-                
+                muons[Particle(mu.Particle())].iso = Iso()
                 muons[Particle(mu.Particle())].iso.sumpt = muons[Particle(mu.Particle())].pt()*mu.Tag().Value()
-
+                
 
 
         if hasattr(self.cfg_ana, 'photons'):
