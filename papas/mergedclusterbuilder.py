@@ -48,6 +48,7 @@ class MergedClusterBuilder(GraphBuilder):
         self.merged =dict()
 
         # collate ids of clusters
+        uniqueids = None
         if layer=="ecal_in":
             uniqueids = list(pfevent.ecal_clusters.keys())         
         elif layer=="hcal_in":
