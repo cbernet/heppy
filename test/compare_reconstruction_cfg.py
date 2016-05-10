@@ -42,6 +42,8 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 #from heppy.framework.eventsgen import Events
 
+
+#Run simulation (and include the original reconstruction of particles)
 from heppy.analyzers.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
@@ -60,6 +62,7 @@ papas = cfg.Analyzer(
     verbose = True
 )
 
+#make connected blocks of tracks/clusters
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
@@ -70,7 +73,7 @@ pfblocks = cfg.Analyzer(
     output_blocks = 'reconstruction_blocks'    
 )
 
-
+#reconstruct particles
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
@@ -82,16 +85,7 @@ pfreconstruct = cfg.Analyzer(
     output_particles_list = 'particles_list'    
 )
 
-from heppy.analyzers.Filter import Filter
-select_non_leptons = cfg.Analyzer(
-    Filter,
-    'sel_non_leptons',
-    output = 'sim_no_leptons',
-    input_objects = 'papas_sim_particles',
-    filter_func = lambda ptc: abs(ptc.pdgid()) not in [11, 13]
-)
-
-
+#compare orignal and new reconstructions
 from heppy.analyzers.PapasParticlesComparer import PapasParticlesComparer 
 particlescomparer = cfg.Analyzer(
     PapasParticlesComparer ,
@@ -109,7 +103,6 @@ sequence = cfg.Sequence( [
     papas,
     pfblocks,
     pfreconstruct,
-    select_non_leptons, 
     particlescomparer
     ] )
  

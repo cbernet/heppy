@@ -171,9 +171,9 @@ class PapasSim(Analyzer):
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
         # and set the event to point to the merged cluster
         pfevent =  PFEvent(event, 'tracks', 'ecal_clusters', 'hcal_clusters')
-        merged_ecals = MergedClusterBuilder("ecal_in", pfevent, ruler, history)
+        merged_ecals = MergedClusterBuilder(pfevent.ecal_clusters, ruler, history)
         setattr(event, self.mergedecalsname, merged_ecals.merged)
-        merged_hcals = MergedClusterBuilder("hcal_in", pfevent, ruler, merged_ecals.history_nodes)
+        merged_hcals = MergedClusterBuilder(pfevent.hcal_clusters, ruler, merged_ecals.history_nodes)
         setattr(event, self.mergedhcalsname, merged_hcals.merged)
         setattr(event,  self.historyname,  merged_hcals.history_nodes)
         

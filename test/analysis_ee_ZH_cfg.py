@@ -51,10 +51,9 @@ gen_particles_stable = cfg.Analyzer(
     filter_func = lambda x : x.status()==1 and x.pdgid() not in [12,14,16] and x.pt()>0.1
 )
 
-
 # configure the papas fast simulation with the CMS detector
 # help(Papas) for more information
-# history nodes keep strack of which particles produced which tracks, clusters 
+# history nodes keeps track of which particles produced which tracks, clusters 
 from heppy.analyzers.PapasSim import PapasSim
 from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
@@ -74,7 +73,7 @@ papas = cfg.Analyzer(
 )
 
 
-# group the clusters, tracks from simulation of non-leptons into connected blocks ready for reconstruction
+# group the clusters, tracks from simulation into connected blocks ready for reconstruction
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
@@ -86,7 +85,7 @@ pfblocks = cfg.Analyzer(
 )
 
 
-#reconstruct non-lepton particles from blocks
+#reconstruct particles from blocks
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
@@ -130,9 +129,7 @@ smear_leptons = cfg.Analyzer(
 )
 
 
-
-
-#merge smeared leptons with reconstructed particles
+#merge smeared leptons with the reconstructed particles
 from heppy.analyzers.Merger import Merger
 merge_particles = cfg.Analyzer(
     Merger,

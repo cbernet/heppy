@@ -14,16 +14,12 @@ class MergedClusterBuilder(GraphBuilder):
         
         Usage example:
              (will return the merged clusters to the event)
-            event.ecal_clusters =  MergingBlockBuilder("ecal_in",PFEvent(event), ruler).merged
+            event.ecal_clusters =  MergingBlockBuilder(event.ecal_clusters, ruler).merged
             
     '''
-    def __init__(self, layer, pfevent, ruler, history_nodes = None):
+    def __init__(self, clusters, ruler, history_nodes = None):
         '''
-        pfevent is event structure inside which we find
-            tracks is a dictionary : {id1:track1, id2:track2, ...}
-            ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
-            hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
-            get_object() which allows a cluster or track to be found from its id
+        clusters a dictionary : {id1:ecal1, id2:ecal2, ...}
         ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)
             it should take the two objects as arguments and return a tuple
@@ -40,35 +36,28 @@ class MergedClusterBuilder(GraphBuilder):
             corresponding to each of the tracks, ecal etc and also for the blocks that
             are created by the event block builder.
         '''
-        
-        #given a unique id this can return the underying object
-        self.pfevent = pfevent
+        self.clusters = clusters
         
         # the merged clusters will be stored here
-        self.merged =dict()
-
+        self.merged = dict()
         # collate ids of clusters
-        uniqueids = None
-        if layer=="ecal_in":
-            uniqueids = list(pfevent.ecal_clusters.keys())         
-        elif layer=="hcal_in":
-            uniqueids = list(pfevent.hcal_clusters.keys())         
+        uniqueids = list(clusters.keys())         
              
         
         # compute edges between each pair of nodes
         edges = dict()
-        for id1, id2 in itertools.combinations(uniqueids,2):
-            edge = self._make_edge(id1,id2, ruler)
+        for obj1, obj2 in itertools.combinations(clusters.values(),2):
+            link_type, is_linked, distance = ruler(obj1, obj2)
+            edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
             #the edge object is added into the edges dictionary
             edges[edge.key] = edge
             
-        #make he subgraphs of clusters
+        #make the subgraphs of clusters
         super(MergedClusterBuilder, self).__init__(uniqueids,edges)
         
         #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
-                 
-        
+            
         self._make_merged_clusters()
         
     def _make_merged_clusters(self):
@@ -76,12 +65,12 @@ class MergedClusterBuilder(GraphBuilder):
         for subgraphids in self.subgraphs:
             if len(subgraphids)==1 : 
                 #no overlapping cluster so no merging needed
-                self.merged[subgraphids[0]] = self.pfevent.get_object(subgraphids[0])
+                self.merged[subgraphids[0]] = self.clusters[subgraphids[0]]
             else: 
                 #make a merged "supercluster" and then add each of the linked clusters into it                
                 supercluster = None
                 for elemid in subgraphids :
-                    thing = self.pfevent.get_object(elemid)
+                    thing = self.clusters[elemid]
                     if supercluster is None:
                         supercluster = MergedCluster(thing)
                         self.merged[supercluster.uniqueid] = supercluster
@@ -99,25 +88,3 @@ class MergedClusterBuilder(GraphBuilder):
                             self.history_nodes[elemid].add_child(snode)  
                         
 
-    def _make_edge(self,id1,id2, ruler): # should I put this in blockbuilder as is used here and in PFBlockBuilder
-        ''' id1, id2 are the unique ids of the two items
-            ruler is something that measures distance between two objects eg track and hcal
-            (see Distance class for example)
-            it should take the two objects as arguments and return a tuple
-            of the form
-                link_type = 'ecal_ecal', 'ecal_track' etc
-                is_link = true/false
-                distance = float
-            an edge object is returned which contains the link_type, is_link (bool) and distance between the 
-            objects. 
-        '''
-        #find the original items and pass to the ruler to get the distance info
-        obj1 = self.pfevent.get_object(id1)
-        obj2 = self.pfevent.get_object(id2)
-        link_type, is_linked, distance = ruler(obj1,obj2) #some redundancy in link_type as both distance and Edge make link_type
-                                                          #not sure which to get rid of
-        
-        #make the edge and add the edge into the dict 
-        return Edge(id1,id2, is_linked, distance) 
-        
-    
