@@ -8,7 +8,6 @@ class M3Builder(Analyzer):
     
     def process(self, event):
         jets = getattr(event, self.cfg_ana.jets)
-        #jets = [jet for jet in jets if self.cfg_ana.filter_func(jet)]
 
         m3 = None
         pt3max=0
