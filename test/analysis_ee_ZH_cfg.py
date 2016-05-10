@@ -48,7 +48,7 @@ gen_particles_stable = cfg.Analyzer(
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',
-    filter_func = lambda x : x.status()==1 and x.pdgid() not in [12,14,16] and x.pt()>0.1
+    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>0.1
 )
 
 # configure the papas fast simulation with the CMS detector
