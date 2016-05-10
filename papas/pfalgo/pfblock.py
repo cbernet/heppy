@@ -152,11 +152,11 @@ class PFBlock(object):
         count = 0
         elemdetails = "\n      elements: {\n"  
         for uid in self.element_uniqueids:
-            elemdetails += "      {shortname}{count}:{strdescrip}".format(shortname=Identifier.type_short_code(uid),
+            elemdetails += "      {shortname}{count}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
                                                                            count=count,
                                                                           strdescrip=self.pfevent.get_object(uid).__str__() )
             count = count + 1            
-        return elemdetails + "      \n}\n"
+        return elemdetails + "      }\n"
     
     def short_name(self):    
         ''' constructs a short summary name for blocks allowing sorting based on contents
@@ -243,7 +243,7 @@ class PFBlock(object):
                T2  0.0210   0.0000        . 
             }
         '''
-        descrip =  "\n" + self.__repr__
+        descrip =  "\n" + self.__repr__()
         descrip += self.elements_string()        
         descrip += self.edge_matrix_string()     
         return descrip
