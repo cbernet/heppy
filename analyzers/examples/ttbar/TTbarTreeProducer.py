@@ -20,8 +20,8 @@ class TTbarTreeProducer(Analyzer):
         var(self.tree, 'mtw')
 
         bookMet(self.tree, 'met')
-        bookLepton(self.tree, 'muon')
-        bookLepton(self.tree, 'electron')
+        bookLepton(self.tree, 'muon', pflow=False)
+        bookLepton(self.tree, 'electron', pflow=False)
 
     def process(self, event):
         self.tree.reset()
@@ -33,10 +33,12 @@ class TTbarTreeProducer(Analyzer):
 
         if len(muons)==1 and len(electrons)==0:
             fillLepton(self.tree, 'muon', muons[0])
+            fillIso(self.tree, 'muon_iso', muons[0].iso)
 
         elif len(electrons)==1 and len(muons)==0:
             fillLepton(self.tree, 'electron', electrons[0])
-
+            fillIso(self.tree, 'electron_iso', electrons[0].iso)
+                        
         else:
             return # NOT FILLING THE TREE IF MORE THAN 1 LEPTON
 
