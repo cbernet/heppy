@@ -243,10 +243,18 @@ class PFBlock(object):
                T2  0.0210   0.0000        . 
             }
         '''
+        descrip =  "\n" + self.__repr__
+        descrip += self.elements_string()        
+        descrip += self.edge_matrix_string()     
+        return descrip
+    
+    def __repr__(self):
+        ''' Short Block description
+        '''
         if (self.is_active):
-            descrip= "\nblock:"
+            descrip= "block:"
         else:
-            descrip= "\ndeactivated block:"
+            descrip= "deactivated block:"
             
         descrip += str('{shortname:<12} id={blockid:4.0f} :uid= {uid}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        
@@ -255,10 +263,5 @@ class PFBlock(object):
             count_ecal   = self.count_ecal(),
             count_hcal   = self.count_hcal(),
             count_tracks = self.count_tracks() )
-        ) 
-        descrip += self.elements_string()        
-        descrip += self.edge_matrix_string()     
-        return descrip
-    
-    def __repr__(self):
-            return self.__str__()  
+        )             
+        return descrip;  
