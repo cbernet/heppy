@@ -71,5 +71,6 @@ class Event(object):
                     stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
                     stripped_attrs[name].append('...')
                     stripped_attrs[name].append(value[-1])
+
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])

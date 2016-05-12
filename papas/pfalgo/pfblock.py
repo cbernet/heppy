@@ -1,6 +1,8 @@
 import itertools
-from edge import Edge
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.graphtools.edge import Edge
+from heppy.papas.data.identifier import Identifier
+
+#todo remove pfevent from this class once we have written a helper class to print the block and its elements
 
 class PFBlock(object):
     
@@ -150,11 +152,11 @@ class PFBlock(object):
         count = 0
         elemdetails = "\n      elements: {\n"  
         for uid in self.element_uniqueids:
-            elemdetails += "      {shortname}{count}:{strdescrip}".format(shortname=Identifier.type_short_code(uid),
+            elemdetails += "      {shortname}{count}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
                                                                            count=count,
                                                                           strdescrip=self.pfevent.get_object(uid).__str__() )
             count = count + 1            
-        return elemdetails + "      \n}\n"
+        return elemdetails + "      }\n"
     
     def short_name(self):    
         ''' constructs a short summary name for blocks allowing sorting based on contents
@@ -241,10 +243,18 @@ class PFBlock(object):
                T2  0.0210   0.0000        . 
             }
         '''
+        descrip =  "\n" + self.__repr__()
+        descrip += self.elements_string()        
+        descrip += self.edge_matrix_string()     
+        return descrip
+    
+    def __repr__(self):
+        ''' Short Block description
+        '''
         if (self.is_active):
-            descrip= "\nblock:"
+            descrip= "block:"
         else:
-            descrip= "\ndeactivated block:"
+            descrip= "deactivated block:"
             
         descrip += str('{shortname:<12} id={blockid:4.0f} :uid= {uid}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        
@@ -253,10 +263,5 @@ class PFBlock(object):
             count_ecal   = self.count_ecal(),
             count_hcal   = self.count_hcal(),
             count_tracks = self.count_tracks() )
-        ) 
-        descrip += self.elements_string()        
-        descrip += self.edge_matrix_string()     
-        return descrip
-    
-    def __repr__(self):
-            return self.__str__()  
+        )             
+        return descrip;  

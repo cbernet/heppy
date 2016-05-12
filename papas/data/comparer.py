@@ -5,13 +5,13 @@ class ParticlesComparer(object):
           will stop on an assert if things are different
           Note that there is an issue with accuracy of particle mass as assessed via TLorentzVector
     '''
-    def __init__(self, particlesA, particlesB, history):
+    def __init__(self, particlesA, particlesB):
         ''' Simple check that two sets of sensibly sorted particles are the same
             is relatively naive but sufficient so far
         '''
         self.A = particlesA
         self.B = particlesB
-        self.history = history
+        #self.history = history
         
         assert(len(self.A)==len(self.B))
         
@@ -33,7 +33,7 @@ class ParticlesComparer(object):
                       
             except AssertionError:
                 print i
-                print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
+                #print self.history.summary_of_links(self.A[i].uniqueid) ,self.B[i]  
                 print self.A[i].p4().X(), self.B[i].p4().X()
                 print self.A[i].p4().Y(), self.B[i].p4().Y()
                 print self.A[i].p4().Z(), self.B[i].p4().Z()
@@ -70,6 +70,9 @@ class ClusterComparer(object):
             
             # really ought to be checked for non merged clusters
             assert_allclose(self.A[i].energy, self.B[i].energy, rtol  = 1e-12, atol=0.00000000001 )
+            #angular size does not make sense for merged clusters
+            #and should not be used
+            #assert_allclose(self.A[i].angular_size(),  self.B[i].angular_size(), rtol  = 1e-12, atol=0.00000000001 )
             assert_allclose(self.A[i].position.Theta(), self.B[i].position.Theta(), rtol = 1e-12, atol = 0.00000000001 )
             assert_allclose(self.A[i].position.Phi(), self.B[i].position.Phi(), rtol = 1e-12, atol = 0.00000000001 )
             assert_allclose(self.A[i].position.Mag(), self.B[i].position.Mag(), rtol = 1e-12, atol = 0.00000000001 )

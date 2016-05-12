@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     files = [
-        'ee_ZH_Zmumu_Hbb_50000.root'
+        'ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
@@ -42,7 +42,9 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 #from heppy.framework.eventsgen import Events
 
-from heppy.papas.aliceproto.PapasSim import PapasSim
+
+#Run simulation (and include the original reconstruction of particles)
+from heppy.analyzers.PapasSim import PapasSim
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
     PapasSim,
@@ -50,26 +52,45 @@ papas = cfg.Analyzer(
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    rec_particles = 'rec_particles',
+    merged_ecals = 'ecal_clusters',
+    merged_hcals = 'hcal_clusters',
+    tracks = 'tracks',
+    rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a anme is provided
+    output_history = 'history_nodes',     
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
 )
 
+#make connected blocks of tracks/clusters
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
-    PapasPFBlockBuilder
+    PapasPFBlockBuilder,
+    tracks = 'tracks', 
+    ecals = 'ecal_clusters', 
+    hcals = 'hcal_clusters', 
+    history = 'history_nodes', 
+    output_blocks = 'reconstruction_blocks'    
 )
 
-
-from heppy.papas.aliceproto.PapasPFReconstructor import PapasPFReconstructor
+#reconstruct particles
+from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
-    PapasPFReconstructor
+    PapasPFReconstructor,
+    instance_label = 'papas_PFreconstruction', 
+    detector = CMS(),
+    input_blocks = 'reconstruction_blocks',
+    history = 'history_nodes',     
+    output_particles_dict = 'particles_dict', 
+    output_particles_list = 'particles_list'    
 )
 
-from heppy.papas.aliceproto.PapasParticlesComparer import PapasParticlesComparer 
+#compare orignal and new reconstructions
+from heppy.analyzers.PapasParticlesComparer import PapasParticlesComparer 
 particlescomparer = cfg.Analyzer(
-    PapasParticlesComparer 
+    PapasParticlesComparer ,
+    particlesA = 'papas_PFreconstruction_particles_list',
+    particlesB = 'papas_sim_rec_particles'
 )
 
 # and then particle reconstruction from blocks 
@@ -120,7 +141,7 @@ if __name__ == '__main__':
         iev = int(sys.argv[1])
        
     loop = Looper( 'looper', config,
-                   nEvents=30000,
+                   nEvents=1000,
                    nPrint=0,
                    firstEvent=0,
                    timeReport=True)
@@ -134,8 +155,12 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        for j in range(10000) :
             process(iev)
-            
+            pass
+            #process(iev) #alice_debug
+            #process(iev) #alice_debug
+            #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

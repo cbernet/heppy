@@ -34,20 +34,19 @@ class Distance(object):
         return None, False, None
     
     def ecal_ecal(self, ele1, ele2):
-        dR = deltaR(ele1.position.Theta(),
-                    ele1.position.Phi(),
-                    ele2.position.Theta(),
-                    ele2.position.Phi())
-        link_ok = dR < ele1.angular_size() + ele2.angular_size()
-        return ('ecal_in', 'ecal_in'), link_ok, dR 
+        #modified this to also deal with clusters that are merged clusters
+        link_ok, dist = ele1.is_inside_clusters(ele2)
+        return ('ecal_in', 'ecal_in'), link_ok,  dist
 
     def hcal_hcal(self, ele1, ele2):
-        dR = deltaR(ele1.position.Theta(),
-                    ele1.position.Phi(),
-                    ele2.position.Theta(),
-                    ele2.position.Phi())
-        link_ok = dR < ele1.angular_size() + ele2.angular_size()
-        return ('hcal_in', 'hcal_in'), link_ok, dR 
+        #dR = deltaR(ele1.position.Theta(),
+                    #ele1.position.Phi(),
+                    #ele2.position.Theta(),
+                    #ele2.position.Phi())
+        #link_ok = dR < ele1.angular_size() + ele2.angular_size()
+        #modified this to also deal with clusters that are merged clusters        
+        link_ok, dist = ele1.is_inside_clusters(ele2)
+        return ('hcal_in', 'hcal_in'), link_ok, dist 
     
     def ecal_track(self, ecal, track):
         tp = track.path.points.get('ecal_in', None)
@@ -67,11 +66,13 @@ class Distance(object):
 
     def ecal_hcal(self, ele1, ele2):
         #TODO eta or theta? 
-        dR = deltaR(ele1.position.Theta(),
-                    ele1.position.Phi(),
-                    ele2.position.Theta(),
-                    ele2.position.Phi())
-        link_ok = dR < ele1.angular_size() + ele2.angular_size()
-        return ('ecal_in', 'hcal_in'), link_ok, dR 
+        #dR = deltaR(ele1.position.Theta(),
+                    #ele1.position.Phi(),
+                    #ele2.position.Theta(),
+                    #ele2.position.Phi())
+        #link_ok = dR < ele1.angular_size() + ele2.angular_size()
+        #modified this to also deal with clusters that are merged clusters        
+        link_ok, dist = ele1.is_inside_clusters(ele2)    
+        return ('ecal_in', 'hcal_in'), link_ok, dist 
 
 distance = Distance()
