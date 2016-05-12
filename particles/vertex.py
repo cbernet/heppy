@@ -16,6 +16,9 @@ class Vertex(object):
     def z(self):
         return self._point.Z()
 
+    def position(self):
+        return self._point
+
     def ctau(self):
         return self._ctau
     
