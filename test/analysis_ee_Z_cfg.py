@@ -40,6 +40,7 @@ source = cfg.Analyzer(
     Reader,
     mode = 'ee',
     gen_particles = 'GenParticle',
+    gen_vertices = 'GenVertex'
 )
 
 # Use a Filter to select stable gen particles for simulation
@@ -111,6 +112,10 @@ print_ptcs = cfg.Analyzer(
     particles = 'gen_particles_stable',
     )
 
+from heppy.analyzers.GenAnalyzer import GenAnalyzer
+gen_ana = cfg.Analyzer(
+    GenAnalyzer
+    )
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -122,7 +127,8 @@ sequence = cfg.Sequence( [
     gen_zeds,
     jets,
     zeds,
-    print_ptcs
+    gen_ana
+    # print_ptcs
     ] )
 
 # Specifics to read FCC events 

@@ -5,15 +5,16 @@ class GenAnalyzer(Analyzer):
     
     def process(self, event):
         genptcs = event.gen_particles
-        event.electrons = [ptc for ptc in genptcs if abs(ptc.pdgid())==11
-                           and ptc.status()==1]
-        if len(event.electrons)==2:
-            print map(str, event.electrons)
+        event.bquarks = [ptc for ptc in genptcs if abs(ptc.pdgid())==5 and
+                         ptc.status()==23]
+        if len(event.bquarks)==2:
+            print map(str, event.bquarks)
             event.genbrowser = GenBrowser(event.gen_particles,
                                           event.gen_vertices)
-            for e in event.electrons:
-                print e
-                ancestors = event.genbrowser.ancestors(e)
-                for a in ancestors:
-                    if a.status()==22:
-                        print '\t', a
+            for bquark in event.bquarks:
+                print bquark
+                descendents = event.genbrowser.descendants(bquark)
+                for dsc in descendents:
+                    if dsc.status()==1 and dsc.q():
+                        print '\t', dsc
+                        print '\t\t', dsc.start_vertex()
