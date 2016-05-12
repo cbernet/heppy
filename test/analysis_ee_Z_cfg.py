@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*jets*','*zeds']
+Event.print_patterns=['*hadrons*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -112,9 +112,9 @@ print_ptcs = cfg.Analyzer(
     particles = 'gen_particles_stable',
     )
 
-from heppy.analyzers.GenAnalyzer import GenAnalyzer
-gen_ana = cfg.Analyzer(
-    GenAnalyzer
+from heppy.analyzers.ChargedHadronsFromB import ChargedHadronsFromB
+charged_hadrons_from_b = cfg.Analyzer(
+    ChargedHadronsFromB
     )
 
 # definition of a sequence of analyzers,
@@ -127,7 +127,7 @@ sequence = cfg.Sequence( [
     gen_zeds,
     jets,
     zeds,
-    gen_ana
+    charged_hadrons_from_b
     # print_ptcs
     ] )
 

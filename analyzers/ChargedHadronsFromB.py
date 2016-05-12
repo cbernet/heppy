@@ -2,11 +2,20 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.genbrowser import GenBrowser
 from heppy.particles.pdgcodes import hasBottom
 
-class GenAnalyzer(Analyzer):
+class ChargedHadronsFromB(Analyzer):
     
     def process(self, event):
         genptcs = event.gen_particles
-        charged_hadrons = [ptc for ptc in genptcs if ptc.q() and ptc.status()==1]
+        bquarks = []
+        charged_hadrons = []
+        event.hadrons_from_b = []
+        for ptc in genptcs:
+            if abs(ptc.pdgid())==5:
+                bquarks.append(ptc)
+            elif ptc.q() and ptc.status()==1:
+                charged_hadrons.append(ptc)
+        if len(bquarks) == 0 or len(charged_hadrons) == 0:
+            return
         event.genbrowser = GenBrowser(event.gen_particles,
                                       event.gen_vertices)
         event.hadrons_from_b = []
