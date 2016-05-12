@@ -190,16 +190,16 @@ class Simulator(object):
         smeared = copy.deepcopy(ptc)
         return smeared
     
-    def extend_muon(self, ptc):
-            self.propagate(ptc)
-            return 
+    def propagate_muon(self, ptc):
+        self.propagate(ptc)
+        return 
     
-    def extend_electron(self, ptc):
-            ecal = self.detector.elements['ecal']
-            self.prop_helix.propagate_one(ptc,
-                                          ecal.volume.inner,
-                                          self.detector.elements['field'].magnitude )
-            return    
+    def propagate_electron(self, ptc):
+        ecal = self.detector.elements['ecal']
+        self.prop_helix.propagate_one(ptc,
+                                      ecal.volume.inner,
+                                      self.detector.elements['field'].magnitude )
+        return    
     
     def simulate(self, ptcs,  do_reconstruct = True):
         self.reset()
@@ -210,12 +210,12 @@ class Simulator(object):
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                self.extend_electron(ptc)
+                self.propagate_electron(ptc)
                 #smeared_ptc = self.smear_electron(ptc)
                 #smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                self.extend_muon(ptc)
+                self.propagate_muon(ptc)
                 #smeared_ptc = self.smear_muon(ptc)
                 #smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
