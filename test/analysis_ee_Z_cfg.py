@@ -28,7 +28,7 @@ random.seed(0xdeadbeef)
 comp = cfg.Component(
     'example',
     files = [
-        'ee_Z_ddbar.root'
+        'ee_Z_bbbar.root'
     ]
 )
 selectedComponents = [comp]
@@ -88,7 +88,7 @@ gen_jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
-# Build Higgs candidates from pairs of jets.
+# Build Zed candidates from pairs of jets.
 from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
 zeds = cfg.Analyzer(
     ResonanceBuilder,
@@ -104,6 +104,14 @@ gen_zeds = cfg.Analyzer(
     pdgid = 23
 )
 
+# print particles to text file for Gael
+from heppy.analyzers.ParticlePrinter import ParticlePrinter
+print_ptcs = cfg.Analyzer(
+    ParticlePrinter,
+    particles = 'gen_particles_stable',
+    )
+
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
@@ -114,6 +122,7 @@ sequence = cfg.Sequence( [
     gen_zeds,
     jets,
     zeds,
+    print_ptcs
     ] )
 
 # Specifics to read FCC events 
