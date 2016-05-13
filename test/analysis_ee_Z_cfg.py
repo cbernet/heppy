@@ -106,9 +106,9 @@ gen_zeds = cfg.Analyzer(
 )
 
 # print particles to text file for Gael
-from heppy.analyzers.ParticlePrinter import ParticlePrinter
+from heppy.analyzers.EventTextOutput import EventTextOutput
 print_ptcs = cfg.Analyzer(
-    ParticlePrinter,
+    EventTextOutput,
     particles = 'gen_particles_stable',
     )
 
@@ -127,8 +127,8 @@ sequence = cfg.Sequence( [
     gen_zeds,
     jets,
     zeds,
-    charged_hadrons_from_b
-    # print_ptcs
+    charged_hadrons_from_b,
+    print_ptcs
     ] )
 
 # Specifics to read FCC events 
