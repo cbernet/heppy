@@ -3,6 +3,8 @@ from scipy import constants
 from ROOT import TVector3
 from heppy.utils.deltar import deltaPhi
 from collections import OrderedDict
+import scipy.optimize as opti # need to compute impact parameters
+from numpy import sign
 
 class Path(object):
     '''Path followed by a particle in 3D space. 
@@ -84,18 +86,40 @@ class Helix(Path):
         return TVector3(xy.X(), xy.Y(), z)
         
     def point_at_time(self, time):
-        z = self.vz() * time + self.origin.Z()
+        x,y,z = self.coord_at_time(time)
+        return TVector3(x, y, z)
+    
+    def path_length(self, deltat):
+        '''ds2 = dx2+dy2+dz2 = [w2rho2 + vz2] dt2'''
+        return math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)*deltat
+ 
+ #______________________________________________________________________________   
+    def coord_at_time(self, time):
         x = self.origin.X() + \
             self.v_over_omega.Y() * (1-math.cos(self.omega*time)) \
             + self.v_over_omega.X() * math.sin(self.omega*time)
         y = self.origin.Y() - \
             self.v_over_omega.X() * (1-math.cos(self.omega*time)) \
             + self.v_over_omega.Y() * math.sin(self.omega*time)
-        return TVector3(x, y, z)
-    
-    def path_length(self, deltat):
-        '''ds2 = dx2+dy2+dz2 = [w2rho2 + vz2] dt2'''
-        return math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)*deltat
+        z = self.vz() * time + self.origin.Z()
+        return x,y,z
+        
+    def compute_IP(self, vertex):
+        self.vertex=vertex
+        def distquad (time):
+            x,y,z = self.coord_at_time(time)
+            dist2 = (x-vertex.x())**2 + (y-vertex.y())**2\
+            + (z-vertex.z())**2 
+            return dist2
+        minim_answer = opti.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
+        self.closest_t = minim_answer[1]
+        vector_IP = self.point_at_time(minim_answer[1]) - vertex
+        self.signIP= vector_IP.Dot(self.p4.Vect().Unit())
+        self.IP = minim_answer[4]**(1.0/2)*sign(self.signIP)
+        #self.closest=TVector3(self.fx(t), self.fy(t), self.fz(t))
+        
+        
+ #______________________________________________________________________________    
 
     # def deltat(self, path_length):
     #     #TODO: shouldn't this just use beta????
