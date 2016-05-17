@@ -19,10 +19,16 @@ class ChargedHadronsFromB(Analyzer):
         event.genbrowser = GenBrowser(event.gen_particles,
                                       event.gen_vertices)
         event.hadrons_from_b = []
+        event.hadrons_not_from_b = []
         for hadron in charged_hadrons:
             ancestors = event.genbrowser.ancestors(hadron)
+            is_from_b = False 
             for ancestor in ancestors:
                 if hasBottom(ancestor.pdgid() ):
-                    event.hadrons_from_b.append(hadron)
-                    break 
+                    is_from_b = True
+            if is_from_b:
+                event.hadrons_from_b.append(hadron)
+            else:
+                event.hadrons_not_from_b.append(hadron)
+            
         

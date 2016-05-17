@@ -26,12 +26,12 @@ class Vertex(object):
         return str(self)
     
     def __str__(self):
-        tmp = '{className} : x = {x:5.2f}, y = {y:5.2f}, z = {z:5.2f}, ctau = {ctau:5.2f}'
+        tmp = '{className} : pos(mm) x = {x:5.3f}, y = {y:5.3f}, z = {z:5.3f}, ctau = {ctau:5.2f}'
         return tmp.format(
             className = self.__class__.__name__,
-            x = self.x(),
-            y = self.y(),
-            z = self.z(),
+            x = self.x()*1000.,
+            y = self.y()*1000.,
+            z = self.z()*1000.,
             ctau = self.ctau(),
             )
 

@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*hadrons*']
+Event.print_patterns=['*hadrons*', '*zeds*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -128,7 +128,7 @@ sequence = cfg.Sequence( [
     jets,
     zeds,
     charged_hadrons_from_b,
-    print_ptcs
+    # print_ptcs
     ] )
 
 # Specifics to read FCC events 

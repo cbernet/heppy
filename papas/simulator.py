@@ -16,9 +16,7 @@ def pfsimparticle(ptc):
     The PFSimParticle will have the same p4, vertex, charge, pdg ID.
     '''
     tp4 = ptc.p4()
-    # vertex = ptc.start_vertex().position()
-    # vertex = TVector3(0.001, 0, 0) # moving vertex 1mm away <<<<<< LUCAS
-    vertex = TVector3()
+    vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
     return PFSimParticle(tp4, vertex, charge, pid) 

@@ -12,5 +12,6 @@ class Vertex(BaseVertex, POD):
         self._point = TVector3(fccobj.Position().X,
                                fccobj.Position().Y,
                                fccobj.Position().Z)
+        self._point *= 1e-3 # pythia : mm -> papas : m
         self._ctau = fccobj.Ctau()
         
