@@ -1,5 +1,7 @@
 from blockbuilder import BlockBuilder
 
+#remove pfevent once we have helper classes to produce good printouts
+
 class BlockSplitter(BlockBuilder):
     ''' BlockSplitter takes an exisiting block of particle flow element ids (clusters,tracks etc)
         and unlinks any specified edges. It then recalculates a new set of sub-blocks
@@ -16,7 +18,7 @@ class BlockSplitter(BlockBuilder):
            as it will effectively be replaced by the new blocks after the split.
            ** explain how old block fits into history node ** 
     '''
-    def __init__(self,  block, unlink_edges, history_nodes=None):
+    def __init__(self,  block, unlink_edges, history_nodes = None):
         '''arguments:
         
         blocks  : dictionary of blocks {id1:block1, id2:block2, ...}
