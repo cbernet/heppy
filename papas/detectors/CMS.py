@@ -8,7 +8,7 @@ class ECAL(DetectorElement):
 
     def __init__(self):
         volume = VolumeCylinder('ecal', 1.55, 2.1, 1.30, 2. )
-        mat = material.Material('ECAL', 18.062e-3, 0.275)#0.240 test gael
+        mat = material.Material('ECAL', 18.062e-3, 0.275)
         self.eta_crack = 1.5
         self.emin = 0.3
         self.eres = {'barrel':[0.073, 0.1, 0.005], 'endcap':[0.213, 0.224, 0.005]}
@@ -53,7 +53,6 @@ class HCAL(DetectorElement):
         mat = material.Material('HCAL', None, 0.17)
         self.eres = [1.25829, 0., 0.175950]
         self.eresp = [1.03430, 5.23646, -2.03400]
-        #self.eresp = [1.03845, 3.80811, 2.50753]
         super(HCAL, self).__init__('ecal', volume, mat)
 
     def energy_resolution(self, energy, theta=0.):
@@ -61,9 +60,8 @@ class HCAL(DetectorElement):
         constant = self.eres[2]
         return math.sqrt( stoch**2 + constant**2)
 
-    def energy_response(self, energy, theta=0):#test gael
+    def energy_response(self, energy, theta=0):
         return self.eresp[0]/(1+math.exp((energy-self.eresp[1])/self.eresp[2]))
-        #return self.eresp[0]*(1-math.exp(-(energy-self.eresp[1])/self.eresp[2]))
 
     def cluster_size(self, ptc):
         return 0.2
