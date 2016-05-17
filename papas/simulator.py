@@ -10,12 +10,13 @@ import shelve
 
 from ROOT import TVector3
 
+
 def pfsimparticle(ptc):
     '''Create a PFSimParticle from a particle.
     The PFSimParticle will have the same p4, vertex, charge, pdg ID.
     '''
     tp4 = ptc.p4()
-    vertex = TVector3()
+    vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
     return PFSimParticle(tp4, vertex, charge, pid) 
