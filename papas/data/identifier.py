@@ -67,6 +67,4 @@ class Identifier(long):
     @staticmethod
     def type_short_code(ident):
         typelist=".eht......" #the enum value (0 to 8) will index into this and return E is it is ECAL etc
-        return typelist[Identifier.get_type(ident)
-    
-    
+        return typelist[Identifier.get_type(ident)]
