@@ -153,7 +153,7 @@ class Simulator(object):
             point_decay = ptc.path.point_at_time(time_decay)
             ptc.points['ecal_decay'] = point_decay
             if ecal.volume.contains(point_decay):
-                frac_ecal = random.uniform(0.,0.7)#random.gauss(0.3, 0.1) test gael
+                frac_ecal = random.uniform(0.,0.7)
                 cluster = self.make_cluster(ptc, 'ecal', frac_ecal)
                 # For now, using the hcal resolution and acceptance
                 # for hadronic cluster

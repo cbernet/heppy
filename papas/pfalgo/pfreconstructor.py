@@ -86,7 +86,7 @@ class PFReconstructor(object):
         
         #impose additional sorting on elements to allow cross cehcking between two methods
         #most likely it is not the optimal sorting
-        #group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
+        group.sort( key = lambda  x: ( Identifier.type_short_code(x.uniqueid) ,(-x.energy)))
         if (self.debugprint and len(group)>5) :
             print "Group: ", group
            
