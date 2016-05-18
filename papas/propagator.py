@@ -3,6 +3,7 @@ import math
 import copy
 from ROOT import TVector3
 from geotools import circle_intersection
+from exceptions import PropagationError
 from path import Helix, StraightLine
 
 class Info(object):
@@ -26,7 +27,8 @@ class StraightLinePropagator(Propagator):
             destz = cylinder.z if line.udir.Z() > 0. else -cylinder.z
             length = (destz - line.origin.Z())/math.cos(theta)
             # import pdb; pdb.set_trace()
-            assert(length>=0)
+            if length < 0:
+                raise PropagationError(particle)
             destination = line.origin + line.udir * length
             rdest = destination.Perp()
             if rdest > cylinder.rad:
@@ -59,10 +61,13 @@ class HelixPropagator(Propagator):
         is_looper = helix.extreme_point_xy.Mag() < cylinder.rad
         is_positive = particle.p4().Z() > 0.
         if not is_looper:
-            xm, ym, xp, yp = circle_intersection(helix.center_xy.X(),
-                                                 helix.center_xy.Y(),
-                                                 helix.rho,
-                                                 cylinder.rad)
+            try: 
+                xm, ym, xp, yp = circle_intersection(helix.center_xy.X(),
+                                                     helix.center_xy.Y(),
+                                                     helix.rho,
+                                                     cylinder.rad )
+            except ValueError:
+                raise PropagationError(particle)
             # particle.points[cylinder.name+'_m'] = Point(xm,ym,0)
             # particle.points[cylinder.name+'_p'] = Point(xp,yp,0)
             phi_m = helix.phi(xm, ym)
