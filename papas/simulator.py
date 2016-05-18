@@ -75,8 +75,8 @@ class Simulator(object):
         '''Returns a copy of self with a smeared energy.  
         If accept is False (default), returns None if the smeared 
         cluster is not in the detector acceptance. '''
-        eres = detector.energy_resolution(cluster.energy, cluster.particle.eta())
-        response = detector.energy_response(cluster.energy)
+        eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
+        response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
         smeared_cluster = SmearedCluster( cluster,
                                           energy,
