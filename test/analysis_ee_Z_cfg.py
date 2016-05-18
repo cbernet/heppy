@@ -149,9 +149,9 @@ sequence = cfg.Sequence( [
     gen_zeds,
     jets,
     zeds,
-    charged_hadrons_from_b,
-    impact_parameter,
-    particle_tree
+    # charged_hadrons_from_b,
+    # impact_parameter,
+    # particle_tree
     ] )
 
 # Specifics to read FCC events 

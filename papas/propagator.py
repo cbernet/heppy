@@ -42,9 +42,12 @@ class StraightLinePropagator(Propagator):
                 b= 2*udirxy.Dot(originxy)
                 c= originxy.Mag2()-cylinder.rad**2
                 delta = b**2 - 4*a*c
-                km = (-b - math.sqrt(delta))/(2*a)
-                # positive propagation -> correct solution.
-                kp = (-b + math.sqrt(delta))/(2*a)
+                try:
+                    km = (-b - math.sqrt(delta))/(2*a)
+                    # positive propagation -> correct solution.
+                    kp = (-b + math.sqrt(delta))/(2*a)
+                except ValueError:
+                    raise PropagationError(particle)
                 # print delta, km, kp
                 destination = line.origin + line.udir * kp  
         #TODO deal with Z == 0 
