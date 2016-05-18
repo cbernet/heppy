@@ -1,6 +1,6 @@
-from heppy.papas.detectors.detector import Detector, DetectorElement
-import heppy.papas.detectors.material as material
-from heppy.papas.detectors.geometry import VolumeCylinder
+from detector import Detector, DetectorElement
+import material as material
+from geometry import VolumeCylinder
 import math
 import random
 
@@ -8,9 +8,9 @@ class ECAL(DetectorElement):
 
     def __init__(self):
         volume = VolumeCylinder('ecal', 1.55, 2.1, 1.30, 2. )
-        mat = material.Material('ECAL', 18.062e-3, 0.275)
+        mat = material.Material('ECAL', 8.9e-3, 0.275)
         self.eta_crack = 1.5
-        self.emin = 0.3
+        self.emin = {'barrel':0.3, 'endcap':1.}
         self.eres = {'barrel':[0.073, 0.1, 0.005], 'endcap':[0.213, 0.224, 0.005]}
         super(ECAL, self).__init__('ecal', volume,  mat)
 
@@ -37,9 +37,9 @@ class ECAL(DetectorElement):
         energy = cluster.energy
         eta = abs(cluster.position.Eta())
         if eta < self.eta_crack:
-            return energy>self.emin
+            return energy>self.emin['barrel']
         elif eta < 2.93:
-            return energy>1 and cluster.pt>0.2
+            return energy>self.emin['endcap'] and cluster.pt>0.2
         else:
             return False
 
@@ -51,13 +51,14 @@ class HCAL(DetectorElement):
     def __init__(self):
         volume = VolumeCylinder('hcal', 2.9, 3.6, 1.9, 2.6 )
         mat = material.Material('HCAL', None, 0.17)
+        self.eta_crack = 1.3
         self.eres = {'barrel':[1.25829, 0., 0.175950], 'endcap':[1.32242e-06, 6.99123, 2.70281e-01]}
         self.eresp = {'barrel':[1.03430, 5.23646, -2.03400], 'endcap':[1.06742, 9.41242, -2.75191]}
         super(HCAL, self).__init__('ecal', volume, mat)
 
     def energy_resolution(self, energy, eta=0.):
         part = 'barrel'
-        if abs(eta)>1.3 and abs(eta)<3.0:
+        if abs(eta)>self.eta_crack:
             part = 'endcap'
         stoch = self.eres[part][0] / math.sqrt(energy)
         noise = self.eres[part][1] / energy
@@ -66,9 +67,9 @@ class HCAL(DetectorElement):
 
     def energy_response(self, energy, eta=0):
         part = 'barrel'
-        if abs(eta)>1.3 and abs(eta)<3.0:
+        if abs(eta)>self.eta_crack:
             part = 'endcap'
-        return self.eresp[part][0]/(1+math.exp((energy-self.eresp[part][1])/self.eresp[part][2]))
+        return self.eresp[part][0]/(1+math.exp((energy-self.eresp[part][1])/self.eresp[part][2])) #using fermi-dirac function : [0]/(1 + exp( (energy-[1]) /[2] ))
 
     def cluster_size(self, ptc):
         return 0.2
@@ -76,7 +77,7 @@ class HCAL(DetectorElement):
     def acceptance(self, cluster):
         energy = cluster.energy
         eta = abs(cluster.position.Eta())
-        if eta < 1.3 :
+        if eta < self.eta_crack :
             if energy>1.:
                 return random.uniform(0,1)<(1/(1+math.exp((energy-1.93816)/(-1.75330))))
             else:
@@ -104,7 +105,6 @@ class Tracker(DetectorElement):
     
     def __init__(self):
         volume = VolumeCylinder('tracker', 1.29, 1.99)
-        #gael test
         mat = material.void
         super(Tracker, self).__init__('tracker', volume,  mat)
 
