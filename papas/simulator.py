@@ -19,7 +19,9 @@ def pfsimparticle(ptc):
     vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
-    return PFSimParticle(tp4, vertex, charge, pid) 
+    simptc = PFSimParticle(tp4, vertex, charge, pid)
+    simptc.gen_ptc = ptc
+    return simptc
 
 class Simulator(object):
 
