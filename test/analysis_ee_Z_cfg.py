@@ -25,13 +25,22 @@ import random
 random.seed(0xdeadbeef)
 
 # input definition
-comp = cfg.Component(
-    'example',
+ee_Z_ddbar = cfg.Component(
+    'ee_Z_ddbar',
+    files = [
+        'ee_Z_ddbar.root'
+    ]
+)
+
+ee_Z_bbbar = cfg.Component(
+    'ee_Z_bbbar',
     files = [
         'ee_Z_bbbar.root'
     ]
 )
-selectedComponents = [comp]
+
+
+selectedComponents = [ee_Z_bbbar]
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -117,6 +126,19 @@ charged_hadrons_from_b = cfg.Analyzer(
     ChargedHadronsFromB
     )
 
+from heppy.analyzers.ImpactParameter import ImpactParameter
+impact_parameter = cfg.Analyzer(
+    ImpactParameter,
+    jets = 'jets'
+    )
+
+from heppy.analyzers.ParticleTreeProducer import ParticleTreeProducer
+particle_tree = cfg.Analyzer(
+    ParticleTreeProducer,
+    particles = 'particles'
+    )
+
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
@@ -128,7 +150,8 @@ sequence = cfg.Sequence( [
     jets,
     zeds,
     charged_hadrons_from_b,
-    # print_ptcs
+    impact_parameter,
+    particle_tree
     ] )
 
 # Specifics to read FCC events 

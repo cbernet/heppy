@@ -29,11 +29,11 @@ class ParticleTreeProducer(Analyzer):
             self.tree.reset()
             fillParticle(self.tree, 'ptc', ptc)
             m211 = m22 = False
-            if hasattr(ptc, 'clusters'):
-                # sim particle
-                ecal = ptc.clusters.get('ecal_in', None)
-                if ecal:
-                    fillCluster(self.tree, 'ptc_ecal', ecal)
+            # if hasattr(ptc, 'clusters'):
+            #     # sim particle
+            #     ecal = ptc.clusters.get('ecal_in', None)
+            #     if ecal:
+            #         fillCluster(self.tree, 'ptc_ecal', ecal)
             if hasattr(ptc, 'match') and ptc.match:
                 fillParticle(self.tree, 'ptc_match', ptc.match)
                 fill(self.tree, 'dr', ptc.dr)
