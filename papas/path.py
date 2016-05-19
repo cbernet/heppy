@@ -86,6 +86,7 @@ class Helix(Path):
         return TVector3(xy.X(), xy.Y(), z)
         
     def point_at_time(self, time):
+        '''return a TVector3 with cartesian coordinates at time t'''
         x,y,z = self.coord_at_time(time)
         return TVector3(x, y, z)
     
@@ -95,6 +96,7 @@ class Helix(Path):
  
  #______________________________________________________________________________   
     def coord_at_time(self, time):
+        '''computes coordinates a time t from helix'''
         x = self.origin.X() + \
             self.v_over_omega.Y() * (1-math.cos(self.omega*time)) \
             + self.v_over_omega.X() * math.sin(self.omega*time)
@@ -104,7 +106,11 @@ class Helix(Path):
         z = self.vz() * time + self.origin.Z()
         return x,y,z
         
-    def compute_IP(self, vertex):
+    def compute_IP(self, vertex,jet):
+        '''find the impact parameter of the trajectory with respect to a given
+        point. The impact parameter has the same sign as the scalar product of
+        the vector pointing from the primary vertex to  the point of closest
+        approach with the jet direction.'''
         self.vertex=vertex
         def distquad (time):
             x,y,z = self.coord_at_time(time)
@@ -114,8 +120,18 @@ class Helix(Path):
         minim_answer = opti.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
         self.closest_t = minim_answer[1]
         vector_IP = self.point_at_time(minim_answer[1]) - vertex
-        self.signIP= vector_IP.Dot(self.p4.Vect().Unit())
-        self.IP = minim_answer[4]**(1.0/2)*sign(self.signIP)
+        Pj = jet.p4().Vect().Unit()
+        Ppart = self.p4.Vect().Unit()
+        #w, t = self.omega, minim_answer[1]
+        #Pt = TVector3(self.v_over_omega.X()*w*math.cos(w*t)\
+        #             +self.v_over_omega.Y()*w*math.sin(w*t),\
+        #              self.v_over_omega.Y()*w*math.cos(w*t)\
+        #             -self.v_over_omega.X()*w*math.sin(w*t),\
+        #             self.vz())
+        signIP  = vector_IP.Dot(Pj)
+        #signIP2 = Pj.Cross(Pt.Unit()).Dot(Pt.Unit().Cross(-vector_IP))
+        #self.sign_verif = sign(signIP*signIP2)
+        self.IP = minim_answer[4]**(1.0/2)*sign(signIP)
         #self.closest=TVector3(self.fx(t), self.fy(t), self.fz(t))
         
         

@@ -1,48 +1,33 @@
 from heppy.framework.analyzer import Analyzer
 from ROOT import TVector3
-#from heppy.framework.event import Event
 from heppy.papas.path import Helix
-#import collections
+import math
 
 class ImpactParameter(Analyzer):
-
+    '''This analyzer puts an impact parameter for every charged particle
+    as an attribute of its path : particle.path.IP
+    Then, it computes W, the likelihood value for the jet to contain beauty,
+    using a likelihood ratio method for each particle in the jet.
+    Above a given value for W, the jet is b-tagged'''
         
     def process(self, event):
         assumed_vertex = TVector3(0, 0, 0)
         jets = getattr(event, self.cfg_ana.jets)
+        def func_b(IP):
+            return 1
+        def func_u(IP):
+            return 1
         for jet in jets:
-            #for ptc in jet.constituents[211]:
-            #    IPsn = 1
-            #    N_charge = 0
-                #for i in range(len(const)):
-                #    if const[i][1][0]._charge <> 0:
-                #        if len const[i][1] > 0:
-                #            for l in range(len(const[i][1]))
-                #                partic = const[i][1][l]
-                #                h = partic.path
-                #                Helix.compute_IP(h, assumed_vertex)
-                #                setattr(partic, self.IP, h.IP)
-                #                setattr(partic, self.tIP, h.closest.t)
-                #                setattr(partic, self.xIP, h.closest.x)
-                #                setattr(partic, self.yIP, h.closest.y)
-                #                setattr(partic, self.zIP, h.closest.z)
-                #                IPsn *= h.IP
-                #                N_charge += 1
-                #        else :
-                #            pass
-                #    else :
-                #        pass
-                #if N_charge <> 0 :
-                #    IPs = IPSn**(1.0/N_charge)
-                #else :
-                #    pass
+            jet.W = 0
             for id, ptcs in jet.constituents.iteritems():
                 if id in [22,130]:
                     continue
                 for ptc in ptcs :
                     if ptc._charge == 0 :
                         continue
-                    ptc.path.compute_IP(assumed_vertex)
-                    #jet.IP = ptc.path.IP
-            #setattr(event, self.cfg_ana.output, IPs)
-        
+                    ptc.path.compute_IP(assumed_vertex,jet)
+                    u = func_u(ptc.path.IP)
+                    b = func_b(ptc.path.IP)
+                    ptc.path.like_b = math.log(1.0*b/u)
+                    jet.W += ptc.path.like_b
+            
