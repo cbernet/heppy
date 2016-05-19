@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*jets*','*zeds']
+Event.print_patterns=['*hadrons*', '*zeds*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -25,13 +25,22 @@ import random
 random.seed(0xdeadbeef)
 
 # input definition
-comp = cfg.Component(
-    'example',
+ee_Z_ddbar = cfg.Component(
+    'ee_Z_ddbar',
     files = [
         'ee_Z_ddbar.root'
     ]
 )
-selectedComponents = [comp]
+
+ee_Z_bbbar = cfg.Component(
+    'ee_Z_bbbar',
+    files = [
+        'ee_Z_bbbar.root'
+    ]
+)
+
+
+selectedComponents = [ee_Z_bbbar]
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -40,6 +49,7 @@ source = cfg.Analyzer(
     Reader,
     mode = 'ee',
     gen_particles = 'GenParticle',
+    gen_vertices = 'GenVertex'
 )
 
 # Use a Filter to select stable gen particles for simulation
@@ -88,7 +98,7 @@ gen_jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
-# Build Higgs candidates from pairs of jets.
+# Build Zed candidates from pairs of jets.
 from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
 zeds = cfg.Analyzer(
     ResonanceBuilder,
@@ -104,6 +114,31 @@ gen_zeds = cfg.Analyzer(
     pdgid = 23
 )
 
+# print particles to text file for Gael
+from heppy.analyzers.EventTextOutput import EventTextOutput
+print_ptcs = cfg.Analyzer(
+    EventTextOutput,
+    particles = 'gen_particles_stable',
+    )
+
+from heppy.analyzers.ChargedHadronsFromB import ChargedHadronsFromB
+charged_hadrons_from_b = cfg.Analyzer(
+    ChargedHadronsFromB
+    )
+
+from heppy.analyzers.ImpactParameter import ImpactParameter
+impact_parameter = cfg.Analyzer(
+    ImpactParameter,
+    jets = 'jets'
+    )
+
+from heppy.analyzers.ParticleTreeProducer import ParticleTreeProducer
+particle_tree = cfg.Analyzer(
+    ParticleTreeProducer,
+    particles = 'particles'
+    )
+
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
@@ -114,6 +149,9 @@ sequence = cfg.Sequence( [
     gen_zeds,
     jets,
     zeds,
+    # charged_hadrons_from_b,
+    # impact_parameter,
+    # particle_tree
     ] )
 
 # Specifics to read FCC events 
