@@ -38,7 +38,7 @@ class PFBlock(object):
                      must provide a get_object function
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.BLOCK) 
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK) 
         self.is_active = True # if a block is subsequently split it will be deactivated
         
         #allow access to the underlying objects
