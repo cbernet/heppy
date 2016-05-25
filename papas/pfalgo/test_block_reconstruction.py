@@ -17,9 +17,9 @@ class Cluster(object):
               layer is ecal/hcal
         '''
         if (layer == 'ecal_in'):
-            self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.ECALCLUSTER)
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER)
         elif (layer == 'hcal_in'):
-            self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.HCALCLUSTER)
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER)
         else:
             assert false
         self.layer = layer
@@ -36,7 +36,7 @@ class Track(object):
     def __init__(self, id):
         ''' id is unique integer from 1-99
         '''
-        self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.TRACK)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK)
         self.id = id
         self.layer = 'tracker'
         self.energy=0
@@ -52,7 +52,7 @@ class Particle(object):
         ''' id is unique integer from 301-399
             pdgid is particle id eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.PARTICLE)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
         #print "particle: ",self.uniqueid," ",id
         self.pdgid = pdgid
         self.id = id
@@ -68,7 +68,7 @@ class ReconstructedParticle(Particle):
         ''' id is unique integer from 601-699
             pdgid is particle id eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.RECPARTICLE)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.RECPARTICLE)
         self.pdgid = pdgid
         self.id = id
         
