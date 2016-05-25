@@ -74,12 +74,13 @@ class Simulator(object):
         ptc.clusters[cylname] = cluster
         return cluster
 
-    def smear_cluster(self, cluster, detector, accept=False):
+    def smear_cluster(self, cluster, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.  
         If accept is False (default), returns None if the smeared 
         cluster is not in the detector acceptance. '''
-        eres = detector.energy_resolution(cluster.energy)
-        energy = cluster.energy * random.gauss(1, eres)
+        eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
+        response = detector.energy_response(cluster.energy, cluster.position.Eta())
+        energy = cluster.energy * random.gauss(response, eres)
         smeared_cluster = SmearedCluster( cluster,
                                           energy,
                                           cluster.position,
@@ -87,7 +88,8 @@ class Simulator(object):
                                           cluster.layer,
                                           cluster.particle )
         # smeared_cluster.set_energy(energy)
-        if detector.acceptance(smeared_cluster) or accept:
+        det = acceptance if acceptance else detector
+        if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
         else:
             return None
@@ -155,12 +157,12 @@ class Simulator(object):
             point_decay = ptc.path.point_at_time(time_decay)
             ptc.points['ecal_decay'] = point_decay
             if ecal.volume.contains(point_decay):
-                frac_ecal = random.uniform(0., 0.7)
+                frac_ecal = random.uniform(0.,0.7)
                 cluster = self.make_cluster(ptc, 'ecal', frac_ecal)
                 # For now, using the hcal resolution and acceptance
                 # for hadronic cluster
                 # in the ECAL. That's not a bug! 
-                smeared = self.smear_cluster(cluster, hcal)
+                smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
                 if smeared:
                     ptc.clusters_smeared[smeared.layer] = smeared
         cluster = self.make_cluster(ptc, 'hcal', 1-frac_ecal)

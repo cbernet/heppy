@@ -27,7 +27,7 @@ class PFObject(object):
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(self,pfobjecttype)
+        self.uniqueid=Identifier.make_id(pfobjecttype)
         
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -236,7 +236,7 @@ class Particle(BaseParticle):
                  pdgid=None,
                  ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.make_id(self, ParticleType)
+        self.uniqueid=Identifier.make_id(ParticleType)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
