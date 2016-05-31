@@ -108,10 +108,10 @@ class Helix(Path):
         
     def compute_IP(self, vertex,jet):
         '''find the impact parameter of the trajectory with respect to a given
-        point. The impact parameter has the same sign as the scalar product of
-        the vector pointing from the primary vertex to  the point of closest
-        approach with the jet direction.'''
-        self.vertex=vertex
+        point (vertex). The impact parameter has the same sign as the scalar product of
+        the vector pointing from the given vertex to  the point of closest
+        approach with the given jet direction.'''
+        self.vertex_IP = vertex
         def distquad (time):
             x,y,z = self.coord_at_time(time)
             dist2 = (x-vertex.x())**2 + (y-vertex.y())**2\
@@ -121,7 +121,7 @@ class Helix(Path):
         self.closest_t = minim_answer[1]
         vector_IP = self.point_at_time(minim_answer[1]) - vertex
         Pj = jet.p4().Vect().Unit()
-        Ppart = self.p4.Vect().Unit()
+        #Ppart = self.p4.Vect().Unit()
         #w, t = self.omega, minim_answer[1]
         #Pt = TVector3(self.v_over_omega.X()*w*math.cos(w*t)\
         #             +self.v_over_omega.Y()*w*math.sin(w*t),\

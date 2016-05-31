@@ -74,10 +74,14 @@ def bookJet( tree, pName ):
     bookP4(tree, pName )
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
-    # var(tree, '{pName}_npart'.format(pName=pName))
+    var(tree, '{pName}_b_LL'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
     fillP4(tree, pName, jet )
+    if jet.tags.get('b_LL', None) is not None:
+        fill(tree, '{pName}_b_LL'.format(pName=pName), jet.tags.get('b_LL', None))
+    else:
+        fill(tree, '{pName}_b_LL'.format(pName=pName), -99)
     for pdgid in pdgids:
         component = jet.constituents.get(pdgid, None)
         if component is not None:
@@ -87,7 +91,7 @@ def fillJet( tree, pName, jet ):
         else:
             import pdb; pdb.set_trace()
             print jet
-
+    
 
 # isolation
 from LeptonAnalyzer import pdgids as iso_pdgids
