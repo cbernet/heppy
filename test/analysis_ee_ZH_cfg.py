@@ -15,8 +15,8 @@ import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
-logging.basicConfig(level=logging.WARNING)
-
+#logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
 import random
 random.seed(0xdeadbeef)

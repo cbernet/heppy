@@ -2,7 +2,9 @@ from detector import Detector, DetectorElement
 import material
 from geometry import VolumeCylinder
 import math
-import random
+#import  random
+from heppy.statistics.rrandom import RRandom as random
+
 
 class ECAL(DetectorElement):
 

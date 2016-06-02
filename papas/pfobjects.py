@@ -3,6 +3,7 @@ from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 import math
+import logging
 
 #add angular size needs to be fixed since at the moment the angluar size is set by the first element
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
@@ -61,6 +62,8 @@ class Cluster(PFObject):
         self.particle = particle
         self.subclusters = [self]
         # self.absorbed = []
+        logging.debug(self.__str__)
+        
 
     def set_size(self, value):
         self._size = value
@@ -211,6 +214,8 @@ class Track(PFObject):
         self.path = path
         self.particle = particle
         self.layer = 'tracker'
+        logging.debug(self.__str__)
+        
 
     def __str__(self):
         return '{classname:15}:uid={uniqueid}: {e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(

@@ -3,15 +3,15 @@ import copy
 import heppy.framework.config as cfg
 
 import logging
+import  math
 
-#import sys
-# next 2 lines necessary to deal with reimports from ipython
-logging.shutdown()
-reload(logging)
-logging.basicConfig(level=logging.WARNING)
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 # setting the random seed for reproducible results
-import random
+#import heppy.papas.random as  random
+from heppy.statistics.rrandom import RRandom as random
 random.seed(0xdeadbeef)
 
 make_tree = True
@@ -24,15 +24,13 @@ comp = cfg.Component(
 selectedComponents = [comp]
 
 
-from heppy.analyzers.Gun import Gun
+from heppy.analyzers.AliceTestGun import Gun
 source = cfg.Analyzer(
     Gun,
     pdgid = 211,
-    thetamin = -1.5,
-    thetamax = 1.5,
-    ptmin = 0.1,
-    ptmax = 10,
-    flat_pt = True,
+    theta = 0.9, 
+    phi = -0.19, 
+    energy = 47.2
 )
 
 
@@ -108,9 +106,9 @@ if __name__ == '__main__':
         #for j in range(10000) :
         process(iev)
         pass
-        process(iev) #alice_debug
-        process(iev) #alice_debug
-        process(iev) #alice_debug
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

@@ -4,7 +4,8 @@ from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.pfalgo.pfinput import  PFInput
 
 from pfalgo.sequence import PFSequence
-import random
+#import random
+from heppy.statistics.rrandom import RRandom as random
 import sys
 import copy
 import shelve
