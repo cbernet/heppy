@@ -19,7 +19,7 @@ class Identifier(long):
                 ....
            
         '''    
-    _id = count(0)
+    _id = count(1)
 
     class PFOBJECTTYPE:
         NONE = 0
@@ -70,8 +70,11 @@ class Identifier(long):
     
     @staticmethod
     def type_short_code(ident):
-        typelist=".eht......" #the enum value (0 to 8) will index into this and return E is it is ECAL etc
+        typelist=".ehtprb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
         return typelist[Identifier.get_type(ident)]    
     
+    @staticmethod
+    def pretty(ident):
+        return Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))    
     
     

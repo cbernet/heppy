@@ -1,18 +1,35 @@
-from heppy.papas.cfg.cpp.physicsoutput import  PhysicsOutput
+#from heppy.papas.cpp.physicsoutput import  PhysicsOutput
 
 class PhysicsOutput(object) :
     
-    _in_use = False;
+    _is_in_use = False
+    _file = None
     
-    def set_on():
-        _is_use = True
-        
-    def openfile(name):
+    
+    @classmethod
+    def open(cls, outfilename):
+        cls._file = open(outfilename, 'w')
+        cls._is_in_use = True
+        pass
+
+    @classmethod
+    def close(cls):
+        cls._file.close()
         pass
     
-    def closefile(name):
+    @classmethod
+    def write(cls, text):
+        if cls._is_in_use :
+            cls._file.write(text)
+            #print "PB: " +  text
         pass
+
     
-    def write(text):
-        pass
     
+if __name__ == '__main__':
+        from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+        pdebug.open("junk.txt")
+        pdebug.write("hello from alice")
+        pdebug.write("and more")
+        pdebug.close()
+      

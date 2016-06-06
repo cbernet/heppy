@@ -2,7 +2,8 @@ from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.pfalgo.pfinput import  PFInput
-
+from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.papas.data.identifier import Identifier
 from pfalgo.sequence import PFSequence
 #import random
 from heppy.statistics.rrandom import RRandom as random
@@ -19,11 +20,12 @@ def pfsimparticle(ptc):
     '''
     tp4 = ptc.p4()
     vertex = TVector3()
-    if hasattr(ptc, '_start_vertex'):
-        vertex = ptc.start_vertex().position()
+    #if hasattr(ptc, '_start_vertex'):
+    #    vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
     simptc = PFSimParticle(tp4, vertex, charge, pid)
+    pdebug.write("Made " +  simptc.__str__() +  "\n")
     simptc.gen_ptc = ptc
     return simptc
 
@@ -74,13 +76,20 @@ class Simulator(object):
                            ptc.points[cylname],
                            size,
                            cylname, ptc)
+        if Identifier.pretty(cluster.uniqueid) == "h113" :
+            pass        
         ptc.clusters[cylname] = cluster
+        pdebug.write("Made " + cluster.__str__() + "\n")
+        
         return cluster
 
     def smear_cluster(self, cluster, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.  
         If accept is False (default), returns None if the smeared 
         cluster is not in the detector acceptance. '''
+        if Identifier.pretty(cluster.uniqueid) == "e29" :
+            pass
+        
         eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
         response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
@@ -90,11 +99,15 @@ class Simulator(object):
                                           cluster.size(),
                                           cluster.layer,
                                           cluster.particle )
+        
+        #pdebug.write(str('Made {i} \n'.format(i=cluster.info()) ))      
+        pdebug.write(str('Made {}\n'.format(smeared_cluster) ))
         # smeared_cluster.set_energy(energy)
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
         else:
+            pdebug.write(str('Rejected {}\n'.format(smeared_cluster)))
             return None
     
     def smear_track(self, track, detector, accept=False):
@@ -105,12 +118,16 @@ class Simulator(object):
                                      track.p3 * scale_factor,
                                      track.charge,
                                      track.path)
+        pdebug.write("Made " + smeared_track.__str__() + "\n")
         if detector.acceptance(smeared_track) or accept:
             return smeared_track
         else:
+            # pdebug.write("Rejected Smeared Track\n")
+            pdebug.write(str('Rejected {}\n'.format(smeared_track)))
             return None
         
     def simulate_photon(self, ptc):
+        pdebug.write("Simulating Photon\n")
         detname = 'ecal'
         ecal = self.detector.elements[detname]
         self.prop_straight.propagate_one(ptc,
@@ -123,6 +140,7 @@ class Simulator(object):
 
 
     def simulate_electron(self, ptc):
+        pdebug.write("Simulating Electron \n")
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
@@ -144,12 +162,22 @@ class Simulator(object):
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
+        pdebug.write("Simulating Hadron\n")
         ecal = self.detector.elements['ecal']
         hcal = self.detector.elements['hcal']        
         frac_ecal = 0.
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
+        
+        
+        if ptc.q()!=0:
+            pdebug.write("Made " + ptc.track.__str__() + "\n")
+            smeared_track = self.smear_track(ptc.track,
+                                             self.detector.elements['tracker'])
+            if smeared_track:
+                ptc.track_smeared = smeared_track
+                
         path_length = ecal.material.path_length(ptc)
         if path_length<sys.float_info.max:
             # ecal path length can be infinite in case the ecal
@@ -172,13 +200,10 @@ class Simulator(object):
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
-        if ptc.q()!=0:
-            smeared_track = self.smear_track(ptc.track,
-                                             self.detector.elements['tracker'])
-            if smeared_track:
-                ptc.track_smeared = smeared_track
+        
 
     def simulate_muon(self, ptc):
+        pdebug.write("Simulating Muon\n")
         self.propagate(ptc)
         smeared_track = self.smear_track(ptc.track,
                                          self.detector.elements['tracker'])
@@ -199,10 +224,12 @@ class Simulator(object):
         return smeared
     
     def propagate_muon(self, ptc):
+        pdebug.write("Propogate Muon\n")
         self.propagate(ptc)
         return 
     
     def propagate_electron(self, ptc):
+        pdebug.write("Propogate Electron\n")
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
@@ -264,7 +291,7 @@ if __name__ == '__main__':
     display_on = True
     detector = cms
 
-    logging.basicConfig(level='INFO')
+    logging.basicConfig(level='WARNING')
     logger = logging.getLogger('Simulator')
     logger.addHandler( logging.StreamHandler(sys.stdout) )
     

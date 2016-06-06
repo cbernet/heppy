@@ -7,7 +7,7 @@ import  math
 
 
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
 #import heppy.papas.random as  random
@@ -23,15 +23,47 @@ comp = cfg.Component(
 )
 selectedComponents = [comp]
 
+#from heppy.analyzers.AliceTestGun import Gun
+#source = cfg.Analyzer(
+    #Gun,
+    #pdgid = 211,
+    #thetamin = -1.5,
+    #thetamax = 1.5,
+    #ptmin = 0.1,
+    #ptmax = 10,
+    #flat_pt = True,
+#)
+
+#from heppy.analyzers.AliceTestGun import Gun
+#source = cfg.Analyzer(
+    #Gun,
+    #pdgid = 22,
+    #thetamin = -1.5,
+    #thetamax = 1.5,
+    #ptmin = 0.1,
+    #ptmax = 10,
+    #flat_pt = True,
+#)
 
 from heppy.analyzers.AliceTestGun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 211,
-    theta = 0.9, 
-    phi = -0.19, 
-    energy = 47.2
+    pdgid = 130,
+    thetamin = -1.5,
+    thetamax = 1.5,
+    ptmin = 0.1,
+    ptmax = 10,
+    flat_pt = True,
 )
+
+#from heppy.analyzers.AliceTestGun import Gun
+#source = cfg.Analyzer(
+    #Gun,
+    #pdgid = 211,
+    #theta = 0.9, 
+    #phi = -0.19, 
+    #energy = 47.2
+#)
 
 
 from heppy.analyzers.Papas import Papas
@@ -53,10 +85,7 @@ sequence = cfg.Sequence( [
     source,
     papas,
     ] )
-if make_tree:
-    from jet_tree_cff import jet_tree_sequence
-    sequence.extend( jet_tree_sequence('gen_particles_stable', 
-                                       'particles') ) 
+
 
 
 from ROOT import gSystem
@@ -77,6 +106,7 @@ if __name__ == '__main__':
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
+        loop.write()
         if display:
             display.draw()
 
@@ -103,8 +133,8 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        #for j in range(10000) :
-        process(iev)
+        for j in range(10) :
+            process(iev)
         pass
         #process(iev) #alice_debug
         #process(iev) #alice_debug

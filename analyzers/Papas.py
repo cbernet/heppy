@@ -69,7 +69,7 @@ class Papas(Analyzer):
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        self.simulator.simulate( gen_particles )
+        self.simulator.simulate( gen_particles, False ) #TODO Alice undo
         pfsim_particles = self.simulator.ptcs
         if self.is_display:
             particles_for_display = pfsim_particles
@@ -80,7 +80,7 @@ class Papas(Analyzer):
                                    layer=1)
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)
-        particles = sorted( self.simulator.particles,
-                            key = lambda ptc: ptc.e(), reverse=True)
+        #TODO undo Alice particles = sorted( self.simulator.particles,
+        #                    key = lambda ptc: ptc.e(), reverse=True)
         setattr(event, self.cfg_ana.sim_particles, simparticles)
-        setattr(event, self.cfg_ana.rec_particles, particles)
+        #setattr(event, self.cfg_ana.rec_particles, particles)

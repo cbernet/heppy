@@ -39,7 +39,13 @@ class PFObject(object):
 
     def __repr__(self):
         return str(self)
-
+    
+    def __str__(self):
+        return '{classname} :{pretty:9}: {info}'.format(
+                    classname = self.__class__.__name__,
+                    pretty = Identifier.pretty(self.uniqueid), 
+                    info = self.info())
+                       
 
 class Cluster(PFObject):
 
@@ -62,7 +68,7 @@ class Cluster(PFObject):
         self.particle = particle
         self.subclusters = [self]
         # self.absorbed = []
-        logging.debug(self.__str__)
+        
         
 
     def set_size(self, value):
@@ -160,11 +166,8 @@ class Cluster(PFObject):
     #         self.pt = value * self.position.Unit().Perp()
     #     self.__dict__[name] = value
 #AJR added \n need to remove
-    def __str__(self):
-        return '{classname:15}:uid={uniqueid}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            classname = self.__class__.__name__,
-            uniqueid = self.uniqueid,
-            layer = self.layer,
+    def info(self):
+        return '{energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             energy = self.energy,
             theta = math.pi/2. - self.position.Theta(),
             phi = self.position.Phi()
@@ -214,13 +217,11 @@ class Track(PFObject):
         self.path = path
         self.particle = particle
         self.layer = 'tracker'
-        logging.debug(self.__str__)
+        
         
 
-    def __str__(self):
-        return '{classname:15}:uid={uniqueid}: {e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            classname = self.__class__.__name__,
-            uniqueid = self.uniqueid,
+    def info(self):
+        return '{e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             pt = self.pt,
             e = self.energy, 
             theta = math.pi/2. - self.p3.Theta(),
@@ -243,7 +244,7 @@ class Particle(BaseParticle):
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
-        self.track = Track(self.p3(), self.q(), self.path)
+        self.track = None # Alice Experiment Track(self.p3(), self.q(), self.path)
         self.clusters_smeared = dict()
         self.track_smeared = None  
   
@@ -266,10 +267,11 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
-            self.track = Track(self.p3(), self.q(), self.path)
+            if self.q():
+                self.track = Track(self.p3(), self.q(), self.path)
     
-    def __str__(self):
-        tmp = '{className}:uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
+    def info(self):
+        tmp = 'pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
         p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
             pt = self.pt(),
             e = self.e(),
@@ -279,8 +281,6 @@ class Particle(BaseParticle):
             m = self.m()  ) 
             
         return tmp.format(
-            className = self.__class__.__name__,
-            uniqueid = self.uniqueid,
             pdgid = self.pdgid(),
             status = self.status(),
             q = self.q(),
@@ -288,7 +288,15 @@ class Particle(BaseParticle):
                     
         )
     
-
+    def __repr__(self):
+        return str(self)
+        
+    def __str__(self):
+        return '{classname} :{pretty:9}: {info}'.format(
+            classname = self.__class__.__name__,
+            pretty = Identifier.pretty(self.uniqueid), 
+            info = self.info())   
+    
 
 class Reconstructed_Particle(Particle):
     '''  A reconstruceted Particle is just like a particle but has a reconstructed particle uniqueid
