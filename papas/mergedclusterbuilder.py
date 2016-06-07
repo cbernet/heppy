@@ -3,6 +3,9 @@ from heppy.papas.graphtools.graphbuilder import GraphBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfobjects import MergedCluster
+from heppy.papas.data.identifier import Identifier
+from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+
 
 class MergedClusterBuilder(GraphBuilder):
     ''' MergingBlockBuilder takes particle flow elements of one cluster type eg ecal_in
@@ -63,28 +66,23 @@ class MergedClusterBuilder(GraphBuilder):
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs:
-            if len(subgraphids)==1 : 
-                #no overlapping cluster so no merging needed
-                self.merged[subgraphids[0]] = self.clusters[subgraphids[0]]
-            else: 
-                #make a merged "supercluster" and then add each of the linked clusters into it                
-                supercluster = None
+            #make a mergecluster based on the first cluster
+            id =  subgraphids[0] # first id in list
+            #make a merged cluster based on the first cluster and create a new Id for it.
+            supercluster = MergedCluster(self.clusters[id]) # Identifier.make_id(Identifier.get_type(id)));
+            self.merged[supercluster.uniqueid] = supercluster;
+            if (self.history_nodes) : 
+                #update the history
+                snode = Node(supercluster.uniqueid)
+                self.history_nodes[supercluster.uniqueid] = snode
+                self.history_nodes[id].add_child(snode)
+            if len(subgraphids)>1 : 
+                #add each of the linked clusters into it                
                 for elemid in subgraphids :
-                    thing = self.clusters[elemid]
-                    if supercluster is None:
-                        supercluster = MergedCluster(thing)
-                        self.merged[supercluster.uniqueid] = supercluster
-                        
-                        if (self.history_nodes): 
-                            #update the history
-                            snode = Node(supercluster.uniqueid)
-                            self.history_nodes[supercluster.uniqueid] = snode
-                            #now add in the links between the block elements and the block into the history_nodes
-                            self.history_nodes[elemid].add_child(snode)
-                        continue
-                    else: 
+                    if elemid != id : # we have already handled this one
+                        thing = self.clusters[elemid]
+                        #now add in the links between the block elements and the block into the history_nodes
+                        self.history_nodes[elemid].add_child(snode)
                         supercluster += thing
-                        if (self.history_nodes):
-                            self.history_nodes[elemid].add_child(snode)  
-                        
+            pdebug.write(str('Made {}\n'.format(supercluster)))
 
