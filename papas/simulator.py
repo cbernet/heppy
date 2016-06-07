@@ -76,7 +76,7 @@ class Simulator(object):
                            ptc.points[cylname],
                            size,
                            cylname, ptc)
-        if Identifier.pretty(cluster.uniqueid) == "h113" :
+        if Identifier.pretty(cluster.uniqueid) == "h3498" :
             pass        
         ptc.clusters[cylname] = cluster
         pdebug.write("Made " + cluster.__str__() + "\n")

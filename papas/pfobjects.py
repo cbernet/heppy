@@ -264,7 +264,7 @@ class Particle(BaseParticle):
         else:
             return False
         
-    def set_path(self, path, option=None):
+    def set_path(self, path, option=None): 
         if option == 'w' or self.path is None:
             self.path = path
             if self.q():
@@ -298,12 +298,20 @@ class Particle(BaseParticle):
             info = self.info())   
     
 
-class Reconstructed_Particle(Particle):
-    '''  A reconstruceted Particle is just like a particle but has a reconstructed particle uniqueid
+class ReconstructedParticle(Particle):
+    '''  A reconstructed Particle is just like a particle but has a reconstructed particle uniqueid
     '''
     def __init__(self, tlv, vertex, charge, pdgid=None):
-        super(Reconstructed_Particle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)
-       
+        super(ReconstructedParticle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)
+    
+    def set_path(self, path, option = None, track = None): #Alice experiement to try to avoid new tracks for rec particles
+        if option == 'w' or self.path is None:
+            self.path = path
+            if self.q() and  track == None:
+                    self.track = Track(self.p3(), self.q(), self.path)
+        if track !=  None:
+            self.track = track
+                
   
 if __name__ == '__main__':
     from ROOT import TVector3

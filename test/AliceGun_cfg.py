@@ -23,16 +23,16 @@ comp = cfg.Component(
 )
 selectedComponents = [comp]
 
-#from heppy.analyzers.AliceTestGun import Gun
-#source = cfg.Analyzer(
-    #Gun,
-    #pdgid = 211,
-    #thetamin = -1.5,
-    #thetamax = 1.5,
-    #ptmin = 0.1,
-    #ptmax = 10,
-    #flat_pt = True,
-#)
+from heppy.analyzers.AliceTestGun import Gun
+source = cfg.Analyzer(
+    Gun,
+    pdgid = 211,
+    thetamin = -1.5,
+    thetamax = 1.5,
+    ptmin = 0.1,
+    ptmax = 10,
+    flat_pt = True,
+)
 
 #from heppy.analyzers.AliceTestGun import Gun
 #source = cfg.Analyzer(
@@ -45,16 +45,16 @@ selectedComponents = [comp]
     #flat_pt = True,
 #)
 
-from heppy.analyzers.AliceTestGun import Gun
-source = cfg.Analyzer(
-    Gun,
-    pdgid = 130,
-    thetamin = -1.5,
-    thetamax = 1.5,
-    ptmin = 0.1,
-    ptmax = 10,
-    flat_pt = True,
-)
+#from heppy.analyzers.AliceTestGun import Gun
+#source = cfg.Analyzer(
+    #Gun,
+    #pdgid = 130,
+    #thetamin = -1.5,
+    #thetamax = 1.5,
+    #ptmin = 0.1,
+    #ptmax = 10,
+    #flat_pt = True,
+#)
 
 #from heppy.analyzers.AliceTestGun import Gun
 #source = cfg.Analyzer(
@@ -66,17 +66,60 @@ source = cfg.Analyzer(
 #)
 
 
+#from heppy.analyzers.Papas import Papas
+#from heppy.papas.detectors.CMS import CMS
+#papas = cfg.Analyzer(
+    #Papas,
+    #instance_label = 'papas',
+    #detector = CMS(),
+    #gen_particles = 'gen_particles_stable',
+    #sim_particles = 'sim_particles',
+    #rec_particles = 'particles',
+    #display = False,
+    #verbose = True
+#)
+
+
+from heppy.analyzers.PapasSim import PapasSim
 from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
-    Papas,
+    PapasSim,
     instance_label = 'papas',
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    rec_particles = 'particles',
+    merged_ecals = 'ecal_clusters',
+    merged_hcals = 'hcal_clusters',
+    tracks = 'tracks', 
+    output_history = 'history_nodes', 
+    display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
+)
+
+
+# group the clusters, tracks from simulation into connected blocks ready for reconstruction
+from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
+pfblocks = cfg.Analyzer(
+    PapasPFBlockBuilder,
+    tracks = 'tracks', 
+    ecals = 'ecal_clusters', 
+    hcals = 'hcal_clusters', 
+    history = 'history_nodes',  
+    output_blocks = 'reconstruction_blocks'
+)
+
+#reconstruct particles from blocks
+from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
+pfreconstruct = cfg.Analyzer(
+    PapasPFReconstructor,
+    instance_label = 'papas_PFreconstruction', 
+    detector = CMS(),
+    input_blocks = 'reconstruction_blocks',
+    history = 'history_nodes',     
+    output_particles_dict = 'particles_dict', 
+    output_particles_list = 'particles_list'
 )
 
 # definition of a sequence of analyzers,
@@ -84,6 +127,8 @@ papas = cfg.Analyzer(
 sequence = cfg.Sequence( [
     source,
     papas,
+    pfblocks,
+    pfreconstruct
     ] )
 
 

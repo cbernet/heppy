@@ -120,7 +120,16 @@ class PapasSim(Analyzer):
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         self.simulator.simulate( gen_particles, self.do_reconstruct)
         pfsim_particles = self.simulator.ptcs
-        if self.is_display:
+        
+        event.tracks = dict()
+        event.ecal_clusters = dict()
+        event.hcal_clusters = dict()
+        
+        if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
+            return
+            
+            
+        if self.is_display  :
             self.display.register( GTrajectories(pfsim_particles),
                                    layer=1)
         #these are the particles before simulation        
@@ -140,14 +149,12 @@ class PapasSim(Analyzer):
                 setattr(event, self.recname, particles)          
             #if hasattr(self, 'rec_noleptonsname')  :
             #    setattr(event, self.rec_noleptonsname, origparticles)
-                
+                    
 
         #extract the tracks and clusters (extraction is prior to Colins merging step)
-        event.tracks = dict()
-        event.ecal_clusters = dict()
-        event.hcal_clusters = dict()
         
         
+
         if "tracker" in self.simulator.pfinput.elements :
             for element in self.simulator.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element

@@ -3,7 +3,8 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
-from heppy.papas.pfobjects import Reconstructed_Particle
+from heppy.papas.pfobjects import ReconstructedParticle
+from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
 
 from ROOT import TVector3, TLorentzVector
 import math
@@ -116,9 +117,10 @@ class PFReconstructor(object):
       
     def _sorted_block_keys(self) :
         #sort blocks (1) by number of elements (2) by mix of ecal, hcal , tracks (the shortname will look like "H1T2" for a block
-        #with one cluster and two tracks)        
-        return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
-        
+        #with one cluster and two tracks)
+        #Alice temporary to match cpp
+        #return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
+        return self.blocks.keys();
             
     def simplify_blocks(self, block, history_nodes=None):
         
@@ -175,6 +177,8 @@ class PFReconstructor(object):
         '''
         particles = dict()
         ids = block.element_uniqueids
+        #ids =  sorted( ids,  key = lambda id: Identifier.type_short_code ) 
+        
         self.locked = dict()
         for id in ids:
             self.locked[id] = False
@@ -359,7 +363,7 @@ class PFReconstructor(object):
                         self.insert_particle(block, self.reconstruct_cluster(hcal, 'ecal_in',
                                                                   ecal_energy))
 
-        else: # case whether there are no tracks make a neutral hadron for each hcal
+        else: # case where there are no tracks make a neutral hadron for each hcal
               # note that hcal-ecal links have been removed so hcal should only be linked to 
               # other hcals
                  
@@ -393,13 +397,16 @@ class PFReconstructor(object):
             momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
-        particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
+        particle = ReconstructedParticle(p4, vertex, charge, pdg_id)
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
                                             # nb this only is problem if the cluster and the assigned layer are different
         particle.set_path(path)
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
+
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
+        
+        pdebug.write(str('Made {} from {}\n'.format(particle,  cluster)))
         if self.debugprint:
             print "made particle from cluster ",pdg_id,  cluster, particle        
         return particle
@@ -412,10 +419,11 @@ class PFReconstructor(object):
         mass, charge = particle_data[pdg_id]
         p4 = TLorentzVector()
         p4.SetVectM(track.p3, mass)
-        particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
-        particle.set_path(track.path)
+        particle = ReconstructedParticle(p4, vertex, charge, pdg_id)
+        particle.set_path(track.path, track=track)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
+        pdebug.write(str('Made {} from {}\n'.format(particle,  track)))
         if self.debugprint:
             print "made particle from track ", pdg_id, track, particle        
         return particle
