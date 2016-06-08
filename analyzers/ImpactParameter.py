@@ -14,6 +14,7 @@ class ImpactParameter(Analyzer):
     def process(self, event):
         assumed_vertex = TVector3(0, 0, 0)
         jets = getattr(event, self.cfg_ana.jets)
+        enable_matter_scattering = self.cfg_ana.enable_matter_scattering
         for jet in jets:
             b_LL = 0
             ptcs_b_LL = []
@@ -39,15 +40,16 @@ class ImpactParameter(Analyzer):
                         b_LL += ptc.path.like_b
                         
                     ptc_IP_signif = 0
-                    if hasattr(ptc.path, 'points') == True :
-                        if 'beampipe_in' in ptc.path.points:
-                            ptc.path.compute_theta_0()
-                            ptc.path.compute_IP_signif(ptc.path.IP,
-                                                       ptc.path.theta_0,
-                                                       ptc.path.points['beampipe_in'])
-                            ptc_IP_signif = ptc.path.IP_signif
-                    ptcs_IP_signif.append(abs(ptc_IP_signif))
-                
+                    if enable_matter_scattering and hasattr(ptc.path, 'points') == True and 'beampipe_in' in ptc.path.points:
+                        ptc.path.compute_theta_0()
+                        ptc.path.compute_IP_signif(ptc.path.IP,
+                                                   ptc.path.theta_0,
+                                                   ptc.path.points['beampipe_in'])
+                    else :
+                        ptc.path.compute_IP_signif(ptc.path.IP, None, None)
+                        
+                    ptcs_IP_signif.append(abs(ptc.path.IP_signif))
+            
             ptcs_IP_signif.sort(reverse=True)
             if len(ptcs_IP_signif) < 2:
                 TCHE = -99

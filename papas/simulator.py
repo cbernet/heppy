@@ -135,7 +135,7 @@ class Simulator(object):
     def simulate_neutrino(self, ptc):
         self.propagate(ptc)
         
-    def simulate_hadron(self, ptc):
+    def simulate_hadron(self, ptc, enable_matter_scattering):
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
@@ -150,13 +150,14 @@ class Simulator(object):
                                            beampipe.volume.inner,
                                            self.detector.elements['field'].magnitude)
         
-        # do scattering
-        mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
-        
-        #re-propagate
-        self.propagator(ptc).propagate_one(ptc,
-                                           beampipe.volume.inner,
-                                           self.detector.elements['field'].magnitude)
+        if enable_matter_scattering :
+            # do scattering
+            mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
+            
+            #re-propagate
+            self.propagator(ptc).propagate_one(ptc,
+                                               beampipe.volume.inner,
+                                               self.detector.elements['field'].magnitude)
                                            
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
@@ -209,7 +210,7 @@ class Simulator(object):
         smeared = copy.deepcopy(ptc)
         return smeared
     
-    def simulate(self, ptcs):
+    def simulate(self, ptcs, enable_matter_scattering):
         self.reset()
         self.ptcs = []
         smeared = []
@@ -231,7 +232,7 @@ class Simulator(object):
                 if ptc.q() and ptc.pt()<0.2:
                     # to avoid numerical problems in propagation
                     continue
-                self.simulate_hadron(ptc)
+                self.simulate_hadron(ptc, enable_matter_scattering)
             self.ptcs.append(ptc)
         
         

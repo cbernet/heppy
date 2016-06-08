@@ -141,12 +141,24 @@ class Helix(Path):
         self.xX_0 = 1.0*x/X_0
     
     def compute_IP_signif(self, IP, theta_0, scat_point):
-        #point_bp = self.points['beampipe_in']
-        d_sq = (scat_point.X()-self.vertex_IP.X())**2 \
-                +(scat_point.Y()-self.vertex_IP.Y())**2\
-                +(scat_point.Z()-self.vertex_IP.Z())**2
-        # for the IP significance : estimation 
-        self.IP_signif = IP*1.0/(d_sq**0.5*math.tan(theta_0))
+        # ! are we sure sigma_IP_due_IP_algo_precise isnt overestimated ?
+        delta_t = 1e-15
+        delta_s = delta_t * self.speed *1.0
+        sigma_s = 0.68 * delta_s
+        sigma_IP_due_IP_algo_precise = IP*1.0/(math.cos(math.atan(sigma_s/IP)))-IP
+        
+        if theta_0 == None or scat_point == None:
+            self.IP_signif = IP*1.0/sigma_IP_due_IP_algo_precise
+        else :        
+            phi_t_scat = self.phi( scat_point.X(), scat_point.Y())
+            t_scat = self.time_at_phi(phi_t_scat)
+            fly_distance = self.speed * 1.0 * t_scat
+            # for the IP significance : estimation 
+            sigma_IP_due_scattering = fly_distance*math.tan(theta_0)
+            
+            sigma_IP_tot = ( sigma_IP_due_IP_algo_precise**2 + sigma_IP_due_scattering**2 )**0.5
+            
+            self.IP_signif = IP*1.0/sigma_IP_tot
         
     
     def compute_new_dir(self):
