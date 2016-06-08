@@ -33,6 +33,10 @@ class Display(object):
         for view in self.views.values():
             view.clear()
 
+    def zoom(self, xmin, xmax, ymin, ymax):
+        for view in self.views.values():
+            view.zoom(xmin, xmax, ymin, ymax)
+
     def unzoom(self):
         for view in self.views.values():
             view.unzoom()

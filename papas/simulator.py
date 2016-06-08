@@ -1,6 +1,7 @@
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
+import heppy.papas.multiple_scattering as mscat
 
 from pfalgo.sequence import PFSequence
 import random
@@ -138,9 +139,25 @@ class Simulator(object):
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
+        #implement beam pipe scattering
+        
         ecal = self.detector.elements['ecal']
-        hcal = self.detector.elements['hcal']        
+        hcal = self.detector.elements['hcal']
+        beampipe = self.detector.elements['beampipe']        
         frac_ecal = 0.
+        
+        self.propagator(ptc).propagate_one(ptc,
+                                           beampipe.volume.inner,
+                                           self.detector.elements['field'].magnitude)
+        
+        # do scattering
+        mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
+        
+        #re-propagate
+        self.propagator(ptc).propagate_one(ptc,
+                                           beampipe.volume.inner,
+                                           self.detector.elements['field'].magnitude)
+                                           
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)

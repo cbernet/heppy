@@ -29,16 +29,21 @@ def fillP4( tree, pName, p4 ):
 def bookParticle( tree, pName ):
     var(tree, '{pName}_pdgid'.format(pName=pName))
     var(tree, '{pName}_ip'.format(pName=pName))
+    var(tree, '{pName}_ip_signif'.format(pName=pName))
     bookP4(tree, pName)
     
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid() )
     ip = -99
+    ip_signif = -99
     if hasattr(particle, 'path'):
         path = particle.path
         if hasattr(path, 'IP'):
             ip = path.IP
+        if hasattr(path, 'IP_signif'):
+            ip_signif = path.IP_signif
     fill(tree, '{pName}_ip'.format(pName=pName), ip )
+    fill(tree, '{pName}_ip_signif'.format(pName=pName), ip_signif )
     fillP4(tree, pName, particle )
 
 
@@ -75,13 +80,23 @@ def bookJet( tree, pName ):
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
     var(tree, '{pName}_b_LL'.format(pName=pName))
+    var(tree, '{pName}_TCHE'.format(pName=pName))
+    var(tree, '{pName}_TCHP'.format(pName=pName))
 
 def fillJet( tree, pName, jet ):
     fillP4(tree, pName, jet )
     if jet.tags.get('b_LL', None) is not None:
         fill(tree, '{pName}_b_LL'.format(pName=pName), jet.tags.get('b_LL', None))
     else:
-        fill(tree, '{pName}_b_LL'.format(pName=pName), -99)
+        fill(tree, '{pName}_TCHE'.format(pName=pName), -99)
+    if jet.tags.get('TCHE', None) is not None:
+        fill(tree, '{pName}_TCHE'.format(pName=pName), jet.tags.get('TCHE', None))
+    else:
+        fill(tree, '{pName}_TCHE'.format(pName=pName), -99)
+    if jet.tags.get('TCHP', None) is not None:
+        fill(tree, '{pName}_TCHP'.format(pName=pName), jet.tags.get('TCHP', None))
+    else:
+        fill(tree, '{pName}_TCHP'.format(pName=pName), -99)
     for pdgid in pdgids:
         component = jet.constituents.get(pdgid, None)
         if component is not None:

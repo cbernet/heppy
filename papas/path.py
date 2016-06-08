@@ -1,10 +1,11 @@
 import math
 from scipy import constants
-from ROOT import TVector3
+from ROOT import TVector3, TLorentzVector
 from heppy.utils.deltar import deltaPhi
 from collections import OrderedDict
 import scipy.optimize as opti # need to compute impact parameters
 from numpy import sign
+import random as random
 
 class Path(object):
     '''Path followed by a particle in 3D space. 
@@ -121,20 +122,62 @@ class Helix(Path):
         self.closest_t = minim_answer[1]
         vector_IP = self.point_at_time(minim_answer[1]) - vertex
         Pj = jet.p4().Vect().Unit()
-        #Ppart = self.p4.Vect().Unit()
-        #w, t = self.omega, minim_answer[1]
-        #Pt = TVector3(self.v_over_omega.X()*w*math.cos(w*t)\
-        #             +self.v_over_omega.Y()*w*math.sin(w*t),\
-        #              self.v_over_omega.Y()*w*math.cos(w*t)\
-        #             -self.v_over_omega.X()*w*math.sin(w*t),\
-        #             self.vz())
         signIP  = vector_IP.Dot(Pj)
-        #signIP2 = Pj.Cross(Pt.Unit()).Dot(Pt.Unit().Cross(-vector_IP))
-        #self.sign_verif = sign(signIP*signIP2)
         self.IP = minim_answer[4]**(1.0/2)*sign(signIP)
-        #self.closest=TVector3(self.fx(t), self.fy(t), self.fz(t))
+       
+    def compute_theta_0(self):
+        '''Computes the square root of the variance, sigma, of the multiple
+        scattering angle due to matter interactions, using the formula in PDG
+        paper. The values for the beam pipe are set'''
+        # for the beam pipe,  X_0 = 1.72e-2, width = 1.5e-3
+        P = self.p4.Vect().Dot(self.udir)
+        PT= self.p4.Perp()
+        x = abs( 1.5e-3 * 1.0* P/PT)
+        X_0 = 1.72e-2
+        # distance and radiation length, linked to the dectector properties
+        # and the particle's direction
+        self.theta_0 = 1.0*13.6e-3/(1.0*self.speed/constants.c*P)
+        self.theta_0 *= abs(self.charge)*(1.0*x/X_0)**(1.0/2)*(1+0.038*math.log(1.0*x/X_0))
+        self.xX_0 = 1.0*x/X_0
+    
+    def compute_IP_signif(self, IP, theta_0, scat_point):
+        #point_bp = self.points['beampipe_in']
+        d_sq = (scat_point.X()-self.vertex_IP.X())**2 \
+                +(scat_point.Y()-self.vertex_IP.Y())**2\
+                +(scat_point.Z()-self.vertex_IP.Z())**2
+        # for the IP significance : estimation 
+        self.IP_signif = IP*1.0/(d_sq**0.5*math.tan(theta_0))
+        
+    
+    def compute_new_dir(self):
+        '''Computes the new p4 vector due to multiple scattering while
+        interacting with matter in the beam pipe surface'''
+        self.compute_theta_0()
+        theta = constants.pi
+        #random.gauss(0,self.theta_0)
+        phi = constants.pi*random.random()
+        p4i = self.p4
+        #vector to be scattered
+        p3i = p4i.Vect()
+        
+        e_z = TVector3(0,0,1)
+        
+        #first rotation : theta, in the xy plane
+        a = p3i.Cross(e_z)
+        #this may change the sign, but randomly, as the sign of theta already is
+        p3 = p3i
+        p3.Rotate(theta,a)
+        
+        #second rotation : phi (isotropic around initial direction)
+        p3.Rotate(phi,p3i.Unit())
+        p4scattered = TLorentzVector(p3.X(), p3.Y(), p3.Z(),p4i.T())
+        
+        #self.p4i = p4i
+        self.p4 = p4scattered
+        #return p4scattered()
         
         
+            
  #______________________________________________________________________________    
 
     # def deltat(self, path_length):
