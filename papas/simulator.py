@@ -245,12 +245,14 @@ class Simulator(object):
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                self.propagate_electron(ptc)
+                pass
+                #TEMPORARY TODO self.propagate_electron(ptc)
                 #smeared_ptc = self.smear_electron(ptc)
                 #smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                self.propagate_muon(ptc)
+                pass
+                #TEMPORARY TODO self.propagate_muon(ptc)
                 #smeared_ptc = self.smear_muon(ptc)
                 #smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
