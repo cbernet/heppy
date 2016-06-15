@@ -66,7 +66,8 @@ class Reader(Analyzer):
             gen_particles = map(Particle, store.get(self.cfg_ana.gen_particles))
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,
-                                          reverse=True )
+                                          reverse=True )            
+            
             # event.gen_particles_stable = [ptc for ptc in event.gen_particles
             #                               if ptc.status()==1 and 
             #                               not math.isnan(ptc.e()) and

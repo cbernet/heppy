@@ -21,7 +21,7 @@ class PhysicsOutput(object) :
     def write(cls, text):
         if cls._is_in_use :
             cls._file.write(text)
-            print "PB: " +  text
+            #print "PB: " +  text
         pass
 
     

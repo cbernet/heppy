@@ -272,6 +272,10 @@ class Particle(BaseParticle):
     
     def info(self):
         tmp = 'pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
+        #needed for now to get match with C++
+        pid=self.pdgid()      
+        if self.q() == 0 and pid < 0:
+            pid = -pid        
         p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
             pt = self.pt(),
             e = self.e(),
@@ -281,7 +285,8 @@ class Particle(BaseParticle):
             m = self.m()  ) 
             
         return tmp.format(
-            pdgid = self.pdgid(),
+            pdgid =pid,
+            #pdgid = self.pdgid(),
             status = self.status(),
             q = self.q(),
             p4 = p4

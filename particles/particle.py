@@ -35,6 +35,7 @@ class Particle(P4):
     
     def info(self):
         tmp = 'pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
+             
         return tmp.format(
             pdgid = self.pdgid(),
             status = self.status(),

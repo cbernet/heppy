@@ -26,8 +26,9 @@ class PFInput(object):
                 self.elements.setdefault(key, []).append(cluster)
             if ptc.track_smeared:
                 self.elements.setdefault('tracker', []).append(ptc.track_smeared)
-        for elems in self.elements.values():
-            elems.sort(key=operator.attrgetter('energy'), reverse=True)
+                #Alice disabled sort
+        #for elems in self.elements.values():
+        #    elems.sort(key=operator.attrgetter('energy'), reverse=True)
 
     def element_list(self):
         thelist = []

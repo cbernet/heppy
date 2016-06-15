@@ -2,6 +2,8 @@ import itertools
 from blockbuilder import BlockBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
+from heppy.papas.data.identifier import Identifier
+from collections import OrderedDict
 
 class PFBlockBuilder(BlockBuilder):
     ''' PFBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
@@ -58,18 +60,26 @@ class PFBlockBuilder(BlockBuilder):
         # collate all the ids of tracks and clusters and, if needed, make history nodes
         uniqueids = []
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
+        uniqueids = sorted(uniqueids)
         
         self.history_nodes = history_nodes
         if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
-        edges = dict()
-        for id1, id2 in itertools.combinations(uniqueids,2):
-            edge=self._make_edge(id1,id2, ruler)
-            #the edge object is added into the edges dictionary
-            edges[edge.key] = edge
-      
+        edges = OrderedDict()
+        #for id1, id2 in itertools.combinations(uniqueids,2):
+        for id1 in uniqueids:
+            for  id2 in uniqueids:
+                if id1 < id2 :      
+                    if Identifier.pretty(id1)=="e299" or Identifier.pretty(id2)=="e299":
+                        if Identifier.pretty(id1)=="t30" or Identifier.pretty(id2)=="t30":
+                            print Identifier.pretty(id1) + " : " + Identifier.pretty(id2)
+                            pass
+                    edge=self._make_edge(id1,id2, ruler)
+                    #the edge object is added into the edges dictionary
+                    edges[edge.key] = edge
+        
         #use the underlying BlockBuilder to construct the blocks        
         super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes, pfevent)
 

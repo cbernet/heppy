@@ -33,16 +33,16 @@ class Identifier(long):
     @classmethod    
     def make_id(cls, type):
         x = cls._id.next()
-        value = type <<40
+        value = type <<32
         return value | x
    
     @staticmethod      
     def get_unique_id( ident):
-        return ident & 0b1111111111111111111111111111111111111111
+        return ident & 0b11111111111111111111111111111111
     
     @staticmethod  
     def get_type ( ident):
-        return ident >> 40
+        return ident >> 32
     
     @staticmethod  
     def is_ecal ( ident):

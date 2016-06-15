@@ -5,7 +5,7 @@ from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import ReconstructedParticle
 from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
-
+from heppy.papas.data.identifier import Identifier
 from ROOT import TVector3, TLorentzVector
 import math
 import pprint
@@ -105,6 +105,7 @@ class PFReconstructor(object):
                 #ALICE debugging
                 #if len(block.element_uniqueids)<6:
                 #    continue
+                pdebug.write('Processing {}'.format(block))
                 self.reconstruct_block(block)                
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
@@ -120,7 +121,7 @@ class PFReconstructor(object):
         #with one cluster and two tracks)
         #Alice temporary to match cpp
         #return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
-        return self.blocks.keys();
+        return sorted(self.blocks.keys());
             
     def simplify_blocks(self, block, history_nodes=None):
         
@@ -147,6 +148,8 @@ class PFReconstructor(object):
         #   - for ecals unlink hcals
         to_unlink = []        
         for id in ids :
+            if id==8589934764 :
+                pass
             if Identifier.is_track(id):
                 linked = block.linked_edges(id,"hcal_track") # NB already sorted from small to large distance
                 if linked!=None and len(linked)>1 :
@@ -303,6 +306,8 @@ class PFReconstructor(object):
                 -> each hcal is treated using rules above
         '''
         
+        if Identifier.pretty(hcalid) == "h634" :
+            pass
         
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
@@ -310,7 +315,9 @@ class PFReconstructor(object):
         hcal =block.pfevent.hcal_clusters[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
-        trackids =    block.sort_distance_energy(hcalid, block.linked_ids(hcalid, "hcal_track") )
+        trackids =    sorted( block.linked_ids(hcalid, "hcal_track") )
+        #alice temporarily disabled
+        #trackids =    block.sort_distance_energy(hcalid, trackids )
         for trackid in  trackids:
             tracks.append(block.pfevent.tracks[trackid])
             for ecalid in block.linked_ids(trackid, "ecal_track"):
@@ -431,7 +438,7 @@ class PFReconstructor(object):
 
     def __str__(self):
         theStr = ['New Rec Particles:']
-        theStr.extend( map(str, self.particles))
+        theStr.extend( map(str, self.particles.itervalues()))
         theStr.append('Unused:')
         if len(self.unused)==0:
             theStr.append('None')

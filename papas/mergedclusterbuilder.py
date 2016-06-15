@@ -5,7 +5,7 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfobjects import MergedCluster
 from heppy.papas.data.identifier import Identifier
 from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
-
+from collections import OrderedDict 
 
 class MergedClusterBuilder(GraphBuilder):
     ''' MergingBlockBuilder takes particle flow elements of one cluster type eg ecal_in
@@ -42,19 +42,34 @@ class MergedClusterBuilder(GraphBuilder):
         self.clusters = clusters
         
         # the merged clusters will be stored here
-        self.merged = dict()
+        #alice temp for cpp comparison
+        #self.merged = dict()
+        self.merged = OrderedDict()
         # collate ids of clusters
         uniqueids = list(clusters.keys())         
              
-        
-        # compute edges between each pair of nodes
-        edges = dict()
-        for obj1, obj2 in itertools.combinations(clusters.values(),2):
-            link_type, is_linked, distance = ruler(obj1, obj2)
-            edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
-            #the edge object is added into the edges dictionary
-            edges[edge.key] = edge
+        #make the edges match cpp by using a the same approach as cpp
+        ## compute edges between each pair of nodes
+        #
+        #for obj1, obj2 in itertools.combinations(clusters.values(),2):
+            #link_type, is_linked, distance = ruler(obj1, obj2)
+            #edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
+            ##the edge object is added into the edges dictionary
+            #edges[edge.key] = edge
             
+        edges = OrderedDict()    
+        for obj1 in  clusters.values():
+            for obj2 in  clusters.values():
+                if obj1.uniqueid < obj2.uniqueid :
+                    #if Identifier.pretty(obj1.uniqueid)=="e310" or Identifier.pretty(obj2.uniqueid)=="e310":
+                    #    print Identifier.pretty(obj2.uniqueid)
+                    link_type, is_linked, distance = ruler(obj1, obj2)
+                    edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
+                    #pdebug.write(str('      Add Edge {:9} - {:9}\n').format(Identifier.pretty(obj1.uniqueid),Identifier.pretty(obj2.uniqueid)))
+                    
+                    #the edge object is added into the edges dictionary
+                    edges[edge.key] = edge
+                    
         #make the subgraphs of clusters
         super(MergedClusterBuilder, self).__init__(uniqueids,edges)
         
@@ -66,8 +81,14 @@ class MergedClusterBuilder(GraphBuilder):
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs:
+            subgraphids.sort()
+            if len(subgraphids)==5:
+                pass
             #make a mergecluster based on the first cluster
             id =  subgraphids[0] # first id in list
+            if (len(subgraphids)>1):
+                for  sid in subgraphids : 
+                    pdebug.write('Merged Cluster from {}\n'.format(self.clusters[sid]))
             #make a merged cluster based on the first cluster and create a new Id for it.
             supercluster = MergedCluster(self.clusters[id]) # Identifier.make_id(Identifier.get_type(id)));
             self.merged[supercluster.uniqueid] = supercluster;
@@ -84,5 +105,6 @@ class MergedClusterBuilder(GraphBuilder):
                         #now add in the links between the block elements and the block into the history_nodes
                         self.history_nodes[elemid].add_child(snode)
                         supercluster += thing
-            pdebug.write(str('Made {}\n'.format(supercluster)))
+            if (len(subgraphids)>1):
+                pdebug.write(str('Made {}\n'.format(supercluster)))
 

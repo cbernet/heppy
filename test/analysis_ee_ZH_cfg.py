@@ -10,22 +10,23 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
+from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
-#logging.basicConfig(level=logging.WARNING)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
+#logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
 import random
-random.seed(0xdeadbeef)
+#random.seed(0xdeadbeef)
 
 # input definition
 comp = cfg.Component(
     'example',
     files = [
-        'ee_ZH_Zmumu_Hbb.root'
+        '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
@@ -302,6 +303,7 @@ if __name__ == '__main__':
 
     import random
     random.seed(0xdeadbeef)
+    pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
 
     def process(iev=None):
         if iev is None:
@@ -324,7 +326,7 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papas.display = True
+        #alice temp papas.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -336,7 +338,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=10,
+                   nEvents=100,
                    nPrint=1,
                    timeReport=True)
     
@@ -349,8 +351,9 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        pdebug.write(str('Event: {}\n'.format(iev)))
         process(iev)
-        process(iev)
+        #process(iev)
         #process(iev)
     else:
         loop.loop()
