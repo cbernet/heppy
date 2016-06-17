@@ -80,23 +80,40 @@ def bookJet( tree, pName ):
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
     var(tree, '{pName}_b_LL'.format(pName=pName))
-    var(tree, '{pName}_TCHE'.format(pName=pName))
     var(tree, '{pName}_TCHP'.format(pName=pName))
+    var(tree, '{pName}_TCHP_IP'.format(pName=pName))
+    for tagger in ['TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt']:
+        var(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger))
+    for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
+        var(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc))
 
 def fillJet( tree, pName, jet ):
     fillP4(tree, pName, jet )
     if jet.tags.get('b_LL', None) is not None:
         fill(tree, '{pName}_b_LL'.format(pName=pName), jet.tags.get('b_LL', None))
     else:
-        fill(tree, '{pName}_TCHE'.format(pName=pName), -99)
-    if jet.tags.get('TCHE', None) is not None:
-        fill(tree, '{pName}_TCHE'.format(pName=pName), jet.tags.get('TCHE', None))
-    else:
-        fill(tree, '{pName}_TCHE'.format(pName=pName), -99)
+        fill(tree, '{pName}_b_LL'.format(pName=pName), -99)
+    
+    for tagger in ['TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt']:
+        if jet.tags.get(tagger, None) is not None:
+            fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), jet.tags.get(tagger, None))
+        else:
+            fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), -99)
+            
     if jet.tags.get('TCHP', None) is not None:
         fill(tree, '{pName}_TCHP'.format(pName=pName), jet.tags.get('TCHP', None))
     else:
         fill(tree, '{pName}_TCHP'.format(pName=pName), -99)
+    if jet.tags.get('TCHP_IP', None) is not None:
+        fill(tree, '{pName}_TCHP_IP'.format(pName=pName), jet.tags.get('TCHP_IP', None))
+    else:
+        fill(tree, '{pName}_TCHP_IP'.format(pName=pName), -99)
+    
+    for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
+        if jet.tags.get('{ptc}'.format(ptc=ptc), None) is not None:
+            fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), jet.tags.get('{ptc}'.format(ptc=ptc), None))
+        else:
+            fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), -99)
     for pdgid in pdgids:
         component = jet.constituents.get(pdgid, None)
         if component is not None:

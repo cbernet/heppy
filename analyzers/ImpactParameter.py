@@ -1,5 +1,6 @@
 from heppy.framework.analyzer import Analyzer
-from ROOT import TVector3, TFile, TH1F
+from ROOT import TFile, TH1F
+from ROOT import TVector3, TLorentzVector
 from heppy.papas.path import Helix
 import math
 
@@ -18,17 +19,30 @@ class ImpactParameter(Analyzer):
         for jet in jets:
             b_LL = 0
             ptcs_b_LL = []
+            ptcs_pt = []
             ptcs_IP = []
+            ptcs_IPxy = []
+            ptcs_IPz = []
             ptcs_IP_signif = []
+            ptcs_x_at_time_0 = []
+            ptcs_y_at_time_0 = []
+            ptcs_z_at_time_0 = []
             for id, ptcs in jet.constituents.iteritems():
-                if id in [22,130]:
+                if abs(id) in [22,130, 11]:
                     continue
                 for ptc in ptcs :
                     if ptc._charge == 0 :
                         continue
                     ptc.path.compute_IP(assumed_vertex,jet)
+                    ptcs_pt.append(ptc.path.p4.Perp())
                     ptcs_IP.append(ptc.path.IP)
-                    
+                    ptcs_IPxy.append((ptc.path.IPx**2 + ptc.path.IPy**2)**0.5)
+                    ptcs_IPz.append(ptc.path.IPz)
+                    x, y, z = ptc.path.coord_at_time(0)
+                    ptcs_x_at_time_0.append(x)
+                    ptcs_y_at_time_0.append(y)
+                    ptcs_z_at_time_0.append(z)
+
                     if self.tag_jets:
                         ibin = self.ratio.FindBin(ptc.path.IP)
                         lhratio = self.ratio.GetBinContent(ibin)
@@ -48,22 +62,116 @@ class ImpactParameter(Analyzer):
                     else :
                         ptc.path.compute_IP_signif(ptc.path.IP, None, None)
                         
-                    ptcs_IP_signif.append(abs(ptc.path.IP_signif))
+                    ptcs_IP_signif.append((ptc.path.IP_signif))
             
-            ptcs_IP_signif.sort(reverse=True)
+            ptcs_IP_signif_sorted = ptcs_IP_signif
+            ptcs_IP_signif_sorted.sort(reverse=True)
             if len(ptcs_IP_signif) < 2:
                 TCHE = -99
                 TCHP = -99
+                TCHE_IP = -99
+                TCHP_IP = -99
+                TCHE_x = -99
+                TCHE_y = -99
+                TCHE_z = -99
+                TCHE_pt = -99
             if len(ptcs_IP_signif) == 2:
-                TCHE = ptcs_IP_signif[1]
+                TCHE = ptcs_IP_signif_sorted[1]
+                TCHE_IP = ptcs_IP[ptcs_IP_signif.index(TCHE)]
+                TCHE_x = ptcs_x_at_time_0[ptcs_IP_signif.index(TCHE)]
+                TCHE_y = ptcs_y_at_time_0[ptcs_IP_signif.index(TCHE)]
+                TCHE_z = ptcs_z_at_time_0[ptcs_IP_signif.index(TCHE)]
+                TCHE_pt = ptcs_pt[ptcs_IP_signif.index(TCHE)]
                 TCHP = -99
+                TCHP_IP = -99
+                
             if len(ptcs_IP_signif) > 2:
-                TCHE = ptcs_IP_signif[1]
-                TCHP = ptcs_IP_signif[2]
+                tche_index = 1
+                
+                #while ptcs_IP_signif_sorted[tche_index] > 20 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                #    tche_index += 1
+                
+                TCHE = ptcs_IP_signif_sorted[tche_index]
+                
+                while ptcs_pt[ptcs_IP_signif.index(TCHE)] < 1 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                    tche_index += 1
+                    TCHE = ptcs_IP_signif_sorted[tche_index]
+                    
+                while ptcs_IPxy[tche_index] > 0.002 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                    tche_index += 1
+                    TCHE = ptcs_IP_signif_sorted[tche_index]
+                    
+                while ptcs_IPz[tche_index] > 0.17 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                    tche_index += 1
+                    TCHE = ptcs_IP_signif_sorted[tche_index]
+                
+                TCHE_IP = ptcs_IP[ptcs_IP_signif.index(TCHE)]
+                TCHE_x = ptcs_x_at_time_0[ptcs_IP_signif.index(TCHE)]
+                TCHE_y = ptcs_y_at_time_0[ptcs_IP_signif.index(TCHE)]
+                TCHE_z = ptcs_z_at_time_0[ptcs_IP_signif.index(TCHE)]
+                TCHE_pt = ptcs_pt[ptcs_IP_signif.index(TCHE)]
+                TCHP = ptcs_IP_signif_sorted[tche_index+1]
+                TCHP_IP = ptcs_IP[ptcs_IP_signif.index(TCHP)]
+                #while TCHE_x**2 + TCHE_y**2 - (0.05)**2 > 0 and TCHE_index < len(ptcs_IP_signif)-2:
+                #    TCHE_index += 1
+                #    TCHE = ptcs_IP_signif_sorted[TCHE_index]
+                #    TCHE_x = ptcs_x_at_time_0[ptcs_IP_signif.index(TCHE)]
+                #    TCHE_y = ptcs_y_at_time_0[ptcs_IP_signif.index(TCHE)]
+                #if TCHE_x**2 + TCHE_y**2 - (0.05)**2 > 0:
+                #    TCHE = -99
+                #    TCHP = -99
+                #    TCHE_IP = -99
+                #    TCHP_IP = -99
+                #    TCHE_x = -99
+                #    TCHE_y = -99
+                #   TCHE_z = -99
+                #else:
+                #    TCHE_IP = ptcs_IP[ptcs_IP_signif.index(TCHE)]
+                #    TCHE_z = ptcs_z_at_time_0[ptcs_IP_signif.index(TCHE)]
+                #    TCHP = ptcs_IP_signif_sorted[TCHE_index + 1]
+                #    TCHP_IP = ptcs_IP[ptcs_IP_signif.index(TCHP)]
+            #if TCHE > 30 and event.K0s == 0 and event.Kp == 0 and event.L0 == 0 and event.S0 == 0 and event.Sp == 0 and event.Sm == 0:
+            #    import pdb; pdb.set_trace()
             
             jet.tags['b_LL'] = b_LL if self.tag_jets else None
             jet.tags['TCHE'] = TCHE
             jet.tags['TCHP'] = TCHP
+            jet.tags['TCHE_IP'] = TCHE_IP
+            jet.tags['TCHP_IP'] = TCHP_IP
+            jet.tags['TCHE_x'] = TCHE_x
+            jet.tags['TCHE_y'] = TCHE_y
+            jet.tags['TCHE_z'] = TCHE_z
+            jet.tags['TCHE_xy'] = (TCHE_x**2+TCHE_y**2)**0.5
+            jet.tags['TCHE_pt'] = TCHE_pt
+            
+            if hasattr(event, 'K0s') == True :
+                jet.tags['K0s'] = event.K0s
+            else :
+                jet.tags['K0s'] = -99
+            if hasattr(event, 'Kp') == True :
+                jet.tags['Kp'] = event.Kp
+            else :
+                jet.tags['Kp'] = -99
+            if hasattr(event, 'L0') == True :
+                jet.tags['L0'] = event.L0
+            else :
+                jet.tags['L0'] = -99
+            if hasattr(event, 'S0') == True :
+                jet.tags['S0'] = event.S0
+            else :
+                jet.tags['S0'] = -99
+            if hasattr(event, 'Sp') == True :
+                jet.tags['Sp'] = event.Sp
+            else :
+                jet.tags['Sp'] = -99
+            if hasattr(event, 'Sm') == True :
+                jet.tags['Sm'] = event.Sm
+            else :
+                jet.tags['Sm'] = -99
+            if hasattr(event, 'Muons') == True :
+                jet.tags['Muons'] = event.Muons
+            else :
+                jet.tags['Muons'] = -99
         
         
     def beginLoop(self, setup):

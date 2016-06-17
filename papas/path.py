@@ -124,6 +124,9 @@ class Helix(Path):
         Pj = jet.p4().Vect().Unit()
         signIP  = vector_IP.Dot(Pj)
         self.IP = minim_answer[4]**(1.0/2)*sign(signIP)
+        
+        x,y,z = self.coord_at_time(minim_answer[1])
+        self.IPx, self.IPy, self.IPz = (x-vertex.x()),  (y-vertex.y()), (z-vertex.z())
        
     def compute_theta_0(self):
         '''Computes the square root of the variance, sigma, of the multiple
