@@ -269,20 +269,20 @@ sequence = cfg.Sequence( [
     gen_particles_stable,
     papas,
     pfblocks,
-    pfreconstruct,
-    select_leptons,
-    smear_leptons, 
-    merge_particles, 
-    leptons_true,
-    iso_leptons,
-    sel_iso_leptons,
-    zeds,
-    recoil,
-    particles_not_zed,
-    jets,
-    higgses,
-    selection, 
-    tree
+    pfreconstruct
+    #select_leptons,
+    #smear_leptons, 
+    #merge_particles, 
+    #leptons_true,
+    #iso_leptons,
+    #sel_iso_leptons,
+    #zeds,
+    #recoil,
+    #particles_not_zed,
+    #jets,
+    #higgses,
+    #selection, 
+    #tree
     ] )
 
 # Specifics to read FCC events 
@@ -303,7 +303,7 @@ if __name__ == '__main__':
 
     import random
     random.seed(0xdeadbeef)
-    pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
+    #pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
 
     def process(iev=None):
         if iev is None:
@@ -326,7 +326,7 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        #alice temp papas.display = True
+        papas.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -338,7 +338,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=100,
+                   nEvents=1000,
                    nPrint=1,
                    timeReport=True)
     
@@ -353,7 +353,7 @@ if __name__ == '__main__':
     if iev is not None:
         pdebug.write(str('Event: {}\n'.format(iev)))
         process(iev)
-        #process(iev)
+        process(iev)
         #process(iev)
     else:
         loop.loop()

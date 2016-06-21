@@ -1,9 +1,6 @@
 
 from ROOT import gSystem
-#gSystem.Load("libfccphysics-papas")
 gSystem.Load("libpapascppstuff")
-#from ROOT.randomgen import RandExponential
-#from ROOT.randomgen import RandUniform
 from ROOT import  randomgen
 
 class RRandom(object):

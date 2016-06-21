@@ -47,9 +47,8 @@ class Gun(Analyzer):
     
     def beginLoop(self, setup):
         super(Gun, self).beginLoop(setup)
-        #pdebug.open('/'.join([self.dirName, "physics.txt"]))
-        pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
-        # pdebug.write("Opening:\n")
+        pdebug.open("python_physics_debug_output.txt")
+        
     
     def process(self, event):
         #event.gen_particles = [particle(self.cfg_ana.pdgid, 
