@@ -6,6 +6,11 @@ from collections import OrderedDict
 import scipy.optimize as opti # need to compute impact parameters
 from numpy import sign
 import random as random
+from detectors.CMS import cms
+detector = cms
+
+epaisseur_beampipe = detector.elements['beampipe'].volume.outer.rad-detector.elements['beampipe'].volume.inner.rad
+X_0_beampipe = detector.elements['beampipe'].material.x0
 
 class Path(object):
     '''Path followed by a particle in 3D space. 
@@ -135,8 +140,8 @@ class Helix(Path):
         # for the beam pipe,  X_0 = 1.72e-2, width = 1.5e-3
         P = self.p4.Vect().Dot(self.udir)
         PT= self.p4.Perp()
-        x = abs( 1.5e-3 * 1.0* P/PT)
-        X_0 = 1.72e-2
+        x = abs( epaisseur_beampipe * 1.0* P/PT)
+        X_0 = X_0_beampipe
         # distance and radiation length, linked to the dectector properties
         # and the particle's direction
         self.theta_0 = 1.0*13.6e-3/(1.0*self.speed/constants.c*P)

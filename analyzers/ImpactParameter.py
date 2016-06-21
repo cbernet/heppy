@@ -3,6 +3,7 @@ from ROOT import TFile, TH1F
 from ROOT import TVector3, TLorentzVector
 from heppy.papas.path import Helix
 import math
+from heppy.utils.deltar import deltaR
 
 class ImpactParameter(Analyzer):
     '''This analyzer puts an impact parameter for every charged particle
@@ -10,7 +11,8 @@ class ImpactParameter(Analyzer):
     The significance is calculated, the calculus are a first order approximation,
     thus this may not be correct for large impact parameters (more than 3 mm)
     It also computes W, the likelihood value for the jet to contain beauty,
-    using a likelihood ratio method for each particle in the jet.'''
+    using a likelihood ratio method for each particle in the jet.
+    Computes TCHE and TCHP for the jet for b-tagging'''
         
     def process(self, event):
         assumed_vertex = TVector3(0, 0, 0)
@@ -27,6 +29,7 @@ class ImpactParameter(Analyzer):
             ptcs_x_at_time_0 = []
             ptcs_y_at_time_0 = []
             ptcs_z_at_time_0 = []
+            ptcs_dr = []
             for id, ptcs in jet.constituents.iteritems():
                 if abs(id) in [22,130, 11]:
                     continue
@@ -34,15 +37,7 @@ class ImpactParameter(Analyzer):
                     if ptc._charge == 0 :
                         continue
                     ptc.path.compute_IP(assumed_vertex,jet)
-                    ptcs_pt.append(ptc.path.p4.Perp())
-                    ptcs_IP.append(ptc.path.IP)
-                    ptcs_IPxy.append((ptc.path.IPx**2 + ptc.path.IPy**2)**0.5)
-                    ptcs_IPz.append(ptc.path.IPz)
-                    x, y, z = ptc.path.coord_at_time(0)
-                    ptcs_x_at_time_0.append(x)
-                    ptcs_y_at_time_0.append(y)
-                    ptcs_z_at_time_0.append(z)
-
+                    
                     if self.tag_jets:
                         ibin = self.ratio.FindBin(ptc.path.IP)
                         lhratio = self.ratio.GetBinContent(ibin)
@@ -54,18 +49,32 @@ class ImpactParameter(Analyzer):
                         b_LL += ptc.path.like_b
                         
                     ptc_IP_signif = 0
-                    if enable_matter_scattering and hasattr(ptc.path, 'points') == True and 'beampipe_in' in ptc.path.points:
+                    if hasattr(ptc.path, 'points') == True and 'beampipe_in' in ptc.path.points:
                         ptc.path.compute_theta_0()
                         ptc.path.compute_IP_signif(ptc.path.IP,
                                                    ptc.path.theta_0,
                                                    ptc.path.points['beampipe_in'])
                     else :
                         ptc.path.compute_IP_signif(ptc.path.IP, None, None)
+                    
+                    if ptc.path.p4.Perp() > 1 and (ptc.path.IPx**2 + ptc.path.IPy**2)**0.5 < 0.002 and ptc.path.IPz**2 < 0.17**2 :
                         
-                    ptcs_IP_signif.append((ptc.path.IP_signif))
+                        dr = deltaR(jet.eta(), jet.phi(), ptc.eta(), ptc.phi())
+                        
+                        ptcs_pt.append(ptc.path.p4.Perp())
+                        ptcs_IP.append(ptc.path.IP)
+                        ptcs_IPxy.append((ptc.path.IPx**2 + ptc.path.IPy**2)**0.5)
+                        ptcs_IPz.append(ptc.path.IPz)
+                        ptcs_IP_signif.append((ptc.path.IP_signif))
+                        x, y, z = ptc.path.coord_at_time(0)
+                        ptcs_x_at_time_0.append(x)
+                        ptcs_y_at_time_0.append(y)
+                        ptcs_z_at_time_0.append(z)
+                        ptcs_dr.append(dr)
+    
+                ptcs_IP_signif_sorted = ptcs_IP_signif
+                ptcs_IP_signif_sorted.sort(reverse=True)
             
-            ptcs_IP_signif_sorted = ptcs_IP_signif
-            ptcs_IP_signif_sorted.sort(reverse=True)
             if len(ptcs_IP_signif) < 2:
                 TCHE = -99
                 TCHP = -99
@@ -75,6 +84,7 @@ class ImpactParameter(Analyzer):
                 TCHE_y = -99
                 TCHE_z = -99
                 TCHE_pt = -99
+                TCHE_dr = -99
             if len(ptcs_IP_signif) == 2:
                 TCHE = ptcs_IP_signif_sorted[1]
                 TCHE_IP = ptcs_IP[ptcs_IP_signif.index(TCHE)]
@@ -82,34 +92,36 @@ class ImpactParameter(Analyzer):
                 TCHE_y = ptcs_y_at_time_0[ptcs_IP_signif.index(TCHE)]
                 TCHE_z = ptcs_z_at_time_0[ptcs_IP_signif.index(TCHE)]
                 TCHE_pt = ptcs_pt[ptcs_IP_signif.index(TCHE)]
+                TCHE_dr = ptcs_dr[ptcs_IP_signif.index(TCHE)]
                 TCHP = -99
                 TCHP_IP = -99
                 
             if len(ptcs_IP_signif) > 2:
                 tche_index = 1
                 
-                #while ptcs_IP_signif_sorted[tche_index] > 20 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                #while ptcs_IP_signif_sorted[tche_index] > 30 and tche_index < len(ptcs_IP_signif_sorted)-2 :
                 #    tche_index += 1
                 
                 TCHE = ptcs_IP_signif_sorted[tche_index]
                 
-                while ptcs_pt[ptcs_IP_signif.index(TCHE)] < 1 and tche_index < len(ptcs_IP_signif_sorted)-2 :
-                    tche_index += 1
-                    TCHE = ptcs_IP_signif_sorted[tche_index]
+                #while ptcs_pt[ptcs_IP_signif.index(TCHE)] < 1 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                #    tche_index += 1
+                #    TCHE = ptcs_IP_signif_sorted[tche_index]
                     
-                while ptcs_IPxy[tche_index] > 0.002 and tche_index < len(ptcs_IP_signif_sorted)-2 :
-                    tche_index += 1
-                    TCHE = ptcs_IP_signif_sorted[tche_index]
+                #while ptcs_IPxy[ptcs_IP_signif.index(TCHE)] > 0.002 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                #    tche_index += 1
+                #    TCHE = ptcs_IP_signif_sorted[tche_index]
                     
-                while ptcs_IPz[tche_index] > 0.17 and tche_index < len(ptcs_IP_signif_sorted)-2 :
-                    tche_index += 1
-                    TCHE = ptcs_IP_signif_sorted[tche_index]
+                #while ptcs_IPz[ptcs_IP_signif.index(TCHE)]**2 > 0.17**2 and tche_index < len(ptcs_IP_signif_sorted)-2 :
+                #    tche_index += 1
+                #    TCHE = ptcs_IP_signif_sorted[tche_index]
                 
                 TCHE_IP = ptcs_IP[ptcs_IP_signif.index(TCHE)]
                 TCHE_x = ptcs_x_at_time_0[ptcs_IP_signif.index(TCHE)]
                 TCHE_y = ptcs_y_at_time_0[ptcs_IP_signif.index(TCHE)]
                 TCHE_z = ptcs_z_at_time_0[ptcs_IP_signif.index(TCHE)]
                 TCHE_pt = ptcs_pt[ptcs_IP_signif.index(TCHE)]
+                TCHE_dr = ptcs_dr[ptcs_IP_signif.index(TCHE)]
                 TCHP = ptcs_IP_signif_sorted[tche_index+1]
                 TCHP_IP = ptcs_IP[ptcs_IP_signif.index(TCHP)]
                 #while TCHE_x**2 + TCHE_y**2 - (0.05)**2 > 0 and TCHE_index < len(ptcs_IP_signif)-2:
@@ -143,6 +155,7 @@ class ImpactParameter(Analyzer):
             jet.tags['TCHE_z'] = TCHE_z
             jet.tags['TCHE_xy'] = (TCHE_x**2+TCHE_y**2)**0.5
             jet.tags['TCHE_pt'] = TCHE_pt
+            jet.tags['TCHE_dr'] = TCHE_dr
             
             if hasattr(event, 'K0s') == True :
                 jet.tags['K0s'] = event.K0s
@@ -177,14 +190,8 @@ class ImpactParameter(Analyzer):
     def beginLoop(self, setup):
         super(ImpactParameter, self).beginLoop(setup)
         if hasattr(self.cfg_ana, 'num') == False :
-            if hasattr(self.cfg_ana, 'ratio') == False :
-                #import pdb; pdb.set_trace()
-                self.compute = False
-                self.tag_jets = False
-            else :
-                self.tag_jets = True
-                self.ratio_file = TFile.Open(self.cfg_ana.ratio[0],"read")
-                self.ratio = self.ratio_file.Get(self.cfg_ana.ratio[1])
+            self.tag_jets = False
+            self.compute = False
         else :
             if hasattr(self.cfg_ana, 'denom') == False :
                 self.compute = False

@@ -82,7 +82,7 @@ def bookJet( tree, pName ):
     var(tree, '{pName}_b_LL'.format(pName=pName))
     var(tree, '{pName}_TCHP'.format(pName=pName))
     var(tree, '{pName}_TCHP_IP'.format(pName=pName))
-    for tagger in ['TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt']:
+    for tagger in ['TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr']:
         var(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger))
     for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
         var(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc))
@@ -94,7 +94,7 @@ def fillJet( tree, pName, jet ):
     else:
         fill(tree, '{pName}_b_LL'.format(pName=pName), -99)
     
-    for tagger in ['TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt']:
+    for tagger in ['TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr']:
         if jet.tags.get(tagger, None) is not None:
             fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), jet.tags.get(tagger, None))
         else:
