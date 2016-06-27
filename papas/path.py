@@ -152,7 +152,7 @@ class Helix(Path):
         # ! are we sure sigma_IP_due_IP_algo_precise isnt overestimated ?
         delta_t = 1e-15
         delta_s = delta_t * self.speed *1.0
-        sigma_s = 0.68 * delta_s
+        sigma_s = delta_s
         sigma_IP_due_IP_algo_precise = IP*1.0/(math.cos(math.atan(sigma_s/IP)))-IP
         
         if theta_0 == None or scat_point == None:
@@ -162,7 +162,7 @@ class Helix(Path):
             t_scat = self.time_at_phi(phi_t_scat)
             fly_distance = self.speed * 1.0 * t_scat
             # for the IP significance : estimation 
-            sigma_IP_due_scattering = fly_distance*math.tan(theta_0)
+            sigma_IP_due_scattering = fly_distance*math.tan((2)**0.5*theta_0)
             
             sigma_IP_tot = ( sigma_IP_due_IP_algo_precise**2 + sigma_IP_due_scattering**2 )**0.5
             

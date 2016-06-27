@@ -19,13 +19,14 @@ class ImpactParameter(Analyzer):
         jets = getattr(event, self.cfg_ana.jets)
         enable_matter_scattering = self.cfg_ana.enable_matter_scattering
         for jet in jets:
-            b_LL = 0
-            ptcs_b_LL = []
+            IP_b_LL = 0
+            IPs_b_LL = 0
             ptcs_pt = []
             ptcs_IP = []
             ptcs_IPxy = []
             ptcs_IPz = []
             ptcs_IP_signif = []
+            ptcs_IP_signif_sorted = []
             ptcs_x_at_time_0 = []
             ptcs_y_at_time_0 = []
             ptcs_z_at_time_0 = []
@@ -38,16 +39,6 @@ class ImpactParameter(Analyzer):
                         continue
                     ptc.path.compute_IP(assumed_vertex,jet)
                     
-                    if self.tag_jets:
-                        ibin = self.ratio.FindBin(ptc.path.IP)
-                        lhratio = self.ratio.GetBinContent(ibin)
-                        if not lhratio == 0:
-                            ptc.path.like_b = math.log(lhratio)
-                        if lhratio == 0:
-                            ptc.path.like_b = 0
-                        ptcs_b_LL.append(ptc.path.like_b)
-                        b_LL += ptc.path.like_b
-                        
                     ptc_IP_signif = 0
                     if hasattr(ptc.path, 'points') == True and 'beampipe_in' in ptc.path.points:
                         ptc.path.compute_theta_0()
@@ -66,13 +57,33 @@ class ImpactParameter(Analyzer):
                         ptcs_IPxy.append((ptc.path.IPx**2 + ptc.path.IPy**2)**0.5)
                         ptcs_IPz.append(ptc.path.IPz)
                         ptcs_IP_signif.append((ptc.path.IP_signif))
+                        ptcs_IP_signif_sorted.append((ptc.path.IP_signif))
                         x, y, z = ptc.path.coord_at_time(0)
                         ptcs_x_at_time_0.append(x)
                         ptcs_y_at_time_0.append(y)
                         ptcs_z_at_time_0.append(z)
                         ptcs_dr.append(dr)
-    
-                ptcs_IP_signif_sorted = ptcs_IP_signif
+                        
+                        if self.tag_IP_b_LL:
+                            #import pdb; pdb.set_trace()
+                            ibin = self.ratio_IP.FindBin(ptc.path.IP)
+                            lhratio = self.ratio_IP.GetBinContent(ibin)
+                            if not lhratio == 0:
+                                ptc.path.IP_b_LL = math.log(lhratio)
+                                IP_b_LL += ptc.path.IP_b_LL
+                            if lhratio == 0:
+                                ptc.path.IP_b_LL = 0
+                        
+                        if self.tag_IPs_b_LL:
+                            #import pdb; pdb.set_trace()
+                            ibin = self.ratio_IPs.FindBin(ptc.path.IP_signif)
+                            lhratio = self.ratio_IPs.GetBinContent(ibin)
+                            if not lhratio == 0:
+                                ptc.path.IPs_b_LL = math.log(lhratio)
+                                IPs_b_LL += ptc.path.IPs_b_LL
+                            if lhratio == 0:
+                                ptc.path.IPs_b_LL = 0
+                            
                 ptcs_IP_signif_sorted.sort(reverse=True)
             
             if len(ptcs_IP_signif) < 2:
@@ -145,7 +156,8 @@ class ImpactParameter(Analyzer):
             #if TCHE > 30 and event.K0s == 0 and event.Kp == 0 and event.L0 == 0 and event.S0 == 0 and event.Sp == 0 and event.Sm == 0:
             #    import pdb; pdb.set_trace()
             
-            jet.tags['b_LL'] = b_LL if self.tag_jets else None
+            jet.tags['IP_b_LL'] = IP_b_LL  if self.tag_IP_b_LL  else None
+            jet.tags['IPs_b_LL']= IPs_b_LL if self.tag_IPs_b_LL else None
             jet.tags['TCHE'] = TCHE
             jet.tags['TCHP'] = TCHP
             jet.tags['TCHE_IP'] = TCHE_IP
@@ -189,19 +201,33 @@ class ImpactParameter(Analyzer):
         
     def beginLoop(self, setup):
         super(ImpactParameter, self).beginLoop(setup)
-        if hasattr(self.cfg_ana, 'num') == False :
-            self.tag_jets = False
-            self.compute = False
+        if hasattr(self.cfg_ana, 'num_IP') == False :
+            self.tag_IP_b_LL = False
         else :
-            if hasattr(self.cfg_ana, 'denom') == False :
-                self.compute = False
-                self.tag_jets = False
+            if hasattr(self.cfg_ana, 'denom_IP') == False :
+                self.tag_IP_b_LL = False
             else :
-                self.tag_jets = True
-                self.num_file = TFile.Open(self.cfg_ana.num[0],"read")
-                self.num_hist = self.num_file.Get(self.cfg_ana.num[1])
-                self.denom_file = TFile.Open(self.cfg_ana.denom[0],"read")
-                self.denom_hist = self.denom_file.Get(self.cfg_ana.denom[1])
-                self.ratio = TH1F("ratio","b over d",100,-0.001,0.001)
-                self.ratio.Divide(self.num_hist,self.denom_hist)
+                self.tag_IP_b_LL = True
+                self.num_IP_file = TFile.Open(self.cfg_ana.num_IP[0],"read")
+                self.num_IP_hist = self.num_IP_file.Get(self.cfg_ana.num_IP[1])
+                self.denom_IP_file = TFile.Open(self.cfg_ana.denom_IP[0],"read")
+                self.denom_IP_hist = self.denom_IP_file.Get(self.cfg_ana.denom_IP[1])
+                self.ratio_IP = TH1F("ratio_IP","num_IP over denom_IP", self.num_IP_hist.GetXaxis().GetNbins(), self.num_IP_hist.GetXaxis().GetXmin(), self.num_IP_hist.GetXaxis().GetXmax())
+                self.ratio_IP.Divide(self.num_IP_hist,self.denom_IP_hist)
                 #import pdb; pdb.set_trace()
+                
+                
+         
+        if hasattr(self.cfg_ana, 'num_IPs') == False :
+            self.tag_IPs_b_LL = False
+        else :
+            if hasattr(self.cfg_ana, 'denom_IPs') == False :
+                self.tag_IPs_b_LL = False
+            else :
+                self.tag_IPs_b_LL = True
+                self.num_IPs_file = TFile.Open(self.cfg_ana.num_IPs[0],"read")
+                self.num_IPs_hist = self.num_IPs_file.Get(self.cfg_ana.num_IPs[1])
+                self.denom_IPs_file = TFile.Open(self.cfg_ana.denom_IPs[0],"read")
+                self.denom_IPs_hist = self.denom_IPs_file.Get(self.cfg_ana.denom_IPs[1])
+                self.ratio_IPs = TH1F("ratio_IPs","num_IPs over denom_IPs", self.num_IPs_hist.GetXaxis().GetNbins(), self.num_IPs_hist.GetXaxis().GetXmin(), self.num_IPs_hist.GetXaxis().GetXmax())
+                self.ratio_IPs.Divide(self.num_IPs_hist,self.denom_IPs_hist)
