@@ -1,4 +1,4 @@
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.data.identifier import Identifier
 
 
 
@@ -14,26 +14,31 @@ class PFEvent(object):
           blocks = optional dictionary of blocks : {id1:block1, id2:block2, ...}
        
        usage: 
-          pfevent = PFEvent(event)
+          pfevent=PFEvent(event, self.tracksname,  self.ecalsname,  self.hcalsname,  self.blocksname) 
           obj1 = pfevent.get_object(id1)
     ''' 
-    def __init__(self, event):    
+    def __init__(self, event,  tracksname = 'tracks', ecalsname = 'ecal_clusters',  hcalsname = 'hcal_clusters',  blocksname = 'blocks',
+                 sim_particlesname = "None",  rec_particlesname = "reconstructed_particles"):    
         '''arguments
              event: must contain
                   tracks dictionary : {id1:track1, id2:track2, ...}
                   ecal dictionary : {id1:ecal1, id2:ecal2, ...}
                   hcal dictionary : {id1:hcal1, id2:hcal2, ...}
+                  
+                  and these must be names according to ecalsname etc
+                  blocks, sim_particles and rec_particles are optional
                   '''            
-        self.tracks = event.tracks
-        self.ecal_clusters = event.ecal_clusters
-        self.hcal_clusters = event.hcal_clusters
+        self.tracks = getattr(event, tracksname)
+        self.ecal_clusters = getattr(event, ecalsname)
+        self.hcal_clusters = getattr(event, hcalsname)
+        
         self.blocks = []
-        if hasattr(event,"blocks"):
-            self.blocks= event.blocks
-        if hasattr(event,"papas_sim_particles"): #todo think about naming
-            self.sim_particles= event.papas_sim_particles 
-        if hasattr(event,"reconstructed_particles"): #todo think about naming
-            self.reconstructed_particles= event.reconstructed_particles                         
+        if hasattr(event, blocksname):
+            self.blocks =  getattr(event, blocksname)
+        if hasattr(event,sim_particlesname): 
+            self.sim_particles= getattr(event, sim_particlesname)
+        if hasattr(event,rec_particlesname): #todo think about naming
+            self.reconstructed_particles= getattr(event, rec_particlesname)                       
     
     def get_object(self, uniqueid):
         ''' given a uniqueid return the underlying obejct

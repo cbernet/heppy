@@ -1,4 +1,4 @@
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.data.identifier import Identifier
 class Edge(object): 
     '''An Edge stores end node ids, distance between the nodes, and whether they are linked
        

@@ -1,5 +1,7 @@
 # simplified class to provide a unique identifier for each object
 # could also add more information into the identifier as needed
+from itertools import count
+
 class Identifier(long):
     '''the Identififier is a uniqueid that contains encoded information about an element
            for example, given an indentifier, we can determine that the element is an ecal_cluster
@@ -12,11 +14,13 @@ class Identifier(long):
         The bits to the left of this contain the objecttype eg ECALCLUSTER etc
         
         usage:
-           self.uniqueid = Identifier.make_id(self,Identifier.PFOBJECTTYPE.BLOCK) 
+           self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK) 
            if Identifier.is_track(self.uniqueid):
                 ....
            
         '''    
+    _id = count(0)
+
     class PFOBJECTTYPE:
         NONE = 0
         ECALCLUSTER = 1 #simplistic initial implementation (may need an enum for layer to be added)
@@ -26,9 +30,9 @@ class Identifier(long):
         RECPARTICLE = 5
         BLOCK = 6
     
-    @staticmethod    
-    def make_id(item, type):
-        x = id(item)
+    @classmethod    
+    def make_id(cls, type):
+        x = cls._id.next()
         value = type <<40
         return value | x
    
@@ -67,7 +71,4 @@ class Identifier(long):
     @staticmethod
     def type_short_code(ident):
         typelist=".eht......" #the enum value (0 to 8) will index into this and return E is it is ECAL etc
-        return typelist[Identifier.get_type(ident)]    
-    
-    
-    
+        return typelist[Identifier.get_type(ident)]

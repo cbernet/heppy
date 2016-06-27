@@ -1,8 +1,12 @@
 from vectors import Point
 from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.data.identifier import Identifier
 import math
+
+#add angular size needs to be fixed since at the moment the angluar size is set by the first element
+#in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
+
 
 
 class PFObject(object):
@@ -23,7 +27,7 @@ class PFObject(object):
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(self,pfobjecttype)
+        self.uniqueid=Identifier.make_id(pfobjecttype)
         
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -69,7 +73,37 @@ class Cluster(PFObject):
         return self._size
 
     def angular_size(self):
+        #angular_size is only properly specified for single (unmerged) clusters
         return self._angularsize
+    
+    def is_inside_clusters(self,  other):
+        #see if two clusters overlap (allowing for merged clusters which contain subclusters)
+        #we have a link if any of the subclusters overlap
+        #the distance is the distance betewen the weighted centres of each (merged) cluster
+        
+        dist =  deltaR(self.position.Theta(),
+                       self.position.Phi(),
+                       other.position.Theta(),
+                       other.position.Phi())
+       
+        for c in self.subclusters:
+            for o in  other.subclusters:
+                is_link,  innerdist =  c.is_inside_cluster(o)
+                if is_link:
+                    return True,  dist
+            
+        return False,  dist
+        
+            
+    def is_inside_cluster(self, other):
+        #now we have original unmerged clusters so we can compare directly to see if they overlap
+        dR = deltaR(self.position.Theta(),
+                    self.position.Phi(),
+                    other.position.Theta(),
+                    other.position.Phi())
+        link_ok = dR < self.angular_size() + other.angular_size()
+        return link_ok,  dR
+            
 
     def is_inside(self, point):
         #check if the point lies within the "size" circle of each of the subclusters
@@ -104,7 +138,9 @@ class Cluster(PFObject):
         position *= denom
         self.position = position
         self.energy = energy
+        assert (len(other.subclusters) == 1)
         self.subclusters.extend(other.subclusters)
+     
         #todo recalculate the angular size
         return self
 
@@ -200,7 +236,7 @@ class Particle(BaseParticle):
                  pdgid=None,
                  ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.make_id(self, ParticleType)
+        self.uniqueid=Identifier.make_id(ParticleType)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -260,7 +296,7 @@ class Reconstructed_Particle(Particle):
   
 if __name__ == '__main__':
     from ROOT import TVector3
-    cluster = Cluster(10., TVector3(1,0,0), 1, 1)
+    cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer
     print cluster.pt
     cluster.set_energy(5.)
     print cluster.pt

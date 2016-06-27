@@ -1,5 +1,5 @@
-from heppy.papas.aliceproto.DAG import Node, BreadthFirstSearchIterative
-from heppy.papas.aliceproto.identifier import Identifier
+from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative
+from heppy.papas.data.identifier import Identifier
 
 class History(object):
     '''   
