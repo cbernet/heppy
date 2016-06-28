@@ -26,7 +26,7 @@ import random
 comp = cfg.Component(
     'example',
     files = [
-        '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
+        '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb_50000.root'
     ]
 )
 selectedComponents = [comp]
@@ -49,7 +49,7 @@ gen_particles_stable = cfg.Analyzer(
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',
-    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [11, 13, 12,14,16] and x.pt()>1e-5  #TODO Alice reinstate 11 and 13 
+    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5  #TODO Alice reinstate 11 and 13 
 )
 
 # configure the papas fast simulation with the CMS detector
@@ -286,8 +286,8 @@ sequence = cfg.Sequence( [
     ] )
 
 # Specifics to read FCC events 
-from ROOT import gSystem
-gSystem.Load("libdatamodelDict")
+#from ROOT import gSystem
+#gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 
 config = cfg.Config(
@@ -354,7 +354,7 @@ if __name__ == '__main__':
         pdebug.write(str('Event: {}\n'.format(iev)))
         process(iev)
         process(iev)
-        #process(iev)
+        process(iev)
     else:
         loop.loop()
         loop.write()

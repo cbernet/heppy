@@ -10,8 +10,8 @@ import  math
 logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
-#import heppy.papas.random as  random
-from heppy.statistics.rrandom import RRandom as random
+import heppy.papas.random as  random
+#from heppy.statistics.rrandom import RRandom as random
 random.seed(0xdeadbeef)
 
 make_tree = True

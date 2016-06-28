@@ -8,14 +8,14 @@ class RRandom(object):
 
     @staticmethod
     def expovariate (a):
-        thing = u = randomgen.RandExponential(1/a)
+        thing = u = randomgen.RandExponential(a)
         u = thing.next()
         #print u
         return u
     
     @staticmethod
     def exponential (a):
-        thing = u = randomgen.RandExponential(a)
+        thing = u = randomgen.RandExponential(1/a)
         u = thing.next()
         #print u
         return u    

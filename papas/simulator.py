@@ -5,8 +5,9 @@ from heppy.papas.pfalgo.pfinput import  PFInput
 from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
 from heppy.papas.data.identifier import Identifier
 from pfalgo.sequence import PFSequence
-#import random
-from heppy.statistics.rrandom import RRandom as random
+import random
+#from heppy.statistics.rrandom import RRandom as random
+#from random import normalvariate 
 import sys
 import copy
 import shelve
@@ -245,16 +246,16 @@ class Simulator(object):
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                pass
+                
                 #TEMPORARY TODO self.propagate_electron(ptc)
-                #smeared_ptc = self.smear_electron(ptc)
-                #smeared.append(smeared_ptc)
+                smeared_ptc = self.smear_electron(ptc)
+                smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                pass
+              
                 #TEMPORARY TODO self.propagate_muon(ptc)
-                #smeared_ptc = self.smear_muon(ptc)
-                #smeared.append(smeared_ptc)
+                smeared_ptc = self.smear_muon(ptc)
+                smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12,14,16]:
                 self.simulate_neutrino(ptc)
