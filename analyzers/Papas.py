@@ -70,9 +70,8 @@ class Papas(Analyzer):
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        enable_matter_scattering = self.cfg_ana.enable_matter_scattering
         try: 
-            self.simulator.simulate( gen_particles, enable_matter_scattering )
+            self.simulator.simulate( gen_particles )
         except PropagationError as err:
             self.mainLogger.error( str(err) + ' -> Event discarded')
             return False

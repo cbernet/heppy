@@ -139,7 +139,7 @@ class Simulator(object):
     def simulate_neutrino(self, ptc):
         self.propagate(ptc)
         
-    def simulate_hadron(self, ptc, enable_matter_scattering):
+    def simulate_hadron(self, ptc):
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
@@ -154,14 +154,20 @@ class Simulator(object):
                                            beampipe.volume.inner,
                                            self.detector.elements['field'].magnitude)
         
-        if enable_matter_scattering :
-            # do scattering
-            mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
+        self.propagator(ptc).propagate_one(ptc,
+                                           beampipe.volume.outer,
+                                           self.detector.elements['field'].magnitude)
+        
+        mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
             
-            #re-propagate
-            self.propagator(ptc).propagate_one(ptc,
-                                               beampipe.volume.inner,
-                                               self.detector.elements['field'].magnitude)
+        #re-propagate
+        self.propagator(ptc).propagate_one(ptc,
+                                           beampipe.volume.inner,
+                                           self.detector.elements['field'].magnitude)
+        
+        self.propagator(ptc).propagate_one(ptc,
+                                           beampipe.volume.outer,
+                                           self.detector.elements['field'].magnitude)
                                            
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
@@ -225,7 +231,7 @@ class Simulator(object):
                                       self.detector.elements['field'].magnitude )
         return    
     
-    def simulate(self, ptcs,  enable_matter_scattering, do_reconstruct = True):
+    def simulate(self, ptcs, do_reconstruct = True):
         self.reset()
         self.ptcs = []
         smeared = []
@@ -249,7 +255,7 @@ class Simulator(object):
                 if ptc.q() and ptc.pt()<0.2:
                     # to avoid numerical problems in propagation
                     continue
-                self.simulate_hadron(ptc, enable_matter_scattering)
+                self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
             #self.smeared =  smeared
             self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        

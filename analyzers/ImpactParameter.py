@@ -12,19 +12,21 @@ class ImpactParameter(Analyzer):
     thus this may not be correct for large impact parameters (more than 3 mm).
     The Impact parameter significance is stored in the particle's path.
     
-    New attributes for particles.path (from compute_IP) :
+    New attributes for heppy.papas.pfobjects.Particle.path (from compute_IP) :
     *   closest_t = time of closest approach to the primary vertex.
     *   IP = signed impact parameter
-    *   IPx, IPy, IPz = coordinates of the point of closest approach to the
-        primary vertex, with respets to the primary vertex
+    *   IPcoord = TVector3 of the point of closest approach to the
+        primary vertex
         
     New attributes for particles.path (from compute_theta_0) :
     *   theta_0 = 1/sqrt(2) * gaussian width of the scattering angle
-        due to the beam pipe
+        due to the beam pipe. -->  See pdg booklet, Passage of particles through matter,
+        multiple scattering through small angles.
     *   xX_0 = distance in number of X_0 the radiation length the particles goes through
     
     New attributes for particles.path (from compute_IP_signif) :
     *   IP_signif = the impact parameter significance. To get the uncertainty, just compute IP/IP_signif
+    *   IP_sigma = the uncertainty on the impact parameter
         
     Then, several b-tagging methods are applied to each jet, with selected tracks :
     *   a log-likelihood ratio based on Impact Parameter (IP_b_LL),
@@ -44,7 +46,7 @@ class ImpactParameter(Analyzer):
     *   TCHE_pt = the transverse impulsion of the particle used for the TCHE
     *   TCHE_dr = the cone containing the track used for the THCE with respects to the jet axis
     
-    Example of configuration : the root files contain the distributions of IP/IPs histograms (h_u, h_b ...)
+    Example of configuration : the root files contain the distributions of IP or IPs histograms (h_u, h_b ...)
     that can be divided (num/denom) to get the ratio.
 
     from heppy.analyzers.ImpactParameter import ImpactParameter
@@ -56,6 +58,10 @@ class ImpactParameter(Analyzer):
                         denom_IP = ("histo_stat_IP_ratio_bems.root","h_u"),
                         num_IPs = ("histo_stat_IPs_ratio_bems.root","h_b"),
                         denom_IPs = ("histo_stat_IPs_ratio_bems.root","h_u"),
+                        pt_min = value in GeV of min transverse impulsion for ptc to be taken into account fo b-tag,
+                        dxy_max = max value of the radius of the track point corresponding to the min approach to primary vertex,
+                        dz_max = same along the z axis,
+                        detector = CMS()
                             ) 
     
     '''
@@ -92,10 +98,25 @@ class ImpactParameter(Analyzer):
                 self.ratio_IPs = TH1F("ratio_IPs","num_IPs over denom_IPs", self.num_IPs_hist.GetXaxis().GetNbins(), self.num_IPs_hist.GetXaxis().GetXmin(), self.num_IPs_hist.GetXaxis().GetXmax())
                 self.ratio_IPs.Divide(self.num_IPs_hist,self.denom_IPs_hist)
 
-    
+
+    def ll_tag(self, ratio_histo, ptc_var, jet_tag ):
+        ibin = ratio_histo.FindBin(ptc_var)
+        lhratio = ratio_histo.GetBinContent(ibin)
+        if not lhratio == 0:
+            LLratio = math.log(lhratio)
+            jet_tag += LLratio
+        if lhratio == 0:
+            LLratio = 0
+        return LLratio
+
+
     def process(self, event):
         assumed_vertex = TVector3(0, 0, 0)
         jets = getattr(event, self.cfg_ana.jets)
+        detector = self.cfg_ana.detector
+        pt_min = self.cfg_ana.pt_min
+        dxy_max = self.cfg_ana.dxy_max
+        dz_max = self.cfg_ana.dz_max
         for jet in jets:
             IP_b_LL = 0     # value of the log likelihood ratio based on IP initiated at 0
             IPs_b_LL = 0    # value of the log likelihood ratio based on IP significance initiated at 0
@@ -104,42 +125,36 @@ class ImpactParameter(Analyzer):
                 if abs(id) in [22,130,11]:
                     continue
                 for ptc in ptcs :
-                    if hasattr(ptc.path, "charge") :
-                        if ptc.path.charge == 0 :
-                            continue
-                        ptc.path.compute_IP(assumed_vertex,jet)
+                    if ptc.q() == 0 :
+                        continue
+                    ptc.path.compute_IP(assumed_vertex,jet)
+                    
+                    ptc_IP_signif = 0
+                    if hasattr(ptc.path, 'points') == True and 'beampipe_in' in ptc.path.points:
+                        phi_in = ptc.path.phi(ptc.path.points['beampipe_in'].X(),\
+                                                    ptc.path.points['beampipe_in'].Y())
+                        phi_out= ptc.path.phi(ptc.path.points['beampipe_out'].X(),\
+                                                    ptc.path.points['beampipe_out'].Y())
+                        deltat = ptc.path.time_at_phi(phi_out)-ptc.path.time_at_phi(phi_in)
+                        x = ptc.path.path_length(deltat)
+                        X_0 = detector.elements['beampipe'].material.x0
+                        ptc.path.compute_theta_0(x, X_0)
+                        ptc.path.compute_IP_signif(ptc.path.IP,
+                                                   ptc.path.theta_0,
+                                                   ptc.path.points['beampipe_in'])
+                    else :
+                        ptc.path.compute_IP_signif(ptc.path.IP, None, None)
+                    
+                    dx = ptc.path.IPcoord.x() - assumed_vertex.x()
+                    dy = ptc.path.IPcoord.y() - assumed_vertex.y()
+                    dz = ptc.path.IPcoord.z() - assumed_vertex.z()
+                    if ptc.path.p4.Perp() > pt_min and (dx**2 + dy**2)**0.5 < dxy_max and dz**2 < dz_max**2 :
+                        ipsig_ptcs.append([ptc.path.IP_signif, ptc])
                         
-                        ptc_IP_signif = 0
-                        if hasattr(ptc.path, 'points') == True and 'beampipe_in' in ptc.path.points:
-                            ptc.path.compute_theta_0()
-                            ptc.path.compute_IP_signif(ptc.path.IP,
-                                                       ptc.path.theta_0,
-                                                       ptc.path.points['beampipe_in'])
-                        else :
-                            ptc.path.compute_IP_signif(ptc.path.IP, None, None)
-                        
-                        if ptc.path.p4.Perp() > 1 and (ptc.path.IPx**2 + ptc.path.IPy**2)**0.5 < 0.002 and ptc.path.IPz**2 < 0.17**2 :
-                            ipsig_ptcs.append([ptc.path.IP_signif, ptc])
-                            
-                            if self.tag_IP_b_LL:
-                                #import pdb; pdb.set_trace()
-                                ibin = self.ratio_IP.FindBin(ptc.path.IP)
-                                lhratio = self.ratio_IP.GetBinContent(ibin)
-                                if not lhratio == 0:
-                                    ptc.path.IP_b_LL = math.log(lhratio)
-                                    IP_b_LL += ptc.path.IP_b_LL
-                                if lhratio == 0:
-                                    ptc.path.IP_b_LL = 0
-                            
-                            if self.tag_IPs_b_LL:
-                                #import pdb; pdb.set_trace()
-                                ibin = self.ratio_IPs.FindBin(ptc.path.IP_signif)
-                                lhratio = self.ratio_IPs.GetBinContent(ibin)
-                                if not lhratio == 0:
-                                    ptc.path.IPs_b_LL = math.log(lhratio)
-                                    IPs_b_LL += ptc.path.IPs_b_LL
-                                if lhratio == 0:
-                                    ptc.path.IPs_b_LL = 0
+                        if self.tag_IP_b_LL:
+                            ptc.path.IP_b_LL = self.ll_tag(self.ratio_IP, ptc.path.IP,IP_b_LL )
+                        if self.tag_IPs_b_LL:
+                            ptc.path.IPs_b_LL = self.ll_tag(self.ratio_IPs, ptc.path.IP_signif, IPs_b_LL )
                             
             ipsig_ptcs.sort(reverse=True)
             

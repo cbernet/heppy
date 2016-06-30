@@ -79,32 +79,23 @@ def bookJet( tree, pName ):
     bookP4(tree, pName )
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
-    var(tree, '{pName}_TCHP'.format(pName=pName))
-    var(tree, '{pName}_TCHP_IP'.format(pName=pName))
-    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr']:
+    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y',\
+                    'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr', 'TCHP', 'TCHP_IP']:
         var(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger))
     for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
         var(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc))
 
 def fillJet( tree, pName, jet ):
     fillP4(tree, pName, jet )
-    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y', 'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr']:
-        if jet.tags.get(tagger, None) is not None:
+    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y',\
+                    'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr', 'TCHP', 'TCHP_IP']:
+        if tagger in jet.tags:
             fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), jet.tags.get(tagger, None))
         else:
             fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), -99)
-            
-    if jet.tags.get('TCHP', None) is not None:
-        fill(tree, '{pName}_TCHP'.format(pName=pName), jet.tags.get('TCHP', None))
-    else:
-        fill(tree, '{pName}_TCHP'.format(pName=pName), -99)
-    if jet.tags.get('TCHP_IP', None) is not None:
-        fill(tree, '{pName}_TCHP_IP'.format(pName=pName), jet.tags.get('TCHP_IP', None))
-    else:
-        fill(tree, '{pName}_TCHP_IP'.format(pName=pName), -99)
-    
+                
     for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
-        if jet.tags.get('{ptc}'.format(ptc=ptc), None) is not None:
+        if ptc in jet.tags:
             fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), jet.tags.get('{ptc}'.format(ptc=ptc), None))
         else:
             fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), -99)

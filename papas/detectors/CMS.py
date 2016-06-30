@@ -108,7 +108,8 @@ class Tracker(DetectorElement):
     #TODO acceptance and resolution depend on the particle type
     
     def __init__(self):
-        volume = VolumeCylinder('tracker', 1.29, 1.99) # care : there is the beam pipe !
+        volume = VolumeCylinder('tracker', 1.29, 1.99)
+        # care : there is the beam pipe ! Shouldn't be an inner radius specified ?
         mat = material.void
         super(Tracker, self).__init__('tracker', volume,  mat)
 
