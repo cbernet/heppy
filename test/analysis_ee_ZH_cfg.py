@@ -57,6 +57,7 @@ gen_particles_stable = cfg.Analyzer(
 from heppy.analyzers.PapasSim import PapasSim
 from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
+
 papas = cfg.Analyzer(
     PapasSim,
     instance_label = 'papas',
