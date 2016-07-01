@@ -12,10 +12,10 @@ class MissingEnergyBuilder(Analyzer):
         charge = 0
         sumpt = 0 
         for ptc in add:
-            missingp4 += ptc
+            missingp4 += ptc.p4()
             charge += ptc.q()
         for ptc in sub: 
-            missingp4 -= ptc
+            missingp4 -= ptc.p4()
             charge -= ptc.q() 
         missing = Particle(0, charge, missingp4)
         setattr(event, self.instance_label, missing)
