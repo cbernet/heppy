@@ -3,6 +3,7 @@ from heppy.particles.fcc.particle import Particle
 
 import math
 from heppy.papas.simulator import Simulator
+from heppy.papas.exceptions import PropagationError
 from heppy.papas.vectors import Point
 from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.toyevents import particles
@@ -118,7 +119,11 @@ class PapasSim(Analyzer):
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        self.simulator.simulate( gen_particles, self.do_reconstruct)
+        try: 
+            self.simulator.simulate( gen_particles, self.do_reconstruct)
+        except PropagationError as err:
+            self.mainLogger.error( str(err) + ' -> Event discarded')
+            return False
         pfsim_particles = self.simulator.ptcs
         if self.is_display:
             self.display.register( GTrajectories(pfsim_particles),
@@ -146,7 +151,6 @@ class PapasSim(Analyzer):
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()
-        
         
         if "tracker" in self.simulator.pfinput.elements :
             for element in self.simulator.pfinput.elements["tracker"]:
