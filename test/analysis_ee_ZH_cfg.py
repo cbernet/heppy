@@ -198,9 +198,18 @@ zeds = cfg.Analyzer(
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
 recoil = cfg.Analyzer(
     RecoilBuilder,
+    instance_label = 'recoil',
     output = 'recoil',
     sqrts = 240.,
     to_remove = 'zeds_legs'
+) 
+
+from heppy.analyzers.MissingEnergyBuilder import MissingEnergyBuilder
+missing_energy = cfg.Analyzer(
+    MissingEnergyBuilder,
+    instance_label = 'missing_energy',
+    output = 'missing_energy',
+    particles = 'rec_particles'
 ) 
 
 # Creating a list of particles excluding the decay products of the best zed.
@@ -259,7 +268,8 @@ tree = cfg.Analyzer(
     zeds = 'zeds',
     jets = 'jets',
     higgses = 'higgses',
-    recoil  = 'recoil'
+    recoil  = 'recoil',
+    misenergy = 'missing_energy'
 )
 
 # definition of a sequence of analyzers,
@@ -278,6 +288,7 @@ sequence = cfg.Sequence( [
     sel_iso_leptons,
     zeds,
     recoil,
+    missing_energy,
     particles_not_zed,
     jets,
     higgses,
