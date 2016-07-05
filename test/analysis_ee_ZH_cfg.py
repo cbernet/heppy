@@ -195,21 +195,23 @@ zeds = cfg.Analyzer(
 
 # Computing the recoil p4 (here, p_initial - p_zed)
 # help(RecoilBuilder) for more information
+sqrts = 240. 
+
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
 recoil = cfg.Analyzer(
     RecoilBuilder,
     instance_label = 'recoil',
     output = 'recoil',
-    sqrts = 240.,
+    sqrts = sqrts,
     to_remove = 'zeds_legs'
 ) 
 
-from heppy.analyzers.MissingEnergyBuilder import MissingEnergyBuilder
 missing_energy = cfg.Analyzer(
-    MissingEnergyBuilder,
+    RecoilBuilder,
     instance_label = 'missing_energy',
     output = 'missing_energy',
-    particles = 'rec_particles'
+    sqrts = sqrts,
+    to_remove = 'rec_particles'
 ) 
 
 # Creating a list of particles excluding the decay products of the best zed.
