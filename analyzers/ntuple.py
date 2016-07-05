@@ -28,10 +28,17 @@ def fillP4( tree, pName, p4 ):
 
 def bookParticle( tree, pName ):
     var(tree, '{pName}_pdgid'.format(pName=pName))
+    var(tree, '{pName}_ip'.format(pName=pName))
     bookP4(tree, pName)
-
+    
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid() )
+    ip = -99
+    if hasattr(particle, 'path'):
+        path = particle.path
+        if hasattr(path, 'IP'):
+            ip = path.IP
+    fill(tree, '{pName}_ip'.format(pName=pName), ip )
     fillP4(tree, pName, particle )
 
 

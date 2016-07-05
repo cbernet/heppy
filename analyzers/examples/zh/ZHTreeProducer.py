@@ -23,11 +23,14 @@ class ZHTreeProducer(Analyzer):
         bookParticle(self.tree, 'higgs')
         bookParticle(self.tree, 'higgs_1')
         bookParticle(self.tree, 'higgs_2')
+        bookParticle(self.tree, 'misenergy')
        
     def process(self, event):
         self.tree.reset()
         recoil = getattr(event, self.cfg_ana.recoil)
         fillParticle(self.tree, 'recoil', recoil)        
+        misenergy = getattr(event, self.cfg_ana.misenergy)
+        fillParticle(self.tree, 'misenergy', misenergy )        
         zeds = getattr(event, self.cfg_ana.zeds)
         if len(zeds)>0:
             zed = zeds[0]

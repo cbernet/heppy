@@ -3,10 +3,18 @@ import copy
 import heppy.framework.config as cfg
 
 import logging
+
+#import sys
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
+
+# setting the random seed for reproducible results
+import random
+random.seed(0xdeadbeef)
+
+make_tree = True
 
 comp = cfg.Component(
     'example',
@@ -16,51 +24,46 @@ comp = cfg.Component(
 selectedComponents = [comp]
 
 
-#TODO colin debug this! 
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
     pdgid = 211,
-    thetamin = -0.5,
-    thetamax = 0.5,
-    ptmin = 10,
+    thetamin = -1.5,
+    thetamax = 1.5,
+    ptmin = 0.1,
     ptmax = 10,
     flat_pt = True,
-)  
+)
 
-from ROOT import gSystem
-# gSystem.Load("libdatamodelDict")
-# from EventStore import EventStore as Events
-from heppy.framework.eventsgen import Events
 
-from heppy.analyzers.PapasSim import PapasSim
+from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
-    PapasSim,
+    Papas,
     instance_label = 'papas',
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    rec_particles = 'rec_particles',
+    rec_particles = 'particles',
     display = False,
     verbose = True
 )
-
-from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
-pfblocks = cfg.Analyzer(
-    PapasPFBlockBuilder
-)
-
-# and then particle reconstruction from blocks 
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
     papas,
-    pfblocks,
     ] )
- 
+if make_tree:
+    from jet_tree_cff import jet_tree_sequence
+    sequence.extend( jet_tree_sequence('gen_particles_stable', 
+                                       'particles') ) 
+
+
+from ROOT import gSystem
+from heppy.framework.eventsgen import Events
+
 config = cfg.Config(
     components = selectedComponents,
     sequence = sequence,
@@ -71,9 +74,6 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-
-    import random
-    random.seed(0xdeadbeef)
 
     def process(iev=None):
         if iev is None:
@@ -91,9 +91,9 @@ if __name__ == '__main__':
     if len(sys.argv)==2:
         papas.display = True
         iev = int(sys.argv[1])
-        
+       
     loop = Looper( 'looper', config,
-                   nEvents=100,
+                   nEvents=1000,
                    nPrint=0,
                    timeReport=True)
     simulation = None
@@ -105,7 +105,12 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        #for j in range(10000) :
         process(iev)
+        pass
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
+        #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

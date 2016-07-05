@@ -13,10 +13,13 @@ class ECAL(DetectorElement):
         super(ECAL, self).__init__('ecal', volume,  mat)
 
     def energy_resolution(self, energy, theta=0.):
-        return 0. 
+        return 0.
+
+    def energy_response(self, energy, eta):
+        return 1.
 
     def cluster_size(self, ptc):
-        pdgid = abs(ptc.pdgid)
+        pdgid = abs(ptc.pdgid())
         if pdgid==22 or pdgid==11:
             return 0.04
         else:
@@ -38,6 +41,9 @@ class HCAL(DetectorElement):
 
     def energy_resolution(self, energy, theta=0.):
         return 0.
+
+    def energy_response(self, energy, eta):
+        return 1.
 
     def cluster_size(self, ptc):
         return 0.2

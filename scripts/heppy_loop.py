@@ -116,14 +116,15 @@ def main( options, args ):
         sys.exit(3)
 
     file = open( cfgFileName, 'r' )
+    sys.path.append( os.path.dirname(cfgFileName) )
     cfg = imp.load_source( 'cfg', cfgFileName, file)
 
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
     # for comp in selComps:
     #    print comp
-    if len(selComps)>14:
-        raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
+    # if len(selComps)>14:
+    #     raise ValueError('too many threads: {tnum}'.format(tnum=len(selComps)))
     if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
         sys.exit(0)

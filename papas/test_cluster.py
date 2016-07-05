@@ -13,7 +13,7 @@ class TestCluster(unittest.TestCase):
 
     def test_pt(self):
         '''Test that pT is correctly set.'''
-        cluster = Cluster(10., TVector3(1,0,0), 1, 1)
+        cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer
         self.assertAlmostEqual(cluster.pt, 10.)
         cluster.set_energy(5.)
         self.assertAlmostEqual(cluster.pt, 5.)
@@ -22,7 +22,7 @@ class TestCluster(unittest.TestCase):
         rootfile = TFile('test_cluster_smear.root', 'recreate')
         h_e = TH1F('h_e','cluster energy', 200, 5, 15.)
         energy = 10.
-        cluster = Cluster(energy, TVector3(1,0,0), 1, 1)
+        cluster = Cluster(energy, TVector3(1,0,0), 1) #alice made this use default layer
         ecal = cms.elements['ecal']
         energies = []
         for i in range(10000):
@@ -45,13 +45,15 @@ class TestCluster(unittest.TestCase):
         h_ptvseta = TH2F('h_ptvseta','cluster pt vs eta',
                          100, -5, 5, 100, 0, 15)
         nclust = 1000.
+        # making 1000 deposits between 0 and 10 GeV
         energies = np.random.uniform(0., 10., nclust)
+        # theta between 0 and pi
         thetas = np.random.uniform(0, math.pi, nclust)
         costhetas = np.cos(thetas)
         sinthetas = np.sin(thetas)
         clusters = []
         for energy, cos, sin in zip(energies, costhetas, sinthetas):
-            clusters.append(Cluster(energy, TVector3(sin,0,cos), 1, 1))
+            clusters.append(Cluster(energy, TVector3(sin,0,cos), 1))  #alice made this use default layer
         ecal = cms.elements['ecal']
         smeared_clusters = []
         min_energy = -999.
@@ -65,8 +67,13 @@ class TestCluster(unittest.TestCase):
                 smeared_clusters.append(smeared_cluster)
                 if smeared_cluster.energy > min_energy:
                     min_energy = smeared_cluster.energy
+        # test that some clusters have been rejected
+        # (not passing the acceptance)
         self.assertGreater(len(clusters), len(smeared_clusters))
-        self.assertGreater(min_energy, ecal.emin)
+        # test that the minimum cluster energy is larger than the
+        # minimum ecal threshold
+        ecal_min_thresh = min(ecal.emin.values())
+        self.assertGreater(min_energy, ecal_min_thresh)
         rootfile.Write()
         rootfile.Close()
 

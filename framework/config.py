@@ -3,6 +3,7 @@
 
 from weight import Weight
 import glob
+import analyzer
 
 # Forbidding PyROOT to hijack help system,
 # in case the configuration module is used as a script.
@@ -90,9 +91,24 @@ class Analyzer( CFG ):
         This analyzer configuration object will become available 
         as self.cfg_ana in your ZMuMuAnalyzer.
         '''
-
+        errmsg = None
+        if type(class_object) is not type: 
+            errmsg = 'The first argument should be a class'
+        elif not analyzer.Analyzer in class_object.__mro__:
+            try: 
+                from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer as CMSBaseAnalyzer
+                if CMSBaseAnalyzer in class_object.__mro__:
+                    errmsg = None
+            except: 
+                errmsg = 'The first argument should be a class inheriting from {anaclass}'.format(anaclass=analyzer.Analyzer)
+        if errmsg: 
+            msg = 'Error creating {selfclass} object. {errmsg}. Instead, you gave {classobjectclass}'.format( 
+                selfclass=self.__class__,
+                errmsg=errmsg, 
+                classobjectclass=class_object )
+            raise ValueError(msg)
         self.class_object = class_object
-        self.instance_label = instance_label
+        self.instance_label = instance_label # calls _build_name
         self.verbose = verbose
         super(Analyzer, self).__init__(**kwargs)
 
@@ -125,6 +141,10 @@ class Analyzer( CFG ):
                     self.__class__.names = set()
                     self.__dict__['instance_label'] = self.instance_label
         return name 
+
+    def __repr__(self):
+        baserepr = super(Analyzer, self).__repr__()
+        return ':'.join([baserepr, self.name])
 
     
 class Service( CFG ):

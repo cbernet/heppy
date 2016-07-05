@@ -2,7 +2,7 @@ from pfinput import PFInput
 from merger import merge_clusters
 from links import Links
 from distance import distance
-from pfreconstructor import PFReconstructor
+from simulation_pfreconstructor import PFReconstructor
 
 #TODO: this class and PFInput should probably be in the papas module, to try to keep the pfalgo package independent from the dataformat in use. 
 
@@ -18,6 +18,9 @@ class PFSequence(object):
         elements = merge_clusters(elements, 'hcal_in')
         elements = merge_clusters(elements, 'ecal_in')
         self.links = Links(elements, distance)
+        
+        self.elements=elements #alice added this is so that the new reconstruction algorithms can start with 
+                                # the merged cluster
         self.pfreco = PFReconstructor( self.links, detector, self.logger)
 
 

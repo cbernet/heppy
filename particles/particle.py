@@ -1,7 +1,6 @@
 import copy
 
 from p4 import P4
-from tlv.rootobj import RootObj
 
 class Particle(P4):
     '''Interface for particles. 
@@ -43,4 +42,7 @@ class Particle(P4):
             q = self.q(),
             p4 = super(Particle, self).__str__()
             )
+
+    def __repr__(self):
+        return str(self)
     

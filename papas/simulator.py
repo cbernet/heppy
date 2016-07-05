@@ -1,6 +1,7 @@
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
+from heppy.papas.pfalgo.pfinput import  PFInput
 
 from pfalgo.sequence import PFSequence
 import random
@@ -10,15 +11,18 @@ import shelve
 
 from ROOT import TVector3
 
+
 def pfsimparticle(ptc):
     '''Create a PFSimParticle from a particle.
     The PFSimParticle will have the same p4, vertex, charge, pdg ID.
     '''
     tp4 = ptc.p4()
-    vertex = TVector3()
+    vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
-    return PFSimParticle(tp4, vertex, charge, pid) 
+    simptc = PFSimParticle(tp4, vertex, charge, pid)
+    simptc.gen_ptc = ptc
+    return simptc
 
 class Simulator(object):
 
@@ -70,12 +74,13 @@ class Simulator(object):
         ptc.clusters[cylname] = cluster
         return cluster
 
-    def smear_cluster(self, cluster, detector, accept=False):
+    def smear_cluster(self, cluster, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.  
         If accept is False (default), returns None if the smeared 
         cluster is not in the detector acceptance. '''
-        eres = detector.energy_resolution(cluster.energy)
-        energy = cluster.energy * random.gauss(1, eres)
+        eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
+        response = detector.energy_response(cluster.energy, cluster.position.Eta())
+        energy = cluster.energy * random.gauss(response, eres)
         smeared_cluster = SmearedCluster( cluster,
                                           energy,
                                           cluster.position,
@@ -83,7 +88,8 @@ class Simulator(object):
                                           cluster.layer,
                                           cluster.particle )
         # smeared_cluster.set_energy(energy)
-        if detector.acceptance(smeared_cluster) or accept:
+        det = acceptance if acceptance else detector
+        if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
         else:
             return None
@@ -151,12 +157,12 @@ class Simulator(object):
             point_decay = ptc.path.point_at_time(time_decay)
             ptc.points['ecal_decay'] = point_decay
             if ecal.volume.contains(point_decay):
-                frac_ecal = random.uniform(0., 0.7)
+                frac_ecal = random.uniform(0.,0.7)
                 cluster = self.make_cluster(ptc, 'ecal', frac_ecal)
                 # For now, using the hcal resolution and acceptance
                 # for hadronic cluster
                 # in the ECAL. That's not a bug! 
-                smeared = self.smear_cluster(cluster, hcal)
+                smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
                 if smeared:
                     ptc.clusters_smeared[smeared.layer] = smeared
         cluster = self.make_cluster(ptc, 'hcal', 1-frac_ecal)
@@ -189,7 +195,18 @@ class Simulator(object):
         smeared = copy.deepcopy(ptc)
         return smeared
     
-    def simulate(self, ptcs):
+    def propagate_muon(self, ptc):
+        self.propagate(ptc)
+        return 
+    
+    def propagate_electron(self, ptc):
+        ecal = self.detector.elements['ecal']
+        self.prop_helix.propagate_one(ptc,
+                                      ecal.volume.inner,
+                                      self.detector.elements['field'].magnitude )
+        return    
+    
+    def simulate(self, ptcs,  do_reconstruct = True):
         self.reset()
         self.ptcs = []
         smeared = []
@@ -198,12 +215,14 @@ class Simulator(object):
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                smeared_ptc = self.smear_electron(ptc)
-                smeared.append(smeared_ptc)
+                self.propagate_electron(ptc)
+                #smeared_ptc = self.smear_electron(ptc)
+                #smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                smeared_ptc = self.smear_muon(ptc)
-                smeared.append(smeared_ptc)
+                self.propagate_muon(ptc)
+                #smeared_ptc = self.smear_muon(ptc)
+                #smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12,14,16]:
                 self.simulate_neutrino(ptc)
@@ -213,9 +232,19 @@ class Simulator(object):
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-        self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
-        self.particles = copy.copy(self.pfsequence.pfreco.particles)
-        self.particles.extend(smeared)
+            #self.smeared =  smeared
+            self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
+        if  do_reconstruct : #now optional, defaults to run this for backwards compatibility
+            self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
+            self.particles = copy.copy(self.pfsequence.pfreco.particles)
+            #self.particles.extend(smeared)
+        
+        
+        #print "number of gen particles: ", len(ptcs)
+        #print "number of smeared particles: ", len(smeared)
+        #print "number of sim particles: ", len(self.ptcs)        
+        #print "number of rec (no smeared) particles: ", len(self.pfsequence.pfreco.particles)
+        #print "number of rec original inc smeared particles: ", len(self.particles)
         
 if __name__ == '__main__':
 

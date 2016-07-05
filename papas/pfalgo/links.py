@@ -46,6 +46,7 @@ class Links(dict):
             if link_ok: 
                 self.add(ele1, ele2, dist)
         floodfill = FloodFill(elements)
+        #print floodfill
         self.groups = floodfill.groups
         self.group_label = floodfill.label
         for elem in elements:
@@ -109,9 +110,14 @@ class Links(dict):
         lines = []
         for key, val in self.iteritems():
             ele1, ele2 = key
-            lines.append("{ele1:50} {ele2:50} {val:5.4f}".format(ele1=ele1,
+            lines.append("{ele1:50} {ele2:50} dist = {val:5.4f}".format(ele1=ele1,
                                                                  ele2=ele2,
                                                                  val=val))
+        '\n Groups:\n'.join(lines)        
+        for gid, group in self.groups.iteritems():
+                    groupinfo = ', '.join(map(str, group))
+                    lines.append('group {gid:5} {ginfo}'.format(gid=gid, ginfo=groupinfo))
+                   
         return '\n'.join(lines)
 
 

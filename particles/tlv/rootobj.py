@@ -2,16 +2,29 @@ from itertools import count
 import copy
 
 class RootObj(object):
+    '''Base class for all objects based on ROOT,
+    typically created on the fly in analysis code instead 
+    of being read from an EDM file.'''
 
     _ids = count(0)
     
     def __init__(self, *args, **kwargs):
         super(RootObj, self).__init__(*args, **kwargs)
-        self.objid = self._ids.next()
+        self._objid = self._ids.next()
 
     def __eq__(self, other):
+        '''compares two objects for equality. 
+        True if object id is the same. 
+        So if an object is copied, the two copies are equal.
+        '''
         try:
-            return self.objid == other.objid
+            return self._objid == other._objid
         except AttributeError:
             import pdb; pdb.set_trace()
     
+    def __hash__(self):
+        '''returns a hash built on the object id. 
+        '''
+        return hash( self._objid )
+
+                
