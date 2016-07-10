@@ -181,7 +181,9 @@ class DAGFloodFill(object):
         self.label = first_label
         self.visited = dict()
         self.blocks = []
-        for uid, node in elements.iteritems():
+        #for uid, node in elements.iteritems():
+        for uid in sorted(elements.iterkeys()):
+            node = elements[uid]
             if self.visited.get(node, False): #already done so skip the rest
                 continue
 

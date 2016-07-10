@@ -3,7 +3,7 @@
 
 import ROOT 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
+from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug #alice would prefer not to put it here but I want to output the event #
 import os
 import sys
 import imp
@@ -194,6 +194,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         if hasattr(self.events, '__getitem__'):
             # events backend supports indexing, e.g. CMS, FCC, bare root
             for iEv in range(firstEvent, firstEvent+nEvents):
+                
                 if iEv%100 == 0:
                     if not hasattr(self,'start_time'):
                         self.logger.info( 'event {iEv}'.format(iEv=iEv))
@@ -271,7 +272,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         This function can be called directly from
         the python interpreter, to jump to a given event and process it.
         """
-
+        pdebug.write(str('Event: {}\n'.format(iEv)))
         if not hasattr(self.events, '__getitem__'):
             msg = '''
 Your events backend, of type 

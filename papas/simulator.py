@@ -6,7 +6,7 @@ from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
 from heppy.papas.data.identifier import Identifier
 from pfalgo.sequence import PFSequence
 import random
-#from heppy.statistics.rrandom import RRandom as random
+from heppy.statistics.rrandom import RRandom as random
 #from random import normalvariate 
 import sys
 import copy
@@ -212,16 +212,27 @@ class Simulator(object):
             ptc.track_smeared = smeared_track
 
     def smear_muon(self, ptc):
+        pdebug.write("Smearing Muon\n");
         self.propagate(ptc)
+        if ptc.q()!=0:
+                    pdebug.write("Made " + ptc.track.__str__() + "\n")        
         smeared = copy.deepcopy(ptc)
+        #pdebug.write(str('Made Smeared{}\n'.format( smeared)))
+        
         return smeared
 
     def smear_electron(self, ptc):
+        pdebug.write("Smearing Electron\n");
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
                                       self.detector.elements['field'].magnitude )
+        if ptc.q()!=0:
+            pdebug.write("Made " + ptc.track.__str__() + "\n")        
         smeared = copy.deepcopy(ptc)
+        #pdebug.write(str('Made Smeared{}\n'.format( smeared)))
+        
+
         return smeared
     
     def propagate_muon(self, ptc):
@@ -241,7 +252,9 @@ class Simulator(object):
         self.reset()
         self.ptcs = []
         smeared = []
-        for gen_ptc in ptcs:
+        for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
+            pdebug.write(str('Selected Papas{}\n'.format(gen_ptc)))
+        for gen_ptc in ptcs:        
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
@@ -263,6 +276,8 @@ class Simulator(object):
                 if ptc.q() and ptc.pt()<0.2:
                     # to avoid numerical problems in propagation
                     continue
+                if ptc.q()==0 and ptc.pdgid<0:
+                    pass
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
             #self.smeared =  smeared

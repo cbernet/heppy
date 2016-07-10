@@ -44,10 +44,12 @@ class GraphBuilder(object):
 
         # build the block nodes (separate graph which will use distances between items to determine links)
         
-        nodes = dict((idt, Node(idt)) for idt in ids)
-        self.nodes = collections.OrderedDict( sorted(nodes.items(), key=lambda t: t[0]) )  #needed to match with cpp
+        self.nodes = dict((idt, Node(idt)) for idt in ids)
+        #self.nodes = collections.OrderedDict( sorted(nodes.items(), key=lambda t: t[0]) )  #needed to match with cpp
 
         for edge in edges.itervalues():
+        #for key in sorted(edges):
+            #edge=edges[key]
             #add linkage info into the nodes dictionary
             if  edge.linked: #this is actually an undirected link - OK for undirected searches 
                 self.nodes[edge.id1].add_child(self.nodes[edge.id2]) 

@@ -77,4 +77,11 @@ class Identifier(long):
     def pretty(ident):
         return Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))    
     
+    @classmethod
+    def reset(cls):
+        cls._id=count(1)
+        print "reset"
+        pass
+        return
+    
     

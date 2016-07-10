@@ -1,5 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
+from heppy.papas.data.identifier import Identifier # alice ask Colin how to improve - allows id to be reset but is not quite right
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 from heppy.particles.fcc.met import Met
@@ -60,9 +61,11 @@ class Reader(Analyzer):
     
     def process(self, event):
         store = event.input
+        
         if hasattr(self.cfg_ana, 'gen_particles'):
             name_genptc = self.cfg_ana.gen_particles
             #import pdb; pdb.set_trace()
+            Identifier.reset()
             gen_particles = map(Particle, store.get(self.cfg_ana.gen_particles))
             event.gen_particles = sorted( gen_particles,
                                           key = self.sort_key,

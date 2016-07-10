@@ -3,7 +3,6 @@ from blockbuilder import BlockBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.data.identifier import Identifier
-from collections import OrderedDict
 
 class PFBlockBuilder(BlockBuilder):
     ''' PFBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
@@ -67,7 +66,7 @@ class PFBlockBuilder(BlockBuilder):
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
-        edges = OrderedDict()
+        edges = dict()# OrderedDict()
         #for id1, id2 in itertools.combinations(uniqueids,2):
         for id1 in uniqueids:
             for  id2 in uniqueids:

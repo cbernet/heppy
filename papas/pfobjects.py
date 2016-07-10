@@ -41,9 +41,10 @@ class PFObject(object):
         return str(self)
     
     def __str__(self):
-        return '{classname} :{pretty:9}: {info}'.format(
+        return '{classname} :{pretty:9}:{id}: {info}'.format(
                     classname = self.__class__.__name__,
-                    pretty = Identifier.pretty(self.uniqueid), 
+                    pretty = Identifier.pretty(self.uniqueid),
+                    id = self.uniqueid,
                     info = self.info())
                        
 
@@ -167,11 +168,20 @@ class Cluster(PFObject):
     #     self.__dict__[name] = value
 #AJR added \n need to remove
     def info(self):
-        return '{energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
+        
+        subclusterstr= str('sub(')
+        for s in self.subclusters:
+            subclusterstr += str('{:9}, '.format(Identifier.pretty(s.uniqueid)))
+        subclusterstr += ")"
+        return '{energy:7.2f} {theta:5.2f} {phi:5.2f} {sub}'.format(
             energy = self.energy,
             theta = math.pi/2. - self.position.Theta(),
-            phi = self.position.Phi()
+            phi = self.position.Phi(),
+            sub= subclusterstr
         )
+    
+    
+    
         
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
@@ -297,9 +307,10 @@ class Particle(BaseParticle):
         return str(self)
         
     def __str__(self):
-        return '{classname} :{pretty:9}: {info}'.format(
+        return '{classname} :{pretty:9}:{id}: {info}'.format(
             classname = self.__class__.__name__,
             pretty = Identifier.pretty(self.uniqueid), 
+            id = self.uniqueid,
             info = self.info())   
     
 

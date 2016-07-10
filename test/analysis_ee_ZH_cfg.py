@@ -19,14 +19,15 @@ reload(logging)
 logging.basicConfig(level=logging.WARNING)
 #logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
-import random
-#random.seed(0xdeadbeef)
+#import random
+from heppy.statistics.rrandom import RRandom as random
+random.seed(0xdeadbeef)
 
 # input definition
 comp = cfg.Component(
     'example',
     files = [
-        '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb_50000.root'
+        '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
@@ -49,7 +50,7 @@ gen_particles_stable = cfg.Analyzer(
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',
-    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5  #TODO Alice reinstate 11 and 13 
+    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5  
 )
 
 # configure the papas fast simulation with the CMS detector
@@ -286,8 +287,8 @@ sequence = cfg.Sequence( [
     ] )
 
 # Specifics to read FCC events 
-#from ROOT import gSystem
-#gSystem.Load("libdatamodelDict")
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 
 config = cfg.Config(
@@ -303,7 +304,7 @@ if __name__ == '__main__':
 
     import random
     random.seed(0xdeadbeef)
-    #pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
+    pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
 
     def process(iev=None):
         if iev is None:
@@ -338,7 +339,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=1000,
+                   nEvents=10,
                    nPrint=1,
                    timeReport=True)
     

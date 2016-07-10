@@ -5,7 +5,7 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfobjects import MergedCluster
 from heppy.papas.data.identifier import Identifier
 from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
-from collections import OrderedDict 
+#from collections import OrderedDict 
 
 class MergedClusterBuilder(GraphBuilder):
     ''' MergingBlockBuilder takes particle flow elements of one cluster type eg ecal_in
@@ -43,10 +43,10 @@ class MergedClusterBuilder(GraphBuilder):
         
         # the merged clusters will be stored here
         #alice temp for cpp comparison
-        #self.merged = dict()
-        self.merged = OrderedDict()
+        self.merged = dict()
+        #self.merged = OrderedDict()
         # collate ids of clusters
-        uniqueids = list(clusters.keys())         
+        uniqueids = sorted(list(clusters.keys()))         
              
         #make the edges match cpp by using a the same approach as cpp
         ## compute edges between each pair of nodes
@@ -57,7 +57,7 @@ class MergedClusterBuilder(GraphBuilder):
             ##the edge object is added into the edges dictionary
             #edges[edge.key] = edge
             
-        edges = OrderedDict()    
+        edges = dict() #OrderedDict()    
         for obj1 in  clusters.values():
             for obj2 in  clusters.values():
                 if obj1.uniqueid < obj2.uniqueid :

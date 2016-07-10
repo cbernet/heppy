@@ -204,11 +204,11 @@ class PFReconstructor(object):
                 self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
-            for id in ids :
+            for id in sorted(ids) :
                 if Identifier.is_hcal(id):
                     self.reconstruct_hcal(block,id)
                     
-            for id in ids :
+            for id in sorted(ids) :
                 if Identifier.is_track(id) and not self.locked[id]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -318,9 +318,9 @@ class PFReconstructor(object):
         trackids =    sorted( block.linked_ids(hcalid, "hcal_track") )
         #alice temporarily disabled
         #trackids =    block.sort_distance_energy(hcalid, trackids )
-        for trackid in  trackids:
+        for trackid in  sorted(trackids):
             tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in block.linked_ids(trackid, "ecal_track"):
+            for ecalid in sorted(block.linked_ids(trackid, "ecal_track")):
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work
