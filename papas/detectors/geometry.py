@@ -1,10 +1,20 @@
 
 class SurfaceCylinder(object):
+
     def __init__(self, name, rad, z):
         self.name = name
         self.rad = rad
         self.z = z
-   
+
+    def __str__(self):
+        return '{} : {}, R={:5.2f}, z={:5.2f}'.format(
+            self.__class__.__name__,
+            self.name,
+            self.rad,
+            self.z
+            )
+
+            
 class VolumeCylinder(object):
     '''Implement sub even for pipes, and consistency test: all space must be filled.'''
     

@@ -21,6 +21,9 @@ class TestCylinder(unittest.TestCase):
         self.assertRaises(ValueError,
                           VolumeCylinder, 1, 2, 0.9, 1.9)
 
+    def test_print(self):
+        cyl2 = SurfaceCylinder('cyl2', 0.7, 1.5)
+        self.assertEqual(str(cyl2), 'SurfaceCylinder : cyl2, R= 0.70, z= 1.50')
 
 class TestCMS(unittest.TestCase):
     def test_surfcyl_sorted(self):
