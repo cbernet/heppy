@@ -1,9 +1,9 @@
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
-import heppy.papas.multiple_scattering as mscat
+import heppy.papas.multiple_scattering as mscat  #TODO COLIN check use of relative paths 
 from heppy.papas.pfalgo.pfinput import  PFInput
-
+from papas_exceptions import SimulationError
 
 from pfalgo.sequence import PFSequence
 import random
@@ -69,12 +69,17 @@ class Simulator(object):
         if size is None:
             size = detector.cluster_size(ptc)
         cylname = detector.volume.inner.name
-        cluster =  Cluster(ptc.p4().E()*fraction,
-                           ptc.points[cylname],
-                           size,
-                           cylname, ptc)
+        if not cylname in ptc.points:
+            # TODO Colin particle was not extrapolated here...
+            # issue must be solved!
+            raise SimulationError('Particle not extrapolated to the detector, so cannot make a cluster there!')
+        cluster =  Cluster( ptc.p4().E()*fraction,
+                            ptc.points[cylname],
+                            size,
+                            cylname, ptc)
         ptc.clusters[cylname] = cluster
         return cluster
+
 
     def smear_cluster(self, cluster, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.  
@@ -160,11 +165,12 @@ class Simulator(object):
         
         mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
             
-        #re-propagate
+        #re-propagate after multiple scattering in the beam pipe
+        # COLIN TODO ASK LUCAS WHY THIS
         self.propagator(ptc).propagate_one(ptc,
                                            beampipe.volume.inner,
                                            self.detector.elements['field'].magnitude)
-        
+        # COLIN TODO QUESTIONABLE
         self.propagator(ptc).propagate_one(ptc,
                                            beampipe.volume.outer,
                                            self.detector.elements['field'].magnitude)
@@ -172,24 +178,26 @@ class Simulator(object):
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
-        path_length = ecal.material.path_length(ptc)
-        if path_length<sys.float_info.max:
-            # ecal path length can be infinite in case the ecal
-            # has lambda_I = 0 (fully transparent to hadrons)
-            time_ecal_inner = ptc.path.time_at_z(ptc.points['ecal_in'].Z())
-            deltat = ptc.path.deltat(path_length)
-            time_decay = time_ecal_inner + deltat
-            point_decay = ptc.path.point_at_time(time_decay)
-            ptc.points['ecal_decay'] = point_decay
-            if ecal.volume.contains(point_decay):
-                frac_ecal = random.uniform(0.,0.7)
-                cluster = self.make_cluster(ptc, 'ecal', frac_ecal)
-                # For now, using the hcal resolution and acceptance
-                # for hadronic cluster
-                # in the ECAL. That's not a bug! 
-                smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
-                if smeared:
-                    ptc.clusters_smeared[smeared.layer] = smeared
+        if 'ecal_in' in ptc.path.points:
+            # doesn't have to be the case (long-lived particles)
+            path_length = ecal.material.path_length(ptc)
+            if path_length<sys.float_info.max:
+                # ecal path length can be infinite in case the ecal
+                # has lambda_I = 0 (fully transparent to hadrons)
+                time_ecal_inner = ptc.path.time_at_z(ptc.points['ecal_in'].Z())
+                deltat = ptc.path.deltat(path_length)
+                time_decay = time_ecal_inner + deltat
+                point_decay = ptc.path.point_at_time(time_decay)
+                ptc.points['ecal_decay'] = point_decay
+                if ecal.volume.contains(point_decay):
+                    frac_ecal = random.uniform(0.,0.7)
+                    cluster = self.make_cluster(ptc, 'ecal', frac_ecal)
+                    # For now, using the hcal resolution and acceptance
+                    # for hadronic cluster
+                    # in the ECAL. That's not a bug! 
+                    smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
+                    if smeared:
+                        ptc.clusters_smeared[smeared.layer] = smeared
         cluster = self.make_cluster(ptc, 'hcal', 1-frac_ecal)
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:

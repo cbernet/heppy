@@ -28,7 +28,7 @@ def fillP4( tree, pName, p4 ):
 
 def bookParticle( tree, pName ):
     var(tree, '{pName}_pdgid'.format(pName=pName))
-    var(tree, '{pName}_ip'.format(pName=pName))
+    var(tree, '{pName}_ip'.format(pName=pName)) #TODO Colin clean up hierarchy
     var(tree, '{pName}_ip_signif'.format(pName=pName))
     bookP4(tree, pName)
     

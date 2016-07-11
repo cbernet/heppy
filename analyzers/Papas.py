@@ -3,7 +3,7 @@ from heppy.particles.fcc.particle import Particle
 
 import math
 from heppy.papas.simulator import Simulator
-from heppy.papas.exceptions import PropagationError
+from heppy.papas.papas_exceptions import PropagationError
 from heppy.papas.vectors import Point
 from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.toyevents import particles

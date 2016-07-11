@@ -196,6 +196,7 @@ class ImpactParameter(Analyzer):
                 
             jet.tags['IP_b_LL'] = IP_b_LL  if self.tag_IP_b_LL  else None
             jet.tags['IPs_b_LL']= IPs_b_LL if self.tag_IPs_b_LL else None
+            #TODO COLIN : create a BTagInfo class. 
             jet.tags['TCHE'] = TCHE
             jet.tags['TCHP'] = TCHP
             jet.tags['TCHE_IP'] = TCHE_IP
