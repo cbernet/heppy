@@ -109,6 +109,7 @@ class Tracker(DetectorElement):
     
     def __init__(self):
         volume = VolumeCylinder('tracker', 1.29, 1.99)
+        # care : there is the beam pipe ! Shouldn't be an inner radius specified ?
         mat = material.void
         super(Tracker, self).__init__('tracker', volume,  mat)
 
@@ -137,7 +138,17 @@ class Field(DetectorElement):
         volume = VolumeCylinder('field', 2.9, 3.6)
         mat = material.void
         super(Field, self).__init__('tracker', volume,  mat)
-        
+
+class BeamPipe(DetectorElement):
+
+    def __init__(self):
+        #Material Seamless AISI 316 LN, External diameter 53 mm, Wall thickness 1.5 mm (hors cms) X0 1.72 cm
+        #in CMS, radius 25 mm (?), tchikness 8mm, X0 35.28 cm : berylluim
+        factor = 1.0
+        volume = VolumeCylinder('beampipe', 2.5e-2*factor+0.8e-3, 1.98, 2.5e-2*factor, 1.9785 )
+        mat = material.Material('BeamPipe', 35.28e-2, 0)
+        super(BeamPipe, self).__init__('beampipe', volume, mat)
+
         
 class CMS(Detector):
     
@@ -147,5 +158,6 @@ class CMS(Detector):
         self.elements['ecal'] = ECAL()
         self.elements['hcal'] = HCAL()
         self.elements['field'] = Field(3.8)
+        self.elements['beampipe'] = BeamPipe()
 
 cms = CMS()
