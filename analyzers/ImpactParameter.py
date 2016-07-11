@@ -49,20 +49,30 @@ class ImpactParameter(Analyzer):
     Example of configuration : the root files contain the distributions of IP or IPs histograms (h_u, h_b ...)
     that can be divided (num/denom) to get the ratio.
 
+    from heppy.papas.detectors.CMS import CMS
     from heppy.analyzers.ImpactParameter import ImpactParameter
-    computeip = cfg.Analyzer(
-                        ImpactParameter,
-                        jets = 'jets',
-                        output = 'computeip',
-                        num_IP = ("histo_stat_IP_ratio_bems.root","h_b"),
-                        denom_IP = ("histo_stat_IP_ratio_bems.root","h_u"),
-                        num_IPs = ("histo_stat_IPs_ratio_bems.root","h_b"),
-                        denom_IPs = ("histo_stat_IPs_ratio_bems.root","h_u"),
-                        pt_min = value in GeV of min transverse impulsion for ptc to be taken into account fo b-tag,
-                        dxy_max = max value of the radius of the track point corresponding to the min approach to primary vertex,
-                        dz_max = same along the z axis,
-                        detector = CMS()
-                            ) 
+    btag = cfg.Analyzer(
+        ImpactParameter,
+        jets = 'jets',
+        
+        # needed only for the IP_b_LL tagger
+        # file and histogram key for b jet charged hadrons IP
+        # num_IP = ("histo_stat_IP_ratio_bems.root","h_b"),
+        # file and histogram key for u jet charged hadrons IP
+        # denom_IP = ("histo_stat_IP_ratio_bems.root","h_u"),
+        
+        # needed only for the IPs_b_LL tagger
+        # file and histogram key for b jet charged hadrons IPs
+        # num_IPs = ("histo_stat_IPs_ratio_bems.root","h_b"),
+        # file and histogram key for u jet charged hadrons IPs
+        # denom_IPs = ("histo_stat_IPs_ratio_bems.root","h_u"),
+
+        # selection of charged hadrons for b tagging 
+        pt_min = 1, # pt threshold 
+        dxy_max = 2e-3, # max impact parameter in transverse plane, in m, w/r origin 
+        dz_max = 17e-2, # max longitudinal impact parameter in transverse plane, in m, w/r origin
+        detector = CMS()
+    )    
     
     '''
     def beginLoop(self, setup):

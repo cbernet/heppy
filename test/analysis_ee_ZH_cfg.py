@@ -21,6 +21,9 @@ logging.basicConfig(level=logging.WARNING)
 import random
 random.seed(0xdeadbeef)
 
+from heppy.papas.detectors.CMS import CMS
+CMS_detector = CMS()
+
 # input definition
 comp = cfg.Component(
     'example',
@@ -61,7 +64,7 @@ from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
     PapasSim,
     instance_label = 'papas',
-    detector = CMS(),
+    detector = CMS_detector,
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
     merged_ecals = 'ecal_clusters',
@@ -91,7 +94,7 @@ from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
     instance_label = 'papas_PFreconstruction', 
-    detector = CMS(),
+    detector = CMS_detector,
     input_blocks = 'reconstruction_blocks',
     history = 'history_nodes',     
     output_particles_dict = 'particles_dict', 
@@ -236,6 +239,23 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
+from heppy.analyzers.ImpactParameter import ImpactParameter
+btag = cfg.Analyzer(
+    ImpactParameter,
+    jets = 'jets',
+    # num_IP = ("histo_stat_IP_ratio_bems.root","h_b"),
+    # denom_IP = ("histo_stat_IP_ratio_bems.root","h_u"),
+    # num_IPs = ("histo_stat_IPs_ratio_bems.root","h_b"),
+    # denom_IPs = ("histo_stat_IPs_ratio_bems.root","h_u"),
+    pt_min = 1, # pt threshold for charged hadrons in b tagging 
+    dxy_max = 2e-3, # 2mm
+    dz_max = 17e-2, # 17cm
+    detector = CMS_detector
+    )
+
+
+
+
 # Build Higgs candidates from pairs of jets.
 higgses = cfg.Analyzer(
     ResonanceBuilder,
@@ -293,6 +313,7 @@ sequence = cfg.Sequence( [
     missing_energy,
     particles_not_zed,
     jets,
+    btag,
     higgses,
     selection, 
     tree
