@@ -1,8 +1,8 @@
-from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
-from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
-from heppy.papas.pfobjects import Particle as PFSimParticle
-import heppy.papas.multiple_scattering as mscat  #TODO COLIN check use of relative paths 
-from heppy.papas.pfalgo.pfinput import  PFInput
+from propagator import StraightLinePropagator, HelixPropagator
+from pfobjects import Cluster, SmearedCluster, SmearedTrack
+from pfobjects import Particle as PFSimParticle
+import multiple_scattering as mscat  
+from pfalgo.pfinput import  PFInput
 from papas_exceptions import SimulationError
 
 from pfalgo.sequence import PFSequence
@@ -72,7 +72,16 @@ class Simulator(object):
         if not cylname in ptc.points:
             # TODO Colin particle was not extrapolated here...
             # issue must be solved!
-            raise SimulationError('Particle not extrapolated to the detector, so cannot make a cluster there!')
+            errormsg = '''
+SimulationError : cannot make cluster for particle: 
+particle: {ptc}
+with vertex rho={rho:5.2f}, z={zed:5.2f}
+cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
+                                               rho = ptc.vertex.Perp(),
+                                               zed = ptc.vertex.Z(),
+                                               det = detector.volume.inner )
+            self.logger.warning(errormsg)
+            raise SimulationError('Particle not extrapolated to the detector, so cannot make a cluster there. No worries for now, problem will be solved :-)')
         cluster =  Cluster( ptc.p4().E()*fraction,
                             ptc.points[cylname],
                             size,
@@ -166,11 +175,12 @@ class Simulator(object):
         mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
             
         #re-propagate after multiple scattering in the beam pipe
-        # COLIN TODO ASK LUCAS WHY THIS
+        #indeed, multiple scattering is applied within the beam pipe,
+        #so the extrapolation points to the beam pipe entrance and exit
+        #change after multiple scattering.
         self.propagator(ptc).propagate_one(ptc,
                                            beampipe.volume.inner,
                                            self.detector.elements['field'].magnitude)
-        # COLIN TODO QUESTIONABLE
         self.propagator(ptc).propagate_one(ptc,
                                            beampipe.volume.outer,
                                            self.detector.elements['field'].magnitude)

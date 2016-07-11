@@ -7,8 +7,6 @@ ipython
 from analysis_ee_ZH_cfg import * 
 '''
 
-# TODO Colin : validate vs commit id
-
 import os
 import copy
 import heppy.framework.config as cfg
