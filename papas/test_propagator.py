@@ -50,7 +50,25 @@ class TestPropagator(unittest.TestCase):
         straight_line.propagate_one( particle, cyl1 )
         self.assertAlmostEqual( particle.points['cyl1'].Perp(), 1. )
         self.assertAlmostEqual( particle.points['cyl1'].Z(), 1. )
+
+        # extrapolating from a z outside the cylinder
+        particle = Particle( LorentzVector(0, 0, -1, 2.),
+                             Point(0,0,2.5), 0)
+        straight_line.propagate_one( particle, cyl1 )
+        self.assertFalse( 'cyl1' in particle.points ) 
         
+        # extrapolating from a z outside the cylinder, negative
+        particle = Particle( LorentzVector(0, 0, -1, 2.),
+                             Point(0,0,-2.5), 0)
+        straight_line.propagate_one( particle, cyl1 )
+        self.assertFalse( 'cyl1' in particle.points ) 
+
+        # extrapolating from a rho outside the cylinder
+        particle = Particle( LorentzVector(0, 0, -1, 2.),
+                             Point(0,1.1,0), 0)
+        straight_line.propagate_one( particle, cyl1 )
+        self.assertFalse( 'cyl1' in particle.points ) 
+                
     def test_helix(self):
         cyl1 = SurfaceCylinder('cyl1', 1., 2.)
         cyl2 = SurfaceCylinder('cyl2', 2., 1.)
