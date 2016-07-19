@@ -1,10 +1,20 @@
+'''Example configuration file for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
+
+While studying this file, open it in ipython as well as in your editor to 
+get more information: 
+
+ipython
+from analysis_ee_ZH_cfg import * 
+'''
+
 import os
 import copy
 import heppy.framework.config as cfg
 
-import logging
+from heppy.framework.event import Event
+Event.print_patterns=['*jet*']
 
-#import sys
+import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
@@ -13,16 +23,6 @@ logging.basicConfig(level=logging.WARNING)
 # setting the random seed for reproducible results
 import random
 random.seed(0xdeadbeef)
-
-make_tree = True
-
-comp = cfg.Component(
-    'example',
-    # files = 'example.root'
-    files = [None]
-)
-selectedComponents = [comp]
-
 
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
@@ -36,31 +36,24 @@ source = cfg.Analyzer(
 )
 
 
-from heppy.analyzers.Papas import Papas
-from heppy.papas.detectors.CMS import CMS
-papas = cfg.Analyzer(
-    Papas,
-    instance_label = 'papas',
-    detector = CMS(),
-    gen_particles = 'gen_particles_stable',
-    sim_particles = 'sim_particles',
-    rec_particles = 'particles',
-    display = False,
-    verbose = True
+comp = cfg.Component(
+    'example',
+    files = [None]
 )
+selectedComponents = [comp]
+
+from heppy.test.papas_cfg import papas_sequence, detector, papas
+
+from jet_tree_cff import jet_tree_sequence
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [
-    source,
-    papas,
-    ] )
-if make_tree:
-    from jet_tree_cff import jet_tree_sequence
-    sequence.extend( jet_tree_sequence('gen_particles_stable', 
-                                       'particles') ) 
+sequence = cfg.Sequence( [source] )
+sequence.extend(papas_sequence)
+sequence.extend(jet_tree_sequence('gen_particles_stable','rec_particles',
+                                  njets=None, ptmin=0.5))
 
-
+# Specifics to read FCC events 
 from ROOT import gSystem
 from heppy.framework.eventsgen import Events
 
@@ -75,6 +68,9 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
+    import random
+    random.seed(0xdeadbeef)
+
     def process(iev=None):
         if iev is None:
             iev = loop.iEvent
@@ -88,14 +84,30 @@ if __name__ == '__main__':
             display.draw()            
 
     iev = None
+    usage = '''usage: python analysis_ee_ZH_cfg.py [ievent]
+    
+    Provide ievent as an integer, or loop on the first events.
+    You can also use this configuration file in this way: 
+    
+    heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
+    '''
     if len(sys.argv)==2:
         papas.display = True
-        iev = int(sys.argv[1])
-       
+        try:
+            iev = int(sys.argv[1])
+        except ValueError:
+            print usage
+            sys.exit(1)
+    elif len(sys.argv)>2: 
+        print usage
+        sys.exit(1)
+            
+        
     loop = Looper( 'looper', config,
-                   nEvents=1000,
-                   nPrint=0,
+                   nEvents=10,
+                   nPrint=1,
                    timeReport=True)
+    
     simulation = None
     for ana in loop.analyzers: 
         if hasattr(ana, 'display'):
@@ -105,12 +117,9 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        #for j in range(10000) :
         process(iev)
-        pass
-        #process(iev) #alice_debug
-        #process(iev) #alice_debug
-        #process(iev) #alice_debug
+        process(iev)
+        process(iev)
     else:
         loop.loop()
         loop.write()
