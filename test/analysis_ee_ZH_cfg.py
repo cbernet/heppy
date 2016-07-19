@@ -40,6 +40,7 @@ source = cfg.Analyzer(
     Reader,
     mode = 'ee',
     gen_particles = 'GenParticle',
+    gen_vertices = 'GenVertex'
 )
 
 # Use a Filter to select stable gen particles for simulation
