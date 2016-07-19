@@ -11,9 +11,14 @@ logging.basicConfig(level=logging.WARNING)
 comp = cfg.Component(
     'example',
     #files = ['example.root']
-   # files = ['/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput_ttbar8TeV_01.root',
-   #          '/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput_ttbar8TeV_02.root']
-    files = ['FCCDelphes_ClementOutput1.root']
+    files = ['root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_1.root',
+             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_2.root',
+             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_3.root',
+             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_4.root',
+
+        #'/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput.root'
+             ]
+    #files = ['FCCDelphes_ClementOutput1.root']
 )
 selectedComponents = [comp]
 
@@ -23,11 +28,19 @@ source = cfg.Analyzer(
     mode = 'pp',
     #gen_particles = 'genParticles',
     gen_jets = 'genJets',
+
     jets = 'jets',
     bTags = 'bTags',
     jetsToBTags = 'jetsToBTags',
+
     electrons = 'electrons',
+    electronITags = 'electronITags',
+    electronsToITags = 'electronsToITags',
+
     muons = 'muons',
+    muonITags = 'muonITags',
+    muonsToITags = 'muonsToITags',
+
     photons = 'photons',
     met = 'met',
 )  
@@ -36,32 +49,7 @@ from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 
-from heppy.analyzers.METBuilder import METBuilder
-gen_met = cfg.Analyzer(
-    METBuilder,
-    instance_label = 'gen_met',
-    particles = 'gen_particles_stable'
-)
 
-# in case we want to redo jet clustering, not used at the moment.
-from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-jets = cfg.Analyzer(
-    JetClusterizer,
-    instance_label = 'gen_jets_reclustered',
-    particles = 'gen_particles_stable'
-)
-
-# currently treating electrons and muons transparently.
-# could use the same modules to have a collection of electrons
-# and a collection of muons 
-from heppy.analyzers.Filter import Filter
-leptons = cfg.Analyzer(
-    Filter,
-    'sel_leptons',
-    output = 'leptons',
-    input_objects = 'gen_particles_stable',
-    filter_func = lambda ptc: ptc.pt()>30 and abs(ptc.pdgid()) in [11, 13]
-)
 
 from heppy.analyzers.Filter import Filter
 muons = cfg.Analyzer(
@@ -73,6 +61,15 @@ muons = cfg.Analyzer(
 )
 
 from heppy.analyzers.Filter import Filter
+iso_muons = cfg.Analyzer(
+    Filter,
+    'sel_iso_muons',
+    output = 'sel_iso_muons',
+    input_objects = 'muons',
+    filter_func = lambda ptc: ptc.iso.sumpt/ptc.pt()<0.2
+)
+
+from heppy.analyzers.Filter import Filter
 electrons = cfg.Analyzer(
     Filter,
     'sel_electrons',
@@ -81,30 +78,15 @@ electrons = cfg.Analyzer(
     filter_func = lambda ptc: ptc.pt()>30
 )
 
-
-
-from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
-from heppy.particles.isolation import EtaPhiCircle
-iso_leptons = cfg.Analyzer(
-    LeptonAnalyzer,
-    leptons = 'leptons',
-    particles = 'gen_particles_stable',
-    iso_area = EtaPhiCircle(0.4)
-)
-
-#TODO: Colin: would be better to have a lepton class
-def relative_isolation(lepton):
-    sumpt = lepton.iso_211.sumpt + lepton.iso_22.sumpt + lepton.iso_130.sumpt
-    sumpt /= lepton.pt()
-    return sumpt
-
-sel_iso_leptons = cfg.Analyzer(
+from heppy.analyzers.Filter import Filter
+iso_electrons = cfg.Analyzer(
     Filter,
-    'sel_iso_leptons',
-    output = 'sel_iso_leptons',
-    input_objects = 'leptons',
-    filter_func = lambda lep : relative_isolation(lep)<0.25
+    'sel_iso_electrons',
+    output = 'sel_iso_electrons',
+    input_objects = 'electrons',
+    filter_func = lambda ptc: ptc.iso.sumpt/ptc.pt()<0.1
 )
+
 
 jets_30 = cfg.Analyzer(
     Filter,
@@ -115,38 +97,85 @@ jets_30 = cfg.Analyzer(
 )
 
 from heppy.analyzers.Matcher import Matcher
-match_jet_leptons = cfg.Analyzer(
+match_jet_electrons = cfg.Analyzer(
     Matcher,
-    delta_r = 0.4,
-    match_particles = 'sel_iso_leptons',
-    particles = 'gen_jets_30'
+    'electron_jets',
+    delta_r = 0.2,
+    match_particles = 'sel_iso_electrons',
+    particles = 'jets_30'
 )
 
-sel_jets_nolepton = cfg.Analyzer(
+sel_jets_electron = cfg.Analyzer(
     Filter,
-    'sel_jets_nolepton',
-    output = 'sel_jets_nolepton',
+    'sel_jets_noelecetron_30',
+    output = 'sel_jets_noelectron_30',
     input_objects = 'jets_30',
-    filter_func = lambda jet: not hasattr(jet, 'sel_iso_leptons')
+    filter_func = lambda jet: jet.match is None
 )
+
+
+from heppy.analyzers.Matcher import Matcher
+match_muon_jets = cfg.Analyzer(
+    Matcher,
+    'muon_jets',
+    delta_r = 0.2,
+    match_particles = 'sel_iso_muons',
+    particles = 'sel_jets_noelectron_30'
+)
+
+sel_jets_muon = cfg.Analyzer(
+    Filter,
+    'sel_jets_nomuon_30',
+    output = 'sel_jets_noelectronnomuon_30',
+    input_objects = 'sel_jets_noelectron_30',
+    filter_func = lambda jet: jet.match is None
+)
+
+
+from heppy.analyzers.Btagging import Btagging
+btagging = cfg.Analyzer(
+    Btagging,
+    'b_jets_30',
+    output = 'b_jets_30',
+    input_objects = 'sel_jets_noelectronnomuon_30',
+    filter_func = lambda jet : jet.tags['bf']>0.
+)
+
 
 from heppy.analyzers.M3Builder import M3Builder
 m3 = cfg.Analyzer(
     M3Builder,
     instance_label = 'm3',
-#    jets = 'sel_jets_nolepton', 
-    jets = 'jets_30', 
+    jets = 'sel_jets_noelectronnomuon_30', 
     filter_func = lambda x : x.pt()>30.
+)
+
+from heppy.analyzers.MTW import MTW
+mtw = cfg.Analyzer(
+    MTW,
+    instance_label = 'mtw',
+    met = 'met',
+    electron = 'sel_iso_electrons',
+    muon = 'sel_iso_muons'
+)
+
+
+
+from heppy.analyzers.examples.ttbar.selection import Selection
+selection = cfg.Analyzer(
+    Selection,
+    instance_label='cuts'
 )
 
 from heppy.analyzers.examples.ttbar.TTbarTreeProducer import TTbarTreeProducer
 gen_tree = cfg.Analyzer(
     TTbarTreeProducer,
-    jets_30 = 'jets',
+    jets_30 = 'sel_jets_noelectronnomuon_30',
     m3 = 'm3',
     met = 'met',
-    muons = 'muons',
-    electrons = 'electrons'
+    mtw= 'mtw',
+    muons = 'sel_iso_muons',
+    electrons = 'sel_iso_electrons'
 )
 
 
@@ -154,16 +183,19 @@ gen_tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    #gen_met,
     jets_30,
     muons,
     electrons,
-    #iso_leptons,
-    #gen_jets_30,
-    #sel_iso_leptons,
-    #match_jet_leptons,
-    #sel_jets_nolepton,
+    iso_muons,
+    iso_electrons,
+    match_jet_electrons,
+    sel_jets_electron,
+    match_muon_jets,
+    sel_jets_muon,
+    btagging,
+    selection,
     m3, 
+    mtw,
     gen_tree
     ] )
 

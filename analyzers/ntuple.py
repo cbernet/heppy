@@ -124,10 +124,11 @@ def fillIso(tree, pName, iso):
     fill(tree, '{pName}_pt'.format(pName=pName), iso.sumpt )
     fill(tree, '{pName}_num'.format(pName=pName), iso.num )    
 
-def bookLepton( tree, pName ):
+def bookLepton( tree, pName, pflow=True ):
     bookParticle(tree, pName )
-    for pdgid in iso_pdgids:
-        bookIso(tree, '{pName}_iso{pdgid:d}'.format(pName=pName, pdgid=pdgid))
+    if pflow:
+        for pdgid in iso_pdgids:
+            bookIso(tree, '{pName}_iso{pdgid:d}'.format(pName=pName, pdgid=pdgid))
     bookIso(tree, '{pName}_iso'.format(pName=pName))
         
         

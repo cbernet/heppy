@@ -82,3 +82,54 @@ class Reader(Analyzer):
         get_collection(Particle, 'gen_particles')
         get_collection(Vertex, 'gen_vertices', False)
         get_collection(Jet, 'gen_jets')
+
+        jets = dict()
+        for jet in get_collection(Jet, 'jets'):
+            jets[jet] = jet
+            
+        if hasattr(self.cfg_ana, 'bTags') and \
+           hasattr(self.cfg_ana, 'jetsToBTags'):
+            for tt in store.get(self.cfg_ana.jetsToBTags):
+                jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
+
+        class Iso(object):
+            def __init__(self):
+                self.sumpt=-9999
+                self.sume=-9999
+                self.num=-9999
+
+        electrons = dict()
+        if hasattr(self.cfg_ana, 'electrons'):
+            event.electrons = map(Particle, store.get(self.cfg_ana.electrons))
+            event.electrons.sort(key = self.sort_key, reverse=True)
+            for ele in event.electrons:
+                ele.iso = Iso()
+                electrons[ele]=ele
+        if  hasattr(self.cfg_ana, 'electronsToITags') and hasattr(self.cfg_ana, 'electronITags'):
+            for ele in store.get(self.cfg_ana.electronsToITags):
+                electrons[Particle(ele.Particle())].iso = Iso()
+                electrons[Particle(ele.Particle())].iso.sumpt = electrons[Particle(ele.Particle())].pt()*ele.Tag().Value()
+                    
+
+        muons = dict()
+        if hasattr(self.cfg_ana, 'muons'):
+            event.muons = map(Particle, store.get(self.cfg_ana.muons))
+            event.muons.sort(key = self.sort_key, reverse=True)   
+            for mu in event.muons:
+                mu.iso = Iso()
+                muons[mu]=mu
+        if  hasattr(self.cfg_ana, 'muonsToITags') and hasattr(self.cfg_ana, 'muonITags'):
+            for mu in store.get(self.cfg_ana.muonsToITags):
+                #import pdb; pdb.set_trace()
+                muons[Particle(mu.Particle())].iso = Iso()
+                muons[Particle(mu.Particle())].iso.sumpt = muons[Particle(mu.Particle())].pt()*mu.Tag().Value()
+                
+
+
+        if hasattr(self.cfg_ana, 'photons'):
+            event.photons = map(Particle, store.get(self.cfg_ana.photons))
+            event.photons.sort(key = self.sort_key, reverse=True)   
+
+        if hasattr(self.cfg_ana, 'met'):
+            event.met = map(Met, store.get(self.cfg_ana.met))[0]
+            
