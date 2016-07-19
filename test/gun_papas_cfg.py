@@ -27,17 +27,17 @@ random.seed(0xdeadbeef)
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 211,
+    pdgid = 130,
     thetamin = -1.5,
     thetamax = 1.5,
-    ptmin = 0.1,
-    ptmax = 10,
-    flat_pt = True,
+    ptmin = 5,
+    ptmax = 100,
+    flat_pt = False,
 )
 
 
 comp = cfg.Component(
-    'example',
+    'gun_{}'.format(source.pdgid),
     files = [None]
 )
 selectedComponents = [comp]

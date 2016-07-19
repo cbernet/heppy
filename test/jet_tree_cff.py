@@ -27,8 +27,8 @@ def jet_tree_sequence(gen_ptcs, rec_ptcs, njets, ptmin):
     from heppy.analyzers.Matcher import Matcher
     jet_match = cfg.Analyzer(
         Matcher,
-        match_particles = 'gen_jets',
-        particles = 'jets',
+        match_particles = 'jets',
+        particles = 'gen_jets',
         delta_r = 0.3
         )
 
@@ -37,7 +37,7 @@ def jet_tree_sequence(gen_ptcs, rec_ptcs, njets, ptmin):
         JetTreeProducer,
         tree_name = 'events',
         tree_title = 'jets',
-        jets = 'jets'
+        jets = 'gen_jets'
         )
 
     return [gen_jets, jets, jet_match, jet_tree]
