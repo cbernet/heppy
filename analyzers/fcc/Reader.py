@@ -82,15 +82,15 @@ class Reader(Analyzer):
         get_collection(Particle, 'gen_particles')
         get_collection(Vertex, 'gen_vertices', False)
         get_collection(Jet, 'gen_jets')
-
-        jets = dict()
-        for jet in get_collection(Jet, 'jets'):
-            jets[jet] = jet
-            
-        if hasattr(self.cfg_ana, 'bTags') and \
-           hasattr(self.cfg_ana, 'jetsToBTags'):
-            for tt in store.get(self.cfg_ana.jetsToBTags):
-                jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
+        jetcoll = get_collection(Jet, 'jets')
+        if jetcoll:
+            jets = dict()
+            for jet in jetcoll:
+                jets[jet] = jet
+            if hasattr(self.cfg_ana, 'bTags') and \
+               hasattr(self.cfg_ana, 'jetsToBTags'):
+                for tt in store.get(self.cfg_ana.jetsToBTags):
+                    jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
 
         class Iso(object):
             def __init__(self):
@@ -109,7 +109,6 @@ class Reader(Analyzer):
             for ele in store.get(self.cfg_ana.electronsToITags):
                 electrons[Particle(ele.Particle())].iso = Iso()
                 electrons[Particle(ele.Particle())].iso.sumpt = electrons[Particle(ele.Particle())].pt()*ele.Tag().Value()
-                    
 
         muons = dict()
         if hasattr(self.cfg_ana, 'muons'):
@@ -124,12 +123,8 @@ class Reader(Analyzer):
                 muons[Particle(mu.Particle())].iso = Iso()
                 muons[Particle(mu.Particle())].iso.sumpt = muons[Particle(mu.Particle())].pt()*mu.Tag().Value()
                 
-
-
-        if hasattr(self.cfg_ana, 'photons'):
-            event.photons = map(Particle, store.get(self.cfg_ana.photons))
-            event.photons.sort(key = self.sort_key, reverse=True)   
-
-        if hasattr(self.cfg_ana, 'met'):
-            event.met = map(Met, store.get(self.cfg_ana.met))[0]
-            
+        
+        get_collection(Particle, 'photons')
+        met = get_collection(Met, 'met', False)
+        if met:
+            event.met = event.met[0]
