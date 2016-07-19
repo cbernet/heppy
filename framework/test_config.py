@@ -55,8 +55,20 @@ class ConfigTestCase(unittest.TestCase):
         ana2 = copy.copy(ana1)
         ana2.instance_label = 'inst2'
         ana2.toto2 = '2'
-        self.assertEqual(ana2.name, 'framework.analyzer.Analyzer_inst2')
+        self.assertTrue(ana2.name.endswith('analyzer.Analyzer_inst2'))
         self.assertEqual(ana2.toto2, '2')
 
+    def test_sequence(self):
+        seq = cfg.Sequence( 0, 1, 2 )
+        self.assertEqual(seq, range(3))
+        seq = cfg.Sequence( range(3) )
+        self.assertEqual(seq, range(3))
+        seq = cfg.Sequence( range(3), 3)
+        self.assertEqual(seq, range(4))
+        seq = cfg.Sequence( 'blah' )
+        self.assertEqual(seq, ['blah'])
+        self.assertRaises(ValueError, cfg.Sequence, dict(a=1) )
+        
+        
 if __name__ == '__main__':
     unittest.main()

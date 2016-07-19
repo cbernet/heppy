@@ -191,9 +191,9 @@ tree = cfg.Analyzer(
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [source] )
-sequence.extend(papas_sequence)
-sequence.extend( [
+sequence = cfg.Sequence(
+    source,
+    papas_sequence, 
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
@@ -206,7 +206,7 @@ sequence.extend( [
     higgses,
     selection, 
     tree
-    ] )
+)
 
 # Specifics to read FCC events 
 from ROOT import gSystem

@@ -48,10 +48,12 @@ from jet_tree_cff import jet_tree_sequence
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [source] )
-sequence.extend(papas_sequence)
-sequence.extend(jet_tree_sequence('gen_particles_stable','rec_particles',
-                                  njets=None, ptmin=0.5))
+sequence = cfg.Sequence(
+    source, 
+    papas_sequence,
+    jet_tree_sequence('gen_particles_stable','rec_particles',
+                      njets=None, ptmin=0.5)
+    )
 
 # Specifics to read FCC events 
 from ROOT import gSystem
