@@ -17,9 +17,9 @@ class JetTreeProducer(Analyzer):
         self.tree = Tree( self.cfg_ana.tree_name,
                           self.cfg_ana.tree_title )
         bookJet(self.tree, 'jet1')
-        bookJet(self.tree, 'jet1_rec')
+        bookJet(self.tree, 'jet1_match')
         bookJet(self.tree, 'jet2')
-        bookJet(self.tree, 'jet2_rec')
+        bookJet(self.tree, 'jet2_match')
         var(self.tree, 'event')
         var(self.tree, 'lumi')
         var(self.tree, 'run')
@@ -42,14 +42,14 @@ class JetTreeProducer(Analyzer):
                     import pdb; pdb.set_trace()
             fillJet(self.tree, 'jet1', jet)
             if hasattr(jet, 'match') and jet.match:
-                fillJet(self.tree, 'jet1_rec', jet.match)
+                fillJet(self.tree, 'jet1_match', jet.match)
                 # if jet.e()/jet.match.e() > 2.:
                 #     import pdb; pdb.set_trace()
         if( len(jets)>1 ):
             jet = jets[1]
             fillJet(self.tree, 'jet2', jet)
             if hasattr(jet, 'match') and jet.match:
-                fillJet(self.tree, 'jet2_rec', jet.match)
+                fillJet(self.tree, 'jet2_match', jet.match)
         self.tree.tree.Fill()
         
         

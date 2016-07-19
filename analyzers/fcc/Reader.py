@@ -6,6 +6,9 @@ from heppy.particles.fcc.met import Met
 
 import math
 
+class MissingCollection(Exception):
+    pass
+
 class Reader(Analyzer):
     '''Reads events in FCC EDM format, and creates lists of objects adapted to an
     analysis in python.
@@ -60,52 +63,34 @@ class Reader(Analyzer):
     
     def process(self, event):
         store = event.input
-        if hasattr(self.cfg_ana, 'gen_particles'):
-            name_genptc = self.cfg_ana.gen_particles
-            #import pdb; pdb.set_trace()
-            gen_particles = map(Particle, store.get(self.cfg_ana.gen_particles))
-            event.gen_particles = sorted( gen_particles,
-                                          key = self.sort_key,
-                                          reverse=True )
-            # event.gen_particles_stable = [ptc for ptc in event.gen_particles
-            #                               if ptc.status()==1 and 
-            #                               not math.isnan(ptc.e()) and
-            #                               ptc.e()>1e-5 and 
-            #                               ptc.pt()>1e-5 and
-            #                               not abs(ptc.pdgid()) in [12, 14, 16]]
-        if hasattr(self.cfg_ana, 'gen_vertices'):        
-            gen_vertices = store.get(self.cfg_ana.gen_vertices)
-            event.gen_vertices = map(Vertex, gen_vertices)
- 
-        if hasattr(self.cfg_ana, 'gen_jets'):
-            event.gen_jets = map(Jet, store.get(self.cfg_ana.gen_jets))
-            event.gen_jets.sort(key = self.sort_key, reverse=True)
+        
+        def get_collection(class_object, coll_label, sort=True):
+            pycoll = None
+            if hasattr(self.cfg_ana, coll_label):
+                coll_name = getattr( self.cfg_ana, coll_label)
+                coll = store.get( coll_name )
+                if coll == None:
+                    raise MissingCollection(
+                        'collection {} is missing'.format(coll_name)
+                        )
+                pycoll = map(class_object, coll)
+                if sort:
+                    pycoll.sort(key = self.sort_key, reverse=True)
+                setattr(event, coll_label, pycoll )
+            return pycoll
 
-        jets = dict()
-        if hasattr(self.cfg_ana, 'jets'):
-            event.jets = map(Jet, store.get(self.cfg_ana.jets))
-            event.jets.sort(key = self.sort_key, reverse=True) 
-            for jet in event.jets: 
+        get_collection(Particle, 'gen_particles')
+        get_collection(Vertex, 'gen_vertices', False)
+        get_collection(Jet, 'gen_jets')
+        jetcoll = get_collection(Jet, 'jets')
+        if jetcoll:
+            jets = dict()
+            for jet in jetcoll:
                 jets[jet] = jet
-
-        if hasattr(self.cfg_ana, 'bTags') and hasattr(self.cfg_ana, 'jetsToBTags'):
-            for tt in store.get(self.cfg_ana.jetsToBTags):
-                jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
-
-            
-                # do this in your btag module:
-                #jets[Jet(tt.Jet())].tags['b'] = tt.Tag().Value()>0.
-                
-                #print '  =====  ',tt.Jet  
-                #print jet.pt(),'  ',math.sqrt(tt.Jet().Core().P4.Px**2+tt.Jet().Core().P4.Py**2)
-#                    #jet.btag = 0
-#
-#                print '----------------------------   ',store.get(self.cfg_ana.jetsToBTags)
-#                for tt in store.get(self.cfg_ana.jetsToBTags):
-#                    print 'jet ',tt.Jet().Core().P4.Px
-#                    print 'tag ',tt.Tag().Value()
-  
-
+            if hasattr(self.cfg_ana, 'bTags') and \
+               hasattr(self.cfg_ana, 'jetsToBTags'):
+                for tt in store.get(self.cfg_ana.jetsToBTags):
+                    jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
 
         class Iso(object):
             def __init__(self):
@@ -124,7 +109,6 @@ class Reader(Analyzer):
             for ele in store.get(self.cfg_ana.electronsToITags):
                 electrons[Particle(ele.Particle())].iso = Iso()
                 electrons[Particle(ele.Particle())].iso.sumpt = electrons[Particle(ele.Particle())].pt()*ele.Tag().Value()
-                    
 
         muons = dict()
         if hasattr(self.cfg_ana, 'muons'):
@@ -139,12 +123,8 @@ class Reader(Analyzer):
                 muons[Particle(mu.Particle())].iso = Iso()
                 muons[Particle(mu.Particle())].iso.sumpt = muons[Particle(mu.Particle())].pt()*mu.Tag().Value()
                 
-
-
-        if hasattr(self.cfg_ana, 'photons'):
-            event.photons = map(Particle, store.get(self.cfg_ana.photons))
-            event.photons.sort(key = self.sort_key, reverse=True)   
-
-        if hasattr(self.cfg_ana, 'met'):
-            event.met = map(Met, store.get(self.cfg_ana.met))[0]
-            
+        
+        get_collection(Particle, 'photons')
+        met = get_collection(Met, 'met', False)
+        if met:
+            event.met = event.met[0]
