@@ -7,14 +7,14 @@ def jet_tree_sequence(gen_ptcs, rec_ptcs):
         JetClusterizer,
         output = 'gen_jets',
         particles = gen_ptcs,
-        fastjet_args = dict(ptmin = 0.5),
+        fastjet_args = dict(njets=2),
         )
 
     jets = cfg.Analyzer(
         JetClusterizer,
         output = 'jets', 
         particles = rec_ptcs,
-        fastjet_args = dict(ptmin = 0.5),
+        fastjet_args = dict(njets=2),
         )
 
     from heppy.analyzers.Matcher import Matcher

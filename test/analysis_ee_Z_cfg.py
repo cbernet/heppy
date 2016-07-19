@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*hadrons*', '*zeds*']
+Event.print_patterns=['*jet*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -54,50 +54,13 @@ source = cfg.Analyzer(
 
 from heppy.test.papas_cfg import papas_sequence, detector, papas
 
-# Make jets from the particles not used to build the best zed.
-# Here the event is forced into 2 jets to target ZH, H->b bbar)
-# help(JetClusterizer) for more information
-from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-jets = cfg.Analyzer(
-    JetClusterizer,
-    output = 'jets',
-    particles = 'rec_particles',
-    fastjet_args = dict( njets = 2)  
-)
-
-gen_jets = cfg.Analyzer(
-    JetClusterizer,
-    output = 'gen_jets',
-    particles = 'gen_particles_stable',
-    fastjet_args = dict( njets = 2)  
-)
-
-# Build Zed candidates from pairs of jets.
-from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
-zeds = cfg.Analyzer(
-    ResonanceBuilder,
-    output = 'zeds',
-    leg_collection = 'jets',
-    pdgid = 23
-)
-
-gen_zeds = cfg.Analyzer(
-    ResonanceBuilder,
-    output = 'gen_zeds',
-    leg_collection = 'gen_jets',
-    pdgid = 23
-)
+from jet_tree_cff import jet_tree_sequence
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [source] )
 sequence.extend(papas_sequence)
-sequence.extend( [
-    gen_jets,
-    gen_zeds,
-    jets,
-    zeds,
-    ] )
+sequence.extend(jet_tree_sequence('gen_particles_stable','rec_particles'))
 
 # Specifics to read FCC events 
 from ROOT import gSystem
