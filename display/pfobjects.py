@@ -11,11 +11,6 @@ class Blob(object):
         thetaphiradius = cluster.angular_size()
         # print radius
         color = 1
-        if cluster.particle:
-            if cluster.particle.pdgid() == 22 or cluster.particle.pdgid() == 11:
-                color = 2
-            else:
-                color = 4
         max_energy = cluster.__class__.max_energy
         self.contour_xy = TEllipse(pos.X(), pos.Y(), radius)
         self.contour_yz = TEllipse(pos.Z(), pos.Y(), radius)   
@@ -34,11 +29,23 @@ class Blob(object):
         inners = [self.inner_xy, self.inner_yz, self.inner_xz,
                   self.inner_thetaphi]
         for contour in contours:
-            contour.SetLineColor(color)
-            contour.SetFillStyle(0)
-        for inner in inners: 
-            inner.SetFillColor(color)
-            inner.SetFillStyle(3002)
+           if cluster.particle:
+            if cluster.particle.pdgid() == 22:	
+                contour.SetLineColor(2)	
+            elif cluster.particle.pdgid() == 11:	
+                contour.SetLineColor(46)
+            else:					
+                contour.SetLineColor(4)
+            contour.SetFillStyle(0) 
+        for inner in inners:
+           if cluster.particle: 
+            if cluster.particle.pdgid() == 22:	
+                inner.SetFillColor(2)	
+            elif cluster.particle.pdgid() == 11:	
+                inner.SetFillColor(46)
+            else:				
+                inner.SetFillColor(4)
+            inner.SetFillStyle(3002)	
             
     def draw(self, projection, opt=''):
         if projection == 'xy':
@@ -116,8 +123,12 @@ class GTrajectory(object):
             
 class GStraightTrajectory(GTrajectory):
     def __init__(self, description):
-        super(GStraightTrajectory, self).__init__(description,
-                                                  linestyle=2, linecolor=1)
+        self.desc = description
+        if abs(self.desc.pdgid()) in [22]:
+          super(GStraightTrajectory, self).__init__(description,
+                                                  linestyle=2, linecolor=2)
+        elif abs(self.desc.pdgid()) in [12, 14, 16]:
+      	super(GStraightTrajectory, self).__init__(description, linestyle=2, linecolor=1)
 
     def draw(self, projection):
         super(GStraightTrajectory, self).draw(projection, 'l')
@@ -147,7 +158,15 @@ class GHelixTrajectory(GTrajectory):
             if i == 0:
                 tppoint = description.p4().Vect()
             self.graphline_thetaphi.SetPoint(i, math.pi/2.-tppoint.Theta(), tppoint.Phi())
-        if abs(self.desc.pdgid()) in [11,13]:
+        if abs(self.desc.pdgid()) in [11]:
+            def set_graph_style(graph):
+                graph.SetLineWidth(2)
+                graph.SetLineColor(46)
+            set_graph_style(self.graphline_xy)
+            set_graph_style(self.graphline_xz)
+            set_graph_style(self.graphline_yz)
+            set_graph_style(self.graphline_thetaphi)
+        elif abs(self.desc.pdgid()) in [13]:
             def set_graph_style(graph):
                 graph.SetLineWidth(3)
                 graph.SetLineColor(5)
