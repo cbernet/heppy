@@ -12,9 +12,11 @@ class Blob(object):
         # print radius
         color = 1
         if cluster.particle:
-            if cluster.particle.pdgid() == 22 or cluster.particle.pdgid() == 11:
-                color = 2
-            else:
+            if cluster.particle.pdgid() == 22:	
+                color = 2	
+            elif cluster.particle.pdgid() == 11:	
+                color = 46
+            else:					
                 color = 4
         max_energy = cluster.__class__.max_energy
         self.contour_xy = TEllipse(pos.X(), pos.Y(), radius)
@@ -35,10 +37,10 @@ class Blob(object):
                   self.inner_thetaphi]
         for contour in contours:
             contour.SetLineColor(color)
-            contour.SetFillStyle(0)
-        for inner in inners: 
+            contour.SetFillStyle(0) 
+        for inner in inners:
             inner.SetFillColor(color)
-            inner.SetFillStyle(3002)
+            inner.SetFillStyle(3002)	
             
     def draw(self, projection, opt=''):
         if projection == 'xy':
@@ -116,8 +118,14 @@ class GTrajectory(object):
             
 class GStraightTrajectory(GTrajectory):
     def __init__(self, description):
-        super(GStraightTrajectory, self).__init__(description,
-                                                  linestyle=2, linecolor=1)
+        self.desc = description
+        if abs(self.desc.pdgid()) in [22]:
+            linestyle = 2
+            linecolor = 2
+        else :
+            linestyle = 2
+            linecolor = 1
+        super(GStraightTrajectory, self).__init__(description, linestyle, linecolor)
 
     def draw(self, projection):
         super(GStraightTrajectory, self).draw(projection, 'l')
@@ -147,14 +155,20 @@ class GHelixTrajectory(GTrajectory):
             if i == 0:
                 tppoint = description.p4().Vect()
             self.graphline_thetaphi.SetPoint(i, math.pi/2.-tppoint.Theta(), tppoint.Phi())
-        if abs(self.desc.pdgid()) in [11,13]:
-            def set_graph_style(graph):
-                graph.SetLineWidth(3)
+        def set_graph_style(graph):
+            if abs(self.desc.pdgid()) in [11]:
+                graph.SetLineWidth(2)
+                graph.SetLineColor(46)
+            elif abs(self.desc.pdgid()) in [13]:
+                graph.SetLineWidth(2)
                 graph.SetLineColor(5)
-            set_graph_style(self.graphline_xy)
-            set_graph_style(self.graphline_xz)
-            set_graph_style(self.graphline_yz)
-            set_graph_style(self.graphline_thetaphi)
+            else:
+            	graph.SetLineWidth(1)
+                graph.SetLineColor(4)
+        set_graph_style(self.graphline_xy)
+        set_graph_style(self.graphline_xz)
+        set_graph_style(self.graphline_yz)
+        set_graph_style(self.graphline_thetaphi)
 
 
     def draw(self, projection):
