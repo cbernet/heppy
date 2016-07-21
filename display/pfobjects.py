@@ -128,7 +128,7 @@ class GStraightTrajectory(GTrajectory):
           super(GStraightTrajectory, self).__init__(description,
                                                   linestyle=2, linecolor=2)
         elif abs(self.desc.pdgid()) in [12, 14, 16]:
-      	super(GStraightTrajectory, self).__init__(description, linestyle=2, linecolor=1)
+      	  super(GStraightTrajectory, self).__init__(description, linestyle=2, linecolor=1)
 
     def draw(self, projection):
         super(GStraightTrajectory, self).draw(projection, 'l')
