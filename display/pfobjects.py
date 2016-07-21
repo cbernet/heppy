@@ -39,7 +39,7 @@ class Blob(object):
             contour.SetLineColor(color)
             contour.SetFillStyle(0) 
         for inner in inners:
-            inner.SetLineColor(color)
+            inner.SetFillColor(color)
             inner.SetFillStyle(3002)	
             
     def draw(self, projection, opt=''):
