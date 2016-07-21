@@ -120,14 +120,11 @@ class GStraightTrajectory(GTrajectory):
     def __init__(self, description):
         self.desc = description
         if abs(self.desc.pdgid()) in [22]:
-            linestyle = 3
+            linestyle = 2
             linecolor = 2
-        elif abs(self.desc.pdgid()) in [12, 14, 16]:
-            linestyle = 3
-            linecolor = 1
         else :
-            linestyle = 1
-            linecolor = 4
+            linestyle = 2
+            linecolor = 1
         super(GStraightTrajectory, self).__init__(description, linestyle, linecolor)
 
     def draw(self, projection):
@@ -158,22 +155,20 @@ class GHelixTrajectory(GTrajectory):
             if i == 0:
                 tppoint = description.p4().Vect()
             self.graphline_thetaphi.SetPoint(i, math.pi/2.-tppoint.Theta(), tppoint.Phi())
-        if abs(self.desc.pdgid()) in [11]:
-            def set_graph_style(graph):
+        def set_graph_style(graph):
+            if abs(self.desc.pdgid()) in [11]:
                 graph.SetLineWidth(2)
                 graph.SetLineColor(46)
-            set_graph_style(self.graphline_xy)
-            set_graph_style(self.graphline_xz)
-            set_graph_style(self.graphline_yz)
-            set_graph_style(self.graphline_thetaphi)
-        elif abs(self.desc.pdgid()) in [13]:
-            def set_graph_style(graph):
-                graph.SetLineWidth(3)
+            elif abs(self.desc.pdgid()) in [13]:
+                graph.SetLineWidth(2)
                 graph.SetLineColor(5)
-            set_graph_style(self.graphline_xy)
-            set_graph_style(self.graphline_xz)
-            set_graph_style(self.graphline_yz)
-            set_graph_style(self.graphline_thetaphi)
+            else :
+                graph.SetLineWidth(1)
+                graph.SetLineColor(4)
+        set_graph_style(self.graphline_xy)
+        set_graph_style(self.graphline_xz)
+        set_graph_style(self.graphline_yz)
+        set_graph_style(self.graphline_thetaphi)
 
 
     def draw(self, projection):
