@@ -120,11 +120,14 @@ class GStraightTrajectory(GTrajectory):
     def __init__(self, description):
         self.desc = description
         if abs(self.desc.pdgid()) in [22]:
-            linestyle = 2
+            linestyle = 3
             linecolor = 2
         elif abs(self.desc.pdgid()) in [12, 14, 16]:
-            linestyle = 2
+            linestyle = 3
             linecolor = 1
+        else :
+            linestyle = 1
+            linecolor = 4
         super(GStraightTrajectory, self).__init__(description, linestyle, linecolor)
 
     def draw(self, projection):
