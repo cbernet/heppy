@@ -11,6 +11,13 @@ class Blob(object):
         thetaphiradius = cluster.angular_size()
         # print radius
         color = 1
+        if cluster.particle:
+            if cluster.particle.pdgid() == 22:	
+                color = 2	
+            elif cluster.particle.pdgid() == 11:	
+                color = 46
+            else:					
+                color = 4
         max_energy = cluster.__class__.max_energy
         self.contour_xy = TEllipse(pos.X(), pos.Y(), radius)
         self.contour_yz = TEllipse(pos.Z(), pos.Y(), radius)   
@@ -29,22 +36,10 @@ class Blob(object):
         inners = [self.inner_xy, self.inner_yz, self.inner_xz,
                   self.inner_thetaphi]
         for contour in contours:
-           if cluster.particle:
-            if cluster.particle.pdgid() == 22:	
-                contour.SetLineColor(2)	
-            elif cluster.particle.pdgid() == 11:	
-                contour.SetLineColor(46)
-            else:					
-                contour.SetLineColor(4)
+            contour.SetLineColor(color)
             contour.SetFillStyle(0) 
         for inner in inners:
-           if cluster.particle: 
-            if cluster.particle.pdgid() == 22:	
-                inner.SetFillColor(2)	
-            elif cluster.particle.pdgid() == 11:	
-                inner.SetFillColor(46)
-            else:				
-                inner.SetFillColor(4)
+            inner.SetLineColor(color)
             inner.SetFillStyle(3002)	
             
     def draw(self, projection, opt=''):
