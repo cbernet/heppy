@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 import sys
 import imp
@@ -9,7 +9,7 @@ import pickle
 import math
 from heppy.utils.batchmanager import BatchManager
 
-from heppy.framework.heppy import split
+from heppy.framework.config import split
 
 def batchScriptPADOVA( index, jobDir='./'):
    '''prepare the LSF version of the batch script, to run on LSF'''
@@ -248,7 +248,8 @@ def batchScriptLocal(  remoteDir, index ):
 
    script = """#!/bin/bash
 echo 'running'
-python $CMSSW_BASE/src/heppy/python/framework/looper.py pycfg.py config.pck                   echo
+looper.py pycfg.py config.pck                   
+echo
 echo 'sending the job directory back'
 mv Loop/* ./
 """ 

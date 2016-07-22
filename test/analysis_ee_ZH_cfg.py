@@ -25,7 +25,7 @@ random.seed(0xdeadbeef)
 comp = cfg.Component(
     'example',
     files = [
-        'ee_ZH_Zmumu_Hbb.root'
+        os.getcwd()+'/ee_ZH_Zee_Hbb.root'
     ]
 )
 selectedComponents = [comp]
