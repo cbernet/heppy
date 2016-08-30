@@ -1,6 +1,6 @@
 
 from ROOT import gSystem
-gSystem.Load("libpapascppstuff")
+gSystem.Load("libpapascpp")
 from ROOT import  randomgen
 
 class RRandom(object):

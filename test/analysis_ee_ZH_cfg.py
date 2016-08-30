@@ -20,15 +20,21 @@ logging.basicConfig(level=logging.WARNING)
 #logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
 #import random
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
 from heppy.statistics.rrandom import RRandom as random
 random.seed(0xdeadbeef)
 
 # input definition
 comp = cfg.Component(
     'example',
+    #files = [
+    #    '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
+    #]
     files = [
-        '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
-    ]
+            '/Users/alice/fcc/pythiafiles/ee_ZH_Zmumu_Hbb.root'
+        ]    
 )
 selectedComponents = [comp]
 
