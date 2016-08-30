@@ -28,10 +28,22 @@ def fillP4( tree, pName, p4 ):
 
 def bookParticle( tree, pName ):
     var(tree, '{pName}_pdgid'.format(pName=pName))
+    var(tree, '{pName}_ip'.format(pName=pName)) #TODO Colin clean up hierarchy
+    var(tree, '{pName}_ip_signif'.format(pName=pName))
     bookP4(tree, pName)
-
+    
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid() )
+    ip = -99
+    ip_signif = -1e9
+    if hasattr(particle, 'path'):
+        path = particle.path
+        if hasattr(path, 'IP'):
+            ip = path.IP
+        if hasattr(path, 'IP_signif'):
+            ip_signif = path.IP_signif
+    fill(tree, '{pName}_ip'.format(pName=pName), ip )
+    fill(tree, '{pName}_ip_signif'.format(pName=pName), ip_signif )
     fillP4(tree, pName, particle )
 
 
@@ -67,10 +79,26 @@ def bookJet( tree, pName ):
     bookP4(tree, pName )
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
-    # var(tree, '{pName}_npart'.format(pName=pName))
+    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y',\
+                    'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr', 'TCHP', 'TCHP_IP']:
+        var(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger))
+    for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
+        var(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc))
 
 def fillJet( tree, pName, jet ):
     fillP4(tree, pName, jet )
+    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y',\
+                    'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr', 'TCHP', 'TCHP_IP']:
+        if tagger in jet.tags:
+            fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), jet.tags.get(tagger, None))
+        else:
+            fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), -99)
+                
+    for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
+        if ptc in jet.tags:
+            fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), jet.tags.get('{ptc}'.format(ptc=ptc), None))
+        else:
+            fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), -99)
     for pdgid in pdgids:
         component = jet.constituents.get(pdgid, None)
         if component is not None:
@@ -80,7 +108,7 @@ def fillJet( tree, pName, jet ):
         else:
             import pdb; pdb.set_trace()
             print jet
-
+    
 
 # isolation
 from LeptonAnalyzer import pdgids as iso_pdgids
@@ -96,10 +124,11 @@ def fillIso(tree, pName, iso):
     fill(tree, '{pName}_pt'.format(pName=pName), iso.sumpt )
     fill(tree, '{pName}_num'.format(pName=pName), iso.num )    
 
-def bookLepton( tree, pName ):
+def bookLepton( tree, pName, pflow=True ):
     bookParticle(tree, pName )
-    for pdgid in iso_pdgids:
-        bookIso(tree, '{pName}_iso{pdgid:d}'.format(pName=pName, pdgid=pdgid))
+    if pflow:
+        for pdgid in iso_pdgids:
+            bookIso(tree, '{pName}_iso{pdgid:d}'.format(pName=pName, pdgid=pdgid))
     bookIso(tree, '{pName}_iso'.format(pName=pName))
         
         

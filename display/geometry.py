@@ -1,6 +1,6 @@
 
 from ROOT import TEllipse, TBox
-from ROOT import TColor, kRed, kBlue
+from ROOT import TColor, kRed, kBlue, kCyan
 
 #TODO display the field
 #TODO display trajectories (tracks, particles, charged or not)
@@ -10,7 +10,8 @@ from ROOT import TColor, kRed, kBlue
 COLORS = dict(
     ECAL = kRed-10,
     HCAL = kBlue-10,
-    void = None
+    void = None,
+    BeamPipe = kCyan-10
 ) 
 
 class GDetectorElement(object):
@@ -73,7 +74,9 @@ class GDetectorElement(object):
 class GDetector(object):
     def __init__(self, description):
         self.desc = description
-        self.elements = [GDetectorElement(elem) for elem in self.desc.elements.values()]
+        elems = sorted(self.desc.elements.values(), key= lambda x : x.volume.outer.rad, reverse = True)
+        self.elements = [GDetectorElement(elem) for elem in elems]
+        #self.elements = [GDetectorElement(elem) for elem in self.desc.elements.values()]
             
     def draw(self, projection):
         for elem in self.elements:

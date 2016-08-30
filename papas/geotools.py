@@ -1,5 +1,6 @@
 import math
 
+from papas_exceptions import PropagationError
 
 def circle_intersection(x1, y1, r1, r2):
     '''Intersections between a circle 1 and a circle 2 centred at origin.'''

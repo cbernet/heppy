@@ -168,6 +168,20 @@ class Sequence( list ):
     '''A list with print functionalities.
 
     Used to define a sequence of analyzers.'''
+    def __init__(self, *args):
+        for arg in args:
+            if isinstance(arg, list):
+                self.extend(arg)
+            elif not hasattr(arg, '__iter__'):
+                self.append(arg)
+            else:
+                raise ValueError(
+'''
+Sequence only accepts lists or non iterable objects.
+You provided an object of type {}
+'''.format(arg.__class__)
+                )
+        
     def __str__(self):
         tmp = []
         for index, ana in enumerate( self ):

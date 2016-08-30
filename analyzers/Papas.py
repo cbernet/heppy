@@ -3,6 +3,7 @@ from heppy.particles.fcc.particle import Particle
 
 import math
 from heppy.papas.simulator import Simulator
+from heppy.papas.papas_exceptions import PropagationError
 from heppy.papas.vectors import Point
 from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.toyevents import particles
@@ -69,7 +70,12 @@ class Papas(Analyzer):
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        self.simulator.simulate( gen_particles, False ) #TODO Alice undo
+        try: 
+            self.simulator.simulate( gen_particles, False ) #TODO Alice undo
+        except PropagationError as err:
+            self.mainLogger.error( str(err) + ' -> Event discarded')
+            return False
+
         pfsim_particles = self.simulator.ptcs
         if self.is_display:
             particles_for_display = pfsim_particles

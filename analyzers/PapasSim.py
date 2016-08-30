@@ -3,6 +3,7 @@ from heppy.particles.fcc.particle import Particle
 
 import math
 from heppy.papas.simulator import Simulator
+from heppy.papas.papas_exceptions import PropagationError, SimulationError
 from heppy.papas.vectors import Point
 from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.toyevents import particles
@@ -120,7 +121,11 @@ class PapasSim(Analyzer):
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        self.simulator.simulate( gen_particles, self.do_reconstruct)
+        try: 
+            self.simulator.simulate( gen_particles, self.do_reconstruct)
+        except (PropagationError,SimulationError) as err:
+            self.mainLogger.error( str(err) + ' -> Event discarded')
+            return False
         pfsim_particles = self.simulator.ptcs
         
         #temp for match with C++
@@ -158,7 +163,6 @@ class PapasSim(Analyzer):
                     
 
         #extract the tracks and clusters (extraction is prior to Colins merging step)
-        
         
 
         if "tracker" in self.simulator.pfinput.elements :

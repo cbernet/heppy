@@ -19,7 +19,9 @@ class Identifier(long):
                 ....
            
         '''    
+
     _id = count(1)
+
 
     class PFOBJECTTYPE:
         NONE = 0
@@ -85,3 +87,4 @@ class Identifier(long):
         return
     
     
+

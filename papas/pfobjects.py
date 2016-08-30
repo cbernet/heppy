@@ -248,7 +248,9 @@ class SmearedTrack(Track):
    
         
 class Particle(BaseParticle):
-    def __init__(self, tlv, vertex, charge, pdgid=None,ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
+    def __init__(self, tlv, vertex, charge,
+                 pdgid=None,
+                 ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
         super(Particle, self).__init__(pdgid, charge, tlv)
         self.uniqueid=Identifier.make_id(ParticleType)
         self.vertex = vertex

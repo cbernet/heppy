@@ -26,7 +26,7 @@ class EventTest(unittest.TestCase):
         
     def test_print(self):
         # Event.print_patterns = ['*list*']
-        print self.event
+        # print self.event
         str(self.event)
         self.assertTrue(True)
         
