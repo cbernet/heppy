@@ -180,7 +180,10 @@ class Cluster(PFObject):
             sub= subclusterstr
         )
     
-    
+    def shortinfo(self):
+        return '{e:.2f}'.format(
+            e = self.energy,  
+        )     
     
         
 class SmearedCluster(Cluster):
@@ -237,6 +240,11 @@ class Track(PFObject):
             theta = math.pi/2. - self.p3.Theta(),
             phi = self.p3.Phi()
         )
+    
+    def shortinfo(self):
+        return '{e:7.2f}'.format(
+            e = self.energy,  
+        )     
         
       
 class SmearedTrack(Track):
@@ -250,7 +258,7 @@ class SmearedTrack(Track):
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge,
                  pdgid=None,
-                 ParticleType=Identifier.PFOBJECTTYPE.PARTICLE):
+                 ParticleType=Identifier.PFOBJECTTYPE.SIMPARTICLE):
         super(Particle, self).__init__(pdgid, charge, tlv)
         self.uniqueid=Identifier.make_id(ParticleType)
         self.vertex = vertex
@@ -304,6 +312,18 @@ class Particle(BaseParticle):
             p4 = p4
                     
         )
+    
+    def shortinfo(self):
+        tmp = '{pdgid:5} ({e:.1f})'
+        #needed for now to get match with C++
+        pid=self.pdgid()      
+        if self.q() == 0 and pid < 0:
+            pid = -pid        
+        
+        return tmp.format(
+            pdgid =pid,
+            e = self.e()        
+        )    
     
     def __repr__(self):
         return str(self)

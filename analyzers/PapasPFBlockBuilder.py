@@ -39,7 +39,7 @@ class PapasPFBlockBuilder(Analyzer):
                 
     def process(self, event):
         
-        pfevent=PFEvent(event, self.tracksname,  self.ecalsname,  self.hcalsname,  self.blocksname) 
+        pfevent=PFEvent(event) 
         
         distance = Distance()
         
@@ -49,7 +49,7 @@ class PapasPFBlockBuilder(Analyzer):
         blockbuilder = PFBlockBuilder(pfevent, distance, history_nodes)
         #print blockbuilder
             
-        setattr(event, self.blocksname, blockbuilder.blocks)
+        setattr(event, "blocks", blockbuilder.blocks)
         #setattr(event, self.outhistoryname, blockbuilder.history_nodes)
         
         

@@ -4,6 +4,9 @@ from heppy.papas.data.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.history import History
 
+
+
+
 class PapasPFReconstructor(Analyzer):
     ''' Module to reconstruct particles from blocks of events
          
@@ -31,7 +34,7 @@ class PapasPFReconstructor(Analyzer):
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
         self.blocksname =  self.cfg_ana.input_blocks
         self.historyname = self.cfg_ana.history   
-        self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
+        #self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
                 
     def process(self, event):
@@ -40,18 +43,33 @@ class PapasPFReconstructor(Analyzer):
            arguments:
                     event must contain blocks made using BlockBuilder'''
         
-        self.reconstructed.reconstruct(event,  self.blocksname, self.historyname)
+        self.reconstructed.reconstruct(event)
         
         #setattr(event, self.historyname, self.reconstructed.history_nodes)
-        setattr(event, self.output_particlesdictname, self.reconstructed.particles)
+        #setattr(event, self.output_particlesdictname, self.reconstructed.particles)
+        setattr(event, "rec_particles", self.reconstructed.particles)
+        setattr(event, "blocks", self.reconstructed.blocks)       
         
-        #hist = History(event.history_nodes,PFEvent(event))
-        #for block in event.blocks:
-        #    hist.summary_of_links(block)
+        
         
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
                                                    key = lambda ptc: ptc.e(), reverse=True)
         
+        
+        
+
+        #for id in BFS.ids:
+        #    print Identifier.pretty(id)
+        
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
+        
+        hist = History(event.history_nodes,PFEvent(event))
+        for rp in reconstructed_particle_list:
+            hist.summary_of_linked_elems(rp.uniqueid, "undirected")
+        #hist.plot_floodfill(event.history_nodes)
+        
+        test_rec_particle = reconstructed_particle_list[0]
+        recnode = event.history_nodes[test_rec_particle.uniqueid]        
+            #BFS = BreadthFirstSearchIterative(self.nodes[0],"undirected")        
         pass         

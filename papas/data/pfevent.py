@@ -17,8 +17,7 @@ class PFEvent(object):
           pfevent=PFEvent(event, self.tracksname,  self.ecalsname,  self.hcalsname,  self.blocksname) 
           obj1 = pfevent.get_object(id1)
     ''' 
-    def __init__(self, event,  tracksname = 'tracks', ecalsname = 'ecal_clusters',  hcalsname = 'hcal_clusters',  blocksname = 'blocks',
-                 sim_particlesname = "None",  rec_particlesname = "reconstructed_particles"):    
+    def __init__(self, event ):    
         '''arguments
              event: must contain
                   tracks dictionary : {id1:track1, id2:track2, ...}
@@ -28,34 +27,45 @@ class PFEvent(object):
                   and these must be names according to ecalsname etc
                   blocks, sim_particles and rec_particles are optional
                   '''            
-        self.tracks = getattr(event, tracksname)
-        self.ecal_clusters = getattr(event, ecalsname)
-        self.hcal_clusters = getattr(event, hcalsname)
-        
-        self.blocks = []
-        if hasattr(event, blocksname):
-            self.blocks =  getattr(event, blocksname)
-        if hasattr(event,sim_particlesname): 
-            self.sim_particles= getattr(event, sim_particlesname)
-        if hasattr(event,rec_particlesname): #todo think about naming
-            self.reconstructed_particles= getattr(event, rec_particlesname)                       
+        self.event= event       
     
     def get_object(self, uniqueid):
         ''' given a uniqueid return the underlying obejct
         '''
         type = Identifier.get_type(uniqueid)
         if type == Identifier.PFOBJECTTYPE.TRACK:
-            return self.tracks[uniqueid]       
+            if uniqueid in self.event.tracks :
+                return self.event.tracks[uniqueid] 
+            elif uniqueid in self.event.gen_tracks :
+                return self.event.gen_tracks[uniqueid] 
+            else:
+                        assert(False)            
         elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
-            return self.ecal_clusters[uniqueid] 
+            if uniqueid in self.event.ecal_clusters:            
+                return self.event.ecal_clusters[uniqueid] 
+            elif uniqueid in self.event.smeared_ecals:            
+                return self.event.smeared_ecals[uniqueid]             
+            elif uniqueid in self.event.gen_ecals:            
+                return self.event.gen_ecals[uniqueid] 
+            else:
+                        assert(False)            
         elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
-            return self.hcal_clusters[uniqueid]            
+            if uniqueid in self.event.hcal_clusters:            
+                return self.event.hcal_clusters[uniqueid] 
+            elif uniqueid in self.event.smeared_hcals:            
+                return self.event.smeared_hcals[uniqueid]             
+            elif uniqueid in self.event.gen_hcals:            
+                return self.event.gen_hcals[uniqueid] 
+            else:
+                        assert(False)            
         elif type == Identifier.PFOBJECTTYPE.PARTICLE:
-            return self.sim_particles[uniqueid]   
+            return self.event.gen_stable_particles[uniqueid] 
+        elif type == Identifier.PFOBJECTTYPE.SIMPARTICLE:
+            return self.event.sim_particles[uniqueid]          
         elif type == Identifier.PFOBJECTTYPE.RECPARTICLE:
-            return self.reconstructed_particles[uniqueid]               
+            return self.event.rec_particles[uniqueid]               
         elif type == Identifier.PFOBJECTTYPE.BLOCK:
-            return self.blocks[uniqueid]               
+            return self.event.blocks[uniqueid]               
         else:
             assert(False)   
 

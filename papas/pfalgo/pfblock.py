@@ -196,6 +196,9 @@ class PFBlock(object):
       
         return shortname      
     
+    def shortinfo(self):
+        return self.short_name()
+    
     def edge_matrix_string(self):
         ''' produces a string containing the the lower part of the matrix of distances between elements
         elements are ordered as ECAL(E), HCAL(H), Track(T) 

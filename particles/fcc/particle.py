@@ -32,7 +32,18 @@ class Particle(BaseParticle, POD):
             if attr not in ['fccobj', '_start_vertex', '_end_vertex']:
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
-
+    
+    def shortinfo(self):
+        tmp = '{pdgid:} ({e:.1f})'
+        #needed for now to get match with C++
+        pid=self.pdgid()      
+        if self.q() == 0 and pid < 0:
+            pid = -pid        
+        
+        return tmp.format(
+            pdgid =pid,
+            e = self.e()        
+        )    
     
     def __str__(self):
         tmp = '{className} :{uniqueid:9}:{uid}: pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'

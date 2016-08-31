@@ -334,13 +334,15 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                     pass
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
+            
             #self.smeared =  smeared
             self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
         if  do_reconstruct : #now optional, defaults to run this for backwards compatibility
             self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
             self.particles = copy.copy(self.pfsequence.pfreco.particles)
             #self.particles.extend(smeared)
-        
+
+             
         
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)
