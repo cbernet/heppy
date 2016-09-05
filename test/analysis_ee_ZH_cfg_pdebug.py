@@ -176,7 +176,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=10,
+                   nEvents=100,
                    nPrint=1,
                    timeReport=True)
     

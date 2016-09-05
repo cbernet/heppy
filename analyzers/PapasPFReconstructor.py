@@ -56,20 +56,71 @@ class PapasPFReconstructor(Analyzer):
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
                                                    key = lambda ptc: ptc.e(), reverse=True)
         
-        
-        
-
-        #for id in BFS.ids:
-        #    print Identifier.pretty(id)
-        
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
         
         hist = History(event.history_nodes,PFEvent(event))
-        for rp in reconstructed_particle_list:
-            hist.summary_of_linked_elems(rp.uniqueid, "undirected")
-        #hist.plot_floodfill(event.history_nodes)
         
-        test_rec_particle = reconstructed_particle_list[0]
-        recnode = event.history_nodes[test_rec_particle.uniqueid]        
-            #BFS = BreadthFirstSearchIterative(self.nodes[0],"undirected")        
+        #for key, gp in event.gen_stable_particles.iteritems():
+            ##(2) What reconstructed particles derive from a given generated particle?
+            ##eg generated charged hadron -> reconstructed photon + neutral hadron
+        
+            #pfall= hist.get_linked_objects(key) 
+            #rec_particles =pfall['rec_particles']
+            #gen_particles =pfall['gen_particles']
+            
+            #if len(rec_particles)>1 or len(gen_particles)>1:
+                #makestring= " ** "
+                #for g in gen_particles:
+                    #print g
+                    #makestring= makestring + g.shortinfo()  + "   "
+                #makestring = makestring+ " -> "
+                #for r in rec_particles:
+                    #print r
+                    #makestring= makestring + r.shortinfo()  + "   "
+                #print makestring
+                #hist.graph_item(gp.uniqueid)
+                #pass
+             
+                                   
+       
+                   
+        for rp in reconstructed_particle_list:   
+            hist.summary_of_linked_elems(rp.uniqueid, "undirected")
+    
+            linked=hist.get_linked_objects(rp.uniqueid)
+            if len(linked['blocks'])>1 or len(linked['blocks'][0])>6 :
+                hist.graph_item(rp.uniqueid)
+            pass
+        #for rp in reconstructed_particle_list:
+            ##
+            ##(1) Given a reconstructed charged hadron, what are the linked:-
+                ##smeared ecals/hcals
+                ##true ecals/hcals
+                ##track
+                ##generated/simulated particles
+            ##(3) Given a reconstructed particle, what simulated particles did it derive from?     
+            #if abs(rp.pdgid())>100 and rp.q() != 0: #charged hadron
+                #hist.graph_item(rp.uniqueid)
+                
+                #pfparents= hist.get_linked_objects(rp.uniqueid,"parents")
+                #print "\nReconstructed:"
+                #print "   " + rp.__str__()    
+                #print "Smeared:"
+                #for x in pfparents['gen_particles']  :
+                    #print "   " + x.__str__() 
+                    
+                #print "Direct Gen_particles"
+                #for x in pfparents['gen_particles']  :
+                    #print "   " + x.__str__()    
+                    
+                #pfall=hist.get_linked_objects(rp.uniqueid) #undirected #
+                #print "All Gen particles:"
+                #for x in pfall['gen_particles']  :
+                    #print "   " + x.__str__()
+                        
+                #pass
+         
+        hist.graph_event(event.history_nodes)
+        
+               
         pass         

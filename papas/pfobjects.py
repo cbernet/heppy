@@ -181,7 +181,7 @@ class Cluster(PFObject):
         )
     
     def shortinfo(self):
-        return '{e:.2f}'.format(
+        return '{e:.1f}'.format(
             e = self.energy,  
         )     
     
@@ -242,7 +242,7 @@ class Track(PFObject):
         )
     
     def shortinfo(self):
-        return '{e:7.2f}'.format(
+        return '{e:.1f}'.format(
             e = self.energy,  
         )     
         
@@ -314,7 +314,7 @@ class Particle(BaseParticle):
         )
     
     def shortinfo(self):
-        tmp = '{pdgid:5} ({e:.1f})'
+        tmp = '{pdgid:} ({e:.1f})'
         #needed for now to get match with C++
         pid=self.pdgid()      
         if self.q() == 0 and pid < 0:

@@ -285,6 +285,8 @@ possibly skipping a number of events at the beginning.
             raise TypeError(msg)
         self.event = Event(iEv, self.events[iEv], self.setup)            
         self.iEvent = iEv
+        #alice added the event number into the event class
+        self.event.iEv = iEv
         return self._run_analyzers_on_event()
 
     def _run_analyzers_on_event(self):

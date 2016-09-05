@@ -16,7 +16,7 @@ class History(object):
         
         
         self.graphnodes = dict()        
-        self.graph.write_png('example2_graph.png')
+        #self.graph.write_png('example2_graph.png')
         
     def summary_of_linked_elems(self, id, direction):
     
@@ -25,9 +25,9 @@ class History(object):
         #the BFS search returns a list of the ids that are  connected to the id of interest
         BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction)
        
-        self.print_linked_ids(BFS.result)
+        #self.print_linked_ids(BFS.result)
         self.print_short_summary(id, BFS.result)
-        self.graph_graph(id, BFS.result)
+        #self.graph_graph(id, BFS.result)
     
     def object(self, node):
         z = node.get_value()
@@ -42,7 +42,8 @@ class History(object):
             return Identifier.type_short_code(z) 
         
     def short_info(self, node):
-        return self.object(node).shortinfo()       
+        obj=self.object(node)
+        return Identifier.type_short_code(obj.uniqueid) +obj.shortinfo()       
        
     def colour(self, node):
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]
@@ -55,8 +56,15 @@ class History(object):
         z = node.get_value()
         return self.pfevent.get_object(z) 
     
-    def print_linked_ids(self,   nodeids): 
-        idvec={}    
+    def get_linked_objects(self, id, direction="undirected"):
+        BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction)
+        linked=self.get_linked_object_dict(BFS.result)
+        linked['rootid']=id
+        linked['direction']=direction
+        return linked;
+    
+    def get_linked_object_dict(self,   nodeids): 
+        linked_objects={}    
         tracks = []
         ecals = []
         hcals = []
@@ -101,23 +109,28 @@ class History(object):
                 gen_particles.append(obj) 
             elif (Identifier.is_sim_particle(z)):
                 sim_particles.append(obj)          
-       
-        idvec["blocks"]=blocks
-        idvec["tracks"]=tracks
-        idvec["ecals"]=ecals
-        idvec["hcals"]=hcals
-        idvec["sim_particles"]=sim_particles
         
-        idvec["smeared_ecals"]=smeared_ecals
-        idvec["smeared_hcals"]=smeared_hcals
-        idvec["gen_particles"]=gen_particles
-        idvec["gen_tracks"]=gen_tracks
-        idvec["gen_ecals"]=gen_ecals
-        idvec["gen_hcals"]=gen_hcals
-          
-        idvec["rec_particles"]=rec_particles
-        print idvec
-        return idvec   
+        linked_objects["blocks"]=blocks
+        linked_objects["tracks"]=tracks
+        linked_objects["ecals"]=ecals
+        linked_objects["hcals"]=hcals
+        linked_objects["sim_particles"]=sim_particles
+         
+        linked_objects["smeared_ecals"]=smeared_ecals
+        linked_objects["smeared_hcals"]=smeared_hcals
+        linked_objects["gen_particles"]=gen_particles
+        linked_objects["gen_tracks"]=gen_tracks
+        linked_objects["gen_ecals"]=gen_ecals
+        linked_objects["gen_hcals"]=gen_hcals
+           
+        linked_objects["rec_particles"]=rec_particles
+       
+       
+        #for key, value in linked_objects.iteritems():
+            #if len(value)>0:
+                #for x in value:
+                    #print "   " + x.__str__()
+        return  linked_objects   
     
     def print_graph (self,  nodeids):
         nodestring =""
@@ -127,34 +140,40 @@ class History(object):
             for c in node.children :
                 nodestring += Identifier.pretty(c.get_value()) 
    
-    def graph_graph (self, id, nodeids):
-       
+    def graph_item (self, id,  direction='undirected'):
+        graph = pydot.Dot(graph_type='digraph')   
+        graphnodes = dict()         
+        BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction)
         
-        # this time, in graph_type we specify we want a DIrected GRAPH
-        alreadythere=False;
+        for node in BFS.result:
+            if   graphnodes.has_key(self.short_name(node))==False:
+                graphnodes[self.short_name(node)] = pydot.Node(self.short_name(node), style="filled", label=self.short_info(node), fillcolor=self.colour(node))
+                graph.add_node( graphnodes[self.short_name(node)])
+        for node in BFS.result:
+                for c in node.parents:
+                    if len(graph.get_edge(graphnodes[self.short_name(c)],graphnodes[self.short_name(node)]))==0:
+                        graph.add_edge(pydot.Edge(  graphnodes[self.short_name(c)],graphnodes[self.short_name(node)]))
+            
+        graph.write_png('plot_dag_' + str(self.pfevent.event.iEv) +'_item_' + Identifier.pretty(id) + '.png')  
         
         
-        for node in nodeids:
+    def graph_event (self, nodeids):
+               
+    
+        for nodeid in nodeids:
+            node = self.history_nodes[nodeid]
             if  self.graphnodes.has_key(self.short_name(node))==False:
                 self.graphnodes[self.short_name(node)] = pydot.Node(self.short_name(node), style="filled", label=self.short_info(node), fillcolor=self.colour(node))
                 self.graph.add_node( self.graphnodes[self.short_name(node)])
-        for node in nodeids:
+                
+        for nodeid in nodeids:
+            node = self.history_nodes[nodeid]
             for c in node.parents:
                 if len(self.graph.get_edge(self.graphnodes[self.short_name(c)],self.graphnodes[self.short_name(node)]))==0:
                     self.graph.add_edge(pydot.Edge(  self.graphnodes[self.short_name(c)],self.graphnodes[self.short_name(node)]))
-                    alreadythere=True
-        if alreadythere==False:
-            pass
-            #for c in node.children:
-            #    self.graph.add_edge(pydot.Edge(  self.graphnodes[self.short_name(c)],self.graphnodes[self.short_name(node)]))            
-                  
-        self.graph.write_png('example2_graph.png')
-        # but, let's make this last edge special, yes?
-        #graph.add_edge(pydot.Edge(node_d, node_a, label="and back we go again", labelfontcolor="#009933", fontsize="10.0", color="blue"))
-        
-        # and we are done
-        
-   
+                   
+               
+        self.graph.write_png('plot_dag_event_' + str(self.pfevent.event.iEv) +'.png')   
    
        
     def print_long_summary(self, id,  nodeids):
