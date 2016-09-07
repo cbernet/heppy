@@ -4,7 +4,9 @@ from heppy.papas.data.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.history import History
 
-
+from heppy.display.core import Display
+from heppy.display.geometry import GDetector
+from heppy.display.pfobjects import GTrajectories
 
 
 class PapasPFReconstructor(Analyzer):
@@ -36,6 +38,17 @@ class PapasPFReconstructor(Analyzer):
         self.historyname = self.cfg_ana.history   
         #self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
+        #TODO self.is_display = self.cfg_ana.display
+        self.is_display = True
+        if self.is_display:
+            self.init_display()        
+    
+    def init_display(self):
+        self.display = Display(['xy','yz'])
+        self.gdetector = GDetector(self.detector)
+        self.display.register(self.gdetector, layer=0, clearable=False)
+        self.is_display = True
+    
                 
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
@@ -85,11 +98,13 @@ class PapasPFReconstructor(Analyzer):
        
                    
         for rp in reconstructed_particle_list:   
-            hist.summary_of_linked_elems(rp.uniqueid, "undirected")
+            print hist.find_summary_string(rp.uniqueid, "undirected")
     
             linked=hist.get_linked_objects(rp.uniqueid)
-            if len(linked['blocks'])>1 or len(linked['blocks'][0])>6 :
+            #
+            if len(linked['blocks'])>1 or len(linked['blocks'].itervalues().next())>6 :
                 hist.graph_item(rp.uniqueid)
+                print hist.summary_string(rp.uniqueid,linked["ids"])
             pass
         #for rp in reconstructed_particle_list:
             ##
@@ -121,6 +136,10 @@ class PapasPFReconstructor(Analyzer):
                 #pass
          
         hist.graph_event(event.history_nodes)
-        
+        hist.graph_event_root(event.history_nodes)
+        #hist.graph.write_png('plot_dag_event_' + str(hist.pfevent.event.iEv) +'.png')
+        if self.is_display  :
+            self.display.register( GTrajectories(event.sim_particles.values()),
+                                   layer=1)      
                
         pass         

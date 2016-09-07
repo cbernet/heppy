@@ -59,6 +59,7 @@ class PFBlock(object):
         for id1, id2 in itertools.combinations(self.element_uniqueids,2):
             key = Edge.make_key(id1,id2)
             self.edges[key] = edges[key]
+            
           
    
     def count_ecal(self):
@@ -292,3 +293,5 @@ class PFBlock(object):
             count_tracks = self.count_tracks() )
         )             
         return descrip;  
+
+ 

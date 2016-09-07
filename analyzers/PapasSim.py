@@ -148,9 +148,7 @@ class PapasSim(Analyzer):
             return
             
             
-        if self.is_display  :
-            self.display.register( GTrajectories(pfsim_particles),
-                                   layer=1)
+        
         #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)     
@@ -187,7 +185,7 @@ class PapasSim(Analyzer):
                 if ptc.track_smeared:
                     event.tracks[ptc.track_smeared.uniqueid]=ptc.track_smeared 
                     history[ptc.track_smeared.uniqueid] = Node(ptc.track_smeared.uniqueid)
-                    history[ptc.uniqueid].add_child(history[ptc.track_smeared.uniqueid])                
+                    #history[ptc.uniqueid].add_child(history[ptc.track_smeared.uniqueid])                
                     history[ptc.track.uniqueid].add_child(history[ptc.track_smeared.uniqueid])    
             if len(ptc.clusters) > 0 :   
                 for key, clust in ptc.clusters.iteritems():
@@ -208,7 +206,7 @@ class PapasSim(Analyzer):
                                 elif key=="hcal_in" :
                                     event.smeared_hcals[smclust.uniqueid]=smclust 
                                 history[smclust.uniqueid] = Node(smclust.uniqueid)
-                                history[ptc.uniqueid].add_child(history[smclust.uniqueid])
+                                #history[ptc.uniqueid].add_child(history[smclust.uniqueid])
                                 history[clust.uniqueid].add_child(history[smclust.uniqueid])
 
         #if "tracker" in self.simulator.pfinput.elements :
@@ -272,6 +270,8 @@ class PapasSim(Analyzer):
             #if element.__class__.__name__ == 'SmearedTrack': 
                 #event.othertracks[element.uniqueid] = element        
         #assert (len(event.tracks) == len(event.othertracks))
+        
+               
        
         pass
 

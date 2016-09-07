@@ -71,10 +71,10 @@ class PFBlockBuilder(BlockBuilder):
         for id1 in uniqueids:
             for  id2 in uniqueids:
                 if id1 < id2 :      
-                    if Identifier.pretty(id1)=="e299" or Identifier.pretty(id2)=="e299":
-                        if Identifier.pretty(id1)=="t30" or Identifier.pretty(id2)=="t30":
-                            print Identifier.pretty(id1) + " : " + Identifier.pretty(id2)
-                            pass
+                    # Identifier.pretty(id1)=="e299" or Identifier.pretty(id2)=="e299":
+                    #    if Identifier.pretty(id1)=="t30" or Identifier.pretty(id2)=="t30":
+                    #        print Identifier.pretty(id1) + " : " + Identifier.pretty(id2)
+                    #        pass
                     edge=self._make_edge(id1,id2, ruler)
                     #the edge object is added into the edges dictionary
                     edges[edge.key] = edge

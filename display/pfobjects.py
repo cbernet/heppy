@@ -185,3 +185,113 @@ class GTrajectories(list):
     def draw(self, projection):
         for traj in self:
             traj.draw(projection)
+            
+            
+class GReconstructedTrajectory(object):
+
+    draw_smeared_clusters = True
+    
+    def __init__(self, detector, particle, ecals, hcals,linestyle=1, linecolor=1):
+        self.path = StraightLine(particle.p4(), particle.vertex)
+        if abs(particle.q()>0.5):
+            self.path = Helix(detector.field.magnitude, particle.q(), particle.p4(), particle.vertex)
+        
+        cylinder = detector.cylinders        
+        #cylinder.
+        npoints = len(self.desc.points)
+        self.graph_xy = TGraph(npoints)
+        self.graph_yz = TGraph(npoints)
+        self.graph_xz = TGraph(npoints)
+        self.graph_thetaphi = TGraph(npoints)
+        self.graphs = [self.graph_xy, self.graph_yz, self.graph_xz, self.graph_thetaphi]
+        def set_graph_style(graph):
+            graph.SetMarkerStyle(2)
+            graph.SetMarkerSize(0.7)
+            graph.SetLineStyle(linestyle)
+            graph.SetLineColor(linecolor)
+        set_graph_style(self.graph_xy)
+        set_graph_style(self.graph_yz)
+        set_graph_style(self.graph_xz)
+        set_graph_style(self.graph_thetaphi)
+        for i, point in enumerate(self.desc.points.values()):
+            self.graph_xy.SetPoint( i, point.X(), point.Y() )
+            self.graph_yz.SetPoint(i, point.Z(), point.Y() )
+            self.graph_xz.SetPoint(i, point.Z(), point.X() )
+            tppoint = point
+            if i == 0:
+                tppoint = description.p4().Vect()
+            self.graph_thetaphi.SetPoint(i, math.pi/2. - tppoint.Theta(), tppoint.Phi() )
+        self.blobs = map(Blob, ecals.values() + hcals.values())            
+
+    def set_color(self, color):
+        for graph in self.graphs:
+            graph.SetMarkerColor(color)
+        
+    def draw(self, projection, opt=''):
+        for blob in self.blobs: 
+            blob.draw(projection, opt)
+        if projection == 'xy':
+            self.graph_xy.Draw(opt+"psame")
+        elif projection == 'yz':
+            self.graph_yz.Draw(opt+"psame")
+        elif projection == 'xz':
+            self.graph_xz.Draw(opt+"psame")
+        elif 'thetaphi' in projection:
+            self.graph_thetaphi.Draw(opt+"psame")            
+        else:
+            raise ValueError('implement drawing for projection ' + projection )
+
+            
+class GStraightReconstructedTrajectory(GReconstructedTrajectory):
+    def __init__(self, description):
+        super(GStraightReconstructedTrajectory, self).__init__(description,
+                                                  linestyle=2, linecolor=1)
+
+    def draw(self, projection):
+        super(GStraightReconstructedTrajectory, self).draw(projection, 'l')
+   
+
+            
+class GHelixReconstructedTrajectory(GReconstructedTrajectory):    
+    def __init__(self, description):
+        super(GHelixReconstructedTrajectory, self).__init__(description)
+        helix = description.path
+        self.helix_xy = TArc(helix.center_xy.X(),
+                             helix.center_xy.Y(),
+                             helix.rho, helix.phi_min, helix.phi_max)
+        self.helix_xy.SetFillStyle(0)
+        #TODO this is patchy,need to access the last point, whatever its name
+        max_time = helix.time_at_z(description.points.values()[-1].Z())
+        npoints = 100
+        self.graphline_xy = TGraph(npoints)
+        self.graphline_yz = TGraph(npoints)
+        self.graphline_xz = TGraph(npoints)
+        self.graphline_thetaphi = TGraph(npoints)
+        for i, time in enumerate(np.linspace(0, max_time, npoints)):
+            point = helix.point_at_time(time)
+            self.graphline_xy.SetPoint(i, point.X(), point.Y())
+            self.graphline_yz.SetPoint(i, point.Z(), point.Y())
+            self.graphline_xz.SetPoint(i, point.Z(), point.X())
+            tppoint = point
+            if i == 0:
+                tppoint = description.p4().Vect()
+            self.graphline_thetaphi.SetPoint(i, math.pi/2.-tppoint.Theta(), tppoint.Phi())
+        if abs(self.desc.pdgid()) in [11,13]:
+            def set_graph_style(graph):
+                graph.SetLineWidth(3)
+                graph.SetLineColor(5)
+            set_graph_style(self.graphline_xy)
+            set_graph_style(self.graphline_xz)
+            set_graph_style(self.graphline_yz)
+            set_graph_style(self.graphline_thetaphi)
+
+
+class GEvent(list):
+    
+    def __init__(self, event):
+            for ptc in event.rec_particles:
+                is_neutral = abs(ptc.q())<0.5
+                TrajClass = GStraightReconstructedTrajectory if is_neutral else GHelixReconstructedTrajectory
+                gtraj = TrajClass(ptc)
+                self.append(gtraj)    
+    

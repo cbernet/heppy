@@ -263,8 +263,8 @@ class PFReconstructor(object):
                 #link particle to the block            
                 blocknode.add_child(pnode)
                 #link particle to block elements
-                for element_id in block.element_uniqueids:
-                    self.history_nodes[element_id].add_child(pnode)    
+                #for element_id in block.element_uniqueids:
+                #    self.history_nodes[element_id].add_child(pnode)    
     
 
     def neutral_hadron_energy_resolution(self, hcal):
