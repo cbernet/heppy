@@ -82,13 +82,13 @@ class PapasSim(Analyzer):
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        self.tracksname =  self.cfg_ana.tracks  
-        self.mergedecalsname = self.cfg_ana.merged_ecals
-        self.mergedhcalsname = self.cfg_ana.merged_hcals
-        self.smearedecalsname = self.cfg_ana.smeared_ecals
-        self.smearedhcalsname = self.cfg_ana.smeared_hcals        
-        self.simecalsname = self.cfg_ana.sim_ecals
-        self.simhcalsname = self.cfg_ana.sim_hcals        
+        #self.tracksname =  self.cfg_ana.tracks  
+        #self.mergedecalsname = self.cfg_ana.merged_ecals
+        #self.mergedhcalsname = self.cfg_ana.merged_hcals
+        #self.smearedecalsname = self.cfg_ana.smeared_ecals
+        #self.smearedhcalsname = self.cfg_ana.smeared_hcals        
+        #self.simecalsname = self.cfg_ana.sim_ecals
+        #self.simhcalsname = self.cfg_ana.sim_hcals        
         self.historyname =  self.cfg_ana.output_history
         #decide if reconstruction is needed
         self.do_reconstruct = False
@@ -169,24 +169,24 @@ class PapasSim(Analyzer):
         for ptc in simparticles:
             event.sim_particles[ptc.uniqueid] =ptc
             history[ptc.uniqueid] = Node(ptc.uniqueid)
-            event.gen_stable_particles[ptc.gen_ptc.uniqueid]=ptc.gen_ptc
+            event.gen_stable_particles[ptc.gen_ptc.uniqueid] = ptc.gen_ptc
             history[ptc.gen_ptc.uniqueid] = Node(ptc.gen_ptc.uniqueid)
             history[ptc.gen_ptc.uniqueid].add_child(history[ptc.uniqueid])
             
             if ptc.track:
-                event.gen_tracks[ptc.track.uniqueid]=ptc.track
+                event.gen_tracks[ptc.track.uniqueid] = ptc.track
                 history[ptc.track.uniqueid] = Node(ptc.track.uniqueid)
                 history[ptc.uniqueid].add_child(history[ptc.track.uniqueid])
                 if ptc.track_smeared:
-                    event.tracks[ptc.track_smeared.uniqueid]=ptc.track_smeared 
+                    event.tracks[ptc.track_smeared.uniqueid] = ptc.track_smeared 
                     history[ptc.track_smeared.uniqueid] = Node(ptc.track_smeared.uniqueid)
                     history[ptc.track.uniqueid].add_child(history[ptc.track_smeared.uniqueid])    
             if len(ptc.clusters) > 0 :   
                 for key, clust in ptc.clusters.iteritems():
                     if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
-                        event.gen_ecals[clust.uniqueid]=clust                       
+                        event.gen_ecals[clust.uniqueid] = clust                       
                     elif key=="hcal_in" :
-                        event.gen_hcals[clust.uniqueid]=clust
+                        event.gen_hcals[clust.uniqueid] = clust
                     else:
                         assert false                    
                     history[clust.uniqueid] = Node(clust.uniqueid)
@@ -209,6 +209,8 @@ class PapasSim(Analyzer):
         setattr(event, "ecal_clusters", merged_ecals.merged)
         merged_hcals = MergedClusterBuilder(pfevent.event.smeared_hcals, ruler, merged_ecals.history_nodes)
         setattr(event, "hcal_clusters", merged_hcals.merged)
+        if (len(merged_hcals.history_nodes)==0):
+            pass
         setattr(event, self.historyname, merged_hcals.history_nodes)
         
         pass

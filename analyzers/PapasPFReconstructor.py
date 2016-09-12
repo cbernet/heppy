@@ -42,7 +42,7 @@ class PapasPFReconstructor(Analyzer):
         
         self.reconstructed.reconstruct(event)
         
-        #setattr(event, self.historyname, self.reconstructed.history_nodes)
+        setattr(event, self.historyname, self.reconstructed.history_nodes)
         #setattr(event, self.output_particlesdictname, self.reconstructed.particles)
         setattr(event, "rec_particles", self.reconstructed.particles)
         setattr(event, "blocks", self.reconstructed.blocks)       

@@ -35,6 +35,7 @@ class PapasPFBlockBuilder(Analyzer):
         self.hcalsname = self.cfg_ana.hcals;
         self.blocksname = self.cfg_ana.output_blocks;
         self.historyname = self.cfg_ana.history;
+        self.outhistoryname = self.cfg_ana.outhistory;
         
                 
     def process(self, event):
@@ -46,11 +47,13 @@ class PapasPFBlockBuilder(Analyzer):
         history_nodes =  None
         if hasattr(event, self.historyname) :
             history_nodes = getattr(event,  self.historyname)
+        else:
+            pass
         blockbuilder = PFBlockBuilder(pfevent, distance, history_nodes)
         #print blockbuilder
             
         setattr(event, "blocks", blockbuilder.blocks)
-        #setattr(event, self.outhistoryname, blockbuilder.history_nodes)
+        setattr(event, self.outhistoryname, blockbuilder.history_nodes)
         
         
         

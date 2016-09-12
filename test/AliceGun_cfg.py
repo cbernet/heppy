@@ -5,13 +5,27 @@ import heppy.framework.config as cfg
 import logging
 import  math
 
+from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
 
+import logging
+# next 2 lines necessary to deal with reimports from ipython
+logging.shutdown()
+reload(logging)
+logging.basicConfig(level=logging.WARNING)
+#logging.basicConfig(level=logging.INFO)
+# setting the random seed for reproducible results
+#import random
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
+from heppy.statistics.rrandom import RRandom as random
+random.seed(0xdeadbeef)
 
 logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
-import heppy.papas.random as  random
-#from heppy.statistics.rrandom import RRandom as random
+#import heppy.papas.random as  random
+from heppy.statistics.rrandom import RRandom as random
 random.seed(0xdeadbeef)
 
 make_tree = True
@@ -106,7 +120,8 @@ pfblocks = cfg.Analyzer(
     tracks = 'tracks', 
     ecals = 'ecal_clusters', 
     hcals = 'hcal_clusters', 
-    history = 'history_nodes',  
+    history = 'history_nodes', 
+    outhistory = 'newhistory',
     output_blocks = 'reconstruction_blocks'
 )
 
@@ -181,9 +196,12 @@ if __name__ == '__main__':
         for j in range(10) :
             process(iev)
         pass
+    
         #process(iev) #alice_debug
         #process(iev) #alice_debug
         #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()
+    pdebug.close()
+    pass    

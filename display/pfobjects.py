@@ -10,7 +10,6 @@ class Blob(object):
         pos = cluster.position
         radius = cluster.size()
         thetaphiradius = cluster.angular_size()
-        print radius
         color = 7
         innercolor=1
 #todo       
@@ -195,8 +194,10 @@ class GTrajectories(list):
         for traj in self:
             traj.draw(projection)
             
-            
-class GReconstructedTrajectory(object):
+#Eventually these may replace the above
+#They try to use the information contained in the history rather than the additional info in the particle (which is only in python)
+#not all things are identical
+class GNewTrajectory(object):
 
     draw_smeared_clusters = True
     
@@ -263,18 +264,18 @@ class GReconstructedTrajectory(object):
             raise ValueError('implement drawing for projection ' + projection )
 
             
-class GReconstructedStraightTrajectory(GReconstructedTrajectory):
+class GNewStraightTrajectory(GNewTrajectory):
     def __init__(self,  detector, particle, ecals, hcals, grey=False):
-        super(GReconstructedStraightTrajectory, self).__init__( detector, particle, ecals, hcals,
+        super(GNewStraightTrajectory, self).__init__( detector, particle, ecals, hcals,
                                                   linestyle=2, linecolor=1, grey= grey)
 
     def draw(self, projection):
-        super(GReconstructedStraightTrajectory, self).draw(projection, 'l')
+        super(GNewStraightTrajectory, self).draw(projection, 'l')
    
 
-class GReconstructedHelixTrajectory(GReconstructedTrajectory):    
+class GNewHelixTrajectory(GNewTrajectory):    
     def __init__(self, detector, particle, ecals, hcals,linestyle=1, linecolor=1, grey=False):
-        super(GReconstructedHelixTrajectory, self).__init__( detector, particle, ecals, hcals, linestyle, linecolor, grey=grey)
+        super(GNewHelixTrajectory, self).__init__( detector, particle, ecals, hcals, linestyle, linecolor, grey=grey)
         helix = self.path
         self.helix_xy = TArc(helix.center_xy.X(),
                              helix.center_xy.Y(),
@@ -336,7 +337,7 @@ class GReconstructedHelixTrajectory(GReconstructedTrajectory):
             self.graphline_thetaphi.Draw("lsame")            
         else:
             raise ValueError('implement drawing for projection ' + projection )
-        super(GReconstructedHelixTrajectory, self).draw(projection)
+        super(GNewHelixTrajectory, self).draw(projection)
         
 
 
@@ -351,7 +352,7 @@ class GHistoryBlock(list):
             linked=history.get_linked_object_dict(ids)
             for ptc in linked[particles_name].values():
                 is_neutral = abs(ptc.q())<0.5
-                TrajClass = GReconstructedStraightTrajectory if is_neutral else GReconstructedHelixTrajectory                  
+                TrajClass = GNewStraightTrajectory if is_neutral else GNewHelixTrajectory                  
                 gtraj = TrajClass(detector, ptc, linked['smeared_ecals'], linked['smeared_hcals'],grey=is_grey)
                 self.append(gtraj)              
             

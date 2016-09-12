@@ -204,7 +204,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                            beampipe.volume.outer,
                                            self.detector.elements['field'].magnitude)
         
-        mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
+        #ajrdebug mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
             
         #re-propagate after multiple scattering in the beam pipe
         #indeed, multiple scattering is applied within the beam pipe,
@@ -307,7 +307,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.ptcs = []
         smeared = []
         for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
-            pdebug.write(str('Selected Papas{}\n'.format(gen_ptc)))
+            pdebug.write(str('Made {}\n'.format(gen_ptc)))
         for gen_ptc in ptcs:        
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
