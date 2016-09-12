@@ -160,8 +160,14 @@ Make sure that the configuration object is of class cfg.Analyzer.
                 os.mkdir( tmpname )
                 break
             except OSError:
-                index += 1
-                tmpname = '%s_%d' % (name, index)
+                # failed to create the directory
+                # is it empty?
+                if not os.listdir(tmpname):
+                    break  # it is, so use it
+                else:
+                    # if not we append a number to the directory name
+                    index += 1
+                    tmpname = '%s_%d' % (name, index)
         if index == 2000:
               raise ValueError( "More than 2000 output folder with same name or 2000 attempts failed, please clean-up, change name or check permissions")
         return tmpname

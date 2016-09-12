@@ -1,6 +1,7 @@
 import unittest
 import os
 import shutil
+import tempfile
 from Filter import Filter 
 from heppy.framework.event import Event
 import heppy.framework.config as cfg
@@ -8,10 +9,10 @@ import heppy.framework.config as cfg
 class FilterTestCase(unittest.TestCase):
 
     def setUp(self):
-        os.mkdir('looper')
+        self.outdir = tempfile.mkdtemp()
     
     def tearDown(self):
-        shutil.rmtree('looper')
+        shutil.rmtree(self.outdir)
     
     def test_list(self):
         event = Event(0)
@@ -26,7 +27,7 @@ class FilterTestCase(unittest.TestCase):
             'test',
             files = []
             )
-        filter = Filter(cfg_ana, cfg_comp, 'looper')
+        filter = Filter(cfg_ana, cfg_comp, self.outdir)
         filter.process(event)
         self.assertItemsEqual(event.filtered, [0,2,4,6,8])
     
@@ -43,7 +44,7 @@ class FilterTestCase(unittest.TestCase):
             'test',
             files = []
             )
-        filter = Filter(cfg_ana, cfg_comp, 'looper')
+        filter = Filter(cfg_ana, cfg_comp, self.outdir)
         filter.process(event)
         self.assertDictEqual(event.filtered, {3:9})
         
