@@ -56,7 +56,6 @@ leptons_true = cfg.Analyzer(
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
 
-
 # Compute lepton isolation w/r other particles in the event.
 # help(LeptonAnalyzer) for more information
 from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
