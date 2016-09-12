@@ -1,4 +1,4 @@
-from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative
+from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
 import pydot
 import matplotlib
@@ -13,34 +13,37 @@ class History(object):
         #this information information needed to be able to unravel information based on a unique identifier
         self.history_nodes = history_nodes
         self.pfevent = pfevent
+                  
         
-    def find_summary_string(self, rootid, direction="undirected"):
         
-        #find everything that is linked to this id
-        #and write a summary of what is found
-        #the BFS search returns a list of the ids that are  connected to the id of interest
-        BFS = BreadthFirstSearchIterative(self.history_nodes[rootid], direction)
-        return self.summary_string(rootid, [ v.get_value() for v in BFS.result])    
+    #def summary_string_id(self, rootid, direction="undirected"):
+        ##find everything that is linked to this id
+        ##and write a summary of what is found
+        ##the BFS search returns a list of the ids that are  connected to the id of interest
+        #BFS = BreadthFirstSearchIterative(self.history_nodes[rootid], direction)
+        #idstring=  "history connected to node:",  self.pfevent.get_object(rootid).__str__()
+        #return idstring + "\n" + self.summary_string_ids([ v.get_value() for v in BFS.result])    
     
-    def summary_string(self, id,  nodeids):
-        #print out all the components in the block
+    def summary_string_ids(self, nodeids):
+        #details all the components in the block
         linked=self.get_linked_object_dict(nodeids)
-        print "history connected to node:",  self.pfevent.get_object(id).__str__()
+        makestring=""
         for k in ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
                   "smeared_hcals","gen_hcals","rec_particles"]:
             newlist = [v.__str__() for a, v in linked[k].items()]
-            print k.rjust(13, ' '), '\n              '.join(newlist)
-        pass          
+            
+            makestring = makestring + "\n" + k.rjust(13, ' ') + ":"  +'\n              '.join(newlist)
+        return makestring          
         
     def get_linked_objects(self, id, direction="undirected"): #get linked nodes
         BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction)
         linked = self.get_linked_object_dict([v.get_value() for v in BFS.result])
-        linked["ids"] = [v.get_value() for v in BFS.result]
         linked['rootid'] = id
         linked['direction'] = direction
         return linked;
     
     def get_linked_object_dict(self, ids): #get object dict
+        
         linked_objects = {}    
         tracks = {}    
         ecals = {}    
@@ -96,7 +99,16 @@ class History(object):
         linked_objects["gen_ecals"] = gen_ecals
         linked_objects["gen_hcals"] = gen_hcals
         linked_objects["rec_particles"] = rec_particles
+        linked_objects["ids"] = ids
         return  linked_objects   
+    
+    def get_history_blocks(self): #get linked nodes
+        self.subgraphs = []
+        for subgraphlist in DAGFloodFill(self.history_nodes).blocks: # change to subgraphs
+            element_ids = [node.get_value() for node in subgraphlist]            
+            self.subgraphs.append(sorted(element_ids)) 
+        return self.subgraphs
+          
 
     def short_name(self, node):
         z = node.get_value()
@@ -123,84 +135,80 @@ class History(object):
         z = node.get_value()
         return self.pfevent.get_object(z) 
               
-    def graph_item (self, id,  direction = 'undirected'):
+    def graph_items (self, ids):
+        #DAG plot for set of ids
+        #input:
+        #   ids: list of uniqueids
         graph = pydot.Dot(graph_type='digraph')   
-        graphnodes = dict()            
-        BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction) 
-        ids=[]
-        for n in BFS.result:
-            ids.append(n.get_value())
-        self.graph_ids(ids, graph, graphnodes)
-        namestring='plot_dag_' + str(self.pfevent.event.iEv) +'_item_' + Identifier.pretty(id) + '.png'
+        self._graph_ids(ids, graph)
+        namestring='event_' + str(self.pfevent.event.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
     
     def graph_event(self, nodeids): 
-        graph = pydot.Dot(graph_type='digraph')
-        graphnodes = dict()                
-        self.graph_ids(nodeids, graph, graphnodes)
-        namestring = 'plot_dag_' + str(self.pfevent.event.iEv)  + '.png'
+        #DAG plot for whole event
+        #input:
+         #   ids: list of uniqueids  for full event      
+        graph = pydot.Dot(graph_type='digraph')             
+        self._graph_ids(nodeids, graph)
+        namestring = 'event_' + str(self.pfevent.event.iEv)  + '_dag.png'
         graph.write_png(namestring)    
         
-    def graph_add_block (self,graph, graphnodes, pfblock):
+    def _graph_add_block (self,graph, graphnodes, pfblock):
+        #this adds the block links (distance, is_linked) onto the DAG in red
         intcols =[1,2,3,4,5,6,7,8]
         for edge in pfblock.edges.itervalues():
             if  edge.linked: 
                 graph.add_edge(pydot.Edge(  graphnodes[Identifier.pretty(edge.id1)],graphnodes[Identifier.pretty(edge.id2)],
                 label=round(edge.distance,1),style="dashed", color="red",arrowhead="none",arrowtail="none",fontsize='7' ))
         pass      
-                     
-    
-        
-    def graph_ids (self, nodeids, graph, graphnodes):
-
+                         
+    def _graph_ids (self, nodeids, graph):
+        graphnodes = dict() 
         for nodeid in nodeids:
             node = self.history_nodes[nodeid]
             if  graphnodes.has_key(self.short_name(node))==False:
                 graphnodes[self.short_name(node)] = pydot.Node(self.short_name(node), style="filled", label=self.short_info(node), fillcolor=self.color(node))
                 graph.add_node( graphnodes[self.short_name(node)]) 
-                
         for nodeid in nodeids:
             node = self.history_nodes[nodeid]
             for c in node.parents:
                 if len(graph.get_edge(graphnodes[self.short_name(c)],graphnodes[self.short_name(node)]))==0:
                     graph.add_edge(pydot.Edge(  graphnodes[self.short_name(c)],graphnodes[self.short_name(node)])) 
+                    
         for nodeid in nodeids:
             node = self.history_nodes[nodeid]
             if self.short(node)== 'b':
                 bl=self.object(node)
                 if len(bl.element_uniqueids)>1:
-                    self.graph_add_block(graph, graphnodes, bl)             
+                    self._graph_add_block(graph, graphnodes, bl)             
              
     def graph_event_root(self, nodeids): 
+        #DAG for whole event (not very good)
         from ROOT import TGraphStruct,TGraphNode, TGraphEdge, gPad, TCanvas
-        can=TCanvas("History","c",200000,1200)        
+        can=TCanvas("History","c",2000,1200)        
         graph = TGraphStruct()
-        graphnodes = dict()                
-        self.graph_ids_root(nodeids, graph, graphnodes)
+        self._graph_ids_root(nodeids, graph)
         graph.Draw()
         can.Draw()
         gPad.Update()
+        gPad.SaveAs('event_' + str(self.pfevent.event.iEv) + '_root_dag.png')   
         pass
     
-    def graph_item_root (self, id,  direction='undirected'):
+    def graph_items_root (self, ids):
+        #DAG for group of ids
+        from ROOT import TGraphStruct,TGraphNode, TGraphEdge, gPad, TCanvas
         can=TCanvas("History","c",600,600)       
-        graph = TGraphStruct()
-        graphnodes = dict()            
-        BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction) 
-        graphnodes = {}
-        ids=[]
-        for n in BFS.result:
-            ids.append(n.get_value())        
-        self.graph_ids_root (ids,graph, graphnodes )
+        graph = TGraphStruct() 
+        self._graph_ids_root (ids, graph)
         graph.Draw()
         can.Draw()
         gPad.Update()
-        graph.Draw()   
-        pass
+        gPad.SaveAs('event_' + str(self.pfevent.event.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
+        
     
-    def graph_ids_root (self, nodeids,graph, graphnodes ):  
+    def _graph_ids_root (self, nodeids,graph ):  
         from ROOT import TGraphStruct,TGraphNode, TGraphEdge, gPad, TCanvas
-    
+        graphnodes=dict()
         for nodeid in nodeids:
             node = self.history_nodes[nodeid]
             if   graphnodes.has_key(self.short_name(node))==False:
@@ -215,17 +223,16 @@ class History(object):
                 edge=TGraphEdge(graphnodes[self.short_name(c)],graphnodes[self.short_name(node)])
                 edge.SetLineStyle(1)
                 graph.AddEdge( edge)
-    
         for nodeid in nodeids:
             node = self.history_nodes[nodeid]
             if self.short(node)== 'b':
                 bl=self.object(node)
                 if len(bl.element_uniqueids)>2:
                     self.graph_add_block_root(graph, graphnodes, bl)
-    
         pass
     
     def graph_add_block_root(self,graph, graphnodes, pfblock):
+        #this documents the pfblock linkages in red (need to add distance text for root)
         from ROOT import TGraphStruct,TGraphNode, TGraphEdge    
     
         for edge in pfblock.edges.itervalues():

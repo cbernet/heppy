@@ -21,10 +21,10 @@ class StraightLinePropagator(Propagator):
         
         line = StraightLine(particle.p4(), particle.vertex) 
         particle.set_path( line ) # TODO 
-        destination = line.destination(cylinder, dummy)
-        if destination==None:
+        position = line.position(cylinder, dummy)
+        if position==None:
             return
-        particle.points[cylinder.name] = destination 
+        particle.points[cylinder.name] = position 
         
 
         

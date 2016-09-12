@@ -27,6 +27,8 @@ from heppy.papas.graphtools.DAG import Node
 #   they are (for the time being) excluded from the simulation rec particles in order that particle
 #   comparisons can be made (eg # no of particles)
 
+#todo redo comments once naming and passing arguments have been agreed
+
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
 
@@ -147,8 +149,6 @@ class PapasSim(Analyzer):
         if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
             return
             
-            
-        
         #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)     
@@ -160,17 +160,12 @@ class PapasSim(Analyzer):
                             key = lambda ptc: ptc.e(), reverse=True)
         
             #these are the reconstructed (via simulation) particles excluding muons and electrons         
-            #origparticles = sorted( self.simulator.pfsequence.pfreco.particles,
-            #                       key = lambda ptc: ptc.e(), reverse=True)
             if hasattr(self, 'recname')  :
                 setattr(event, self.recname, particles)          
-            #if hasattr(self, 'rec_noleptonsname')  :
-            #    setattr(event, self.rec_noleptonsname, origparticles)
-                    
+                  
 
-
-        history= dict() #(idt, Node(idt)) 
-        #extract the tracks and clusters (extraction is prior to Colins merging step)
+        #construct the history from the simulated particles
+        history= dict()  
         for ptc in simparticles:
             event.sim_particles[ptc.uniqueid] =ptc
             history[ptc.uniqueid] = Node(ptc.uniqueid)
@@ -185,11 +180,10 @@ class PapasSim(Analyzer):
                 if ptc.track_smeared:
                     event.tracks[ptc.track_smeared.uniqueid]=ptc.track_smeared 
                     history[ptc.track_smeared.uniqueid] = Node(ptc.track_smeared.uniqueid)
-                    #history[ptc.uniqueid].add_child(history[ptc.track_smeared.uniqueid])                
                     history[ptc.track.uniqueid].add_child(history[ptc.track_smeared.uniqueid])    
             if len(ptc.clusters) > 0 :   
                 for key, clust in ptc.clusters.iteritems():
-                    if key=="ecal_in" :  #.or. key=="ecal_decay" :
+                    if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
                         event.gen_ecals[clust.uniqueid]=clust                       
                     elif key=="hcal_in" :
                         event.gen_hcals[clust.uniqueid]=clust
@@ -201,47 +195,23 @@ class PapasSim(Analyzer):
                     if len(ptc.clusters_smeared) > 0 :   
                         for key1, smclust in ptc.clusters_smeared.iteritems():
                             if (key ==key1): 
-                                if key=="ecal_in" :  #.or. key=="ecal_decay" :
+                                if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
                                     event.smeared_ecals[smclust.uniqueid]=smclust
                                 elif key=="hcal_in" :
                                     event.smeared_hcals[smclust.uniqueid]=smclust 
                                 history[smclust.uniqueid] = Node(smclust.uniqueid)
-                                #history[ptc.uniqueid].add_child(history[smclust.uniqueid])
                                 history[clust.uniqueid].add_child(history[smclust.uniqueid])
 
-        #if "tracker" in self.simulator.pfinput.elements :
-            #for element in self.simulator.pfinput.elements["tracker"]:
-                #event.tracks[element.uniqueid] = element
-                
-        #if "ecal_in" in self.simulator.pfinput.elements :        
-            #for element in self.simulator.pfinput.elements["ecal_in"]:
-                #event.smeared_ecals[element.uniqueid] = element
-                
-        #if "hcal_in" in self.simulator.pfinput.elements :
-            #for element in self.simulator.pfinput.elements["hcal_in"]:
-                #event.smeared_hcals[element.uniqueid] = element
-                
+        #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
         ruler = Distance()
-
-        #create history node
-        #note eventually history will be created by the simulator and passed in
-        # as an argument and this will no longer be needed
-        #uniqueids = sorted(list(event.tracks.keys()) + list(event.smeared_ecals.keys()) + list(event.smeared_hcals.keys())
-        #                   + list(event.gen_tracks.keys())+ list(event.gen_ecals.keys()))+ list(event.gen_hcals.keys())
-        #temporarty removed fro c+history =  dict( (idt, Node(idt)) for idt in uniqueids )                    
-        #history= dict((idt, Node(idt)) for idt in uniqueids)
-        
-        
-        
-       
-        #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
-        # and set the event to point to the merged cluster
-        pfevent =  PFEvent(event)
+        pfevent = PFEvent(event)
         merged_ecals = MergedClusterBuilder(pfevent.event.smeared_ecals, ruler, history)
         setattr(event, "ecal_clusters", merged_ecals.merged)
         merged_hcals = MergedClusterBuilder(pfevent.event.smeared_hcals, ruler, merged_ecals.history_nodes)
         setattr(event, "hcal_clusters", merged_hcals.merged)
-        setattr(event,  self.historyname,  merged_hcals.history_nodes)
+        setattr(event, self.historyname, merged_hcals.history_nodes)
+        
+        pass
         
         ####if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
         #event.ecal_clusters = dict()
@@ -270,9 +240,7 @@ class PapasSim(Analyzer):
             #if element.__class__.__name__ == 'SmearedTrack': 
                 #event.othertracks[element.uniqueid] = element        
         #assert (len(event.tracks) == len(event.othertracks))
-        
-               
-       
-        pass
+
+        #pass
 
         

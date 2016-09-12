@@ -50,8 +50,8 @@ class Path(object):
 class StraightLine(Path):
     pass
 
-    def destination(self, cylinder, dummy=None):
-            
+    def position(self, cylinder, dummy=None):
+         #this code was in propapagator class   
             theta = self.udir.Theta()
             if abs(self.origin.Z()) > cylinder.z or \
                self.origin.Perp() > cylinder.rad:
@@ -222,9 +222,10 @@ class Helix(Path):
     #     # d2 = path_length / math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)
     #     return d1
         
-    #added by alice to assist with plotting reconstructed particles and keeping
-    #particles cleaner
+
     def destination(self, cylinder):
+        #added by alice to assist with plotting reconstructed particles and keeping
+        #particles cleaner was originally in propagator class        
         is_looper = self.extreme_point_xy.Mag() < cylinder.rad
         is_positive = self.p4.Z() > 0.
         if not is_looper:
@@ -257,6 +258,11 @@ class Helix(Path):
         
         return {'position': destination, 'info' : info}
 
+    def position(self, cylinder):
+        dest=self.destination(cylinder)
+        if dest==None:
+            return
+        return dest["position"]   
 
             
     

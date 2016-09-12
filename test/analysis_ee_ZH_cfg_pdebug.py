@@ -30,9 +30,6 @@ random.seed(0xdeadbeef)
 # input definition
 comp = cfg.Component(
     'example',
-    #files = [
-    #    '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
-    #]
     files = [
             '/Users/alice/fcc/pythiafiles/ee_ZH_Zmumu_Hbb.root'
         ]    
@@ -111,6 +108,14 @@ pfreconstruct = cfg.Analyzer(
     output_particles_list = 'particles_list'
 )
 
+from heppy.analyzers.PapasHistory import PapasHistory
+papashistory = cfg.Analyzer(
+    PapasHistory,
+    instance_label = 'papas_history', 
+    detector = CMS(),
+    history = 'history'
+)
+
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -119,7 +124,8 @@ sequence = cfg.Sequence(
     gen_particles_stable,
     papas,
     pfblocks,
-    pfreconstruct
+    pfreconstruct,
+    papashistory
      )
 
 
