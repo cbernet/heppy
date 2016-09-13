@@ -108,7 +108,7 @@ class PapasHistory(Analyzer):
             linked=hist.get_linked_object_dict(s)
             if len(s)>20 : #for example
                 hist.graph_items(s) 
-                hist.graph_items_root(s) 
+                #hist.graph_items_root(s) 
                 print "Linked History Block \n" + hist.summary_string_ids(linked["ids"])
                 pass        
         
@@ -117,6 +117,18 @@ class PapasHistory(Analyzer):
             #whole event as DAG
             hist.graph_event(event.history_nodes)
             hist.graph_event(event.history_nodes)
+            #whole event as ROOT
+            self.display.register( GHistoryBlock(event.history_nodes, event.simulator.detector, hist, 'rec_particles', False), layer=2) 
+            self.display.register( GHistoryBlock(event.history_nodes, event.simulator.detector, hist, 'sim_particles', True), layer=1) 
+            self.display.draw()        
+            gPad.SaveAs('event_' + str(event.iEv) + '_rec.png') 
+            self.display.clear() 
+            self.display.register( GHistoryBlock(event.history_nodes, event.simulator.detector, hist, 'rec_particles', True), layer=1) 
+            self.display.register( GHistoryBlock(event.history_nodes, event.simulator.detector, hist, 'sim_particles', False), layer=2) 
+            self.display.draw()        
+            gPad.SaveAs('event_' + str(event.iEv) + '_sim.png') 
+            self.display.clear()             
+            
             #display event display for each of the history blocks 
             for s in subgraphs:  
                 linked=hist.get_linked_object_dict(s)

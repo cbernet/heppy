@@ -183,7 +183,7 @@ class History(object):
                     self._graph_add_block(graph, graphnodes, bl)             
              
     def graph_event_root(self, nodeids): 
-        #DAG for whole event (not very good)
+        #DAG for whole event (not very good when printed)
         from ROOT import TGraphStruct,TGraphNode, TGraphEdge, gPad, TCanvas
         can=TCanvas("History","c",2000,1200)        
         graph = TGraphStruct()
