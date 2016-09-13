@@ -14,7 +14,7 @@ class Identifier(long):
         The bits to the left of this contain the objecttype eg ECALCLUSTER etc
         
         usage:
-           self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK) 
+           self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's') 
            if Identifier.is_track(self.uniqueid):
                 ....
            
@@ -29,15 +29,17 @@ class Identifier(long):
         HCALCLUSTER = 2
         TRACK = 3
         PARTICLE = 4
-        RECPARTICLE = 5
-        BLOCK = 6
-        SIMPARTICLE = 7
+        BLOCK = 5
+        
     
     @classmethod    
-    def make_id(cls, type):
+    def make_id(cls, type, subtype='u'):
         x = cls._id.next()
+        if subtype=='u':
+            pass
         value = type <<32
-        return value | x
+        vsubtype= ord(subtype.lower())<< 38
+        return vsubtype | value | x
    
     @staticmethod      
     def get_unique_id( ident):
@@ -45,7 +47,13 @@ class Identifier(long):
     
     @staticmethod  
     def get_type ( ident):
-        return ident >> 32
+        return ident >> 32 & 0b111111
+    
+    @staticmethod  
+    def get_subtype ( ident):
+        #intended to be single char
+        #add checks
+        return chr( (ident >> 38 & 0b111111111111))
     
     @staticmethod  
     def is_ecal ( ident):
@@ -63,26 +71,30 @@ class Identifier(long):
     def is_block ( ident):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.BLOCK     
     
-    @staticmethod  
-    def is_rec_particle ( ident):
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.RECPARTICLE 
+    #@staticmethod  
+    #def is_rec_particle ( ident):
+    #    return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.RECPARTICLE 
     
     @staticmethod  
     def is_particle ( ident):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.PARTICLE 
     
-    @staticmethod  
-    def is_sim_particle ( ident):
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.SIMPARTICLE     
+    #@staticmethod  
+    #def is_sim_particle ( ident):
+    #   return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.SIMPARTICLE     
     
     @staticmethod
     def type_short_code(ident):
-        typelist=".ehtprbs..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
+        typelist=".ehtpb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
         return typelist[Identifier.get_type(ident)]    
     
     @staticmethod
+    def type_code(ident):
+        typelist=".ehtpb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
+        return Identifier.get_subtype(ident) + typelist[Identifier.get_type(ident)]     
+    @staticmethod
     def pretty(ident):
-        return Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))    
+        return Identifier.get_subtype(ident) + Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))    
     
     @classmethod
     def reset(cls):
@@ -93,3 +105,10 @@ class Identifier(long):
     
     
 
+if __name__ == '__main__':
+
+   
+    id = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's') 
+    print Identifier.get_subtype(id)
+    print Identifier.get_type(id)
+    pass

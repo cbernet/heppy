@@ -122,7 +122,8 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.position,
                                           cluster.size(),
                                           cluster.layer,
-                                          cluster.particle )
+                                          cluster.particle
+                                          )
         
         #pdebug.write(str('Made {i} \n'.format(i=cluster.info()) ))      
         pdebug.write(str('Made {}\n'.format(smeared_cluster) ))

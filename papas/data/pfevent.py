@@ -33,13 +33,14 @@ class PFEvent(object):
         ''' given a uniqueid return the underlying obejct
         '''
         type = Identifier.get_type(uniqueid)
+        subtype = Identifier.get_subtype(uniqueid)
         if type == Identifier.PFOBJECTTYPE.TRACK:
             if uniqueid in self.event.tracks :
                 return self.event.tracks[uniqueid] 
             elif uniqueid in self.event.gen_tracks :
                 return self.event.gen_tracks[uniqueid] 
             else:
-                        assert(False)            
+                assert(False)            
         elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
             if uniqueid in self.event.ecal_clusters:            
                 return self.event.ecal_clusters[uniqueid] 
@@ -48,7 +49,7 @@ class PFEvent(object):
             elif uniqueid in self.event.gen_ecals:            
                 return self.event.gen_ecals[uniqueid] 
             else:
-                        assert(False)            
+                assert(False)            
         elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
             if uniqueid in self.event.hcal_clusters:            
                 return self.event.hcal_clusters[uniqueid] 
@@ -57,13 +58,16 @@ class PFEvent(object):
             elif uniqueid in self.event.gen_hcals:            
                 return self.event.gen_hcals[uniqueid] 
             else:
-                        assert(False)            
+                assert(False)            
         elif type == Identifier.PFOBJECTTYPE.PARTICLE:
-            return self.event.gen_stable_particles[uniqueid] 
-        elif type == Identifier.PFOBJECTTYPE.SIMPARTICLE:
-            return self.event.sim_particles[uniqueid]          
-        elif type == Identifier.PFOBJECTTYPE.RECPARTICLE:
-            return self.event.rec_particles[uniqueid]               
+            if subtype == 'g':            
+                return self.event.gen_stable_particles[uniqueid] 
+            elif uniqueid in self.event.sim_particles:            
+                return self.event.sim_particles[uniqueid]             
+            elif uniqueid in self.event.rec_particles:            
+                return self.event.rec_particles[uniqueid] 
+            else:  
+                assert false
         elif type == Identifier.PFOBJECTTYPE.BLOCK:
             return self.event.blocks[uniqueid]               
         else:
