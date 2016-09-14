@@ -29,22 +29,26 @@ class TestDistance(unittest.TestCase):
                 self.assertTrue(link_ok)
             elif ele==tr:
                 self.assertFalse(link_ok)
-        for ele1, ele2 in itertools.combinations(elems, 2):
-            link_type, link_ok, distance = ruler(ele1, ele2)
-            self.assertTrue(link_ok)
+        #ecal hcal no longer linked to match c++ so have adjusted test
         link_type, link_ok, distance = ruler(c2, c1)
-        self.assertEqual(link_type, ('ecal_in','hcal_in'))
+        self.assertFalse(link_ok)
+        self.assertEqual(link_type, None)
+        link_type, link_ok, distance = ruler(tr, c1)
+        self.assertTrue(link_ok) 
+        link_type, link_ok, distance = ruler(tr, c2)
+        self.assertTrue(link_ok)        
+
         
     def test_ecal_hcal(self):
         c1 = Cluster(10, TVector3(1, 0, 0), 4., 'ecal_in')
         c2 = Cluster(20, TVector3(1, 0, 0), 4., 'hcal_in')
         link_type, link_ok, distance = ruler(c1, c2)
-        self.assertTrue(link_ok)
-        self.assertEqual(distance, 0.)
+        self.assertFalse(link_ok) #adjusted to match cpp
+        self.assertEqual(distance, None)
         pos3 = TVector3(c1.position)
         pos3.RotateZ(0.059)
         c3 = Cluster(30, pos3, 5, 'hcal_in')
-        link_type, link_ok, distance = ruler(c1, c3)
+        link_type, link_ok, distance = ruler(c2, c3)
         self.assertEqual(distance, 0.059)
         
         
