@@ -39,39 +39,23 @@ class GraphBuilder(object):
         
         ids.sort()
         
-        #for idt in ids:
-        #    pdebug.write(str('Node {:9}\n').format(Identifier.pretty(idt)))
-
-        # build the block nodes (separate graph which will use distances between items to determine links)
         
+        # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict((idt, Node(idt)) for idt in ids)
-        #self.nodes = collections.OrderedDict( sorted(nodes.items(), key=lambda t: t[0]) )  #needed to match with cpp
-
+        
         for edge in edges.itervalues():
-        #for key in sorted(edges):
-            #edge=edges[key]
             #add linkage info into the nodes dictionary
             if  edge.linked: #this is actually an undirected link - OK for undirected searches 
                 self.nodes[edge.id1].add_child(self.nodes[edge.id2]) 
-                #pdebug.write(str('      Add Child {:9} to  Node {:9}\n').format(Identifier.pretty(edge.id2),Identifier.pretty(edge.id1)))
                 
-        #for node in self.nodes.itervalues():
-            #pdebug.write(str('Node {:9}\n').format(Identifier.pretty(node.get_value())))
-            #for c in node.children:
-                #pdebug.write(str('      Children Node {:9}\n').format(Identifier.pretty(c.get_value())))
-            #for p in node.parents:
-                #pdebug.write(str('      Parent Node {:9}\n').format(Identifier.pretty(p.get_value())))
-            
         
         # build the subgraphs of connected nodes
         self.subgraphs = []
         for subgraphlist in DAGFloodFill(self.nodes).blocks: # change to subgraphs
             element_ids = [] 
-            #pdebug.write("Group\n")
             # NB the nodes that are found by FloodFill are the Nodes describing links between items
             # we want the ids of these nodes
             for node in subgraphlist:
-                #pdebug.write(str('inside Node {:9}\n').format(Identifier.pretty(node.get_value())))
                 element_ids.append(node.get_value())        
             self.subgraphs.append(sorted(element_ids))
 

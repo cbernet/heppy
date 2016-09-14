@@ -66,8 +66,8 @@ class PFBlockBuilder(BlockBuilder):
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
-        edges = dict()# OrderedDict()
-        #for id1, id2 in itertools.combinations(uniqueids,2):
+        edges = dict()
+       
         for id1 in uniqueids:
             for  id2 in uniqueids:
                 if id1 < id2 :      

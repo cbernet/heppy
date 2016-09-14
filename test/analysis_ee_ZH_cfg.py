@@ -287,8 +287,8 @@ if __name__ == '__main__':
     if iev is not None:
         pdebug.write(str('Event: {}\n'.format(iev)))
         process(iev)
-        process(iev)
-        process(iev)
+        #process(iev)
+        #process(iev)
     else:
         loop.loop()
         loop.write()

@@ -71,7 +71,7 @@ class Papas(Analyzer):
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         try: 
-            self.simulator.simulate( gen_particles, False ) #TODO Alice undo
+            self.simulator.simulate( gen_particles, False ) 
         except PropagationError as err:
             self.mainLogger.error( str(err) + ' -> Event discarded')
             return False
@@ -86,7 +86,7 @@ class Papas(Analyzer):
                                    layer=1)
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)
-        #TODO undo Alice particles = sorted( self.simulator.particles,
+        #energy sorted particles = sorted( self.simulator.particles,
         #                    key = lambda ptc: ptc.e(), reverse=True)
         setattr(event, self.cfg_ana.sim_particles, simparticles)
         #setattr(event, self.cfg_ana.rec_particles, particles)

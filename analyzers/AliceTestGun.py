@@ -66,11 +66,9 @@ class Gun(Analyzer):
         event.gen_particles_stable = event.gen_particles
 
     def write(self, setup):
-        #pdebug.write("closing\n")
-        #pdebug.close()
+
         pass
         
     def endLoop(self, setup):
         super(Gun, self).endLoop(setup)
-        #pdebug.write("closing\n")
         pdebug.close() 

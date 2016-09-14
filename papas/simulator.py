@@ -124,7 +124,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.layer,
                                           cluster.particle )
         
-        #pdebug.write(str('Made {i} \n'.format(i=cluster.info()) ))      
         pdebug.write(str('Made {}\n'.format(smeared_cluster) ))
         # smeared_cluster.set_energy(energy)
         det = acceptance if acceptance else detector
@@ -271,7 +270,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         if ptc.q()!=0:
                     pdebug.write("Made " + ptc.track.__str__() + "\n")        
         smeared = copy.deepcopy(ptc)
-        #pdebug.write(str('Made Smeared{}\n'.format( smeared)))
         
         return smeared
 
@@ -284,7 +282,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         if ptc.q()!=0:
             pdebug.write("Made " + ptc.track.__str__() + "\n")        
         smeared = copy.deepcopy(ptc)
-        #pdebug.write(str('Made Smeared{}\n'.format( smeared)))
         
 
         return smeared

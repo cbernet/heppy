@@ -19,7 +19,6 @@ from heppy.papas.data.pfevent import PFEvent
 from ROOT import TLorentzVector, TVector3
 from heppy.papas.graphtools.DAG import Node
 
-#from collections import OrderedDict
 
 #todo following Alices merge and reconstruction work
 # - add muons and electrons back into the particles, these
@@ -128,10 +127,6 @@ class PapasSim(Analyzer):
             return False
         pfsim_particles = self.simulator.ptcs
         
-        #temp for match with C++
-        #event.tracks = dict()
-        #event.ecal_clusters = dict()
-        #event.hcal_clusters = dict()
         event.tracks = dict()
         event.ecal_clusters = dict()
         event.hcal_clusters = dict()        
@@ -183,8 +178,7 @@ class PapasSim(Analyzer):
         #note eventually history will be created by the simulator and passed in
         # as an argument and this will no longer be needed
         uniqueids = sorted(list(event.tracks.keys()) + list(event.ecal_clusters.keys()) + list(event.hcal_clusters.keys()))
-        #temporarty removed fro c+history =  dict( (idt, Node(idt)) for idt in uniqueids )                    
-        history= dict((idt, Node(idt)) for idt in uniqueids)
+        history = dict((idt, Node(idt)) for idt in uniqueids)
        
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
         # and set the event to point to the merged cluster
