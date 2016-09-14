@@ -34,6 +34,26 @@ def printComps(comps, details=False):
     print '# components with files = ', nCompsWithFiles
     print '# jobs                  = ', nJobs
 
+def split(comps):
+    '''takes a list of components, split the ones that need to be splitted, 
+    and return a new (bigger) list'''
+    splitComps = []
+    for comp in comps:
+        if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
+            chunkSize = len(comp.files) / comp.splitFactor
+            if len(comp.files) % comp.splitFactor:
+                chunkSize += 1
+            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor
+            for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
+                newComp = copy.deepcopy(comp)
+                newComp.files = chunk
+                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
+                                                       index=ichunk)
+                splitComps.append( newComp )
+        else:
+            splitComps.append( comp )
+    return splitComps
+
 
 class CFG(object):
     '''Base configuration class. The attributes are used to store parameters of any type'''

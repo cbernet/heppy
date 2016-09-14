@@ -1,5 +1,6 @@
 import unittest
 import shutil
+import tempfile
 import os
 import copy
 from simple_example_cfg import config, stopper 
@@ -17,7 +18,10 @@ class TestSimpleExample(unittest.TestCase):
         self.fname = create_tree()
         rootfile = TFile(self.fname)
         self.nevents = rootfile.Get('test_tree').GetEntries()
-        self.outdir = 'Out_test'
+        self.outdir = tempfile.mkdtemp()
+        
+    def tearDown(self):
+        shutil.rmtree(self.outdir)
 
     def test_all_events_processed(self):
         loop = Looper( self.outdir, config,
@@ -67,7 +71,6 @@ class TestSimpleExample(unittest.TestCase):
                        timeReport=True)
         self.assertRaises(UserStop, loop.process, 10)
   
-
 
 if __name__ == '__main__':
 

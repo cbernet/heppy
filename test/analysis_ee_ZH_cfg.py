@@ -34,8 +34,8 @@ comp = cfg.Component(
     #    '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
     #]
     files = [
-            '/Users/alice/fcc/pythiafiles/ee_ZH_Zmumu_Hbb.root'
-        ]    
+        os.getcwd()+'/ee_ZH_Zee_Hbb.root'
+    ]
 )
 selectedComponents = [comp]
 
@@ -65,7 +65,6 @@ leptons_true = cfg.Analyzer(
     input_objects = 'rec_particles',
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
-
 
 # Compute lepton isolation w/r other particles in the event.
 # help(LeptonAnalyzer) for more information
