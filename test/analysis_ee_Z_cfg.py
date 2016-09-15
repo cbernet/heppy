@@ -47,7 +47,6 @@ selectedComponents = [ee_Z_ddbar]
 from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
-    mode = 'ee',
     gen_particles = 'GenParticle',
     gen_vertices = 'GenVertex'
 )

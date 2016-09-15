@@ -1,4 +1,5 @@
 import math
+from heppy.configuration import Collider
 
 class P4(object):
 
@@ -49,11 +50,19 @@ class P4(object):
     
     
     def __str__(self):
-        return 'pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
-            pt = self.pt(),
-            e = self.e(),
-            eta = self.eta(),
-            theta = self.theta(),
-            phi = self.phi(),
-            m = self.m()
-        )
+        if Collider.BEAMS == 'pp':
+            return 'pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
+                pt = self.pt(),
+                e = self.e(),
+                eta = self.eta(),
+                phi = self.phi(),
+                m = self.m()
+            )
+        elif Collider.BEAMS == 'ee':
+            return 'e = {e:5.1f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
+                e = self.e(),
+                eta = self.eta(),
+                theta = self.theta(),
+                phi = self.phi(),
+                m = self.m()
+            )

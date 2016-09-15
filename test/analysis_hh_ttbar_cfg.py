@@ -25,7 +25,6 @@ selectedComponents = [comp]
 from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
-    mode = 'pp',
     #gen_particles = 'genParticles',
     gen_jets = 'genJets',
 

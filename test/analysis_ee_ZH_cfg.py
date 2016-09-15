@@ -22,11 +22,16 @@ logging.basicConfig(level=logging.WARNING)
 import random
 random.seed(0xdeadbeef)
 
+# definition of the collider
+from heppy.configuration import Collider
+Collider.BEAMS = 'pp'
+Collider.SQRTS = 240.
+
 # input definition
 comp = cfg.Component(
     'example',
     files = [
-        os.getcwd()+'/ee_ZH_Zee_Hbb.root'
+        os.getcwd()+'/ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
@@ -36,7 +41,6 @@ selectedComponents = [comp]
 from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
-    mode = 'ee',
     gen_particles = 'GenParticle',
     gen_vertices = 'GenVertex'
 )
@@ -96,7 +100,7 @@ zeds = cfg.Analyzer(
 
 # Computing the recoil p4 (here, p_initial - p_zed)
 # help(RecoilBuilder) for more information
-sqrts = 240. 
+sqrts = Collider.SQRTS 
 
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
 recoil = cfg.Analyzer(

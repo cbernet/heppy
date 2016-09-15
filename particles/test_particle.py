@@ -12,7 +12,15 @@ class TestParticle(unittest.TestCase):
         ptc = TlvParticle(1, 1, TLorentzVector())
         ptc2 = copy.deepcopy(ptc)
         self.assertEqual(ptc, ptc2)
-
+        
+    def test_printout(self):
+        ptc = TlvParticle(1, 1, TLorentzVector())        
+        self.assertIn('pt', ptc.__repr__())
+        from heppy.configuration import Collider
+        Collider.BEAMS = 'ee'
+        self.assertIn('theta', ptc.__repr__())
+        Collider.BEAMS = 'pp'
+        
     #----------------------------------------------------------------------
     def test_fcc_particle(self):
         """Test that FCC particles can be copied and compared"""

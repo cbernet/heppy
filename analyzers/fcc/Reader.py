@@ -3,6 +3,7 @@ from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 from heppy.particles.fcc.met import Met
+import heppy.configuration
 
 import math
 
@@ -58,7 +59,7 @@ class Reader(Analyzer):
     def beginLoop(self, setup):
         super(Reader, self).beginLoop(setup)
         self.sort_key = lambda ptc: ptc.e()
-        if self.cfg_ana.mode=='pp' or self.cfg_ana.mode=='ep':
+        if heppy.configuration.Collider.BEAMS in ['pp', 'ep']:
             self.sort_key = lambda ptc: ptc.pt()
     
     def process(self, event):
