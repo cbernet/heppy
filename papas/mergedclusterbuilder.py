@@ -44,31 +44,20 @@ class MergedClusterBuilder(GraphBuilder):
         self.merged = dict()
         
         # collate ids of clusters
-        uniqueids = sorted(list(clusters.keys()))         
+        uniqueids = list(clusters.keys())         
              
-        #make the edges match cpp by using a the same approach as cpp
-        ## compute edges between each pair of nodes
-        #
-        #for obj1, obj2 in itertools.combinations(clusters.values(),2):
-            #link_type, is_linked, distance = ruler(obj1, obj2)
-            #edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
-            ##the edge object is added into the edges dictionary
-            #edges[edge.key] = edge
-            
-        edges = dict() #OrderedDict()    
+        #make the edges match cpp by using the same approach as cpp
+        edges = dict()    
         for obj1 in  clusters.values():
             for obj2 in  clusters.values():
                 if obj1.uniqueid < obj2.uniqueid :
-                    #if Identifier.pretty(obj1.uniqueid)=="e310" or Identifier.pretty(obj2.uniqueid)=="e310":
-                    #    print Identifier.pretty(obj2.uniqueid)
                     link_type, is_linked, distance = ruler(obj1, obj2)
                     edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
-                    
                     #the edge object is added into the edges dictionary
                     edges[edge.key] = edge
                     
         #make the subgraphs of clusters
-        super(MergedClusterBuilder, self).__init__(uniqueids,edges)
+        super(MergedClusterBuilder, self).__init__(uniqueids, edges)
         
         #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
@@ -77,31 +66,30 @@ class MergedClusterBuilder(GraphBuilder):
         
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
-        for subgraphids in self.subgraphs:
-            subgraphids.sort()
-            if len(subgraphids)==5:
-                pass
-            #make a mergecluster based on the first cluster
-            id =  subgraphids[0] # first id in list
-            if (len(subgraphids)>1):
-                for  sid in subgraphids : 
-                    pdebugger.info('Merged Cluster from {}'.format(self.clusters[sid]))
-            #make a merged cluster based on the first cluster and create a new Id for it.
-            supercluster = MergedCluster(self.clusters[id]) # Identifier.make_id(Identifier.get_type(id)));
-            self.merged[supercluster.uniqueid] = supercluster;
-            if (self.history_nodes) : 
-                #update the history
-                snode = Node(supercluster.uniqueid)
-                self.history_nodes[supercluster.uniqueid] = snode
-                self.history_nodes[id].add_child(snode)
-            if len(subgraphids)>1 : 
-                #add each of the linked clusters into it                
+        #subgraph is a list containing list of connected ids
+        #subgraphids will therefore be a list of connected ids
+        for subgraphids in self.subgraphs: 
+            if len(subgraphids)>1: 
+                subgraphids.sort()
+                first = None
+                 #todo not finished
                 for elemid in subgraphids :
-                    if elemid != id : # we have already handled this one
+                    pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid])) 
+                    if not first:
+                        first = elemid # first id in list
+                        #make a merged cluster based on the first cluster and create a new Id for it.
+                        supercluster = MergedCluster(self.clusters[first]) 
+                        self.merged[supercluster.uniqueid] = supercluster;
+                        if (self.history_nodes) : 
+                            #update the history
+                            snode = Node(supercluster.uniqueid)
+                            self.history_nodes[supercluster.uniqueid] = snode
+                            self.history_nodes[first].add_child(snode)                           
+                    if first : 
+                        #add each of the linked clusters into it
                         thing = self.clusters[elemid]
                         #now add in the links between the block elements and the block into the history_nodes
                         self.history_nodes[elemid].add_child(snode)
                         supercluster += thing
-            if (len(subgraphids)>1):
                 pdebugger.info(str('Made {}\n'.format(supercluster)))
 

@@ -95,16 +95,14 @@ class PapasSim(Analyzer):
 
     def process(self, event):
         '''
-           event must contain the
-           
+           event must contain 
+             todo once history is implemented
            event will gain
              ecal_clusters:- smeared merged clusters from simulation
              hcal_clusters:- smeared merged clusters from simulation
              tracks:       - tracks from simulation
              baseline_particles:- simulated particles (excluding electrons and muons)
-             sim_particles - simulated particles including electrons and muons
-             
-             
+             sim_particles - simulated particles including electrons and muons     
         '''
         event.simulator = self 
         if self.is_display:
@@ -153,7 +151,7 @@ class PapasSim(Analyzer):
         #create history node
         #note eventually history will be created by the simulator and passed in
         # as an argument and this will no longer be needed
-        uniqueids = sorted(list(event.tracks.keys()) + list(event.ecal_clusters.keys()) + list(event.hcal_clusters.keys()))
+        uniqueids = list(event.tracks.keys()) + list(event.ecal_clusters.keys()) + list(event.hcal_clusters.keys())
         history = dict((idt, Node(idt)) for idt in uniqueids)
        
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
