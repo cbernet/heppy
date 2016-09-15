@@ -3,10 +3,14 @@ import os
 import copy
 from heppy.particles.tlv.particle import Particle as TlvParticle
 from heppy.particles.fcc.particle import Particle as FccParticle
+from heppy.configuration import Collider
 from ROOT import TLorentzVector, gSystem
 
 
 class TestParticle(unittest.TestCase):
+
+    def tearDown(self):
+        Collider.BEAMS = 'pp'
     
     def test_root_particle_copy(self):
         '''Test that root-based particles can be created, deepcopied,
@@ -19,8 +23,8 @@ class TestParticle(unittest.TestCase):
         '''Test that the particle printout is adapted to the collider
         beams.'''
         ptc = TlvParticle(1, 1, TLorentzVector())        
+        Collider.BEAMS = 'pp'
         self.assertIn('pt', ptc.__repr__())
-        from heppy.configuration import Collider
         Collider.BEAMS = 'ee'
         self.assertIn('theta', ptc.__repr__())
         Collider.BEAMS = 'pp'
@@ -31,7 +35,6 @@ class TestParticle(unittest.TestCase):
         on the collider beams"""
         ptcs = [TlvParticle(1, 1, TLorentzVector(10, 0, 0, 11)), 
                 TlvParticle(1, 1, TLorentzVector(0, 0, 11, 12))]
-        from heppy.configuration import Collider
         Collider.BEAMS = 'ee'
         self.assertEqual(sorted(ptcs, reverse=True),
                          [ptcs[1], ptcs[0]])
