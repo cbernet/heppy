@@ -42,15 +42,21 @@ import logging
 '''
 
 
-pdebugger = logging.getLogger(__name__)
+pdebugger = logging.getLogger('pdebug')
+pdebugger.setLevel(logging.ERROR)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
+formatter = logging.Formatter('HELLO %(message)s')
+anotherformatter = logging.Formatter('%(message)s')
+ch.setFormatter(formatter)
 pdebugger.addHandler(ch)
+
 
 def set_file(filename = "pdebug.log", mode='w', level ="INFO"):
     #todo add checks
     cf = logging.FileHandler(filename, mode)
     cf.setLevel(level)
+    cf.setFormatter(anotherformatter)
     pdebugger.addHandler(cf)
 
 def set_streamlevel(level ="INFO"):

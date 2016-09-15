@@ -148,8 +148,6 @@ class PFReconstructor(object):
         #   - for ecals unlink hcals
         to_unlink = []        
         for id in ids :
-            if id==8589934764 :
-                pass
             if Identifier.is_track(id):
                 linked = block.linked_edges(id,"hcal_track") # NB already sorted from small to large distance
                 if linked!=None and len(linked)>1 :
@@ -162,11 +160,6 @@ class PFReconstructor(object):
                             if (elem.distance==first_dist):
                                 pass
                             to_unlink.append(elem)
-            elif Identifier.is_ecal(id):
-                # this is now handled  elsewhere and so could be removed
-                # remove all ecal-hcal links. ecal linked to hcal give rise to a photon anyway.
-                linked = block.linked_edges(id,"ecal_hcal")
-                to_unlink.extend(linked)
         
         #if there is something to unlink then use the BlockSplitter        
         splitblocks=None        

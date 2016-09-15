@@ -1,33 +1,16 @@
-
+#will remove this once ROOT radmon is set up and working in cpp
 from ROOT import gSystem
 gSystem.Load("libpapascpp") #check with Colin if this is OK or if should be made to execute just once
 from ROOT import  randomgen
 
-class RRandom(object):
-    
-    @staticmethod
-    def expovariate (a):
-        thing = u = randomgen.RandExponential(a)
-        u = thing.next()
-        #print u
-        return u
-    
-    @staticmethod
-    def uniform (a, b):
-        thing = randomgen.RandUniform(a, b)
-        u = thing.next()
-        #print u
-        return u
-    
-    @staticmethod
-    def gauss (a, b):
-        thing = randomgen.RandNormal(a, b)
-        u = thing.next()
-        #print u
-        return u    
-    
-    @staticmethod
-    def seed (s):
-        thing = randomgen.RandUniform(0, 1)
-        thing.setSeed(s)
-    
+def expovariate (a):
+    return randomgen.RandExponential(a).next()
+
+def uniform (a, b):
+    return randomgen.RandUniform(a, b).next()
+
+def gauss (a, b):
+    return randomgen.RandNormal(a, b).next()
+
+def seed (s):
+    randomgen.RandUniform(0, 1).setSeed(s)

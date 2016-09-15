@@ -11,31 +11,38 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
-from heppy.utils.pdebug import pdebugger
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
-#logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-from heppy.statistics.random import random
+
+import heppy.statistics.random as random
 random.seed(0xdeadbeef)
 
 # input definition
 comp = cfg.Component(
     'example',
     files = [
-         #'/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
-         #'/Users/alice/fcc/papasmodular/temp/ee_ZH_Zmumu_Hbb.root'
         os.getcwd()+'/ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
+
+#  Pdebugger
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+    PDebugger,
+    debug_level = logging.INFO, # INFO will turn on; ERROR will turn everything off
+    debug_file = os.getcwd()+'/python_physics_debug.log', #optional
+    console_level = logging.ERROR #optionally turns off console
+)
+
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -46,7 +53,6 @@ source = cfg.Analyzer(
     gen_particles = 'GenParticle',
     gen_vertices = 'GenVertex'
 )
-
 
 from heppy.test.papas_cfg import papas_sequence, detector, papas
 
@@ -130,7 +136,6 @@ particles_not_zed = cfg.Analyzer(
     output = 'particles_not_zed',
     input = 'rec_particles',
     mask = 'zeds_legs',
-
 )
 
 # Make jets from the particles not used to build the best zed.
@@ -199,6 +204,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
+    pdebug,
     source,
     papas_sequence, 
     leptons_true,
@@ -215,7 +221,6 @@ sequence = cfg.Sequence(
     tree
 )
 
-
 # Specifics to read FCC events 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
@@ -231,16 +236,6 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-
-    from heppy.statistics.random import random
-    random.seed(0xdeadbeef)
-    
-    #pdebugger 
-    #pdebugger.setLevel(logging.ERROR)  # turns off all output
-    pdebugger.setLevel(logging.INFO) # turns on ouput
-    pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
-    pdebugger.info("Run ee ZZ debug cfg")    
-
 
     def process(iev=None):
         if iev is None:
@@ -290,8 +285,7 @@ if __name__ == '__main__':
     if iev is not None:
         pdebugger.info(str('Event: {}'.format(iev)))
         process(iev)
-        #process(iev)
-        #process(iev)
+        pass
     else:
         loop.loop()
         loop.write()

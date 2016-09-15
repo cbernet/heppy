@@ -21,7 +21,7 @@ reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
-from heppy.statistics.random import random
+import heppy.statistics.random as random
 random.seed(0xdeadbeef)
 
 # input definition
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    from heppy.statistics.random import random
+    import heppy.statistics.random as random
     random.seed(0xdeadbeef)
 
     def process(iev=None):

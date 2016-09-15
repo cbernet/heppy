@@ -66,13 +66,12 @@ class MergedClusterBuilder(GraphBuilder):
         
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
-        #subgraph is a list containing list of connected ids
-        #subgraphids will therefore be a list of connected ids
+        #subgraph is a list containing lists of connected ids
+        #each subgraphids will therefore be a list of connected ids
         for subgraphids in self.subgraphs: 
             if len(subgraphids)>1: 
                 subgraphids.sort()
                 first = None
-                 #todo not finished
                 for elemid in subgraphids :
                     pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid])) 
                     if not first:
@@ -89,7 +88,7 @@ class MergedClusterBuilder(GraphBuilder):
                         #add each of the linked clusters into it
                         thing = self.clusters[elemid]
                         #now add in the links between the block elements and the block into the history_nodes
-                        self.history_nodes[elemid].add_child(snode)
+                        if (self.history_nodes) :                        
+                            self.history_nodes[elemid].add_child(snode)
                         supercluster += thing
                 pdebugger.info(str('Made {}\n'.format(supercluster)))
-

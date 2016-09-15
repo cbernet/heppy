@@ -2,7 +2,7 @@ import math
 from scipy import constants
 from numpy import sign
 from ROOT import TLorentzVector, TVector3
-from heppy.statistics.random import random
+import heppy.statistics.random as random
 from heppy.papas.path import Helix
 from heppy.papas.pfobjects import Particle
 

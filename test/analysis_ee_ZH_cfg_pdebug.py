@@ -20,13 +20,13 @@ import logging
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
-#logging.basicConfig(level=logging.INFO)
+
 # setting the random seed for reproducible results
 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-from heppy.statistics.random import random
+import heppy.statistics.random as random
 random.seed(0xdeadbeef)
 
 
@@ -138,7 +138,7 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    from heppy.statistics.random import random
+    import heppy.statistics.random as random
     random.seed(0xdeadbeef)
     
     

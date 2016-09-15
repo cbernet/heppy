@@ -123,7 +123,6 @@ class PapasSim(Analyzer):
         if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
             return
             
-            
         if self.is_display  :
             self.display.register( GTrajectories(pfsim_particles),
                                    layer=1)
