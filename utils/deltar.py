@@ -5,6 +5,8 @@ import math
 import copy
 import heppy.configuration
 
+DEFAULT_DRMAX = 0.3
+DEFAULT_DRMIN = 1e-5
 
 def deltaR2( e1, p1, e2=None, p2=None):
     """Take either 4 arguments (eta,phi, eta,phi) or two particles that have 'eta', 'phi' methods)"""
@@ -32,7 +34,9 @@ def deltaPhi( p1, p2):
     return res
 
 
-def inConeCollection(pivot, particles, deltaRMax, deltaRMin=1e-5):
+def inConeCollection(pivot, particles,
+                     deltaRMax = DEFAULT_DRMAX,
+                     deltaRMin = DEFAULT_DRMIN):
     '''Returns the list of particles that are less than deltaRMax away from pivot.'''
     dR2Max = deltaRMax ** 2
     dR2Min = deltaRMin ** 2
@@ -44,7 +48,7 @@ def inConeCollection(pivot, particles, deltaRMax, deltaRMin=1e-5):
     return results
 
 
-def cleanObjectCollection( ptcs, masks, deltaRMin ):
+def cleanObjectCollection(ptcs, masks, deltaRMax=DEFAULT_DRMAX):
     '''returns a tuple clean_ptcs, dirty_ptcs,
     where:
     - dirty_ptcs is the list of particles in ptcs that are matched to a particle
@@ -56,14 +60,14 @@ def cleanObjectCollection( ptcs, masks, deltaRMin ):
     '''
     if len(ptcs)==0 or len(masks)==0:
         return ptcs, []
-    deltaR2Min = deltaRMin*deltaRMin
+    dR2Max = deltaRMax ** 2
     clean_ptcs = []
     dirty_ptcs = []
     for ptc in ptcs:
         ok = True 
         for mask in masks:
             dR2 = deltaR2(ptc, mask)
-            if dR2 < deltaR2Min:
+            if dR2 < dR2Max:
                 ok = False
         if ok:
             clean_ptcs.append( ptc )
@@ -72,7 +76,7 @@ def cleanObjectCollection( ptcs, masks, deltaRMin ):
     return clean_ptcs, dirty_ptcs
 
 
-def cleanObjectCollection2( ptcs, masks, deltaRMin ):
+def cleanObjectCollection2(ptcs, masks, deltaRMax=DEFAULT_DRMAX):
     '''returns the list of particles in ptcs that are NOT matched to a
     particle in masks.
     
@@ -84,13 +88,13 @@ def cleanObjectCollection2( ptcs, masks, deltaRMin ):
     '''
     if len(ptcs)==0:
         return ptcs
-    deltaR2Min = deltaRMin*deltaRMin
+    dR2Max = deltaRMax ** 2
     clean_ptcs = copy.copy( ptcs )
     for mask in masks:
         tooClose = []
         for idx, ptc in enumerate(clean_ptcs):
             dR2 = deltaR2(ptc, mask)
-            if dR2 < deltaR2Min:
+            if dR2 < dR2Max:
                 tooClose.append( idx )
         nRemoved = 0
         for idx in tooClose:
@@ -108,7 +112,9 @@ def cleanObjectCollection2( ptcs, masks, deltaRMin ):
 
 def bestMatch(ptc, matchCollection):
     '''Return the best match to ptc in matchCollection,
-    which is the closest ptc in delta R.'''
+    which is the closest ptc in delta R,
+    together with the squared distance dR2 between ptc
+    and the match.'''
     deltaR2Min = float('+inf')
     bm = None
     for match in matchCollection:
@@ -119,22 +125,25 @@ def bestMatch(ptc, matchCollection):
     return bm, deltaR2Min
 
 
-def matchObjectCollection(ptcs, matchCollection, deltaR2Max):
+def matchObjectCollection(ptcs, matchCollection,
+                          deltaRMax=DEFAULT_DRMAX):
     pairs = {}
     if len(ptcs)==0:
         return pairs
     if len(matchCollection)==0:
         return dict( zip(ptcs, [None]*len(ptcs)) )
+    dR2Max = deltaRMax ** 2
     for ptc in ptcs:
         bm, dr2 = bestMatch( ptc, matchCollection )
-        if dr2<deltaR2Max:
+        if dr2 < dR2Max:
             pairs[ptc] = bm
         else:
             pairs[ptc] = None            
     return pairs
 
 
-def matchObjectCollection2 ( ptcs, matchCollection, deltaRMax = 0.3 ):
+def matchObjectCollection2(ptcs, matchCollection,
+                           deltaRMax=DEFAULT_DRMAX):
     '''Univoque association of an element from matchCollection to an element of ptcs.
     Returns a list of tuples [(ptc, matched_to_ptc), ...].
     particles in ptcs and matchCollection get the "matched" attribute,
@@ -159,11 +168,11 @@ def matchObjectCollection2 ( ptcs, matchCollection, deltaRMax = 0.3 ):
     for match in matchCollection:
         match.matched = False
 
-    deltaR2Max = deltaRMax * deltaRMax
+    dR2Max = deltaRMax ** 2
     for dR2, (ptc, match) in allPairs:
-        if dR2 > deltaR2Max:
+        if dR2 > dR2Max:
             break
-        if dR2 < deltaR2Max and ptc.matched == False and match.matched == False:
+        if dR2 < dR2Max and ptc.matched == False and match.matched == False:
             ptc.matched = True
             match.matched = True
             pairs[ptc] = match
@@ -177,7 +186,9 @@ def matchObjectCollection2 ( ptcs, matchCollection, deltaRMax = 0.3 ):
     # one could remove it with delattr (object, attrname)
 
 
-def matchObjectCollection3(ptcs, matchCollection, deltaRMax=0.3, filter_func=None):
+def matchObjectCollection3(ptcs, matchCollection,
+                           deltaRMax=DEFAULT_DRMAX,
+                           filter_func=None):
     '''Univoque association of an element from matchCollection to an element of ptcs.
     Returns a list of tuples [(ptc, matched_to_ptc), ...].
     particles in ptcs and matchCollection get the "matched" attribute,
@@ -211,11 +222,11 @@ def matchObjectCollection3(ptcs, matchCollection, deltaRMax=0.3, filter_func=Non
     for match in matchCollection:
         match.matched = False
         
-    deltaR2Max = deltaRMax * deltaRMax
+    dR2Max = deltaRMax ** 2
     for dR2, (ptc, match) in allPairs:
-        if dR2 > deltaR2Max:
+        if dR2 > dR2Max:
             break
-        if dR2 < deltaR2Max and ptc.matched == False and match.matched == False:
+        if dR2 < dR2Max and ptc.matched == False and match.matched == False:
             ptc.matched = True
             match.matched = True
             pairs[ptc] = match
