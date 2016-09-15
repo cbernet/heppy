@@ -3,7 +3,7 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
-from heppy.papas.pfobjects import Reconstructed_Particle
+from heppy.papas.pfobjects import Particle
 
 from ROOT import TVector3, TLorentzVector
 import math
@@ -393,7 +393,7 @@ class PFReconstructor(object):
             momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
-        particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
+        particle = Particle(p4, vertex, charge, pdg_id, Identifier.PFOBJECTTYPE.RECPARTICLE)
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
                                             # nb this only is problem if the cluster and the assigned layer are different
@@ -412,7 +412,7 @@ class PFReconstructor(object):
         mass, charge = particle_data[pdg_id]
         p4 = TLorentzVector()
         p4.SetVectM(track.p3, mass)
-        particle = Reconstructed_Particle(p4, vertex, charge, pdg_id)
+        particle = Particle(p4, vertex, charge, pdg_id, Identifier.PFOBJECTTYPE.RECPARTICLE)
         particle.set_path(track.path)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True

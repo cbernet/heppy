@@ -284,15 +284,7 @@ class Particle(BaseParticle):
             p4 = p4
                     
         )
-    
-
-
-class Reconstructed_Particle(Particle):
-    '''  A reconstruceted Particle is just like a particle but has a reconstructed particle uniqueid
-    '''
-    def __init__(self, tlv, vertex, charge, pdgid=None):
-        super(Reconstructed_Particle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)
-       
+          
   
 if __name__ == '__main__':
     from ROOT import TVector3
