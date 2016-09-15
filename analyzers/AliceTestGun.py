@@ -1,11 +1,12 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pdt import particle_data
-from heppy.particles.tlv.particle import Particle
+from heppy.papas.pfobjects import GenParticle
+#from heppy.particles.fcc.particle import Particle
 from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
 import  math
 from heppy.statistics.rrandom import RRandom as random
 
-from ROOT import TLorentzVector
+from ROOT import TLorentzVector, TVector3
 
 def fixed_particle(pdgid, theta, phi, energy   ):
     mass, charge = particle_data[pdgid]
@@ -19,7 +20,7 @@ def fixed_particle(pdgid, theta, phi, energy   ):
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    return Particle(pdgid, charge, tlv) 
+    return GenParticle(pdgid, charge, tlv) 
     
 def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
     mass, charge = particle_data[pdgid]
@@ -41,13 +42,17 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    return Particle(pdgid, charge, tlv)     
+    vertex = TVector3()
+    return GenParticle(tlv, vertex, charge, pdgid)     
 
 class Gun(Analyzer):
     
     def beginLoop(self, setup):
         super(Gun, self).beginLoop(setup)
-        pdebug.open("python_physics_debug_output.txt")
+        pdebug.open("/Users/alice/work/Outputs/python_physics_debug_output.txt")
+        #pdebug.write("start")
+        pass
+    
         
     
     def process(self, event):
@@ -66,9 +71,11 @@ class Gun(Analyzer):
         event.gen_particles_stable = event.gen_particles
 
     def write(self, setup):
-
+        #pdebug.write("closing\n")
+        #pdebug.close()
         pass
         
     def endLoop(self, setup):
         super(Gun, self).endLoop(setup)
+        #pdebug.write("closing\n")
         pdebug.close() 

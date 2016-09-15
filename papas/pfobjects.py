@@ -329,7 +329,23 @@ class ReconstructedParticle(Particle):
                     self.track = Track(self.p3(), self.q(), self.path)
         if track !=  None:
             self.track = track
+
+#allows a generated particle with a unique id
+class GenParticle(Particle):
+    '''  A gen Particle is just like a particle but has a  particle uniqueid
+    '''
+    def __init__(self, tlv, vertex, charge, pdgid=None):
+        super(GenParticle, self).__init__(tlv, vertex, charge, pdgid, Identifier.PFOBJECTTYPE.PARTICLE)
+    
+    def set_path(self, path, option = None, track = None): #Alice experiement to try to avoid new tracks for rec particles
+        if option == 'w' or self.path is None:
+            self.path = path
+            if self.q() and  track == None:
+                    self.track = Track(self.p3(), self.q(), self.path)
+        if track !=  None:
+            self.track = track
                 
+                  
   
 if __name__ == '__main__':
     from ROOT import TVector3

@@ -121,7 +121,7 @@ class PapasSim(Analyzer):
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         try: 
-            self.simulator.simulate( gen_particles, self.do_reconstruct)
+            self.simulator.simulate( gen_particles)
         except (PropagationError,SimulationError) as err:
             self.mainLogger.error( str(err) + ' -> Event discarded')
             return False

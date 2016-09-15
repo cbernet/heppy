@@ -11,7 +11,8 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+#from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+import heppy.utils.pdebug as pdebugging
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -20,12 +21,17 @@ reload(logging)
 logging.basicConfig(level=logging.WARNING)
 #logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
-#import random
+
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-from heppy.statistics.rrandom import RRandom as random
+from heppy.statistics.random import random
 random.seed(0xdeadbeef)
+
+#pdebugging.pdebugger.warning('blahblah')
+#pdebug.pdebugger.setLevel(logging.ERROR)
+pdebugging.set_file()
+#pdebug.pdebugger.warning('blahblah')
 
 # input definition
 comp = cfg.Component(
@@ -135,9 +141,11 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    import random
+    from heppy.statistics.random import random
     random.seed(0xdeadbeef)
-    pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
+    #pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
+    pdebugging.set_file("/Users/alice/work/Outputs/pythonphysics.txt")
+    pdebugging.pdebugger.warning("alices")
 
     def process(iev=None):
         if iev is None:

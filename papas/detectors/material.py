@@ -1,5 +1,4 @@
-#import random
-from heppy.statistics.rrandom import RRandom as random
+from heppy.statistics.random import random
 
 
 import sys

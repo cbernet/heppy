@@ -8,12 +8,8 @@ from heppy.papas.data.identifier import Identifier
 
 import multiple_scattering as mscat  
 from papas_exceptions import SimulationError
-
-
 from pfalgo.sequence import PFSequence
-import random
-from heppy.statistics.rrandom import RRandom as random
-#from random import normalvariate 
+from heppy.statistics.random import random
 import sys
 import copy
 import shelve
@@ -299,7 +295,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                       self.detector.elements['field'].magnitude )
         return    
     
-    def simulate(self, ptcs, do_reconstruct = True):
+    def simulate(self, ptcs):
         self.reset()
         self.ptcs = []
         smeared = []
@@ -333,10 +329,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             self.ptcs.append(ptc)
             #self.smeared =  smeared
             self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
-        if  do_reconstruct : #now optional, defaults to run this for backwards compatibility
-            self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
-            self.particles = copy.copy(self.pfsequence.pfreco.particles)
-            #self.particles.extend(smeared)
         
         
         #print "number of gen particles: ", len(ptcs)

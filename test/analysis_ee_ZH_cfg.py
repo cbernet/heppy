@@ -20,21 +20,19 @@ reload(logging)
 logging.basicConfig(level=logging.WARNING)
 #logging.basicConfig(level=logging.INFO)
 # setting the random seed for reproducible results
-#import random
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-from heppy.statistics.rrandom import RRandom as random
+from heppy.statistics.random import random
 random.seed(0xdeadbeef)
 
 # input definition
 comp = cfg.Component(
     'example',
-    #files = [
-    #    '/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
-    #]
     files = [
-        os.getcwd()+'/ee_ZH_Zee_Hbb.root'
+         #'/Users/alice/fcc/papasmodular/heppy/test/ee_ZH_Zmumu_Hbb.root'
+         #'/Users/alice/fcc/papasmodular/temp/ee_ZH_Zmumu_Hbb.root'
+        os.getcwd()+'/ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]
@@ -234,7 +232,7 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    import random
+    from heppy.statistics.random import random
     random.seed(0xdeadbeef)
     pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
 
