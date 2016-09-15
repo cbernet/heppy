@@ -29,7 +29,7 @@ class TestDistance(unittest.TestCase):
                 self.assertTrue(link_ok)
             elif ele==tr:
                 self.assertFalse(link_ok)
-        #ecal hcal no longer linked to match c++ so have adjusted test
+        #ecal hcal no longer linked to match c++ so have adjusted test accordingly
         link_type, link_ok, distance = ruler(c2, c1)
         self.assertFalse(link_ok)
         self.assertEqual(link_type, None)

@@ -8,7 +8,6 @@ from heppy.papas.data.identifier import Identifier
 
 import multiple_scattering as mscat  
 from papas_exceptions import SimulationError
-from pfalgo.sequence import PFSequence
 from heppy.statistics.random import random
 import sys
 import copy
@@ -334,8 +333,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)
         #print "number of sim particles: ", len(self.ptcs)        
-        #print "number of rec (no smeared) particles: ", len(self.pfsequence.pfreco.particles)
-        #print "number of rec original inc smeared particles: ", len(self.particles)
         
 if __name__ == '__main__':
 

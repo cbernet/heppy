@@ -69,7 +69,7 @@ gen_particles_stable = cfg.Analyzer(
 # help(Papas) for more information
 # history nodes keeps track of which particles produced which tracks, clusters 
 from heppy.analyzers.PapasSim import PapasSim
-from heppy.analyzers.Papas import Papas
+#from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
     PapasSim,

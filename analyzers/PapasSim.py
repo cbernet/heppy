@@ -82,16 +82,7 @@ class PapasSim(Analyzer):
         self.tracksname =  self.cfg_ana.tracks  
         self.mergedecalsname = self.cfg_ana.merged_ecals
         self.mergedhcalsname = self.cfg_ana.merged_hcals
-        self.historyname =  self.cfg_ana.output_history
-        #decide if reconstruction is needed
-        self.do_reconstruct = False
-        if hasattr(self.cfg_ana, 'rec_particles') :
-            self.do_reconstruct = True
-            self.recname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles])
-        #if hasattr(self.cfg_ana, 'rec_particles_no_leptons') :
-        #    self.do_reconstruct = True
-        #    self.rec_noleptonsname = '_'.join([self.instance_label,  self.cfg_ana.rec_particles_no_leptons])        
-        
+        self.historyname =  self.cfg_ana.output_history      
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
@@ -143,23 +134,8 @@ class PapasSim(Analyzer):
                                key = lambda ptc: ptc.e(), reverse=True)     
         setattr(event, self.simname, simparticles)
         
-        if self.do_reconstruct: # used for verification/ comparison of reconstruction methods
-            #these are the reconstructed (via simulation) particles  including electrons and muons
-            particles = sorted( self.simulator.particles,
-                            key = lambda ptc: ptc.e(), reverse=True)
-        
-            #these are the reconstructed (via simulation) particles excluding muons and electrons         
-            #origparticles = sorted( self.simulator.pfsequence.pfreco.particles,
-            #                       key = lambda ptc: ptc.e(), reverse=True)
-            if hasattr(self, 'recname')  :
-                setattr(event, self.recname, particles)          
-            #if hasattr(self, 'rec_noleptonsname')  :
-            #    setattr(event, self.rec_noleptonsname, origparticles)
-                    
-
+              
         #extract the tracks and clusters (extraction is prior to Colins merging step)
-        
-
         if "tracker" in self.simulator.pfinput.elements :
             for element in self.simulator.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element
@@ -188,34 +164,7 @@ class PapasSim(Analyzer):
         merged_hcals = MergedClusterBuilder(pfevent.hcal_clusters, ruler, merged_ecals.history_nodes)
         setattr(event, self.mergedhcalsname, merged_hcals.merged)
         setattr(event,  self.historyname,  merged_hcals.history_nodes)
-        
-        ####if uncommented this will use the original reconstructions to provide the ready merged tracks and clusters
-        #event.ecal_clusters = dict()
-        #event.hcal_clusters = dict()        
-        #for element in self.simulator.pfsequence.elements :
-            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
-                #event.ecal_clusters[element.uniqueid] = element
-            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
-                #event.hcal_clusters[element.uniqueid] = element
-            #else :            
-                #print element.__class__.__name__ 
-                #assert(False)
-       
-        ###if uncommented will check that cluster merging is OK   (compare new merging module with Colins merging)    
-        #event.origecal_clusters = dict()
-        #event.orighcal_clusters = dict()
-        #for element in self.simulator.pfsequence.elements :
-            #if element.__class__.__name__ == 'SmearedCluster' and element.layer == 'ecal_in': 
-                #event.origecal_clusters[element.uniqueid] = element
-            #elif element.__class__.__name__ == 'SmearedCluster' and element.layer == 'hcal_in': 
-                #event.orighcal_clusters[element.uniqueid] = element
-        #ClusterComparer(event.origecal_clusters,event.ecal_clusters)
-        #ClusterComparer(event.orighcal_clusters,event.hcal_clusters)
-        #event.othertracks =  dict()
-        #for element in self.simulator.pfsequence.elements :
-            #if element.__class__.__name__ == 'SmearedTrack': 
-                #event.othertracks[element.uniqueid] = element        
-        #assert (len(event.tracks) == len(event.othertracks))
+    
        
         pass
 
