@@ -3,7 +3,7 @@ from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
 from heppy.papas.data.identifier import Identifier
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as pdebug
+from heppy.utils.pdebug import pdebugger 
 import copy
 
 class Particle(BaseParticle, POD):

@@ -3,7 +3,7 @@ from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.pfalgo.pfinput import  PFInput
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 
 import multiple_scattering as mscat  
@@ -31,7 +31,7 @@ def pfsimparticle(ptc):
     charge = ptc.q()
     pid = ptc.pdgid()
     simptc = PFSimParticle(tp4, vertex, charge, pid)
-    pdebug.write("Made " +  simptc.__str__() +  "\n")
+    pdebugger.info("Made " +  simptc.__str__() +  "")
 
     
    
@@ -101,7 +101,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                             cylname, ptc)
 
         ptc.clusters[cylname] = cluster
-        pdebug.write("Made " + cluster.__str__() + "\n")
+        pdebugger.info("Made " + cluster.__str__() + "")
         
         return cluster
 
@@ -120,13 +120,13 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.layer,
                                           cluster.particle )
         
-        pdebug.write(str('Made {}\n'.format(smeared_cluster) ))
+        pdebugger.info(str('Made {}'.format(smeared_cluster) ))
         # smeared_cluster.set_energy(energy)
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
         else:
-            pdebug.write(str('Rejected {}\n'.format(smeared_cluster)))
+            pdebugger.info(str('Rejected {}'.format(smeared_cluster)))
             return None
     
     def smear_track(self, track, detector, accept=False):
@@ -137,16 +137,16 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                      track.p3 * scale_factor,
                                      track.charge,
                                      track.path)
-        pdebug.write("Made " + smeared_track.__str__() + "\n")
+        pdebugger.info("Made " + smeared_track.__str__())
         if detector.acceptance(smeared_track) or accept:
             return smeared_track
         else:
-            # pdebug.write("Rejected Smeared Track\n")
-            pdebug.write(str('Rejected {}\n'.format(smeared_track)))
+            # pdebugger.info("Rejected Smeared Track")
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
             return None
         
     def simulate_photon(self, ptc):
-        pdebug.write("Simulating Photon\n")
+        pdebugger.info("Simulating Photon")
         detname = 'ecal'
         ecal = self.detector.elements[detname]
         self.prop_straight.propagate_one(ptc,
@@ -159,7 +159,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
 
 
     def simulate_electron(self, ptc):
-        pdebug.write("Simulating Electron \n")
+        pdebugger.info("Simulating Electron")
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
@@ -182,7 +182,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         ptc should behave as pfobjects.Particle.
         '''
 
-        pdebug.write("Simulating Hadron\n")
+        pdebugger.info("Simulating Hadron")
 
         #implement beam pipe scattering
     
@@ -218,7 +218,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
 
         # alice left over from merge ... are the next 6 lines needed        
         if ptc.q()!=0:
-            pdebug.write("Made " + ptc.track.__str__() + "\n")
+            pdebugger.info("Made " + ptc.track.__str__())
             smeared_track = self.smear_track(ptc.track,
                                              self.detector.elements['tracker'])
             if smeared_track:
@@ -253,7 +253,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         
 
     def simulate_muon(self, ptc):
-        pdebug.write("Simulating Muon\n")
+        pdebugger.info("Simulating Muon")
         self.propagate(ptc)
         smeared_track = self.smear_track(ptc.track,
                                          self.detector.elements['tracker'])
@@ -261,34 +261,34 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             ptc.track_smeared = smeared_track
 
     def smear_muon(self, ptc):
-        pdebug.write("Smearing Muon\n");
+        pdebugger.info("Smearing Muon");
         self.propagate(ptc)
         if ptc.q()!=0:
-                    pdebug.write("Made " + ptc.track.__str__() + "\n")        
+                    pdebugger.info("Made " + ptc.track.__str__())        
         smeared = copy.deepcopy(ptc)
         
         return smeared
 
     def smear_electron(self, ptc):
-        pdebug.write("Smearing Electron\n");
+        pdebugger.info("Smearing Electron");
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
                                       self.detector.elements['field'].magnitude )
         if ptc.q()!=0:
-            pdebug.write("Made " + ptc.track.__str__() + "\n")        
+            pdebugger.info("Made " + ptc.track.__str__())        
         smeared = copy.deepcopy(ptc)
         
 
         return smeared
     
     def propagate_muon(self, ptc):
-        pdebug.write("Propogate Muon\n")
+        pdebugger.info("Propogate Muon")
         self.propagate(ptc)
         return 
     
     def propagate_electron(self, ptc):
-        pdebug.write("Propogate Electron\n")
+        pdebugger.info("Propogate Electron")
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
@@ -300,7 +300,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.ptcs = []
         smeared = []
         for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
-            pdebug.write(str('Selected Papas{}\n'.format(gen_ptc)))
+            pdebugger.info(str('Selected Papas{}'.format(gen_ptc)))
         for gen_ptc in ptcs:        
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:

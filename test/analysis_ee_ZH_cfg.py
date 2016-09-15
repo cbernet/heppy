@@ -11,7 +11,7 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.utils.pdebug import pdebugger
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -234,7 +234,13 @@ if __name__ == '__main__':
 
     from heppy.statistics.random import random
     random.seed(0xdeadbeef)
-    pdebug.open("/Users/alice/work/Outputs/pythonphysics.txt")
+    
+    #pdebugger 
+    #pdebugger.setLevel(logging.ERROR)  # turns off all output
+    pdebugger.setLevel(logging.INFO) # turns on ouput
+    pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
+    pdebugger.info("Run ee ZZ debug cfg")    
+
 
     def process(iev=None):
         if iev is None:
@@ -282,7 +288,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        pdebug.write(str('Event: {}\n'.format(iev)))
+        pdebugger.info(str('Event: {}'.format(iev)))
         process(iev)
         #process(iev)
         #process(iev)

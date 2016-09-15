@@ -4,7 +4,7 @@ from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import ReconstructedParticle
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 from ROOT import TVector3, TLorentzVector
 import math
@@ -105,7 +105,7 @@ class PFReconstructor(object):
                 #ALICE debugging
                 #if len(block.element_uniqueids)<6:
                 #    continue
-                pdebug.write('Processing {}'.format(block))
+                pdebugger.info('Processing {}'.format(block))
                 self.reconstruct_block(block)                
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
@@ -413,7 +413,7 @@ class PFReconstructor(object):
 
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
         
-        pdebug.write(str('Made {} from {}\n'.format(particle,  cluster)))
+        pdebugger.info(str('Made {} from {}'.format(particle,  cluster)))
         if self.debugprint:
             print "made particle from cluster ",pdg_id,  cluster, particle        
         return particle
@@ -430,7 +430,7 @@ class PFReconstructor(object):
         particle.set_path(track.path, track=track)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
-        pdebug.write(str('Made {} from {}\n'.format(particle,  track)))
+        pdebugger.info(str('Made {} from {}'.format(particle,  track)))
         if self.debugprint:
             print "made particle from track ", pdg_id, track, particle        
         return particle

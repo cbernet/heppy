@@ -2,7 +2,7 @@
 from DAG import Node, DAGFloodFill
 
 #temp
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 import collections
 

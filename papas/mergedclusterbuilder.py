@@ -4,7 +4,7 @@ from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfobjects import MergedCluster
 from heppy.papas.data.identifier import Identifier
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.utils.pdebug import pdebugger
 
 class MergedClusterBuilder(GraphBuilder):
     ''' MergingBlockBuilder takes particle flow elements of one cluster type eg ecal_in
@@ -85,7 +85,7 @@ class MergedClusterBuilder(GraphBuilder):
             id =  subgraphids[0] # first id in list
             if (len(subgraphids)>1):
                 for  sid in subgraphids : 
-                    pdebug.write('Merged Cluster from {}\n'.format(self.clusters[sid]))
+                    pdebugger.info('Merged Cluster from {}'.format(self.clusters[sid]))
             #make a merged cluster based on the first cluster and create a new Id for it.
             supercluster = MergedCluster(self.clusters[id]) # Identifier.make_id(Identifier.get_type(id)));
             self.merged[supercluster.uniqueid] = supercluster;
@@ -103,5 +103,5 @@ class MergedClusterBuilder(GraphBuilder):
                         self.history_nodes[elemid].add_child(snode)
                         supercluster += thing
             if (len(subgraphids)>1):
-                pdebug.write(str('Made {}\n'.format(supercluster)))
+                pdebugger.info(str('Made {}\n'.format(supercluster)))
 

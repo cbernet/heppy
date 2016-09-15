@@ -2,7 +2,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.pdt import particle_data
 from heppy.papas.pfobjects import GenParticle
 #from heppy.particles.fcc.particle import Particle
-from heppy.papas.cpp.physicsoutput import PhysicsOutput as  pdebug
+from heppy.utils.pdebug import pdebugger
 import  math
 from heppy.statistics.rrandom import RRandom as random
 
@@ -49,8 +49,12 @@ class Gun(Analyzer):
     
     def beginLoop(self, setup):
         super(Gun, self).beginLoop(setup)
-        pdebug.open("/Users/alice/work/Outputs/python_physics_debug_output.txt")
-        #pdebug.write("start")
+        import heppy.utils.pdebug as pdebugging
+        from heppy.utils.pdebug import pdebugger
+        
+        pdebugger.setLevel(logging.INFO) 
+        pdebugging.set_file("pdebug.log")
+        #pdebugging.set_streamlevel(logging.ERROR) 
         pass
     
         
@@ -71,11 +75,11 @@ class Gun(Analyzer):
         event.gen_particles_stable = event.gen_particles
 
     def write(self, setup):
-        #pdebug.write("closing\n")
+        #pdebugger.info("closing")
         #pdebug.close()
         pass
         
     def endLoop(self, setup):
         super(Gun, self).endLoop(setup)
-        #pdebug.write("closing\n")
+        #pdebugger.info("closing")
         pdebug.close() 
