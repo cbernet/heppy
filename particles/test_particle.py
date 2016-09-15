@@ -9,17 +9,36 @@ from ROOT import TLorentzVector, gSystem
 class TestParticle(unittest.TestCase):
     
     def test_root_particle_copy(self):
+        '''Test that root-based particles can be created, deepcopied,
+        and compared.'''
         ptc = TlvParticle(1, 1, TLorentzVector())
         ptc2 = copy.deepcopy(ptc)
         self.assertEqual(ptc, ptc2)
         
     def test_printout(self):
+        '''Test that the particle printout is adapted to the collider
+        beams.'''
         ptc = TlvParticle(1, 1, TLorentzVector())        
         self.assertIn('pt', ptc.__repr__())
         from heppy.configuration import Collider
         Collider.BEAMS = 'ee'
         self.assertIn('theta', ptc.__repr__())
         Collider.BEAMS = 'pp'
+        
+    #----------------------------------------------------------------------
+    def test_sort(self):
+        """Test that particles are sorted by energy or by pT depending
+        on the collider beams"""
+        ptcs = [TlvParticle(1, 1, TLorentzVector(10, 0, 0, 11)), 
+                TlvParticle(1, 1, TLorentzVector(0, 0, 11, 12))]
+        from heppy.configuration import Collider
+        Collider.BEAMS = 'ee'
+        self.assertEqual(sorted(ptcs, reverse=True),
+                         [ptcs[1], ptcs[0]])
+        Collider.BEAMS = 'pp'
+        self.assertEqual(sorted(ptcs, reverse=True),
+                         [ptcs[0], ptcs[1]])
+        
         
     #----------------------------------------------------------------------
     def test_fcc_particle(self):

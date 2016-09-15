@@ -24,7 +24,7 @@ random.seed(0xdeadbeef)
 
 # definition of the collider
 from heppy.configuration import Collider
-Collider.BEAMS = 'pp'
+Collider.BEAMS = 'ee'
 Collider.SQRTS = 240.
 
 # input definition
