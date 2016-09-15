@@ -67,10 +67,12 @@ class TestDeltaR(unittest.TestCase):
         self.assertEqual(len(in_cone), 4)
         
     def test_cleanObjectCollection(self):
-        clean, dirty = cleanObjectCollection(self.ptcs,
-                                             [ self.ptcs[(0, 0)] ])
-        self.assertEqual(dirty, ptcs[0, 0])
-        self.assertEqual(len(clean), len(self.ptcs-1))
+        # masking only one particle
+        clean, dirty = cleanObjectCollection(self.ptcs.values(),
+                                             [ self.ptcs[(0, 0)] ],
+                                             0.01)
+        self.assertEqual(dirty, [self.ptcs[0, 0]])
+        self.assertEqual(len(clean), len(self.ptcs) - 1 )
         
         
 if __name__ == '__main__':
