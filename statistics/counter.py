@@ -102,7 +102,8 @@ class Counters(object):
         return self.counters[ self.ranks[name] ] 
 
     def write(self, dirname):
-        map( lambda x: x.write(dirname), self.counters)
+        for item in self.counters:
+            item.write(dirname)
 
     def __str__(self):
         prints = map( str, self.counters )
