@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
-from heppy.papas.data.identifier import Identifier # alice ask Colin how to improve - allows id to be reset but is not quite right
+#from heppy.papas.data.identifier import Identifier # alice ask Colin how to improve - allows id to be reset but is not quite right
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 from heppy.particles.fcc.met import Met

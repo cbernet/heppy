@@ -11,11 +11,11 @@ import logging
        from heppy.utils.pdebug import pdebugger
        
        
-     Use following four lines and comment out as needed to obtain desired behaviour   
+     Use following 3 lines and comment out as needed to obtain desired behaviour   
        #pdebugger.setLevel(logging.ERROR)  # turns off all output
        pdebugger.setLevel(logging.INFO) # turns on ouput
        pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
-       pdebugger.info("Run ee ZZ debug cfg")
+       pdebugger.set_stream_level(logging.ERROR)
        
     For example
      (1) file and console:
@@ -44,25 +44,26 @@ import logging
 
 pdebugger = logging.getLogger('pdebug')
 pdebugger.setLevel(logging.ERROR)
-ch = logging.StreamHandler()
-ch.setLevel(logging.INFO)
-formatter = logging.Formatter('HELLO %(message)s')
-anotherformatter = logging.Formatter('%(message)s')
-ch.setFormatter(formatter)
-pdebugger.addHandler(ch)
 
 
 def set_file(filename = "pdebug.log", mode='w', level ="INFO"):
     #todo add checks
     cf = logging.FileHandler(filename, mode)
     cf.setLevel(level)
-    cf.setFormatter(anotherformatter)
     pdebugger.addHandler(cf)
 
-def set_streamlevel(level ="INFO"):
+def set_stream(level ="INFO"):
+    ch = logging.StreamHandler()
     ch.setLevel(level)
-
+    mformatter = logging.Formatter('TEST %(message)s')
+    ch.setFormatter(mformatter)    
+    pdebugger.addHandler(ch)
+    
 
 if __name__ == '__main__':
-    logger = logging.getLogger('__main__')
-    logger.warning('blah')
+
+    pdebugger.setLevel(logging.WARNING)
+    set_stream()
+    set_file("pdebug.log")
+    pdebugger.warning('blah')
+    pass

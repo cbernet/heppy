@@ -3,7 +3,6 @@
 
 import ROOT 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-from heppy.utils.pdebug import pdebugger #alice would prefer not to put it here but I want to output the event #
 import os
 import sys
 import imp
@@ -278,7 +277,6 @@ Make sure that the configuration object is of class cfg.Analyzer.
         This function can be called directly from
         the python interpreter, to jump to a given event and process it.
         """
-        pdebugger.info(str('Event: {}'.format(iEv)))
         if not hasattr(self.events, '__getitem__'):
             msg = '''
 Your events backend, of type 

@@ -1,7 +1,8 @@
 from heppy.framework.analyzer import Analyzer
+import logging
 import heppy.utils.pdebug as pdebugging
-from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.pfevent import PFEvent
+
 
 
 class PDebugger(Analyzer):
@@ -9,18 +10,14 @@ class PDebugger(Analyzer):
     '''
     def __init__(self, *args, **kwargs):
         super(PDebugger, self).__init__(*args, **kwargs) 
-        if hasattr(self.cfg_ana, 'console_level') ==True :
-            pass
-            pdebugging.set_streamlevel(self.cfg_ana.console_level)       
-        if hasattr(self.cfg_ana, 'debug_file') ==True :
-            pass
-            pdebugging.set_file(self.cfg_ana.debug_file) #optional writes to file
+        #bnot working as expected
+        pdebugging.pdebugger.setLevel(self.cfg_ana.debug_level)
+        pdebugging.set_stream(level=self.cfg_ana.console_level)
+        pdebugging.set_file(self.cfg_ana.debug_file)
+        pdebugging.pdebugger.info('blah')
         
-        pdebugger.setLevel(self.cfg_ana.debug_level) # turns on or off output
-       
-        pdebugger.info("inits")
         pass
         
     def process(self, event):
-        pdebugger.info(str('Event: {}'.format(event.iEv)))
+        pdebugging.pdebugger.info(str('Event: {}'.format(event.iEv)))
         pass         

@@ -25,6 +25,14 @@ from EventStore import EventStore as Events
 import heppy.statistics.random as random
 random.seed(0xdeadbeef)
 
+#import heppy.utils.pdebug as pdebugging
+
+#pdebugger.setLevel(logging.ERROR)  # turns off all output
+#pdebugging.pdebugger.setLevel(logging.INFO) # turns on ouput
+#pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
+#pdebugging.set_stream(logging.INFO)
+
+
 # input definition
 comp = cfg.Component(
     'example',
@@ -38,7 +46,7 @@ selectedComponents = [comp]
 from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
     PDebugger,
-    debug_level = logging.INFO, # INFO will turn on; ERROR will turn everything off
+    debug_level = logging.ERROR, # INFO will turn on; ERROR will turn everything off
     debug_file = os.getcwd()+'/python_physics_debug.log', #optional
     console_level = logging.ERROR #optionally turns off console
 )
@@ -283,7 +291,7 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        pdebugger.info(str('Event: {}'.format(iev)))
+        #pdebugger.info(str('Event: {}'.format(iev)))
         process(iev)
         pass
     else:

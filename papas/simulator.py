@@ -299,7 +299,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.ptcs = []
         smeared = []
         for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
-            pdebugger.info(str('Selected Papas{}'.format(gen_ptc)))
+            pdebugger.info(str('{}'.format(gen_ptc)))
         for gen_ptc in ptcs:        
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
