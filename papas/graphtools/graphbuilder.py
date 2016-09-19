@@ -1,5 +1,8 @@
 #todo remove pfevent from this class once we have written a helper class to print the block and its elements
 from DAG import Node, DAGFloodFill
+from heppy.utils.pdebug import pdebugger
+from heppy.papas.data.identifier import Identifier
+import collections
 
 #todo remove pfevent from this class once we have written a helper class to print the block and its elements
 
@@ -9,7 +12,6 @@ class GraphBuilder(object):
         It uses the distances between elements to construct a set of subgraphs
         Each element will end up in one (and only one) subgraph
         
-
         attributes:
 
         ids   : list of unique identifiers eg of tracks, clusters etc
@@ -31,15 +33,15 @@ class GraphBuilder(object):
         '''
         self.ids = ids
         self.edges = edges
-
+ 
         # build the block nodes (separate graph which will use distances between items to determine links)
-        self.nodes = dict( (idt, Node(idt)) for idt in ids ) 
-
+        self.nodes = dict((idt, Node(idt)) for idt in ids)
+        
         for edge in edges.itervalues():
             #add linkage info into the nodes dictionary
             if  edge.linked: #this is actually an undirected link - OK for undirected searches 
-                self.nodes[edge.id1].add_child(self.nodes[edge.id2])            
-
+                self.nodes[edge.id1].add_child(self.nodes[edge.id2]) 
+                
         # build the subgraphs of connected nodes
         self.subgraphs = []
         for subgraphlist in DAGFloodFill(self.nodes).blocks: # change to subgraphs
@@ -48,8 +50,7 @@ class GraphBuilder(object):
             # we want the ids of these nodes
             for node in subgraphlist:
                 element_ids.append(node.get_value())        
-            self.subgraphs.append(element_ids)
-
+            self.subgraphs.append(sorted(element_ids))
 
     def __str__(self):
         descrip = "{ "

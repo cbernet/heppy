@@ -3,6 +3,7 @@ from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 import math
+import logging
 
 #add angular size needs to be fixed since at the moment the angluar size is set by the first element
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
@@ -38,7 +39,14 @@ class PFObject(object):
 
     def __repr__(self):
         return str(self)
-
+    
+    def __str__(self):
+        return '{classname} :{pretty:9}:{id}: {info}'.format(
+                    classname = self.__class__.__name__,
+                    pretty = Identifier.pretty(self.uniqueid),
+                    id = self.uniqueid,
+                    info = self.info())
+                       
 
 class Cluster(PFObject):
     '''
@@ -69,6 +77,8 @@ class Cluster(PFObject):
         self.particle = particle
         self.subclusters = [self]
         # self.absorbed = []
+        
+        
 
     def set_size(self, value):
         self._size = value
@@ -167,15 +177,21 @@ class Cluster(PFObject):
     #         self.pt = value * self.position.Unit().Perp()
     #     self.__dict__[name] = value
 #AJR added \n need to remove
-    def __str__(self):
-        return '{classname:15}:uid={uniqueid}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            classname = self.__class__.__name__,
-            uniqueid = self.uniqueid,
-            layer = self.layer,
+    def info(self):
+        
+        subclusterstr= str('sub(')
+        for s in self.subclusters:
+            subclusterstr += str('{:9}, '.format(Identifier.pretty(s.uniqueid)))
+        subclusterstr += ")"
+        return '{energy:7.2f} {theta:5.2f} {phi:5.2f} {sub}'.format(
             energy = self.energy,
             theta = math.pi/2. - self.position.Theta(),
-            phi = self.position.Phi()
+            phi = self.position.Phi(),
+            sub= subclusterstr
         )
+    
+    
+    
         
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
@@ -222,11 +238,11 @@ class Track(PFObject):
         self.path = path
         self.particle = particle
         self.layer = 'tracker'
+        
+        
 
-    def __str__(self):
-        return '{classname:15}:uid={uniqueid}: {e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            classname = self.__class__.__name__,
-            uniqueid = self.uniqueid,
+    def info(self):
+        return '{e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             pt = self.pt,
             e = self.energy, 
             theta = math.pi/2. - self.p3.Theta(),
@@ -251,7 +267,7 @@ class Particle(BaseParticle):
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
-        self.track = Track(self.p3(), self.q(), self.path)
+        self.track = None # Alice Experiment Track(self.p3(), self.q(), self.path)
         self.clusters_smeared = dict()
         self.track_smeared = None  
   
@@ -271,11 +287,13 @@ class Particle(BaseParticle):
         else:
             return False
         
-    def set_path(self, path, option=None):
+    def set_path(self, path, option=None): 
         if option == 'w' or self.path is None:
             self.path = path
-            self.track = Track(self.p3(), self.q(), self.path)
+            if self.q():
+                self.track = Track(self.p3(), self.q(), self.path)
     
+
 ##    def __str__(self):
 ##        tmp = '{className}:uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
 ##        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
@@ -295,6 +313,71 @@ class Particle(BaseParticle):
 ##            p4 = p4                    
 ##        )
           
+    #def info(self):
+        #tmp = 'pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
+        ##needed for now to get match with C++
+        #pid=self.pdgid()      
+        #if self.q() == 0 and pid < 0:
+            #pid = -pid        
+        #p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
+            #pt = self.pt(),
+            #e = self.e(),
+            #eta = self.eta(),
+            #theta = self.theta(),
+            #phi = self.phi(),
+            #m = self.m()  ) 
+            
+        #return tmp.format(
+            #pdgid =pid,
+            ##pdgid = self.pdgid(),
+            #status = self.status(),
+            #q = self.q(),
+            #p4 = p4
+                    
+        #)
+    
+    #def __repr__(self):
+        #return str(self)
+        
+    #def __str__(self):
+        #return '{classname} :{pretty:9}:{id}: {info}'.format(
+            #classname = self.__class__.__name__,
+            #pretty = Identifier.pretty(self.uniqueid), 
+            #id = self.uniqueid,
+            #info = self.info())   
+    
+
+#class ReconstructedParticle(Particle):
+    #'''  A reconstructed Particle is just like a particle but has a reconstructed particle uniqueid
+    #'''
+    #def __init__(self, tlv, vertex, charge, pdgid=None):
+        #super(ReconstructedParticle, self).__init__(tlv, vertex, charge, pdgid,Identifier.PFOBJECTTYPE.RECPARTICLE)
+    
+    #def set_path(self, path, option = None, track = None): #Alice experiement to try to avoid new tracks for rec particles
+        #if option == 'w' or self.path is None:
+            #self.path = path
+            #if self.q() and  track == None:
+                    #self.track = Track(self.p3(), self.q(), self.path)
+        #if track !=  None:
+            #self.track = track
+
+##allows a generated particle with a unique id
+#class GenParticle(Particle):
+    #'''  A gen Particle is just like a particle but has a  particle uniqueid
+    #'''
+    #def __init__(self, tlv, vertex, charge, pdgid=None):
+        #super(GenParticle, self).__init__(tlv, vertex, charge, pdgid, Identifier.PFOBJECTTYPE.PARTICLE)
+    
+    #def set_path(self, path, option = None, track = None): #Alice experiement to try to avoid new tracks for rec particles
+        #if option == 'w' or self.path is None:
+            #self.path = path
+            #if self.q() and  track == None:
+                    #self.track = Track(self.p3(), self.q(), self.path)
+        #if track !=  None:
+            #self.track = track
+                
+                  
+#>>>>>>> splitmerge
   
 if __name__ == '__main__':
     from ROOT import TVector3

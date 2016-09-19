@@ -21,7 +21,6 @@ class Edge(object):
         '''
         self.id1 = id1
         self.id2 = id2
-        
         self.distance = distance
         self.linked = is_linked
         self.edge_type = self._edge_type()

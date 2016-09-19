@@ -3,7 +3,7 @@ from heppy.papas.pdt import particle_data
 from heppy.particles.tlv.particle import Particle 
 
 import math
-import random
+import heppy.statistics.random as random
 
 from ROOT import TLorentzVector
 

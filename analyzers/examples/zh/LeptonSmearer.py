@@ -1,7 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 
 import copy
-import random
+import heppy.statistics.random as random
 
 class LeptonSmearer(Analyzer):
     '''Apply a simple resolution and efficiency model to electrons and muons.

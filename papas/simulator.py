@@ -1,12 +1,14 @@
-from propagator import StraightLinePropagator, HelixPropagator
-from pfobjects import Cluster, SmearedCluster, SmearedTrack
-from pfobjects import Particle as PFSimParticle
-import multiple_scattering as mscat  
-from pfalgo.pfinput import  PFInput
-from papas_exceptions import SimulationError
 
-from pfalgo.sequence import PFSequence
-import random
+from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
+from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
+from heppy.papas.pfobjects import Particle as PFSimParticle
+from heppy.papas.pfalgo.pfinput import  PFInput
+from heppy.utils.pdebug import pdebugger
+from heppy.papas.data.identifier import Identifier
+
+import multiple_scattering as mscat  
+from papas_exceptions import SimulationError
+import heppy.statistics.random as random
 import sys
 import copy
 import shelve
@@ -19,10 +21,19 @@ def pfsimparticle(ptc):
     The PFSimParticle will have the same p4, vertex, charge, pdg ID.
     '''
     tp4 = ptc.p4()
-    vertex = ptc.start_vertex().position()
+
+    
+    #merged here so could need fix
+    vertex = TVector3()
+    if hasattr(ptc, '_start_vertex'):
+        vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
     simptc = PFSimParticle(tp4, vertex, charge, pid)
+    pdebugger.info("Made " +  simptc.__str__() +  "")
+
+    
+   
     simptc.gen_ptc = ptc
     return simptc
 
@@ -69,6 +80,7 @@ class Simulator(object):
         if size is None:
             size = detector.cluster_size(ptc)
         cylname = detector.volume.inner.name
+
         if not cylname in ptc.points:
             # TODO Colin particle was not extrapolated here...
             # issue must be solved!
@@ -86,14 +98,17 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                             ptc.points[cylname],
                             size,
                             cylname, ptc)
-        ptc.clusters[cylname] = cluster
-        return cluster
 
+        ptc.clusters[cylname] = cluster
+        pdebugger.info("Made " + cluster.__str__() + "")
+        
+        return cluster
 
     def smear_cluster(self, cluster, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.  
         If accept is False (default), returns None if the smeared 
         cluster is not in the detector acceptance. '''
+
         eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
         response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
@@ -103,11 +118,14 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.size(),
                                           cluster.layer,
                                           cluster.particle )
+        
+        pdebugger.info(str('Made {}'.format(smeared_cluster) ))
         # smeared_cluster.set_energy(energy)
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
         else:
+            pdebugger.info(str('Rejected {}'.format(smeared_cluster)))
             return None
     
     def smear_track(self, track, detector, accept=False):
@@ -118,12 +136,16 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                      track.p3 * scale_factor,
                                      track.charge,
                                      track.path)
+        pdebugger.info("Made " + smeared_track.__str__())
         if detector.acceptance(smeared_track) or accept:
             return smeared_track
         else:
+            # pdebugger.info("Rejected Smeared Track")
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
             return None
         
     def simulate_photon(self, ptc):
+        pdebugger.info("Simulating Photon")
         detname = 'ecal'
         ecal = self.detector.elements[detname]
         self.prop_straight.propagate_one(ptc,
@@ -136,6 +158,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
 
 
     def simulate_electron(self, ptc):
+        pdebugger.info("Simulating Electron")
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
@@ -157,8 +180,11 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
+
+        pdebugger.info("Simulating Hadron")
+
         #implement beam pipe scattering
-        
+    
         ecal = self.detector.elements['ecal']
         hcal = self.detector.elements['hcal']
         beampipe = self.detector.elements['beampipe']        
@@ -188,6 +214,16 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
+
+        # alice left over from merge ... are the next 6 lines needed        
+        if ptc.q()!=0:
+            pdebugger.info("Made " + ptc.track.__str__())
+            smeared_track = self.smear_track(ptc.track,
+                                             self.detector.elements['tracker'])
+            if smeared_track:
+                ptc.track_smeared = smeared_track
+                
+
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)
             path_length = ecal.material.path_length(ptc)
@@ -208,17 +244,15 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                     smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
                     if smeared:
                         ptc.clusters_smeared[smeared.layer] = smeared
+
         cluster = self.make_cluster(ptc, 'hcal', 1-frac_ecal)
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
-        if ptc.q()!=0:
-            smeared_track = self.smear_track(ptc.track,
-                                             self.detector.elements['tracker'])
-            if smeared_track:
-                ptc.track_smeared = smeared_track
+        
 
     def simulate_muon(self, ptc):
+        pdebugger.info("Simulating Muon")
         self.propagate(ptc)
         smeared_track = self.smear_track(ptc.track,
                                          self.detector.elements['tracker'])
@@ -226,46 +260,61 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             ptc.track_smeared = smeared_track
 
     def smear_muon(self, ptc):
+        pdebugger.info("Smearing Muon");
         self.propagate(ptc)
+        if ptc.q()!=0:
+                    pdebugger.info("Made " + ptc.track.__str__())        
         smeared = copy.deepcopy(ptc)
+        
         return smeared
 
     def smear_electron(self, ptc):
+        pdebugger.info("Smearing Electron");
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
                                       self.detector.elements['field'].magnitude )
+        if ptc.q()!=0:
+            pdebugger.info("Made " + ptc.track.__str__())        
         smeared = copy.deepcopy(ptc)
+        
+
         return smeared
     
     def propagate_muon(self, ptc):
+        pdebugger.info("Propogate Muon")
         self.propagate(ptc)
         return 
     
     def propagate_electron(self, ptc):
+        pdebugger.info("Propogate Electron")
         ecal = self.detector.elements['ecal']
         self.prop_helix.propagate_one(ptc,
                                       ecal.volume.inner,
                                       self.detector.elements['field'].magnitude )
         return    
     
-    def simulate(self, ptcs, do_reconstruct = True):
+    def simulate(self, ptcs):
         self.reset()
         self.ptcs = []
         smeared = []
-        for gen_ptc in ptcs:
+        for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
+            pdebugger.info(str('{}'.format(gen_ptc)))
+        for gen_ptc in ptcs:        
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                self.propagate_electron(ptc)
-                #smeared_ptc = self.smear_electron(ptc)
-                #smeared.append(smeared_ptc)
+                
+                #TEMPORARY TODO self.propagate_electron(ptc)
+                smeared_ptc = self.smear_electron(ptc)
+                smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                self.propagate_muon(ptc)
-                #smeared_ptc = self.smear_muon(ptc)
-                #smeared.append(smeared_ptc)
+              
+                #TEMPORARY TODO self.propagate_muon(ptc)
+                smeared_ptc = self.smear_muon(ptc)
+                smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12,14,16]:
                 self.simulate_neutrino(ptc)
@@ -273,21 +322,17 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                 if ptc.q() and ptc.pt()<0.2:
                     # to avoid numerical problems in propagation
                     continue
+                if ptc.q()==0 and ptc.pdgid<0:
+                    pass
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
             #self.smeared =  smeared
             self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
-        if  do_reconstruct : #now optional, defaults to run this for backwards compatibility
-            self.pfsequence = PFSequence(self.ptcs, self.detector, self.logger)
-            self.particles = copy.copy(self.pfsequence.pfreco.particles)
-            #self.particles.extend(smeared)
         
         
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)
         #print "number of sim particles: ", len(self.ptcs)        
-        #print "number of rec (no smeared) particles: ", len(self.pfsequence.pfreco.particles)
-        #print "number of rec original inc smeared particles: ", len(self.particles)
         
 if __name__ == '__main__':
 
@@ -304,7 +349,7 @@ if __name__ == '__main__':
     display_on = True
     detector = cms
 
-    logging.basicConfig(level='INFO')
+    logging.basicConfig(level='WARNING')
     logger = logging.getLogger('Simulator')
     logger.addHandler( logging.StreamHandler(sys.stdout) )
     

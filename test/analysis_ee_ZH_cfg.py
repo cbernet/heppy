@@ -17,15 +17,27 @@ import logging
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
-
 # setting the random seed for reproducible results
-import random
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
+
+import heppy.statistics.random as random
 random.seed(0xdeadbeef)
+
 
 # definition of the collider
 from heppy.configuration import Collider
 Collider.BEAMS = 'pp'
 Collider.SQRTS = 240.
+
+#import heppy.utils.pdebug as pdebugging
+
+#pdebugger.setLevel(logging.ERROR)  # turns off all output
+#pdebugging.pdebugger.setLevel(logging.INFO) # turns on ouput
+#pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
+#pdebugging.set_stream(logging.INFO)
+
 
 # input definition
 comp = cfg.Component(
@@ -35,6 +47,16 @@ comp = cfg.Component(
     ]
 )
 selectedComponents = [comp]
+
+#  Pdebugger
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+    PDebugger,
+    debug_level = logging.ERROR, # INFO will turn on; ERROR will turn everything off
+    debug_file = os.getcwd()+'/python_physics_debug.log', #optional
+    console_level = logging.ERROR #optionally turns off console
+)
+
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -127,7 +149,6 @@ particles_not_zed = cfg.Analyzer(
     output = 'particles_not_zed',
     input = 'rec_particles',
     mask = 'zeds_legs',
-
 )
 
 # Make jets from the particles not used to build the best zed.
@@ -196,6 +217,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
+    pdebug,
     source,
     papas_sequence, 
     leptons_true,
@@ -227,9 +249,6 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-
-    import random
-    random.seed(0xdeadbeef)
 
     def process(iev=None):
         if iev is None:
@@ -277,9 +296,9 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
+        #pdebugger.info(str('Event: {}'.format(iev)))
         process(iev)
-        #process(iev)
-        #process(iev)
+        pass
     else:
         loop.loop()
         loop.write()

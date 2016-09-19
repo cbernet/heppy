@@ -5,8 +5,7 @@ from heppy.utils.deltar import deltaPhi
 from collections import OrderedDict
 import scipy.optimize as opti # need to compute impact parameters
 from numpy import sign
-import random as random
-
+import heppy.statistics.random as random
 
 class Path(object):
     '''Path followed by a particle in 3D space. 
