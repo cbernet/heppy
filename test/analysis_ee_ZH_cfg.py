@@ -24,14 +24,14 @@ random.seed(0xdeadbeef)
 
 # definition of the collider
 from heppy.configuration import Collider
-Collider.BEAMS = 'ee'
+Collider.BEAMS = 'pp'
 Collider.SQRTS = 240.
 
 # input definition
 comp = cfg.Component(
     'example',
     files = [
-        os.getcwd()+'/ee_ZH_Zmumu_Hbb.root'
+        os.getcwd()+'/data/ee_ZH_Zmumu_Hbb.root'
     ]
 )
 selectedComponents = [comp]

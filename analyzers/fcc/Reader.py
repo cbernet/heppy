@@ -76,7 +76,7 @@ class Reader(Analyzer):
                         )
                 pycoll = map(class_object, coll)
                 if sort:
-                    # pycoll.sort(key = self.sort_key, reverse=True)
+                    #    pycoll.sort(key = self.sort_key, reverse=True)
                     pycoll.sort(reverse=True)
                 setattr(event, coll_label, pycoll )
             return pycoll

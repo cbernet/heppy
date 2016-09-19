@@ -1,6 +1,8 @@
 import math
 from heppy.configuration import Collider
 
+from functools import total_ordering
+
 class P4(object):
 
     def __init__(self, *args, **kwargs):
@@ -49,20 +51,19 @@ class P4(object):
         return self._tlv.M()
     
     
+    def sort_key(self):
+        if Collider.BEAMS == 'ee':
+            return self.e()
+        else:
+            return self.pt() 
+    
     def __gt__(self, other):
         '''sorting by pT or energy depending on Collider.BEAMS'''
-        if Collider.BEAMS == 'ee':
-            return self.e() > other.e()
-        elif Collider.BEAMS == 'pp':
-            return self.pt() > other.pt()
+        return self.sort_key() > other.sort_key()  
         
     def __lt__(self, other):
         '''sorting by pT or energy depending on Collider.BEAMS'''
-        if Collider.BEAMS == 'ee':
-            return self.e() < other.e()
-        elif Collider.BEAMS == 'pp':
-            return self.pt() < other.pt()
-        
+        return self.sort_key() < other.sort_key()  
     
     def __str__(self):
         if Collider.BEAMS == 'pp':

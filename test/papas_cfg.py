@@ -1,4 +1,5 @@
 import heppy.framework.config as cfg
+from heppy.configuration import Collider
 
 # Use a Filter to select stable gen particles for simulation
 # from the output of "source" 
@@ -94,12 +95,15 @@ smear_leptons = cfg.Analyzer(
 
 #merge smeared leptons with the reconstructed particles
 from heppy.analyzers.Merger import Merger
+from heppy.particles.p4 import P4
+
 merge_particles = cfg.Analyzer(
     Merger,
     instance_label = 'merge_particles', 
     inputA = 'papas_PFreconstruction_particles_list',
     inputB = 'smeared_leptons',
-    output = 'rec_particles', 
+    output = 'rec_particles',
+    sort_key = P4.sort_key
 )
 
 papas_sequence = [

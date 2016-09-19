@@ -28,6 +28,9 @@ class Merger(Analyzer):
         
         output = copy.copy(inputA)
         output.extend(inputB)
+        if hasattr(self.cfg_ana, 'sort_key'):
+            output.sort(key=self.cfg_ana.sort_key,
+                        reverse=True)
         setattr( event, self.cfg_ana.output, output)
         
         

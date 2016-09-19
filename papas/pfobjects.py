@@ -41,6 +41,14 @@ class PFObject(object):
 
 
 class Cluster(PFObject):
+    '''
+    TODO:
+    - not sure  max_energy plays well with SmearedClusters
+    - investigate the possibility to have only one class.
+     so: put mother in Cluster
+     define the identifier outside?
+    or stay as it is, but do not do any work in the child SmearedCluster and MergedCluster classes
+    '''
 
     #TODO: not sure this plays well with SmearedClusters
     max_energy = 0.
@@ -77,6 +85,10 @@ class Cluster(PFObject):
         return self._angularsize
     
     def is_inside_clusters(self,  other):
+        '''TODO: no need for two versions of this method, see below.
+        one should have a single overlap method that always works, whether or not there are any
+        subclusters. 
+        '''
         #see if two clusters overlap (allowing for merged clusters which contain subclusters)
         #we have a link if any of the subclusters overlap
         #the distance is the distance betewen the weighted centres of each (merged) cluster
@@ -96,6 +108,7 @@ class Cluster(PFObject):
         
             
     def is_inside_cluster(self, other):
+        '''TODO change name to "overlaps" ? '''
         #now we have original unmerged clusters so we can compare directly to see if they overlap
         dR = deltaR(self.position.Theta(),
                     self.position.Phi(),
@@ -106,10 +119,7 @@ class Cluster(PFObject):
             
 
     def is_inside(self, point):
-        #check if the point lies within the "size" circle of each of the subclusters
-        #fixed a bug in which the ""size"" was taken from the initial cluster and not the
-        # individual sizes of each of the subclusters (this 'breaks' when used with mergedclusters)
-        # does this function want to be moved to MergedCluster class perhaps 
+        """check if the point lies within the "size" circle of each of the subclusters"""
         subdist=[]
         for subc in self.subclusters:
             dist=(subc.position - point).Mag()
@@ -181,6 +191,7 @@ class MergedCluster(Cluster):
         self.subclusters = [mother]  
 
     def __iadd__(self, other):
+        '''TODO: why not using iadd from base class'''
         if other.layer != self.layer:
             raise ValueError('can only add a cluster from the same layer') 
         position = self.position * self.energy + other.position * other.energy
