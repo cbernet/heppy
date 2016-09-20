@@ -4,6 +4,8 @@ from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.papas.pfobjects import Particle
+from heppy.utils.pdebug import pdebugger
+
 
 from ROOT import TVector3, TLorentzVector
 import math
@@ -104,6 +106,7 @@ class PFReconstructor(object):
                 #ALICE debugging
                 #if len(block.element_uniqueids)<6:
                 #    continue
+                pdebugger.info('Processing {}'.format(block))
                 self.reconstruct_block(block)                
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
@@ -400,8 +403,9 @@ class PFReconstructor(object):
         particle.set_path(path)
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
-        if self.debugprint:
-            print "made particle from cluster ",pdg_id,  cluster, particle        
+        pdebugger.info(str('Made {} from {}'.format(particle,  cluster)))
+        
+      
         return particle
         
     def reconstruct_track(self, track, clusters = None): # cluster argument does not ever seem to be used at present
@@ -416,8 +420,8 @@ class PFReconstructor(object):
         particle.set_path(track.path)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
-        if self.debugprint:
-            print "made particle from track ", pdg_id, track, particle        
+        pdebugger.info(str('Made {} from {}'.format(particle,  track)))
+             
         return particle
 
 

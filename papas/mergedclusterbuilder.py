@@ -3,6 +3,8 @@ from heppy.papas.graphtools.graphbuilder import GraphBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfobjects import MergedCluster
+from heppy.papas.data.identifier import Identifier
+from heppy.utils.pdebug import pdebugger
 
 class MergedClusterBuilder(GraphBuilder):
     ''' MergingBlockBuilder takes particle flow elements of one cluster type eg ecal_in
@@ -63,13 +65,16 @@ class MergedClusterBuilder(GraphBuilder):
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs:
+            supercluster = None            
             if len(subgraphids)==1 : 
                 #no overlapping cluster so no merging needed
                 self.merged[subgraphids[0]] = self.clusters[subgraphids[0]]
+                
             else: 
                 #make a merged "supercluster" and then add each of the linked clusters into it                
-                supercluster = None
+                
                 for elemid in subgraphids :
+                    pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))                    
                     thing = self.clusters[elemid]
                     if supercluster is None:
                         supercluster = MergedCluster(thing)
@@ -86,5 +91,6 @@ class MergedClusterBuilder(GraphBuilder):
                         supercluster += thing
                         if (self.history_nodes):
                             self.history_nodes[elemid].add_child(snode)  
-                        
+           if len(subgraphids)>1 : 
+              pdebugger.info(str('Made {}\n'.format(supercluster)))                        
 

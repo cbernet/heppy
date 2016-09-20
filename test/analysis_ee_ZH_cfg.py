@@ -36,6 +36,15 @@ comp = cfg.Component(
 )
 selectedComponents = [comp]
 
+
+#  Pdebugger
+    from heppy.analyzers.PDebugger import PDebugger
+    pdebug = cfg.Analyzer(
+        PDebugger,
+        output_to_stdout = False,
+        debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+        )
+
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
@@ -196,6 +205,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
+    pdebug,
     source,
     papas_sequence, 
     leptons_true,

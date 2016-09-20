@@ -2,6 +2,7 @@ import itertools
 from blockbuilder import BlockBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
+from heppy.utils.pdebug import pdebugger
 
 class PFBlockBuilder(BlockBuilder):
     ''' PFBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
