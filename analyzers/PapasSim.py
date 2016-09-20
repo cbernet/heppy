@@ -115,11 +115,6 @@ class PapasSim(Analyzer):
             self.mainLogger.error( str(err) + ' -> Event discarded')
             return False
         pfsim_particles = self.simulator.ptcs
-        
-        event.tracks = dict()
-        event.ecal_clusters = dict()
-        event.hcal_clusters = dict()        
-        
         if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
             return
             
@@ -129,10 +124,12 @@ class PapasSim(Analyzer):
         #these are the particles before simulation        
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)     
-        setattr(event, self.simname, simparticles)
-        
+        setattr(event, self.simname, simparticles) 
               
         #extract the tracks and clusters (extraction is prior to Colins merging step)
+        event.tracks = dict()
+        event.ecal_clusters = dict()
+        event.hcal_clusters = dict()        
         if "tracker" in self.simulator.pfinput.elements :
             for element in self.simulator.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element
@@ -151,7 +148,7 @@ class PapasSim(Analyzer):
         #note eventually history will be created by the simulator and passed in
         # as an argument and this will no longer be needed
         uniqueids = list(event.tracks.keys()) + list(event.ecal_clusters.keys()) + list(event.hcal_clusters.keys())
-        history = dict((idt, Node(idt)) for idt in uniqueids)
+        history = dict(( idt, Node(idt)) for idt in uniqueids )
        
         #Now merge the simulated clusters and tracks as a separate pre-stage (prior to new reconstruction)        
         # and set the event to point to the merged cluster

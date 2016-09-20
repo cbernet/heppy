@@ -34,9 +34,9 @@ class TestDistance(unittest.TestCase):
         self.assertFalse(link_ok)
         self.assertEqual(link_type, None)
         link_type, link_ok, distance = ruler(tr, c1)
-        self.assertTrue(link_ok) 
+        self.assertTrue(link_ok)
         link_type, link_ok, distance = ruler(tr, c2)
-        self.assertTrue(link_ok)        
+        self.assertTrue(link_ok)
 
         
     def test_ecal_hcal(self):

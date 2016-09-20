@@ -36,7 +36,6 @@ class GraphBuilder(object):
  
         # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict((idt, Node(idt)) for idt in ids)
-        
         for edge in edges.itervalues():
             #add linkage info into the nodes dictionary
             if  edge.linked: #this is actually an undirected link - OK for undirected searches 

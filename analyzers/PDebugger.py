@@ -22,9 +22,9 @@ class PDebugger(Analyzer):
         if hasattr(self.cfg_ana, 'debug_filename'):
             pdebugging.set_file(self.cfg_ana.debug_filename)
             pdebugging.pdebugger.setLevel(logging.INFO)    
-        
         pass
         
     def process(self, event):
         pdebugging.pdebugger.info(str('Event: {}'.format(event.iEv)))
         pass         
+

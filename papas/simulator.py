@@ -21,7 +21,6 @@ def pfsimparticle(ptc):
     '''
     tp4 = ptc.p4()
 
-    
     #merged here so could need fix
     vertex = TVector3()
     if hasattr(ptc, '_start_vertex'):
@@ -30,9 +29,6 @@ def pfsimparticle(ptc):
     pid = ptc.pdgid()
     simptc = PFSimParticle(tp4, vertex, charge, pid)
     pdebugger.info("Made " +  simptc.__str__() +  "")
-
-    
-   
     simptc.gen_ptc = ptc
     return simptc
 
@@ -100,7 +96,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
 
         ptc.clusters[cylname] = cluster
         pdebugger.info("Made " + cluster.__str__() + "")
-        
         return cluster
 
     def smear_cluster(self, cluster, detector, accept=False, acceptance=None):
@@ -183,7 +178,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         pdebugger.info("Simulating Hadron")
 
         #implement beam pipe scattering
-    
+
         ecal = self.detector.elements['ecal']
         hcal = self.detector.elements['hcal']
         beampipe = self.detector.elements['beampipe']        
@@ -221,7 +216,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                              self.detector.elements['tracker'])
             if smeared_track:
                 ptc.track_smeared = smeared_track
-                
 
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)
@@ -248,7 +242,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
-        
+
 
     def simulate_muon(self, ptc):
         pdebugger.info("Simulating Muon")
@@ -262,9 +256,8 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         pdebugger.info("Smearing Muon");
         self.propagate(ptc)
         if ptc.q()!=0:
-                    pdebugger.info("Made " + ptc.track.__str__())        
+                    pdebugger.info("Made " + ptc.track.__str__())
         smeared = copy.deepcopy(ptc)
-        
         return smeared
 
     def smear_electron(self, ptc):
@@ -274,10 +267,8 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                       ecal.volume.inner,
                                       self.detector.elements['field'].magnitude )
         if ptc.q()!=0:
-            pdebugger.info("Made " + ptc.track.__str__())        
+            pdebugger.info("Made " + ptc.track.__str__())
         smeared = copy.deepcopy(ptc)
-        
-
         return smeared
     
     def propagate_muon(self, ptc):
@@ -299,18 +290,16 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         smeared = []
         for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
             pdebugger.info(str('{}'.format(gen_ptc)))
-        for gen_ptc in ptcs:        
+        for gen_ptc in ptcs:
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
-            elif abs(ptc.pdgid()) == 11:
-                
+            elif abs(ptc.pdgid()) == 11:  
                 #TEMPORARY TODO self.propagate_electron(ptc)
                 smeared_ptc = self.smear_electron(ptc)
                 smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
-            elif abs(ptc.pdgid()) == 13:
-              
+            elif abs(ptc.pdgid()) == 13:              
                 #TEMPORARY TODO self.propagate_muon(ptc)
                 smeared_ptc = self.smear_muon(ptc)
                 smeared.append(smeared_ptc)

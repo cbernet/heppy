@@ -299,9 +299,6 @@ class PFReconstructor(object):
                 -> each hcal is treated using rules above
         '''
         
-        if Identifier.pretty(hcalid) == "h634" :
-            pass
-        
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
         ecals = []
@@ -423,8 +420,6 @@ class PFReconstructor(object):
         p4.SetVectM(track.p3, mass)
         particle = Particle(p4, vertex, charge, pdg_id, Identifier.PFOBJECTTYPE.RECPARTICLE)
         particle.set_path(track.path)
-
-        #check particle.set_path(track.path, track=track)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle,  track)))

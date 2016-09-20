@@ -3,7 +3,7 @@ from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
 from heppy.papas.data.identifier import Identifier
-from heppy.utils.pdebug import pdebugger 
+from heppy.utils.pdebug import pdebugger
 import copy
 
 class Particle(BaseParticle, POD):
@@ -33,7 +33,7 @@ class Particle(BaseParticle, POD):
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
 
-    
+
     def __str__(self):
         tmp = '{className} :{uniqueid:9}:{uid}: pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
         p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
@@ -42,11 +42,11 @@ class Particle(BaseParticle, POD):
             eta = self.eta(),
             theta = self.theta(),
             phi = self.phi(),
-            m = self.m()  ) 
-        
+            m = self.m()  )
+
         pid=self.pdgid()
         if self.q() == 0 and self.pdgid() < 0:
-            pid = -self.pdgid();   
+            pid = -self.pdgid();
         return tmp.format(
             className = self.__class__.__name__,
             uniqueid = Identifier.pretty(self.uniqueid),
@@ -54,6 +54,5 @@ class Particle(BaseParticle, POD):
             pdgid = pid,
             status = self.status(),
             q = self.q(),
-            p4 = p4
-                    
+            p4 = p4    
         )

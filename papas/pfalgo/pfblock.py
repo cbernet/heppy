@@ -159,10 +159,10 @@ class PFBlock(object):
             count = count + 1            
         return elemdetails + "      }\n"
     
-    def short_elements_string(self): 
+    def short_elements_string(self):
         ''' Construct a string descrip of each of the elements in a block:-
         The elements are given a short name E/H/T according to ecal/hcal/track
-        and then sequential numbering starting from 0, this naming is also used to index the 
+        and then sequential numbering starting from 0, this naming is also used to index the
         matrix of distances. The full unique id is also given.
         For example:-
         elements: {
@@ -178,9 +178,9 @@ class PFBlock(object):
                                                                            count=count,
                                                                           strdescrip=Identifier.pretty(uid),
                                                                           id=uid)
-            count = count + 1            
+            count = count + 1
         return elemdetails
-    
+
     def short_name(self):    
         ''' constructs a short summary name for blocks allowing sorting based on contents
             eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks
@@ -220,7 +220,7 @@ class PFBlock(object):
                 matrixstr +=  "{:>8}".format(elemstr)
                 count += 1
             matrixstr +=  "\n"
-        
+
             #for each element find distances to all other items that are in the lower part of the matrix
             countrow = 0
             for e1 in self.element_uniqueids : # this will be the rows
@@ -229,22 +229,22 @@ class PFBlock(object):
                 #make short name for the row element eg E3, H5 etc
                 rowname = Identifier.type_short_code(e1) +str(countrow)
                 for e2 in self.element_uniqueids:  # these will be the columns
-                    #make short name for the col element eg E3, H5                
-                    colname = Identifier.type_short_code(e1) + str(countcol) 
+                    #make short name for the col element eg E3, H5
+                    colname = Identifier.type_short_code(e1) + str(countcol)
                     countcol += 1
                     if (e1 == e2):
                         rowstr += "       ."
                         break
                     elif self.get_edge(e1,e2).distance == None:
-                        rowstr   += "     ---" 
+                        rowstr   += "     ---"
                     elif self.get_edge(e1,e2).linked == False:
-                        rowstr   += "     xxx"                 
+                        rowstr   += "     xxx"
                     else :
                         rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) 
                 matrixstr += "{:>8}".format(rowname) + rowstr + "\n"
-                countrow += 1        
-                
-        return matrixstr   
+                countrow += 1
+
+        return matrixstr
     
     def get_edge(self, id1, id2):
         ''' Find the edge corresponding to e1 e2 
@@ -269,7 +269,7 @@ class PFBlock(object):
             }
         '''
         descrip =  self.__repr__() + "\n"
-        descrip += self.short_elements_string()        
+        descrip += self.short_elements_string()
         descrip += self.edge_matrix_string()     
         return descrip
     

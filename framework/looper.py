@@ -199,7 +199,6 @@ Make sure that the configuration object is of class cfg.Analyzer.
         if hasattr(self.events, '__getitem__'):
             # events backend supports indexing, e.g. CMS, FCC, bare root
             for iEv in range(firstEvent, firstEvent+nEvents):
-                
                 if iEv%100 == 0:
                     if not hasattr(self,'start_time'):
                         self.logger.info( 'event {iEv}'.format(iEv=iEv))

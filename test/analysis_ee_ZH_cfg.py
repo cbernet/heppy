@@ -47,7 +47,6 @@ pdebug = cfg.Analyzer(
     PDebugger,
     output_to_stdout = False,
     debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
-   
 )
 
 
@@ -289,7 +288,6 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        #pdebugger.info(str('Event: {}'.format(iev)))
         process(iev)
         pass
     else:
