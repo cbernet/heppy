@@ -33,7 +33,7 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
                           'test/data/ee_ZH_Zmumu_Hbb.root'])
         config.components[0].files = [fname]
         self.looper = Looper( self.outdir, config,
-                              nEvents=500,
+                              nEvents=50,
                               nPrint=0,
                               timeReport=True)
         import logging
