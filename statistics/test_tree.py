@@ -1,6 +1,6 @@
 import unittest
 from ROOT import TFile
-from tree import Tree
+from heppy.statistics.tree import Tree
 
 class TreeTestCase(unittest.TestCase):
 
@@ -33,7 +33,7 @@ class TreeTestCase(unittest.TestCase):
     def test_cwn(self):
         fi = TFile('tree2.root','RECREATE')
         tr = Tree('test_tree', 'A test tree')
-        tr.var('nvals', type=int)
+        tr.var('nvals', the_type=int)
         tr.vector('x', 'nvals', 20)
         tr.fill('nvals', 10)
         tr.vfill('x', range(10))
