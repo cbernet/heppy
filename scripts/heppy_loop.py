@@ -73,11 +73,7 @@ def createOutputDir(dir, components, force):
             else:
                 raise ValueError( ' '.join(['answer can not have this value!',
                                             answer]) )
-
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-
-
+            
 
 def main( options, args ):
 

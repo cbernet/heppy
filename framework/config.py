@@ -4,6 +4,7 @@
 from weight import Weight
 import glob
 import analyzer
+import copy
 
 # Forbidding PyROOT to hijack help system,
 # in case the configuration module is used as a script.
@@ -34,9 +35,15 @@ def printComps(comps, details=False):
     print '# components with files = ', nCompsWithFiles
     print '# jobs                  = ', nJobs
 
+
 def split(comps):
     '''takes a list of components, split the ones that need to be splitted, 
     and return a new (bigger) list'''
+
+    def chunks(l, n):
+        '''split list l in n chunks. The last one can be smaller.'''
+        return [l[i:i+n] for i in range(0, len(l), n)]
+
     splitComps = []
     for comp in comps:
         if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
@@ -44,11 +51,11 @@ def split(comps):
             if len(comp.files) % comp.splitFactor:
                 chunkSize += 1
             # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor
-            for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
+            for ichunk, chunk in enumerate(chunks(comp.files, chunkSize)):
                 newComp = copy.deepcopy(comp)
                 newComp.files = chunk
                 newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
-                                                       index=ichunk)
+                                                            index=ichunk)
                 splitComps.append( newComp )
         else:
             splitComps.append( comp )
@@ -60,6 +67,7 @@ class CFG(object):
     def __init__(self, **kwargs):
         '''All keyword arguments are added as attributes.'''
         self.__dict__.update( **kwargs )
+        self.name = None
 
     def __str__(self):
         '''A useful printout'''
@@ -111,11 +119,15 @@ class Analyzer( CFG ):
         This analyzer configuration object will become available 
         as self.cfg_ana in your ZMuMuAnalyzer.
         '''
+        super(Analyzer, self).__init__(**kwargs)
         errmsg = None
         if type(class_object) is not type: 
             errmsg = 'The first argument should be a class'
         elif not analyzer.Analyzer in class_object.__mro__:
-            try: 
+            try:
+                #TODO: we also should be able to use analyzers
+                #TODO: in PhysicsTools.HeppyCore...
+                #TODO: a bit of a hack anyway, can we do something cleaner?
                 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer as CMSBaseAnalyzer
                 if CMSBaseAnalyzer in class_object.__mro__:
                     errmsg = None
@@ -130,7 +142,6 @@ class Analyzer( CFG ):
         self.class_object = class_object
         self.instance_label = instance_label # calls _build_name
         self.verbose = verbose
-        super(Analyzer, self).__init__(**kwargs)
 
     def __setattr__(self, name, value):
         '''You may decide to copy an existing analyzer and change
@@ -171,11 +182,11 @@ class Service( CFG ):
     
     def __init__(self, class_object, instance_label='1', 
                  verbose=False, **kwargs):
+        super(Service, self).__init__(**kwargs)
         self.class_object = class_object
         self.instance_label = instance_label
         self.name = self._build_name()
         self.verbose = verbose
-        super(Service, self).__init__(**kwargs)
 
     def _build_name(self):
         class_name = '.'.join([self.class_object.__module__, 
@@ -220,14 +231,15 @@ class Component( CFG ):
     def __init__(self, name, files, tree_name=None, triggers=None, **kwargs):
         if isinstance(triggers, basestring):
             triggers = [triggers]
-        super( Component, self).__init__( name = name,
-                                          files = files,
-                                          tree_name = tree_name,
-                                          triggers = triggers, **kwargs)
+        super(Component, self).__init__(files = files,
+                                        tree_name = tree_name,
+                                        triggers = triggers, **kwargs)
+        self.name = name
         self.dataset_entries = 0
         self.isData = False
         self.isMC = False
         self.isEmbed = False
+
 
 class DataComponent( Component ):
 

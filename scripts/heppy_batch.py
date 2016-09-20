@@ -74,7 +74,7 @@ exit $?
 
 def batchScriptCERN( jobDir, remoteDir=''):
    '''prepare the LSF version of the batch script, to run on LSF'''
-   
+
    dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
 cp -r Loop/* $LS_SUBCWD
 if [ $? -ne 0 ]; then
@@ -85,7 +85,7 @@ fi"""
    if remoteDir=='':
       cpCmd=dirCopy
    elif remoteDir.startswith("/pnfs/psi.ch"):
-       cpCmd="""echo 'sending root files to remote dir'
+      cpCmd="""echo 'sending root files to remote dir'
 export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # Fabio's workaround to fix gfal-tools with CMSSW
 for f in Loop/mt2*.root
 do
@@ -104,9 +104,9 @@ done
 #fi
 """.format(idx=jobDir[jobDir.find("_Chunk")+6:].strip("/"), srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")]) + dirCopy
    else:
-       print "chosen location not supported yet: ", remoteDir
-       print 'path must start with "/pnfs/psi.ch"'
-       sys.exit(1)
+      print "chosen location not supported yet: ", remoteDir
+      print 'path must start with "/pnfs/psi.ch"'
+      sys.exit(1)
 
    script = """#!/bin/bash
 #BSUB -q 8nm
@@ -139,10 +139,10 @@ def batchScriptPSI( index, jobDir, remoteDir=''):
    VO_CMS_SW_DIR = "/swshare/cms"  # $VO_CMS_SW_DIR doesn't seem to work in the new SL6 t3wn
 
    if remoteDir=='':
-       cpCmd="""echo 'sending the job directory back'
+      cpCmd="""echo 'sending the job directory back'
 cp -r Loop/* $SUBMISIONDIR"""
    elif remoteDir.startswith("/pnfs/psi.ch"):
-       cpCmd="""echo 'sending root files to remote dir'
+      cpCmd="""echo 'sending root files to remote dir'
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/lib64/dcap/ # Fabio's workaround to fix gfal-tools
 for f in Loop/treeProducerSusyFullHad/*.root
 do
@@ -157,9 +157,9 @@ rm Loop/treeProducerSusyFullHad/*.root
 echo 'sending the logs back'
 cp -r Loop/* $SUBMISIONDIR""".format(idx=index, srm='srm://t3se01.psi.ch'+remoteDir+jobDir[jobDir.rfind("/"):jobDir.find("_Chunk")])
    else:
-       print "remote directory not supported yet: ", remoteDir
-       print 'path must start with "/pnfs/psi.ch"'
-       sys.exit(1)
+      print "remote directory not supported yet: ", remoteDir
+      print 'path must start with "/pnfs/psi.ch"'
+      sys.exit(1)
 
 
    script = """#!/bin/bash
@@ -258,64 +258,64 @@ mv Loop/* ./
 
 class MyBatchManager( BatchManager ):
    '''Batch manager specific to cmsRun processes.''' 
-         
-   def PrepareJobUser(self, jobDir, value ):
-       '''Prepare one job. This function is called by the base class.'''
-       print value
-       print components[value]
 
-       #prepare the batch script
-       scriptFileName = jobDir+'/batchScript.sh'
-       scriptFile = open(scriptFileName,'w')
-       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
-       mode = self.RunningMode(options.batch)
-       if mode == 'LXPLUS':
-           scriptFile.write( batchScriptCERN( jobDir, storeDir) ) 
-       elif mode == 'PSI':
-           scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
-       elif mode == 'LOCAL':
-           scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
-       elif mode == 'PISA' :
-	   scriptFile.write( batchScriptPISA( storeDir, value) ) 	
-       elif mode == 'PADOVA' :
-           scriptFile.write( batchScriptPADOVA( value, jobDir) )        
-       elif mode == 'IC':
-           scriptFile.write( batchScriptIC(jobDir) )
-       scriptFile.close()
-       os.system('chmod +x %s' % scriptFileName)
-       
-       shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
+   def PrepareJobUser(self, jobDir, value ):
+      '''Prepare one job. This function is called by the base class.'''
+      print value
+      print components[value]
+
+      #prepare the batch script
+      scriptFileName = jobDir+'/batchScript.sh'
+      scriptFile = open(scriptFileName,'w')
+      storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
+      mode = self.RunningMode(options.batch)
+      if mode == 'LXPLUS':
+         scriptFile.write( batchScriptCERN( jobDir, storeDir) ) 
+      elif mode == 'PSI':
+         scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
+      elif mode == 'LOCAL':
+         scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
+      elif mode == 'PISA' :
+         scriptFile.write( batchScriptPISA( storeDir, value) ) 	
+      elif mode == 'PADOVA' :
+         scriptFile.write( batchScriptPADOVA( value, jobDir) )        
+      elif mode == 'IC':
+         scriptFile.write( batchScriptIC(jobDir) )
+      scriptFile.close()
+      os.system('chmod +x %s' % scriptFileName)
+
+      shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
 #      jobConfig = copy.deepcopy(config)
 #      jobConfig.components = [ components[value] ]
-       cfgFile = open(jobDir+'/config.pck','w')
-       pickle.dump(  components[value] , cfgFile )
-       # pickle.dump( cfo, cfgFile )
-       cfgFile.close()
+      cfgFile = open(jobDir+'/config.pck','w')
+      pickle.dump(  components[value] , cfgFile )
+      # pickle.dump( cfo, cfgFile )
+      cfgFile.close()
 
-      
+
 if __name__ == '__main__':
-    batchManager = MyBatchManager()
-    batchManager.parser_.usage="""
+   batchManager = MyBatchManager()
+   batchManager.parser_.usage="""
     %prog [options] <cfgFile>
 
     Run Colin's python analysis system on the batch.
     Job splitting is determined by your configuration file.
     """
 
-    options, args = batchManager.ParseOptions()
+   options, args = batchManager.ParseOptions()
 
-    cfgFileName = args[0]
+   cfgFileName = args[0]
 
-    handle = open(cfgFileName, 'r')
-    cfo = imp.load_source("pycfg", cfgFileName, handle)
-    config = cfo.config
-    handle.close()
+   handle = open(cfgFileName, 'r')
+   cfo = imp.load_source("pycfg", cfgFileName, handle)
+   config = cfo.config
+   handle.close()
 
-    components = split( [comp for comp in config.components if len(comp.files)>0] )
-    listOfValues = range(0, len(components))
-    listOfNames = [comp.name for comp in components]
+   components = split( [comp for comp in config.components if len(comp.files)>0] )
+   listOfValues = range(0, len(components))
+   listOfNames = [comp.name for comp in components]
 
-    batchManager.PrepareJobs( listOfValues, listOfNames )
-    waitingTime = 0.1
-    batchManager.SubmitJobs( waitingTime )
+   batchManager.PrepareJobs( listOfValues, listOfNames )
+   waitingTime = 0.1
+   batchManager.SubmitJobs( waitingTime )
 
