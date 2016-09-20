@@ -1,5 +1,5 @@
 import logging
-
+import sys
 
 '''
     Usage:
@@ -44,7 +44,7 @@ import logging
 
 pdebugger = logging.getLogger('pdebug')
 pdebugger.setLevel(logging.ERROR)
-
+pdebugger.propagate = False
 
 def set_file(filename = "pdebug.log", mode='w', level ="INFO"):
     #todo add checks
@@ -52,18 +52,18 @@ def set_file(filename = "pdebug.log", mode='w', level ="INFO"):
     cf.setLevel(level)
     pdebugger.addHandler(cf)
 
-def set_stream(level ="INFO"):
-    ch = logging.StreamHandler()
+def set_stream(out, level ="INFO"):
+    ch = logging.StreamHandler(out)
     ch.setLevel(level)
-    mformatter = logging.Formatter('TEST %(message)s')
+    mformatter = logging.Formatter('%(message)s')
     ch.setFormatter(mformatter)    
     pdebugger.addHandler(ch)
     
 
 if __name__ == '__main__':
 
-    pdebugger.setLevel(logging.WARNING)
-    set_stream()
+    pdebugger.setLevel(logging.INFO)
+    set_stream(sys.stdout)
     set_file("pdebug.log")
-    pdebugger.warning('blah')
+    pdebugger.info('blah')
     pass

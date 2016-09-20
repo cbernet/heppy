@@ -31,13 +31,6 @@ from heppy.configuration import Collider
 Collider.BEAMS = 'pp'
 Collider.SQRTS = 240.
 
-#import heppy.utils.pdebug as pdebugging
-
-#pdebugger.setLevel(logging.ERROR)  # turns off all output
-#pdebugging.pdebugger.setLevel(logging.INFO) # turns on ouput
-#pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
-#pdebugging.set_stream(logging.INFO)
-
 
 # input definition
 comp = cfg.Component(
@@ -52,9 +45,9 @@ selectedComponents = [comp]
 from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
     PDebugger,
-    debug_level = logging.ERROR, # INFO will turn on; ERROR will turn everything off
-    debug_file = os.getcwd()+'/python_physics_debug.log', #optional
-    console_level = logging.ERROR #optionally turns off console
+    output_to_stdout = False,
+    debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+   
 )
 
 

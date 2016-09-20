@@ -10,11 +10,18 @@ class PDebugger(Analyzer):
     '''
     def __init__(self, *args, **kwargs):
         super(PDebugger, self).__init__(*args, **kwargs) 
-        #bnot working as expected
-        pdebugging.pdebugger.setLevel(self.cfg_ana.debug_level)
-        pdebugging.set_stream(level=self.cfg_ana.console_level)
-        pdebugging.set_file(self.cfg_ana.debug_file)
-        pdebugging.pdebugger.info('blah')
+         
+        #no output will occur unless one or both of the following is requested.
+        
+        #turn on output to stdout if requested
+        if hasattr(self.cfg_ana, 'output_to_stdout') and self.cfg_ana.output_to_stdout:
+                pdebugging.set_stream(level=logging.INFO)           
+                pdebugging.pdebugger.setLevel(logging.INFO)  
+    
+        #turn on output to file if requested
+        if hasattr(self.cfg_ana, 'debug_filename'):
+            pdebugging.set_file(self.cfg_ana.debug_filename)
+            pdebugging.pdebugger.setLevel(logging.INFO)    
         
         pass
         
