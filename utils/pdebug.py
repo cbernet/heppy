@@ -14,7 +14,7 @@ import sys
        #pdebugger.setLevel(logging.ERROR)  # turns off all output
        pdebugger.setLevel(logging.INFO) # turns on ouput
        pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
-       pdebugger.set_stream_level(logging.ERROR)
+       pdebugger.set_stream(level=logging.ERROR)
 
     For example
      (1) file and console:
@@ -27,7 +27,7 @@ import sys
      (3) file only:
        pdebugger.setLevel(logging.INFO)
        pdebugging.set_file("pdebug.log")
-       pdebugging.set_streamlevel(logging.ERROR)
+       pdebugging.set_stream(level=logging.ERROR)
 
      (4) no output
        pdebugger.setLevel(logging.ERROR)
