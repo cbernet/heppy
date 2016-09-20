@@ -38,12 +38,12 @@ selectedComponents = [comp]
 
 
 #  Pdebugger
-    from heppy.analyzers.PDebugger import PDebugger
-    pdebug = cfg.Analyzer(
-        PDebugger,
-        output_to_stdout = False,
-        debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
-        )
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+    PDebugger,
+    output_to_stdout = False,
+    debug_filename = os.getcwd()+'/python_physics_debug_official.log' #optional argument
+    )
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
