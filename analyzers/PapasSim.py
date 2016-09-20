@@ -82,7 +82,7 @@ class PapasSim(Analyzer):
         self.tracksname =  self.cfg_ana.tracks  
         self.mergedecalsname = self.cfg_ana.merged_ecals
         self.mergedhcalsname = self.cfg_ana.merged_hcals
-        self.historyname =  self.cfg_ana.output_history      
+        self.historyname =  self.cfg_ana.output_history
         self.is_display = self.cfg_ana.display
         if self.is_display:
             self.init_display()        
@@ -95,14 +95,14 @@ class PapasSim(Analyzer):
 
     def process(self, event):
         '''
-           event must contain 
+           event must contain
              todo once history is implemented
            event will gain
              ecal_clusters:- smeared merged clusters from simulation
              hcal_clusters:- smeared merged clusters from simulation
              tracks:       - tracks from simulation
              baseline_particles:- simulated particles (excluding electrons and muons)
-             sim_particles - simulated particles including electrons and muons     
+             sim_particles - simulated particles including electrons and muons
         '''
         event.simulator = self 
         if self.is_display:
@@ -116,8 +116,7 @@ class PapasSim(Analyzer):
             return False
         pfsim_particles = self.simulator.ptcs
         if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
-            return
-            
+            return 
         if self.is_display  :
             self.display.register( GTrajectories(pfsim_particles),
                                    layer=1)
@@ -125,11 +124,11 @@ class PapasSim(Analyzer):
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)     
         setattr(event, self.simname, simparticles) 
-              
+   
         #extract the tracks and clusters (extraction is prior to Colins merging step)
         event.tracks = dict()
         event.ecal_clusters = dict()
-        event.hcal_clusters = dict()        
+        event.hcal_clusters = dict()
         if "tracker" in self.simulator.pfinput.elements :
             for element in self.simulator.pfinput.elements["tracker"]:
                 event.tracks[element.uniqueid] = element
@@ -158,8 +157,6 @@ class PapasSim(Analyzer):
         merged_hcals = MergedClusterBuilder(pfevent.hcal_clusters, ruler, merged_ecals.history_nodes)
         setattr(event, self.mergedhcalsname, merged_hcals.merged)
         setattr(event,  self.historyname,  merged_hcals.history_nodes)
-    
-       
         pass
 
         

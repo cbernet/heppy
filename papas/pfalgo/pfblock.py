@@ -172,7 +172,7 @@ class PFBlock(object):
         }
         '''
         count = 0
-        elemdetails = "    elements:\n"  
+        elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
             elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({id})\n".format(shortname=Identifier.type_short_code(uid),
                                                                            count=count,

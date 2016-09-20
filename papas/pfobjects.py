@@ -186,8 +186,7 @@ class Cluster(PFObject):
             phi = self.position.Phi(),
             sub= subclusterstr
         )
-    
- 
+
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
@@ -233,8 +232,6 @@ class Track(PFObject):
         self.path = path
         self.particle = particle
         self.layer = 'tracker'
-        
-        
 
     def info(self):
         return '{e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
@@ -282,7 +279,7 @@ class Particle(BaseParticle):
         else:
             return False
         
-    def set_path(self, path, option=None): 
+    def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
             if self.q():

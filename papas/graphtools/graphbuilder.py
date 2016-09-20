@@ -39,8 +39,8 @@ class GraphBuilder(object):
         for edge in edges.itervalues():
             #add linkage info into the nodes dictionary
             if  edge.linked: #this is actually an undirected link - OK for undirected searches 
-                self.nodes[edge.id1].add_child(self.nodes[edge.id2]) 
-                
+                self.nodes[edge.id1].add_child(self.nodes[edge.id2])
+
         # build the subgraphs of connected nodes
         self.subgraphs = []
         for subgraphlist in DAGFloodFill(self.nodes).blocks: # change to subgraphs

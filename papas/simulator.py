@@ -112,7 +112,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.size(),
                                           cluster.layer,
                                           cluster.particle )
-        
         pdebugger.info(str('Made {}'.format(smeared_cluster) ))
         # smeared_cluster.set_energy(energy)
         det = acceptance if acceptance else detector
@@ -209,7 +208,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
 
-        # alice left over from merge ... are the next 6 lines needed        
+        # alice left over from merge ... are the next 6 lines needed
         if ptc.q()!=0:
             pdebugger.info("Made " + ptc.track.__str__())
             smeared_track = self.smear_track(ptc.track,
@@ -294,12 +293,12 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
-            elif abs(ptc.pdgid()) == 11:  
+            elif abs(ptc.pdgid()) == 11:
                 #TEMPORARY TODO self.propagate_electron(ptc)
                 smeared_ptc = self.smear_electron(ptc)
                 smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
-            elif abs(ptc.pdgid()) == 13:              
+            elif abs(ptc.pdgid()) == 13:   
                 #TEMPORARY TODO self.propagate_muon(ptc)
                 smeared_ptc = self.smear_muon(ptc)
                 smeared.append(smeared_ptc)

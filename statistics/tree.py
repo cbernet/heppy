@@ -24,10 +24,10 @@ class Tree(object):
         for branch in tree.GetListOfBranches():
             name = branch.GetName() 
             typeName = branch.GetListOfLeaves()[0].GetTypeName()
-            type = float
+            the_type = float
             if typeName == 'Int_t':
-                type = int
-            self.var(name, type)            
+                the_type = int
+            self.var(name, the_type)
     
     def branch_(self, selfmap, varName, type, len, postfix="", storageType="default", title=None):
         """Backend function used to create scalar and vector branches. 

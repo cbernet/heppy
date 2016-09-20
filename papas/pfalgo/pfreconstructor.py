@@ -174,7 +174,6 @@ class PFReconstructor(object):
         particles = dict()
         ids = block.element_uniqueids
         #ids =  sorted( ids,  key = lambda id: Identifier.type_short_code ) 
-        
         self.locked = dict()
         for id in ids:
             self.locked[id] = False
