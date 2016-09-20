@@ -22,7 +22,7 @@ from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 
-import heppy.statistics.random as random
+import heppy.statistics.rrandom as random
 random.seed(0xdeadbeef)
 
 

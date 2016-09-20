@@ -8,7 +8,7 @@ from heppy.papas.data.identifier import Identifier
 
 import multiple_scattering as mscat  
 from papas_exceptions import SimulationError
-import heppy.statistics.random as random
+import heppy.statistics.rrandom as random
 import sys
 import copy
 import shelve
