@@ -1,6 +1,4 @@
 import heppy.statistics.random as random
-
-
 import sys
 
 class Material(object):
