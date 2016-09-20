@@ -251,7 +251,7 @@ class Particle(BaseParticle):
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
-        self.track = Track(self.p3(), self.q(), self.path)
+        self.track = None # Alice Experiment to match cpp debug Track(self.p3(), self.q(), self.path)
         self.clusters_smeared = dict()
         self.track_smeared = None  
   
@@ -274,7 +274,8 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
-            self.track = Track(self.p3(), self.q(), self.path)
+            if self.q():
+                self.track = Track(self.p3(), self.q(), self.path)
     
 ##    def __str__(self):
 ##        tmp = '{className}:uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'

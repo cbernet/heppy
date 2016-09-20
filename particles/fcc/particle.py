@@ -2,6 +2,7 @@ from heppy.particles.particle import Particle as BaseParticle
 from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
+from heppy.papas.data.identifier import Identifier
 
 import copy
 
@@ -9,6 +10,7 @@ class Particle(BaseParticle, POD):
     
     def __init__(self, fccobj):
         super(Particle, self).__init__(fccobj)
+        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
         self._charge = fccobj.Core().Charge
         self._pid = fccobj.Core().Type
         self._status = fccobj.Core().Status
@@ -29,3 +31,13 @@ class Particle(BaseParticle, POD):
             if attr not in ['fccobj', '_start_vertex', '_end_vertex']:
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
+    
+    def __substr__(self):
+        tmp = '{pretty}:{uid}: {descrip}'
+        return tmp.format(
+            pretty=Identifier.pretty(self.uniqueid),
+            uid = self.uniqueid,
+            descrip=super(Particle, self).__substr__()
+            )    
+
+    

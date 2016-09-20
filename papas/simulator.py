@@ -201,6 +201,15 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.propagator(ptc).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
+        
+        
+        if ptc.q()!=0:
+            pdebugger.info("Made " + ptc.track.__str__())
+            smeared_track = self.smear_track(ptc.track,
+                                             self.detector.elements['tracker'])
+            if smeared_track:
+                ptc.track_smeared = smeared_track
+        
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)
             path_length = ecal.material.path_length(ptc)
@@ -225,11 +234,11 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
-        if ptc.q()!=0:
-            smeared_track = self.smear_track(ptc.track,
-                                             self.detector.elements['tracker'])
-            if smeared_track:
-                ptc.track_smeared = smeared_track
+        #if ptc.q()!=0:
+        #    smeared_track = self.smear_track(ptc.track,
+        #                                     self.detector.elements['tracker'])
+        #    if smeared_track:
+        #        ptc.track_smeared = smeared_track
 
     def simulate_muon(self, ptc):
         pdebugger.info("Simulating Muon")
@@ -275,21 +284,23 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.reset()
         self.ptcs = []
         smeared = []
-        #for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
-        #    pdebugger.info(str('{}'.format(gen_ptc)))        
+        for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
+            pdebugger.info(str('{}'.format(gen_ptc)))        
         for gen_ptc in ptcs:
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11:
-                self.propagate_electron(ptc)
-                #smeared_ptc = self.smear_electron(ptc)
-                #smeared.append(smeared_ptc)
+                #undo
+                ###self.propagate_electron(ptc)
+                smeared_ptc = self.smear_electron(ptc)
+                smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:
-                self.propagate_muon(ptc)
-                #smeared_ptc = self.smear_muon(ptc)
-                #smeared.append(smeared_ptc)
+                ##self.propagate_muon(ptc)
+                #undo
+                smeared_ptc = self.smear_muon(ptc)
+                smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12,14,16]:
                 self.simulate_neutrino(ptc)
