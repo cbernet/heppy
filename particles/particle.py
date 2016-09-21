@@ -33,18 +33,21 @@ class Particle(P4):
     def __repr__(self):
         return str(self)
     
-    def info(self):
+    def __substr__(self):
         tmp = 'pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
-
         return tmp.format(
             pdgid = self.pdgid(),
             status = self.status(),
             q = self.q(),
             p4 = super(Particle, self).__str__()
-            )
-
+            )        
+     
     def __str__(self):
-        return self.__class__.__name__ +  " : " + self.info()
+        tmp = '{className} : {descrip}'
+        return tmp.format(
+            className = self.__class__.__name__,
+            descrip=self.__substr__()
+            )
 
     def __repr__(self):
         return str(self)

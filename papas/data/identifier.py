@@ -38,6 +38,8 @@ class Identifier(long):
         x = cls._id.next()
         value = type <<32
         id = value | x
+        assert (Identifier.get_unique_id(id) == x )
+        assert (Identifier.get_type(id)==type)
         return id
    
     @staticmethod      

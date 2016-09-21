@@ -8,6 +8,7 @@ from heppy.papas.data.identifier import Identifier
 
 import multiple_scattering as mscat  
 from papas_exceptions import SimulationError
+from heppy.utils.pdebug import pdebugger
 import heppy.statistics.rrandom as random
 import sys
 import copy
@@ -110,6 +111,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.particle )
         pdebugger.info(str('Made {}'.format(smeared_cluster) ))
         # smeared_cluster.set_energy(energy)
+        pdebugger.info(str('Made {}'.format(smeared_cluster) ))
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
@@ -129,7 +131,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         if detector.acceptance(smeared_track) or accept:
             return smeared_track
         else:
-            # pdebugger.info("Rejected Smeared Track")
             pdebugger.info(str('Rejected {}'.format(smeared_track)))
             return None
         
@@ -166,6 +167,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.propagate(ptc)
         
     def simulate_hadron(self, ptc):
+        pdebugger.info("Simulating Hadron")
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
@@ -238,7 +240,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
-
     def simulate_muon(self, ptc):
         pdebugger.info("Simulating Muon")
         self.propagate(ptc)
@@ -283,18 +284,20 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.reset()
         self.ptcs = []
         smeared = []
+
+        #newsort
         for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
-            pdebugger.info(str('{}'.format(gen_ptc)))
+            pdebugger.info(str('{}'.format(gen_ptc)))        
         for gen_ptc in ptcs:
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
-            elif abs(ptc.pdgid()) == 11:
+            elif abs(ptc.pdgid()) == 11: #check with colin
                 #TEMPORARY TODO self.propagate_electron(ptc)
                 smeared_ptc = self.smear_electron(ptc)
                 smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
-            elif abs(ptc.pdgid()) == 13:   
+            elif abs(ptc.pdgid()) == 13:   #check with colin
                 #TEMPORARY TODO self.propagate_muon(ptc)
                 smeared_ptc = self.smear_muon(ptc)
                 smeared.append(smeared_ptc)

@@ -43,7 +43,6 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         logging.disable(logging.CRITICAL)
         random.seed('0xdeadbeef')
         Identifier.reset()
-
         
     def tearDown(self):
         shutil.rmtree(self.outdir)

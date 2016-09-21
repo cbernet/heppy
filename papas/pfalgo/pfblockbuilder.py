@@ -2,7 +2,6 @@ import itertools
 from blockbuilder import BlockBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
-from heppy.papas.data.identifier import Identifier
 
 class PFBlockBuilder(BlockBuilder):
     ''' PFBlockBuilder takes particle flow elements from an event (clusters,tracks etc)
@@ -60,7 +59,7 @@ class PFBlockBuilder(BlockBuilder):
         uniqueids = []
         uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
         uniqueids = sorted(uniqueids)
-        
+
         self.history_nodes = history_nodes
         if history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
@@ -78,8 +77,6 @@ class PFBlockBuilder(BlockBuilder):
         #use the underlying BlockBuilder to construct the blocks        
         super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes, pfevent)
 
-    
-    
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items
             ruler is something that measures distance between two objects eg track and hcal

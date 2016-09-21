@@ -4,6 +4,7 @@ from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 import collections
 
+
 #todo remove pfevent from this class once we have written a helper class to print the block and its elements
 
 
@@ -49,7 +50,7 @@ class GraphBuilder(object):
             # we want the ids of these nodes
             for node in subgraphlist:
                 element_ids.append(node.get_value())        
-            self.subgraphs.append(sorted(element_ids))
+            self.subgraphs.append(sorted(element_ids)) #newsort
 
     def __str__(self):
         descrip = "{ "

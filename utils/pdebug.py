@@ -39,7 +39,8 @@ import sys
 
 '''
 
-
+#Note the first use of this header should come from the top level of the program
+#If not the stream output may be missing
 pdebugger = logging.getLogger('pdebug')
 pdebugger.setLevel(logging.ERROR)
 pdebugger.propagate = False

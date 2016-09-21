@@ -5,6 +5,8 @@ from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.pfobjects import Particle
+from heppy.utils.pdebug import pdebugger
+
 
 from ROOT import TVector3, TLorentzVector
 import math
@@ -118,9 +120,9 @@ class PFReconstructor(object):
       
     def _sorted_block_keys(self) :
         #sort blocks (1) by number of elements (2) by mix of ecal, hcal , tracks (the shortname will look like "H1T2" for a block
-        #with one cluster and two tracks)
         #Alice temporary to match cpp
         #return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
+        #newsort
         return sorted(self.blocks.keys());
             
     def simplify_blocks(self, block, history_nodes=None):
@@ -196,11 +198,12 @@ class PFReconstructor(object):
                 self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
-            for id in sorted(ids) :
+
+            for id in sorted(ids) : #newsort
                 if Identifier.is_hcal(id):
                     self.reconstruct_hcal(block,id)
-                    
-            for id in sorted(ids) :
+
+            for id in sorted(ids) : #newsort
                 if Identifier.is_track(id) and not self.locked[id]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -304,12 +307,15 @@ class PFReconstructor(object):
         hcal =block.pfevent.hcal_clusters[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
-        trackids =  block.linked_ids(hcalid, "hcal_track")
+
+        #trackids =  block.linked_ids(hcalid, "hcal_track")
         #alice temporarily disabled
         #trackids =    block.sort_distance_energy(hcalid, trackids )
-        for trackid in  trackids:
+#newsort        
+        trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
+        for trackid in trackids:
             tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in block.linked_ids(trackid, "ecal_track"):
+            for ecalid in block.linked_ids(trackid, "ecal_track"): #new sort
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work
@@ -403,10 +409,7 @@ class PFReconstructor(object):
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
 
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
-        
         pdebugger.info(str('Made {} from {}'.format(particle,  cluster)))
-        if self.debugprint:
-            print "made particle from cluster ",pdg_id,  cluster, particle        
         return particle
         
     def reconstruct_track(self, track, clusters = None): # cluster argument does not ever seem to be used at present
@@ -422,8 +425,6 @@ class PFReconstructor(object):
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle,  track)))
-        if self.debugprint:
-            print "made particle from track ", pdg_id, track, particle        
         return particle
 
 

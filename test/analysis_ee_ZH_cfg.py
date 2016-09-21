@@ -11,6 +11,7 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
+import heppy.utils.pdebug
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -23,7 +24,6 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 import heppy.utils.pdebug
 import heppy.statistics.rrandom as random
-
 random.seed(0xdeadbeef)
 
 
@@ -49,8 +49,6 @@ pdebug = cfg.Analyzer(
     output_to_stdout = True,
     debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
 )
-
-
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
@@ -242,6 +240,8 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
+    import heppy.statistics.rrandom as random
+    random.seed(0xdeadbeef)
 
     def process(iev=None):
         if iev is None:

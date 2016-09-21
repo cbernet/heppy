@@ -46,10 +46,11 @@ class PFBlock(object):
         
         #order the elements by element type (ecal, hcal, track) and then by energy
         #this is a bit yucky but needed to make sure the order returned is consistent
+
         #maybe should live outside of this class
         #comment out energy for now as not available C++
         self.element_uniqueids = sorted(element_ids, key = lambda  x: Identifier.type_short_code(x)) #,-self.pfevent.get_object(x).energy) )
-        
+
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
         PFBlock.temp_block_count += 1
@@ -161,6 +162,7 @@ class PFBlock(object):
     
     def short_elements_string(self):
         ''' Construct a string descrip of each of the elements in a block:-
+
         The elements are given a short name E/H/T according to ecal/hcal/track
         and then sequential numbering starting from 0, this naming is also used to index the
         matrix of distances. The full unique id is also given.
@@ -171,13 +173,14 @@ class PFBlock(object):
         T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
         }
         '''
+
         count = 0
         elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
             elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({id})\n".format(shortname=Identifier.type_short_code(uid),
-                                                                           count=count,
-                                                                          strdescrip=Identifier.pretty(uid),
-                                                                          id=uid)
+                                                                         count=count,
+                                                                        strdescrip=Identifier.pretty(uid),
+                                                                        id=uid)
             count = count + 1
         return elemdetails
 
@@ -243,9 +246,8 @@ class PFBlock(object):
                         rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) 
                 matrixstr += "{:>8}".format(rowname) + rowstr + "\n"
                 countrow += 1
+        return matrixstr 
 
-        return matrixstr
-    
     def get_edge(self, id1, id2):
         ''' Find the edge corresponding to e1 e2 
             Note that make_key deals with whether it is get_edge(e1, e2) or get_edge(e2, e1) (either order gives same result)
