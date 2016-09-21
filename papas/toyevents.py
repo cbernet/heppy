@@ -1,4 +1,4 @@
-import random
+import heppy.statistics.rrandom as random
 #TODO get rid of vectors
 from vectors import *
 from ROOT import TLorentzVector

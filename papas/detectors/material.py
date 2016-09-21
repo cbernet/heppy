@@ -1,4 +1,4 @@
-import random
+import heppy.statistics.rrandom as random
 import sys
 
 class Material(object):

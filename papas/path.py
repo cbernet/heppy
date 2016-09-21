@@ -5,7 +5,7 @@ from heppy.utils.deltar import deltaPhi
 from collections import OrderedDict
 import scipy.optimize as opti # need to compute impact parameters
 from numpy import sign
-import random as random
+import heppy.statistics.rrandom as random 
 
 
 class Path(object):

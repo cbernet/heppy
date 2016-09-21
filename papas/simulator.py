@@ -7,7 +7,7 @@ from papas_exceptions import SimulationError
 from heppy.utils.pdebug import pdebugger
 
 from pfalgo.sequence import PFSequence
-import random
+import heppy.statistics.rrandom as random
 import sys
 import copy
 import shelve

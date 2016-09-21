@@ -54,8 +54,8 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         rootfile = '/'.join([self.outdir,
                             'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        import random
-        print random.getstate()
+        #import heppy.statistics.rrandom as random
+        #print random.getstate()
         print mean, sigma
         self.assertAlmostEqual(mean, 118.3, 1)
         self.assertAlmostEqual(sigma, 31.0, 1)
