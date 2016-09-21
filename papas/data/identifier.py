@@ -36,7 +36,11 @@ class Identifier(long):
     def make_id(cls, type):
         x = cls._id.next()
         value = type <<32
-        return value | x
+        id = value | x
+        assert (Identifier.get_unique_id(id) == x )
+        assert(Identifier.get_type(id)==type)
+        print "makeid: ", x, "+" , type, "=", id
+        return id
    
     @staticmethod      
     def get_unique_id( ident):

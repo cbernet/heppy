@@ -11,6 +11,9 @@ from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
 
+import heppy.statistics.rrandom as random
+from heppy.papas.data.identifier import Identifier
+
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 
@@ -38,6 +41,9 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
                               timeReport=True)
         import logging
         logging.disable(logging.CRITICAL)
+        random.seed('0xdeadbeef')
+        Identifier.reset()
+        
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
