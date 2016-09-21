@@ -4,13 +4,15 @@ import copy
 import os
 import shutil
 
-import heppy.utils.pdebug
+
 from analysis_ee_ZH_cfg import config
 from heppy.test.plot_ee_ZH import plot
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
 
+import heppy.statistics.rrandom as random
+from heppy.papas.data.identifier import Identifier
 
 import logging
 logging.getLogger().setLevel(logging.ERROR)
@@ -39,6 +41,9 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
                               timeReport=True)
         import logging
         logging.disable(logging.CRITICAL)
+        random.seed('0xdeadbeef')
+        Identifier.reset()
+        
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
@@ -55,8 +60,8 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         rootfile = '/'.join([self.outdir,
                             'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        import random
-        print random.getstate()
+        #import heppy.statistics.rrandom as random
+        #print random.getstate()
         print mean, sigma
         self.assertAlmostEqual(mean, 118.3, 1)
         self.assertAlmostEqual(sigma, 31.0, 1)
