@@ -1,6 +1,7 @@
 # simplified class to provide a unique identifier for each object
 # could also add more information into the identifier as needed
 from itertools import count
+from heppy.utils.pdebug import pdebugger
 
 class Identifier(long):
     '''the Identififier is a uniqueid that contains encoded information about an element
@@ -36,7 +37,10 @@ class Identifier(long):
     def make_id(cls, type):
         x = cls._id.next()
         value = type <<32
-        return value | x
+        id = value | x
+        if id >4294967600:
+            pdebugger.info( "made"+Identifier.pretty(id)+ ":"+ str(id))
+        return id
    
     @staticmethod      
     def get_unique_id( ident):
