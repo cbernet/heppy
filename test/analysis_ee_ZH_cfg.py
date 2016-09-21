@@ -11,6 +11,7 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
+import heppy.utils.pdebug
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -41,7 +42,7 @@ selectedComponents = [comp]
 from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
     PDebugger,
-    output_to_stdout = False,
+    output_to_stdout = True,
     debug_filename = os.getcwd()+'/python_physics_debug_official.log' #optional argument
     )
 
