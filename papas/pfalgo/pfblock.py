@@ -46,8 +46,9 @@ class PFBlock(object):
         
         #order the elements by element type (ecal, hcal, track) and then by energy
         #this is a bit yucky but needed to make sure the order returned is consistent
-        #maybe should live outside of this class        
-        self.element_uniqueids = sorted(element_ids, key = lambda  x: (Identifier.type_short_code(x),-self.pfevent.get_object(x).energy) )
+        #maybe should live outside of this class    
+        #newsort
+        self.element_uniqueids = sorted(element_ids, key = lambda  x: (Identifier.type_short_code(x))) #,-self.pfevent.get_object(x).energy) )
         
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
@@ -158,6 +159,28 @@ class PFBlock(object):
             count = count + 1            
         return elemdetails + "      }\n"
     
+    def short_elements_string(self):
+        ''' Construct a string descrip of each of the elements in a block:-
+     The elements are given a short name E/H/T according to ecal/hcal/track
+     and then sequential numbering starting from 0, this naming is also used to index the
+     matrix of distances. The full unique id is also given.
+     For example:-
+     elements: {
+     E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
+     H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
+     T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
+     }
+     '''
+        count = 0
+        elemdetails = "    elements:\n"
+        for uid in self.element_uniqueids:
+            elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({id})\n".format(shortname=Identifier.type_short_code(uid),
+                                                                         count=count,
+                                                                        strdescrip=Identifier.pretty(uid),
+                                                                        id=uid)
+            count = count + 1
+        return elemdetails
+    
     def short_name(self):    
         ''' constructs a short summary name for blocks allowing sorting based on contents
             eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks
@@ -188,39 +211,40 @@ class PFBlock(object):
     
         # make the header line for the matrix       
         count = 0
-        matrixstr = "      distances:\n           "
-        for e1 in self.element_uniqueids :
-            # will produce short id of form E2 H3, T4 etc in tidy format
-            elemstr = Identifier.type_short_code(e1) + str(count)
-            matrixstr +=  "{:>9}".format(elemstr)
-            count += 1
-        matrixstr +=  "\n"
-    
-        #for each element find distances to all other items that are in the lower part of the matrix
-        countrow = 0
-        for e1 in self.element_uniqueids : # this will be the rows
-            countcol = 0
-            rowstr = ""
-            #make short name for the row element eg E3, H5 etc
-            rowname = Identifier.type_short_code(e1) +str(countrow)
-            for e2 in self.element_uniqueids:  # these will be the columns
-                #make short name for the col element eg E3, H5                
-                colname = Identifier.type_short_code(e1) + str(countcol) 
-                countcol += 1
-                if (e1 == e2):
-                    rowstr += "       . "
-                    break
-                elif self.get_edge(e1,e2).distance == None:
-                    rowstr   += "     ---" + " "
-                elif self.get_edge(e1,e2).linked == False:
-                    rowstr   += "     xxx" + " "                
-                else :
-                    rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) + " "
-            matrixstr += "{:>11}".format(rowname) + rowstr + "\n"
-            countrow += 1        
-    
-        return matrixstr   +"      }\n"
-    
+        matrixstr = "\n"
+        if (len(self.element_uniqueids) > 1) :
+            matrixstr = "    distances:\n        "
+            for e1 in self.element_uniqueids :
+                # will produce short id of form E2 H3, T4 etc in tidy format
+                elemstr = Identifier.type_short_code(e1) + str(count)
+                matrixstr +=  "{:>8}".format(elemstr)
+                count += 1
+            matrixstr +=  "\n"
+
+            #for each element find distances to all other items that are in the lower part of the matrix
+            countrow = 0
+            for e1 in self.element_uniqueids : # this will be the rows
+                countcol = 0
+                rowstr = ""
+                #make short name for the row element eg E3, H5 etc
+                rowname = Identifier.type_short_code(e1) +str(countrow)
+                for e2 in self.element_uniqueids:  # these will be the columns
+                    #make short name for the col element eg E3, H5
+                    colname = Identifier.type_short_code(e1) + str(countcol)
+                    countcol += 1
+                    if (e1 == e2):
+                        rowstr += "       ."
+                        break
+                    elif self.get_edge(e1,e2).distance == None:
+                        rowstr   += "     ---"
+                    elif self.get_edge(e1,e2).linked == False:
+                        rowstr   += "     xxx"
+                    else :
+                        rowstr   += "{:8.4f}".format(self.get_edge(e1,e2).distance) 
+                matrixstr += "{:>8}".format(rowname) + rowstr + "\n"
+                countrow += 1
+
+        return matrixstr 
     def get_edge(self, id1, id2):
         ''' Find the edge corresponding to e1 e2 
             Note that make_key deals with whether it is get_edge(e1, e2) or get_edge(e2, e1) (either order gives same result)
@@ -244,7 +268,7 @@ class PFBlock(object):
             }
         '''
         descrip =  "\n" + self.__repr__()
-        descrip += self.elements_string()        
+        descrip += self.short_elements_string()        
         descrip += self.edge_matrix_string()     
         return descrip
     
@@ -256,10 +280,9 @@ class PFBlock(object):
         else:
             descrip= "deactivated block:"
             
-        descrip += str('{shortname:<12} id={blockid:4.0f} :uid= {uid}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
+        descrip += str('{shortname:8} :{prettyid:9}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        
-            blockid      = self.block_count, 
-            uid          = self.uniqueid,
+            prettyid     = Identifier.pretty(self.uniqueid),
             count_ecal   = self.count_ecal(),
             count_hcal   = self.count_hcal(),
             count_tracks = self.count_tracks() )

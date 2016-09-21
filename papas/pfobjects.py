@@ -166,16 +166,24 @@ class Cluster(PFObject):
     #     if name == 'energy':
     #         self.pt = value * self.position.Unit().Perp()
     #     self.__dict__[name] = value
-#AJR added \n need to remove
     def __str__(self):
-        return '{classname:15}:uid={uniqueid}: {layer:10} {energy:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            classname = self.__class__.__name__,
-            uniqueid = self.uniqueid,
-            layer = self.layer,
+        return '{classname} :{pretty:9}:{id}: {info}'.format(
+                    classname = self.__class__.__name__,
+                    pretty = Identifier.pretty(self.uniqueid),
+                    id = self.uniqueid,
+                    info = self.info())
+    def info(self):   
+        subclusterstr= str('sub(')
+        for s in self.subclusters:
+            subclusterstr += str('{:9}, '.format(Identifier.pretty(s.uniqueid)))
+        subclusterstr += ")"
+        return '{energy:7.2f} {theta:5.2f} {phi:5.2f} {sub}'.format(
             energy = self.energy,
             theta = math.pi/2. - self.position.Theta(),
-            phi = self.position.Phi()
-        )
+    
+            phi = self.position.Phi(),
+            sub= subclusterstr
+        )    
         
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
@@ -274,6 +282,7 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
+            #new
             if self.q():
                 self.track = Track(self.p3(), self.q(), self.path)
     

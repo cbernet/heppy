@@ -66,7 +66,7 @@ def multiple_scattering( particle, detector_element, field ):
 
     # now, make p4_t change due to scattering :
     theta_space = random.gauss(0, theta_0*2.0**(1.0/2))
-    psi = constants.pi*random.random()
+    psi = constants.pi*random.uniform(0,1)
     p3i = p4_t.Vect().Clone()
     e_z = TVector3(0,0,1)
     #first rotation : theta, in the xy plane

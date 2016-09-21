@@ -120,8 +120,10 @@ class PFReconstructor(object):
     def _sorted_block_keys(self) :
         #sort blocks (1) by number of elements (2) by mix of ecal, hcal , tracks (the shortname will look like "H1T2" for a block
         #with one cluster and two tracks)        
-        return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
+        #return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
         
+        #newsort
+        return sorted(self.blocks.keys());
             
     def simplify_blocks(self, block, history_nodes=None):
         
@@ -200,11 +202,11 @@ class PFReconstructor(object):
                 self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
-            for id in ids :
+            for id in sorted(ids) : #newsort
                 if Identifier.is_hcal(id):
                     self.reconstruct_hcal(block,id)
                     
-            for id in ids :
+            for id in sorted(ids) : #newsort
                 if Identifier.is_track(id) and not self.locked[id]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -312,7 +314,7 @@ class PFReconstructor(object):
         trackids =    block.sort_distance_energy(hcalid, block.linked_ids(hcalid, "hcal_track") )
         for trackid in  trackids:
             tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in block.linked_ids(trackid, "ecal_track"):
+            for ecalid in sorted(block.linked_ids(trackid, "ecal_track")): #new sort
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work

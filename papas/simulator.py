@@ -284,6 +284,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         self.reset()
         self.ptcs = []
         smeared = []
+        #newsort
         for gen_ptc in sorted(ptcs, key = lambda ptc: ptc.uniqueid):
             pdebugger.info(str('{}'.format(gen_ptc)))        
         for gen_ptc in ptcs:

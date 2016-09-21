@@ -48,11 +48,13 @@ class MergedClusterBuilder(GraphBuilder):
         
         # compute edges between each pair of nodes
         edges = dict()
-        for obj1, obj2 in itertools.combinations(clusters.values(),2):
-            link_type, is_linked, distance = ruler(obj1, obj2)
-            edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
-            #the edge object is added into the edges dictionary
-            edges[edge.key] = edge
+        for obj1 in  clusters.values():
+            for obj2 in  clusters.values():
+                if obj1.uniqueid < obj2.uniqueid :
+                    link_type, is_linked, distance = ruler(obj1, obj2)
+                    edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
+                    #the edge object is added into the edges dictionary
+                    edges[edge.key] = edge
             
         #make the subgraphs of clusters
         super(MergedClusterBuilder, self).__init__(uniqueids,edges)
@@ -65,7 +67,8 @@ class MergedClusterBuilder(GraphBuilder):
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs:
-            supercluster = None            
+            supercluster = None  
+            subgraphids.sort() #newsort
             if len(subgraphids)==1 : 
                 #no overlapping cluster so no merging needed
                 self.merged[subgraphids[0]] = self.clusters[subgraphids[0]]
