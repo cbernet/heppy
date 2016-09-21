@@ -38,8 +38,7 @@ class Identifier(long):
         value = type <<32
         id = value | x
         assert (Identifier.get_unique_id(id) == x )
-        assert(Identifier.get_type(id)==type)
-        print "makeid: ", x, "+" , type, "=", id
+        assert (Identifier.get_type(id)==type)
         return id
    
     @staticmethod      
