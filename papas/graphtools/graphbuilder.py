@@ -49,7 +49,7 @@ class GraphBuilder(object):
             # we want the ids of these nodes
             for node in subgraphlist:
                 element_ids.append(node.get_value())        
-            self.subgraphs.append(element_ids)
+            self.subgraphs.append(sorted(element_ids)) #newsort
 
 
     def __str__(self):

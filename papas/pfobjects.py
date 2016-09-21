@@ -286,24 +286,23 @@ class Particle(BaseParticle):
                 self.track = Track(self.p3(), self.q(), self.path)
     
 
-##    def __str__(self):
-##        tmp = '{className}:uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
-##        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
-##            pt = self.pt(),
-##            e = self.e(),
-##            eta = self.eta(),
-##            theta = self.theta(),
-##            phi = self.phi(),
-##            m = self.m()  ) 
-##            
-##        return tmp.format(
-##            className = self.__class__.__name__,
-##            uniqueid = self.uniqueid,
-##            pdgid = self.pdgid(),
-##            status = self.status(),
-##            q = self.q(),
-##            p4 = p4                    
-##        )      
+    def __substr__(self):
+        tmp = 'uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
+        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
+            pt = self.pt(),
+            e = self.e(),
+            eta = self.eta(),
+            theta = self.theta(),
+            phi = self.phi(),
+            m = self.m()  ) 
+            
+        return tmp.format(
+            uniqueid = self.uniqueid,
+            pdgid = self.pdgid(),
+            status = self.status(),
+            q = self.q(),
+            p4 = p4                    
+        )      
 
 
 if __name__ == '__main__':

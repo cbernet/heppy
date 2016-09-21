@@ -18,7 +18,7 @@ class Distance(object):
         elif layers == ('hcal_in', 'tracker'):
             func = self.hcal_track
         elif layers == ('ecal_in', 'hcal_in'):
-            func = self.ecal_hcal
+            func = self.no_link
         elif layers == ('ecal_in', 'ecal_in'):
             func = self.ecal_ecal
         elif layers == ('hcal_in', 'hcal_in'):
