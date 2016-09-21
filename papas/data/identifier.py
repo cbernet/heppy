@@ -38,8 +38,8 @@ class Identifier(long):
         x = cls._id.next()
         value = type <<32
         id = value | x
-        if id >4294967600:
-            pdebugger.info( "made"+Identifier.pretty(id)+ ":"+ str(id))
+        #if id >4294967600:
+        #    pdebugger.info( "made"+Identifier.pretty(id)+ ":"+ str(id))
         return id
    
     @staticmethod      
