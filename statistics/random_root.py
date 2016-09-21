@@ -1,17 +1,24 @@
 
 from ROOT import TRandom
+from heppy.utils.pdebug import pdebugger
 
 rootrandom = TRandom()
 
 def expovariate (a):
-    return rootrandom.Exp(1./a)
+    x=rootrandom.Exp(1./a)
+    pdebugger.info( x)
+    return x
 
 def uniform (a, b):
-    return rootrandom.Uniform(a, b)
+    x=rootrandom.Uniform(a, b)
+    pdebugger.info( x)
+    return x
 
 
 def gauss (a, b):
-    return rootrandom.Gaus(a,b)
+    x= rootrandom.Gaus(a,b)
+    pdebugger.info( x)
+    return x
 
 
 def seed (s):

@@ -2,7 +2,7 @@ from heppy.framework.analyzer import Analyzer
 import logging
 import heppy.utils.pdebug as pdebugging
 from heppy.papas.data.pfevent import PFEvent
-
+import sys
 
 
 class PDebugger(Analyzer):
@@ -15,7 +15,7 @@ class PDebugger(Analyzer):
 
         #turn on output to stdout if requested
         if hasattr(self.cfg_ana, 'output_to_stdout') and self.cfg_ana.output_to_stdout:
-                pdebugging.set_stream(level=logging.INFO)
+                pdebugging.set_stream(sys.stdout,level=logging.INFO)
                 pdebugging.pdebugger.setLevel(logging.INFO)
 
         #turn on output to file if requested

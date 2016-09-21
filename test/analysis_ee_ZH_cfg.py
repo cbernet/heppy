@@ -21,8 +21,9 @@ logging.basicConfig(level=logging.WARNING)
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-
+import heppy.utils.pdebug
 import heppy.statistics.rrandom as random
+
 random.seed(0xdeadbeef)
 
 
@@ -45,7 +46,7 @@ selectedComponents = [comp]
 from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
     PDebugger,
-    output_to_stdout = False,
+    output_to_stdout = True,
     debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
 )
 
