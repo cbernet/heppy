@@ -118,7 +118,7 @@ class PFBlock(object):
                         linked_ids.append(edge.id2)
                     else:
                         linked_ids.append(edge.id1)
-            return linked_ids
+            return sorted(linked_ids)
     
     def sort_distance_energy( self, uniqueid, otherids):
         ''' returns a list of the otherids sorted by distance to uniqueid and by decreasing energies

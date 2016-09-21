@@ -42,11 +42,11 @@ class MergedClusterBuilder(GraphBuilder):
         
         # the merged clusters will be stored here
         self.merged = dict()
+
         # collate ids of clusters
         uniqueids = list(clusters.keys())         
              
-        
-        # compute edges between each pair of nodes
+        #make the edges match cpp by using the same approach as cpp
         edges = dict()
         for obj1 in  clusters.values():
             for obj2 in  clusters.values():
@@ -55,45 +55,37 @@ class MergedClusterBuilder(GraphBuilder):
                     edge = Edge(obj1.uniqueid, obj2.uniqueid, is_linked, distance)
                     #the edge object is added into the edges dictionary
                     edges[edge.key] = edge
-            
+
         #make the subgraphs of clusters
-        super(MergedClusterBuilder, self).__init__(uniqueids,edges)
+        super(MergedClusterBuilder, self).__init__(uniqueids, edges)
         
         #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
-            
+
         self._make_merged_clusters()
-        
+
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs:
-            supercluster = None  
-            subgraphids.sort() #newsort
-            if len(subgraphids)==1 : 
-                #no overlapping cluster so no merging needed
-                self.merged[subgraphids[0]] = self.clusters[subgraphids[0]]
-                
-            else: 
-                #make a merged "supercluster" and then add each of the linked clusters into it                
-                
-                for elemid in subgraphids :
-                    pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))                    
+            subgraphids.sort()
+            first = None
+            supercluster =None
+            snode = None
+            for elemid in subgraphids :
+                if not first:
+                    first = elemid
+                    supercluster = MergedCluster(self.clusters[elemid])
+                    self.merged[supercluster.uniqueid] = supercluster;
+                    if (self.history_nodes) :
+                        snode = Node(supercluster.uniqueid)
+                        self.history_nodes[supercluster.uniqueid] = snode 
+                    pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))
+                else:
                     thing = self.clusters[elemid]
-                    if supercluster is None:
-                        supercluster = MergedCluster(thing)
-                        self.merged[supercluster.uniqueid] = supercluster
-                        
-                        if (self.history_nodes): 
-                            #update the history
-                            snode = Node(supercluster.uniqueid)
-                            self.history_nodes[supercluster.uniqueid] = snode
-                            #now add in the links between the block elements and the block into the history_nodes
-                            self.history_nodes[elemid].add_child(snode)
-                        continue
-                    else: 
-                        supercluster += thing
-                        if (self.history_nodes):
-                            self.history_nodes[elemid].add_child(snode)  
-                if len(subgraphids)>1 : 
-                    pdebugger.info(str('Made {}\n'.format(supercluster)))                        
-
+                    supercluster += thing
+                #if (len(subgraphids)>1) :
+                    pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))
+                if (self.history_nodes) :
+                    self.history_nodes[elemid].add_child(snode)
+            
+            pdebugger.info(str('Made {}\n'.format(supercluster)))

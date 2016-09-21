@@ -3,6 +3,7 @@ from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 import math
+import logging
 
 #add angular size needs to be fixed since at the moment the angluar size is set by the first element
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
@@ -38,6 +39,13 @@ class PFObject(object):
 
     def __repr__(self):
         return str(self)
+
+    def __str__(self):
+        return '{classname} :{pretty:9}:{id}: {info}'.format(
+                    classname = self.__class__.__name__,
+                    pretty = Identifier.pretty(self.uniqueid),
+                    id = self.uniqueid,
+                    info = self.info())
 
 
 class Cluster(PFObject):
@@ -166,12 +174,7 @@ class Cluster(PFObject):
     #     if name == 'energy':
     #         self.pt = value * self.position.Unit().Perp()
     #     self.__dict__[name] = value
-    def __str__(self):
-        return '{classname} :{pretty:9}:{id}: {info}'.format(
-                    classname = self.__class__.__name__,
-                    pretty = Identifier.pretty(self.uniqueid),
-                    id = self.uniqueid,
-                    info = self.info())
+#AJR added \n need to remove
     def info(self):   
         subclusterstr= str('sub(')
         for s in self.subclusters:
@@ -180,11 +183,10 @@ class Cluster(PFObject):
         return '{energy:7.2f} {theta:5.2f} {phi:5.2f} {sub}'.format(
             energy = self.energy,
             theta = math.pi/2. - self.position.Theta(),
-    
             phi = self.position.Phi(),
             sub= subclusterstr
-        )    
-        
+        )
+
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
@@ -231,10 +233,8 @@ class Track(PFObject):
         self.particle = particle
         self.layer = 'tracker'
 
-    def __str__(self):
-        return '{classname:15}:uid={uniqueid}: {e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            classname = self.__class__.__name__,
-            uniqueid = self.uniqueid,
+    def info(self):
+        return '{e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             pt = self.pt,
             e = self.energy, 
             theta = math.pi/2. - self.p3.Theta(),
@@ -282,10 +282,10 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
-            #new
             if self.q():
                 self.track = Track(self.p3(), self.q(), self.path)
     
+
 ##    def __str__(self):
 ##        tmp = '{className}:uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
 ##        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
@@ -303,9 +303,9 @@ class Particle(BaseParticle):
 ##            status = self.status(),
 ##            q = self.q(),
 ##            p4 = p4                    
-##        )
-          
-  
+##        )      
+
+
 if __name__ == '__main__':
     from ROOT import TVector3
     cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer
