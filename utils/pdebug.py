@@ -50,7 +50,7 @@ def set_file(filename = "pdebug.log", mode='w', level ="INFO"):
     cf.setLevel(level)
     pdebugger.addHandler(cf)
 
-def set_stream(out, level ="INFO"):
+def set_stream(out=sys.stdout, level ="INFO"):
     ch = logging.StreamHandler(out)
     ch.setLevel(level)
     mformatter = logging.Formatter('%(message)s')

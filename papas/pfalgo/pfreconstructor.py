@@ -304,12 +304,12 @@ class PFReconstructor(object):
         hcal =block.pfevent.hcal_clusters[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
-        trackids =    sorted( block.linked_ids(hcalid, "hcal_track") )
+        trackids =  block.linked_ids(hcalid, "hcal_track")
         #alice temporarily disabled
         #trackids =    block.sort_distance_energy(hcalid, trackids )
-        for trackid in  sorted(trackids):
+        for trackid in  trackids:
             tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in sorted(block.linked_ids(trackid, "ecal_track")):
+            for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work

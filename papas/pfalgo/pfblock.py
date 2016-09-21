@@ -118,7 +118,7 @@ class PFBlock(object):
                         linked_ids.append(edge.id2)
                     else:
                         linked_ids.append(edge.id1)
-            return linked_ids
+            return sorted(linked_ids)
     
     def sort_distance_energy( self, uniqueid, otherids):
         ''' returns a list of the otherids sorted by distance to uniqueid and by decreasing energies
@@ -283,7 +283,7 @@ class PFBlock(object):
             
         descrip += str('{shortname:8} :{prettyid:9}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        
-            prettyid       = Identifier.pretty(self.uniqueid),
+            prettyid     = Identifier.pretty(self.uniqueid),
             count_ecal   = self.count_ecal(),
             count_hcal   = self.count_hcal(),
             count_tracks = self.count_tracks() )

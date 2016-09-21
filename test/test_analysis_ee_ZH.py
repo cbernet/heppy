@@ -36,14 +36,14 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
                           'test/data/ee_ZH_Zmumu_Hbb.root'])
         config.components[0].files = [fname]
         self.looper = Looper( self.outdir, config,
-                              nEvents=10,
+                              nEvents=50,
                               nPrint=0,
                               timeReport=True)
         import logging
         logging.disable(logging.CRITICAL)
         random.seed('0xdeadbeef')
         Identifier.reset()
-        
+
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
@@ -63,8 +63,8 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         #import heppy.statistics.rrandom as random
         #print random.getstate()
         print mean, sigma
-        self.assertAlmostEqual(mean, 118.3, 1)
-        self.assertAlmostEqual(sigma, 31.0, 1)
+        self.assertAlmostEqual(mean, 132.1, 1)
+        self.assertAlmostEqual(sigma, 31.4, 1)
         
     def test_analysis_sorting(self):
         self.looper.process(0)

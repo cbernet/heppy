@@ -20,11 +20,7 @@ def pfsimparticle(ptc):
     The PFSimParticle will have the same p4, vertex, charge, pdg ID.
     '''
     tp4 = ptc.p4()
-
-    #merged here so could need fix
-    vertex = TVector3()
-    if hasattr(ptc, '_start_vertex'):
-        vertex = ptc.start_vertex().position()
+    vertex = ptc.start_vertex().position()
     charge = ptc.q()
     pid = ptc.pdgid()
     simptc = PFSimParticle(tp4, vertex, charge, pid)
@@ -208,7 +204,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
 
-        # alice left over from merge ... are the next 6 lines needed
+        # these lines moved earlier in order to match cpp logic
         if ptc.q()!=0:
             pdebugger.info("Made " + ptc.track.__str__())
             smeared_track = self.smear_track(ptc.track,
@@ -255,7 +251,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         pdebugger.info("Smearing Muon");
         self.propagate(ptc)
         if ptc.q()!=0:
-                    pdebugger.info("Made " + ptc.track.__str__())
+            pdebugger.info("Made " + ptc.track.__str__())
         smeared = copy.deepcopy(ptc)
         return smeared
 

@@ -82,9 +82,7 @@ class MergedClusterBuilder(GraphBuilder):
                 else:
                     thing = self.clusters[elemid]
                     supercluster += thing
-                if (len(subgraphids)>1) :
                     pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))
                 if (self.history_nodes) :
                     self.history_nodes[elemid].add_child(snode)
-            if len(subgraphids)>1 : 
-                pdebugger.info(str('Made {}\n'.format(supercluster)))
+            pdebugger.info(str('Made {}\n'.format(supercluster)))
