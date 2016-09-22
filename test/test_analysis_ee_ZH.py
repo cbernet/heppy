@@ -13,6 +13,7 @@ from ROOT import TFile
 
 import logging
 logging.getLogger().setLevel(logging.ERROR)
+import random
 
 
 def test_sorted(ptcs):
@@ -28,6 +29,7 @@ def test_sorted(ptcs):
 class TestAnalysis_ee_ZH(unittest.TestCase):
 
     def setUp(self):
+        random.seed(0xdeadbeef)
         self.outdir = tempfile.mkdtemp()
         fname = '/'.join([os.environ['HEPPY'],
                           'test/data/ee_ZH_Zmumu_Hbb.root'])
