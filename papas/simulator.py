@@ -1,4 +1,3 @@
-
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
@@ -72,7 +71,6 @@ class Simulator(object):
         if size is None:
             size = detector.cluster_size(ptc)
         cylname = detector.volume.inner.name
-
         if not cylname in ptc.points:
             # TODO Colin particle was not extrapolated here...
             # issue must be solved!
@@ -90,7 +88,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                             ptc.points[cylname],
                             size,
                             cylname, ptc)
-
         ptc.clusters[cylname] = cluster
         pdebugger.info("Made " + cluster.__str__() + "")
         return cluster
@@ -289,14 +286,14 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11: #check with colin
-                #TEMPORARY TODO self.propagate_electron(ptc)
-                smeared_ptc = self.smear_electron(ptc)
-                smeared.append(smeared_ptc)
+                self.propagate_electron(ptc)
+                #smeared_ptc = self.smear_electron(ptc)
+                #smeared.append(smeared_ptc)
                 # self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:   #check with colin
-                #TEMPORARY TODO self.propagate_muon(ptc)
-                smeared_ptc = self.smear_muon(ptc)
-                smeared.append(smeared_ptc)
+                self.propagate_muon(ptc)
+                #smeared_ptc = self.smear_muon(ptc)
+                #smeared.append(smeared_ptc)
                 # self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12,14,16]:
                 self.simulate_neutrino(ptc)
@@ -304,8 +301,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                 if ptc.q() and ptc.pt()<0.2:
                     # to avoid numerical problems in propagation
                     continue
-                if ptc.q()==0 and ptc.pdgid<0:
-                    pass
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
             #self.smeared =  smeared

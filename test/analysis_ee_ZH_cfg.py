@@ -26,12 +26,10 @@ import heppy.utils.pdebug
 import heppy.statistics.rrandom as random
 random.seed(0xdeadbeef)
 
-
 # definition of the collider
 from heppy.configuration import Collider
 Collider.BEAMS = 'pp'
 Collider.SQRTS = 240.
-
 
 # input definition
 comp = cfg.Component(

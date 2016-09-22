@@ -7,7 +7,6 @@ from heppy.utils.pdebug import pdebugger
 from heppy.papas.pfobjects import Particle
 from heppy.utils.pdebug import pdebugger
 
-
 from ROOT import TVector3, TLorentzVector
 import math
 import pprint
@@ -198,11 +197,9 @@ class PFReconstructor(object):
                 self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
-
             for id in sorted(ids) : #newsort
                 if Identifier.is_hcal(id):
                     self.reconstruct_hcal(block,id)
-
             for id in sorted(ids) : #newsort
                 if Identifier.is_track(id) and not self.locked[id]:
                 # unused tracks, so not linked to HCAL
@@ -399,15 +396,12 @@ class PFReconstructor(object):
             momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
-
         particle = Particle(p4, vertex, charge, pdg_id, Identifier.PFOBJECTTYPE.RECPARTICLE)
-
         path = StraightLine(p4, vertex)
         path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
                                             # nb this only is problem if the cluster and the assigned layer are different
         particle.set_path(path)
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
-
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
         pdebugger.info(str('Made {} from {}'.format(particle,  cluster)))
         return particle

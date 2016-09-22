@@ -284,7 +284,7 @@ class Particle(BaseParticle):
             self.path = path
             if self.q():
                 self.track = Track(self.p3(), self.q(), self.path)
-    
+
     def __str__(self):
         mainstr =  super(Particle, self).__str__()
         idstr = '{pretty:6}:{id}'.format(
@@ -292,9 +292,8 @@ class Particle(BaseParticle):
             id = self.uniqueid)
         fields = mainstr.split(':')
         fields.insert(1, idstr)
-        return ':'.join(fields) 
+        return ':'.join(fields)
 
-    
 if __name__ == '__main__':
     from ROOT import TVector3
     cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer

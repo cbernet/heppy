@@ -13,10 +13,9 @@ def plot(fname):
     # h.GetYaxis().SetRangeUser(0, 120)
     h.Fit("gaus")
     gPad.Update()
-    gPad.SaveAs('ee_ZH_mjjo.png')
+    gPad.SaveAs('ee_ZH_mjj.png')
     time.sleep(1)
     func = h.GetFunction("gaus")
-    print func.GetParameter(1), func.GetParameter(2)
     return func.GetParameter(1), func.GetParameter(2)
 
 

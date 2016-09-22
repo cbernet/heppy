@@ -32,7 +32,7 @@ class Particle(BaseParticle, POD):
             if attr not in ['fccobj', '_start_vertex', '_end_vertex']:
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
-    
+
     def __str__(self):
         mainstr =  super(Particle, self).__str__()
         idstr = '{pretty:6}:{id}'.format(

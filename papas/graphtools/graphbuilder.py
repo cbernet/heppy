@@ -3,8 +3,6 @@ from DAG import Node, DAGFloodFill
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 import collections
-
-
 #todo remove pfevent from this class once we have written a helper class to print the block and its elements
 
 
@@ -34,7 +32,7 @@ class GraphBuilder(object):
         '''
         self.ids = ids
         self.edges = edges
- 
+
         # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict((idt, Node(idt)) for idt in ids)
         for edge in edges.itervalues():
