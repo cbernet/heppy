@@ -41,7 +41,7 @@ class PFObject(object):
         return str(self)
 
     def __str__(self):
-        return '{classname} :{pretty:9}:{id}: {info}'.format(
+        return '{classname}: {pretty:6}:{id}: {info}'.format(
                     classname = self.__class__.__name__,
                     pretty = Identifier.pretty(self.uniqueid),
                     id = self.uniqueid,
@@ -178,7 +178,7 @@ class Cluster(PFObject):
     def info(self):   
         subclusterstr= str('sub(')
         for s in self.subclusters:
-            subclusterstr += str('{:9}, '.format(Identifier.pretty(s.uniqueid)))
+            subclusterstr += str('{:}, '.format(Identifier.pretty(s.uniqueid)))
         subclusterstr += ")"
         return '{energy:7.2f} {theta:5.2f} {phi:5.2f} {sub}'.format(
             energy = self.energy,
@@ -286,25 +286,12 @@ class Particle(BaseParticle):
                 self.track = Track(self.p3(), self.q(), self.path)
     
     def __substr__(self):
-        tmp = 'uid={uniqueid} pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
-        p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
-            pt = self.pt(),
-            e = self.e(),
-            eta = self.eta(),
-            theta = self.theta(),
-            phi = self.phi(),
-            m = self.m()  ) 
-            
-        return tmp.format(
-            uniqueid = self.uniqueid,
-            pdgid = self.pdgid(),
-            status = self.status(),
-            q = self.q(),
-            p4 = p4                    
-        )      
+        return '{pretty:6}:{id}: {info}'.format(
+            pretty = Identifier.pretty(self.uniqueid),
+            id = self.uniqueid,
+            info = super(Particle, self).__substr__())  
 
-
-
+    
 if __name__ == '__main__':
     from ROOT import TVector3
     cluster = Cluster(10., TVector3(1,0,0), 1)  #alice made this use default layer

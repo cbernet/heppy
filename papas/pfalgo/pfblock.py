@@ -283,7 +283,7 @@ class PFBlock(object):
         else:
             descrip= "deactivated block:"
             
-        descrip += str('{shortname:8} :{prettyid:9}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
+        descrip += str('{shortname:8} :{prettyid:6}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname    = self.short_name(),        
             prettyid     = Identifier.pretty(self.uniqueid),
             count_ecal   = self.count_ecal(),

@@ -43,7 +43,7 @@ class Particle(P4):
             )        
      
     def __str__(self):
-        tmp = '{className} : {descrip}'
+        tmp = '{className}: {descrip}'
         return tmp.format(
             className = self.__class__.__name__,
             descrip=self.__substr__()
