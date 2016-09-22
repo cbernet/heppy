@@ -4,6 +4,7 @@ from heppy.papas.data.pfevent import PFEvent
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.history import History
 
+
 class PapasPFReconstructor(Analyzer):
     ''' Module to reconstruct particles from blocks of events
          
@@ -31,27 +32,28 @@ class PapasPFReconstructor(Analyzer):
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
         self.blocksname =  self.cfg_ana.input_blocks
         self.historyname = self.cfg_ana.history   
-        self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
+        #self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
-                
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
            reconstructed paricles and updated history_nodes to the event object
            arguments:
                     event must contain blocks made using BlockBuilder'''
         
-        self.reconstructed.reconstruct(event,  self.blocksname, self.historyname)
+        self.reconstructed.reconstruct(event)
         
-        #setattr(event, self.historyname, self.reconstructed.history_nodes)
-        setattr(event, self.output_particlesdictname, self.reconstructed.particles)
+        setattr(event, self.historyname, self.reconstructed.history_nodes)
+        #setattr(event, self.output_particlesdictname, self.reconstructed.particles)
+        setattr(event, "rec_particles", self.reconstructed.particles)
+        setattr(event, "blocks", self.reconstructed.blocks)       
         
-        #hist = History(event.history_nodes,PFEvent(event))
-        #for block in event.blocks:
-        #    hist.summary_of_links(block)
+        
         
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
                                                    key = lambda ptc: ptc.e(), reverse=True)
         
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
-        pass         
+        
+        hist = History(event.history_nodes,PFEvent(event))
+        

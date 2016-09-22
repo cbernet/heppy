@@ -60,6 +60,7 @@ class PFBlock(object):
         for id1, id2 in itertools.combinations(self.element_uniqueids,2):
             key = Edge.make_key(id1,id2)
             self.edges[key] = edges[key]
+            
           
    
     def count_ecal(self):
@@ -199,6 +200,9 @@ class PFBlock(object):
       
         return shortname      
     
+    def shortinfo(self):
+        return self.short_name()
+    
     def edge_matrix_string(self):
         ''' produces a string containing the the lower part of the matrix of distances between elements
         elements are ordered as ECAL(E), HCAL(H), Track(T) 
@@ -291,3 +295,5 @@ class PFBlock(object):
             count_tracks = self.count_tracks() )
         )             
         return descrip;  
+
+ 

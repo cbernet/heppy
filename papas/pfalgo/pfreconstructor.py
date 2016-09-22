@@ -72,16 +72,16 @@ class PFReconstructor(object):
     #self.reconstruct(links)
 
 
-    def reconstruct(self, event,  blocksname, historyname):
+    def reconstruct(self, event):
         '''arguments event: should contain blocks and optionally history_nodes'''
-        self.blocks = getattr(event,  blocksname)
+        self.blocks = getattr(event,  "blocks")
         self.unused = []
         self.particles = dict()
         
         
         # history nodes will be used to connect reconstructed particles into the history
         # its optional at the moment
-        if hasattr(event, historyname):
+        if hasattr(event, "history_nodes"):
             self.history_nodes = event.history_nodes
         else : 
             self.history_nodes = None
@@ -188,13 +188,13 @@ class PFReconstructor(object):
             id = ids[0]
             
             if Identifier.is_ecal(id):
-                self.insert_particle(block, self.reconstruct_cluster(block.pfevent.ecal_clusters[id],"ecal_in"))
+                self.insert_particle(block, self.reconstruct_cluster(block.pfevent.event.ecal_clusters[id],"ecal_in"))
                 
             elif Identifier.is_hcal(id):
-                self.insert_particle(block, self.reconstruct_cluster(block.pfevent.hcal_clusters[id],"hcal_in"))
+                self.insert_particle(block, self.reconstruct_cluster(block.pfevent.event.hcal_clusters[id],"hcal_in"))
                 
             elif Identifier.is_track(id):
-                self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
+                self.insert_particle(block, self.reconstruct_track(block.pfevent.event.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
             for id in sorted(ids) : #newsort
@@ -205,7 +205,7 @@ class PFReconstructor(object):
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
                 # ELECTRONS TO BE DEALT WITH.
-                    self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
+                    self.insert_particle(block, self.reconstruct_track(block.pfevent.event.tracks[id]))
                     
                     # tracks possibly linked to ecal->locking cluster
                     for idlink in block.linked_ids(id,"ecal_track"):
@@ -255,8 +255,8 @@ class PFReconstructor(object):
                 #link particle to the block            
                 blocknode.add_child(pnode)
                 #link particle to block elements
-                for element_id in block.element_uniqueids:
-                    self.history_nodes[element_id].add_child(pnode)    
+                #for element_id in block.element_uniqueids:
+                #    self.history_nodes[element_id].add_child(pnode)    
     
 
     def neutral_hadron_energy_resolution(self, hcal):
@@ -301,24 +301,23 @@ class PFReconstructor(object):
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
         ecals = []
-        hcal =block.pfevent.hcal_clusters[hcalid]
+        hcal =block.pfevent.event.hcal_clusters[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
 
         #trackids =  block.linked_ids(hcalid, "hcal_track")
         #alice temporarily disabled
-        #trackids =    block.sort_distance_energy(hcalid, trackids )
-#newsort        
+        #trackids =    block.sort_distance_energy(hcalid, trackids )  
         trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
         for trackid in trackids:
-            tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in block.linked_ids(trackid, "ecal_track"): #new sort
+            tracks.append(block.pfevent.event.tracks[trackid])
+            for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work
                 # ask colin.
                 if not self.locked[ecalid]:
-                    ecals.append(block.pfevent.ecal_clusters[ecalid])
+                    ecals.append(block.pfevent.event.ecal_clusters[ecalid])
                     self.locked[ecalid]  = True
                 # hcal should be the only remaining linked hcal cluster (closest one)
                 #thcals = [th for th in elem.linked if th.layer=='hcal_in']

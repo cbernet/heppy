@@ -6,6 +6,12 @@ from collections import OrderedDict
 import scipy.optimize as opti # need to compute impact parameters
 from numpy import sign
 import heppy.statistics.rrandom as random
+from geotools import circle_intersection
+
+
+class Info(object):
+    pass
+
 
 class Path(object):
     '''Path followed by a particle in 3D space. 
@@ -43,6 +49,45 @@ class Path(object):
     
 class StraightLine(Path):
     pass
+
+    def position(self, cylinder, dummy=None):
+         #this code was in propapagator class   
+            theta = self.udir.Theta()
+            if abs(self.origin.Z()) > cylinder.z or \
+               self.origin.Perp() > cylinder.rad:
+                return # particle created outside the cylinder
+            if self.udir.Z(): 
+                destz = cylinder.z if self.udir.Z() > 0. else -cylinder.z
+                length = (destz - self.origin.Z())/math.cos(theta)
+                if length < 0:
+                    print 'HERE!!'
+                    import pdb; pdb.set_trace()
+                    raise PropagationError(particle)
+                destination = self.origin + self.udir * length
+                rdest = destination.Perp()
+                if rdest > cylinder.rad:
+                    udirxy = TVector3(self.udir.X(), self.udir.Y(), 0.)
+                    originxy = TVector3(self.origin.X(), self.origin.Y(), 0.)
+                    # solve 2nd degree equation for intersection
+                    # between the straight line and the cylinder
+                    # in the xy plane to get k,
+                    # the propagation length
+                    a = udirxy.Mag2()
+                    b= 2*udirxy.Dot(originxy)
+                    c= originxy.Mag2()-cylinder.rad**2
+                    delta = b**2 - 4*a*c
+                    if delta<0:
+                        return 
+                        # raise PropagationError(particle)
+                    km = (-b - math.sqrt(delta))/(2*a)
+                    # positive propagation -> correct solution.
+                    kp = (-b + math.sqrt(delta))/(2*a)
+                    # print delta, km, kp
+                    destination = self.origin + self.udir * kp  
+            return destination
+            #TODO deal with Z == 0 
+            #TODO deal with overlapping cylinders
+                   
     
     
 class Helix(Path):
@@ -177,6 +222,49 @@ class Helix(Path):
     #     # d2 = path_length / math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)
     #     return d1
         
+
+    def destination(self, cylinder):
+        #added by alice to assist with plotting reconstructed particles and keeping
+        #particles cleaner was originally in propagator class        
+        is_looper = self.extreme_point_xy.Mag() < cylinder.rad
+        is_positive = self.p4.Z() > 0.
+        if not is_looper:
+            try: 
+                xm, ym, xp, yp = circle_intersection(self.center_xy.X(),
+                                                 self.center_xy.Y(),
+                                                 self.rho,
+                                                 cylinder.rad )
+            except ValueError:
+                return
+        
+            phi_m = self.phi(xm, ym)
+            phi_p = self.phi(xp, yp)
+            dest_time = self.time_at_phi(phi_p)
+            destination = self.point_at_time(dest_time)
+            if destination.Z()*self.udir.Z()<0.:
+                dest_time = self.time_at_phi(phi_m)
+                destination = self.point_at_time(dest_time)
+            if abs(destination.Z())>=cylinder.z:
+                is_looper = True
+        if is_looper:
+            # extrapolating to endcap
+            destz = cylinder.z if self.udir.Z() > 0. else -cylinder.z
+            dest_time = self.time_at_z(destz)
+            destination = self.point_at_time(dest_time)
+        # destz = cylinder.z if positive else -cylinder.z
+        info = Info()
+        info.is_positive = is_positive
+        info.is_looper = is_looper        
+        
+        return {'position': destination, 'info' : info}
+
+    def position(self, cylinder):
+        dest=self.destination(cylinder)
+        if dest==None:
+            return
+        return dest["position"]   
+
+            
     
 if __name__ == '__main__':
 

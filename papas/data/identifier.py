@@ -32,6 +32,7 @@ class Identifier(long):
         PARTICLE = 4
         RECPARTICLE = 5
         BLOCK = 6
+        SIMPARTICLE = 7
     
     @classmethod    
     def make_id(cls, type):
@@ -72,13 +73,17 @@ class Identifier(long):
     
     @staticmethod  
     def is_particle ( ident):
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.PARTICLE     
-
+        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.PARTICLE 
+    
+    @staticmethod  
+    def is_sim_particle ( ident):
+        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.SIMPARTICLE     
+    
     @staticmethod
     def type_short_code(ident):
-        typelist=".ehtprb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
-        return typelist[Identifier.get_type(ident)]
-
+        typelist=".ehtprbs..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
+        return typelist[Identifier.get_type(ident)]    
+    
     @staticmethod
     def pretty(ident):
         return Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))

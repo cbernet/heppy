@@ -2,20 +2,27 @@ from ROOT import TPolyLine, TGraph, TArc, TEllipse, kGray
 import numpy as np
 import operator
 import math
+from heppy.papas.path import Helix, StraightLine, Info
 
 class Blob(object):
-    def __init__(self, cluster):
+    def __init__(self, cluster, grey=False):
         self.cluster = cluster
         pos = cluster.position
         radius = cluster.size()
         thetaphiradius = cluster.angular_size()
-        # print radius
-        color = 1
+        color = 7
+        innercolor=1
+#todo       
         if cluster.particle:
             if cluster.particle.pdgid() == 22 or cluster.particle.pdgid() == 11:
                 color = 2
             else:
                 color = 4
+        if grey:
+            color = 17
+            innercolor=17
+        if color == 1:
+            pass
         max_energy = cluster.__class__.max_energy
         self.contour_xy = TEllipse(pos.X(), pos.Y(), radius)
         self.contour_yz = TEllipse(pos.Z(), pos.Y(), radius)   
@@ -37,6 +44,7 @@ class Blob(object):
             contour.SetLineColor(color)
             contour.SetFillStyle(0)
         for inner in inners: 
+            inner.SetLineColor(innercolor)
             inner.SetFillColor(color)
             inner.SetFillStyle(3002)
             
@@ -185,3 +193,168 @@ class GTrajectories(list):
     def draw(self, projection):
         for traj in self:
             traj.draw(projection)
+            
+#Eventually these may replace the above
+#They try to use the information contained in the history rather than the additional info in the particle (which is only in python)
+#not all things are identical
+class GNewTrajectory(object):
+
+    draw_smeared_clusters = True
+    
+    def __init__(self, detector, particle, ecals, hcals,linestyle=1, linecolor=1, grey = False):
+        self.path = StraightLine(particle.p4(), particle.vertex)
+        if abs(particle.q())>0.5:
+            self.path = Helix(detector.elements['field'].magnitude, particle.q(), particle.p4(), particle.vertex)
+        
+        if grey:
+            linecolor=17
+        #cylinder 
+        npoints =  6
+        if len(hcals):
+            npoints = 6
+        elif len(ecals):
+            npoints = 3
+        self.graph_xy = TGraph(npoints)
+        self.graph_yz = TGraph(npoints)
+        self.graph_xz = TGraph(npoints)
+        self.graph_thetaphi = TGraph(npoints)
+        self.graphs = [self.graph_xy, self.graph_yz, self.graph_xz, self.graph_thetaphi]
+        def set_graph_style(graph):
+            graph.SetMarkerStyle(2)
+            graph.SetMarkerSize(0.7)
+            graph.SetMarkerColor(linecolor)
+            graph.SetLineStyle(linestyle)
+            graph.SetLineColor(linecolor)
+        set_graph_style(self.graph_xy)
+        set_graph_style(self.graph_yz)
+        set_graph_style(self.graph_xz)
+        set_graph_style(self.graph_thetaphi)
+        #i=0
+        for i in range(npoints):
+            position=self.path.position(detector.cylinders()[i])
+            if position!=None:
+                self.graph_xy.SetPoint( i, position.X(), position.Y() )
+                self.graph_yz.SetPoint( i, position.Z(), position.Y() )
+                self.graph_xz.SetPoint( i, position.Z(), position.X() )
+                #self.graph_xy.SetPointColor(linecolor)
+                self.graph_xy.SetLineColor(linecolor)
+                tppoint = position
+                if i == 0:
+                    tppoint = particle.p4().Vect()
+                self.graph_thetaphi.SetPoint(i, math.pi/2. - tppoint.Theta(), tppoint.Phi() )
+            #i= 1+i
+        self.blobs = map(Blob, ecals.values() + hcals.values(), [grey]*len(ecals.values() + hcals.values()))            
+
+    def set_color(self, color):
+        for graph in self.graphs:
+            graph.SetMarkerColor(color)
+        
+    def draw(self, projection, opt=''):
+        for blob in self.blobs: 
+            blob.draw(projection, opt)
+        if projection == 'xy':
+            self.graph_xy.Draw(opt+"psame")
+        elif projection == 'yz':
+            self.graph_yz.Draw(opt+"psame")
+        elif projection == 'xz':
+            self.graph_xz.Draw(opt+"psame")
+        elif 'thetaphi' in projection:
+            self.graph_thetaphi.Draw(opt+"psame")            
+        else:
+            raise ValueError('implement drawing for projection ' + projection )
+
+            
+class GNewStraightTrajectory(GNewTrajectory):
+    def __init__(self,  detector, particle, ecals, hcals, grey=False):
+        super(GNewStraightTrajectory, self).__init__( detector, particle, ecals, hcals,
+                                                  linestyle=2, linecolor=1, grey= grey)
+
+    def draw(self, projection):
+        super(GNewStraightTrajectory, self).draw(projection, 'l')
+   
+
+class GNewHelixTrajectory(GNewTrajectory):    
+    def __init__(self, detector, particle, ecals, hcals,linestyle=1, linecolor=1, grey=False):
+        super(GNewHelixTrajectory, self).__init__( detector, particle, ecals, hcals, linestyle, linecolor, grey=grey)
+        helix = self.path
+        self.helix_xy = TArc(helix.center_xy.X(),
+                             helix.center_xy.Y(),
+                             helix.rho, helix.phi_min, helix.phi_max)
+        self.helix_xy.SetFillStyle(0)
+        if grey:
+            linecolor =17
+        self.helix_xy.SetLineColor(linecolor)
+        #TODO this is patchy,need to access the last point, whatever its name
+        
+        last_cylinder=6
+        if len(hcals):
+            last_cylinder=6
+        elif len(ecals):
+            last_cylinder=3
+        position=helix.position(detector.cylinders()[last_cylinder-1])
+            
+        max_time = helix.time_at_z(position.Z())
+        npoints = 100
+        self.graphline_xy = TGraph(npoints)
+        self.graphline_yz = TGraph(npoints)
+        self.graphline_xz = TGraph(npoints)
+        self.graphline_thetaphi = TGraph(npoints)
+        self.graphline_xy.SetLineColor(linecolor)
+        self.graphline_yz.SetLineColor(linecolor)
+        self.graphline_xz.SetLineColor(linecolor) 
+        self.graphline_xy.SetMarkerColor(linecolor)
+        self.graphline_yz.SetMarkerColor(linecolor)
+        self.graphline_xz.SetMarkerColor(linecolor) 
+        
+        for i, time in enumerate(np.linspace(0, max_time, npoints)):
+            point = helix.point_at_time(time)
+            self.graphline_xy.SetPoint(i, point.X(), point.Y())
+            self.graphline_yz.SetPoint(i, point.Z(), point.Y())
+            self.graphline_xz.SetPoint(i, point.Z(), point.X())
+            tppoint = point
+            if i == 0:
+                tppoint = particle.p4().Vect()
+            self.graphline_thetaphi.SetPoint(i, math.pi/2.-tppoint.Theta(), tppoint.Phi())
+        if abs(particle.pdgid()) in [11,13]:
+            def set_graph_style(graph):
+                graph.SetLineWidth(3)
+                graph.SetLineColor(5)
+            set_graph_style(self.graphline_xy)
+            set_graph_style(self.graphline_xz)
+            set_graph_style(self.graphline_yz)
+            set_graph_style(self.graphline_thetaphi)
+
+
+    def draw(self, projection):
+        if projection == 'xy':
+            # self.helix_xy.Draw("onlysame")
+            self.graphline_xy.Draw("lsame")
+        elif projection == 'yz':
+            self.graphline_yz.Draw("lsame")
+        elif projection == 'xz':
+            self.graphline_xz.Draw("lsame")
+        elif 'thetaphi' in projection:
+            self.graphline_thetaphi.Draw("lsame")            
+        else:
+            raise ValueError('implement drawing for projection ' + projection )
+        super(GNewHelixTrajectory, self).draw(projection)
+        
+
+
+
+
+                        
+class GHistoryBlock(list):
+    
+    def __init__(self, ids, detector, history, particles_name, is_grey=False):
+                     
+            
+            linked=history.get_linked_object_dict(ids)
+            for ptc in linked[particles_name].values():
+                is_neutral = abs(ptc.q())<0.5
+                TrajClass = GNewStraightTrajectory if is_neutral else GNewHelixTrajectory                  
+                gtraj = TrajClass(detector, ptc, linked['smeared_ecals'], linked['smeared_hcals'],grey=is_grey)
+                self.append(gtraj)              
+            
+
+                         

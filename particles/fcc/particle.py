@@ -33,6 +33,18 @@ class Particle(BaseParticle, POD):
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
 
+    def shortinfo(self):
+        tmp = '{pdgid:} ({e:.1f})'
+        #needed for now to get match with C++
+        pid=self.pdgid()      
+        if self.q() == 0 and pid < 0:
+            pid = -pid        
+        
+        return tmp.format(
+            pdgid =pid,
+            e = self.e()        
+        )    
+    
     def __str__(self):
         mainstr =  super(Particle, self).__str__()
         idstr = '{pretty:6}:{id}'.format(

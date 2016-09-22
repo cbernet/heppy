@@ -182,7 +182,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                            beampipe.volume.outer,
                                            self.detector.elements['field'].magnitude)
         
-        mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
+        #ajrdebug mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
             
         #re-propagate after multiple scattering in the beam pipe
         #indeed, multiple scattering is applied within the beam pipe,
@@ -303,10 +303,10 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
+            
             #self.smeared =  smeared
             self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
-        
-        
+
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)
         #print "number of sim particles: ", len(self.ptcs)        

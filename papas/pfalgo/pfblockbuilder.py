@@ -57,7 +57,7 @@ class PFBlockBuilder(BlockBuilder):
 
         # collate all the ids of tracks and clusters and, if needed, make history nodes
         uniqueids = []
-        uniqueids = list(pfevent.tracks.keys()) + list(pfevent.ecal_clusters.keys()) + list(pfevent.hcal_clusters.keys()) 
+        uniqueids = list(pfevent.event.tracks.keys()) + list(pfevent.event.ecal_clusters.keys()) + list(pfevent.event.hcal_clusters.keys()) 
         uniqueids = sorted(uniqueids)
 
         self.history_nodes = history_nodes

@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pdt import particle_data
-from heppy.particles.tlv.particle import Particle 
+from heppy.papas.pfobjects import Particle 
 
 import math
 import heppy.statistics.rrandom as random

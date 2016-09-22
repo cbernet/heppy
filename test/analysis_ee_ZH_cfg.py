@@ -56,7 +56,64 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
-from heppy.test.papas_cfg import papas_sequence, detector, papas
+from heppy.analyzers.PapasSim import PapasSim
+#from heppy.analyzers.Papas import Papas
+from heppy.papas.detectors.CMS import CMS
+papas = cfg.Analyzer(
+    PapasSim,
+    instance_label = 'papas',
+    detector = CMS(),
+    gen_particles = 'gen_particles_stable',
+    sim_particles = 'sim_particles',
+    sim_ecals='sim_ecal_clusters',
+    sim_hcals='sim_ecal_clusters',
+    smeared_ecals = 'smeared_ecal_clusters',
+    smeared_hcals = 'smeared_hcal_clusters',    
+    merged_ecals = 'merged_ecal_clusters',
+    merged_hcals = 'merged_hcal_clusters',
+    tracks = 'tracks', 
+    output_history = 'history_nodes', 
+    display_filter_func = lambda ptc: ptc.e()>1.,
+    display = False,
+    verbose = True
+)
+
+
+# group the clusters, tracks from simulation into connected blocks ready for reconstruction
+from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
+pfblocks = cfg.Analyzer(
+    PapasPFBlockBuilder,
+    tracks = 'tracks', 
+    ecals = 'ecal_clusters', 
+    hcals = 'hcal_clusters', 
+    history = 'history_nodes',  
+    output_blocks = 'reconstruction_blocks'
+)
+
+
+#reconstruct particles from blocks
+from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
+pfreconstruct = cfg.Analyzer(
+    PapasPFReconstructor,
+    instance_label = 'papas_PFreconstruction', 
+    detector = CMS(),
+    input_blocks = 'reconstruction_blocks',
+    history = 'history_nodes',     
+    output_particles_dict = 'particles_dict', 
+    output_particles_list = 'particles_list'
+)
+
+from heppy.analyzers.PapasHistory import PapasHistory
+papashistory = cfg.Analyzer(
+    PapasHistory,
+    instance_label = 'papas_history', 
+    detector = CMS(),
+    history = 'history'
+)
+
+
+
+
 
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -208,7 +265,11 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     pdebug,
     source,
-    papas_sequence, 
+        gen_particles_stable,
+        papas,
+        pfblocks,
+        pfreconstruct,
+        papashistory,     
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
