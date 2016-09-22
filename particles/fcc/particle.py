@@ -33,11 +33,12 @@ class Particle(BaseParticle, POD):
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
     
-    
-    def __substr__(self):
-        tmp = '{pretty:6}:{uid}: {info}'
-        return tmp.format(
-            pretty=Identifier.pretty(self.uniqueid),
-            uid = self.uniqueid,
-            info=super(Particle, self).__substr__()
-            )    
+    def __str__(self):
+        mainstr =  super(Particle, self).__str__()
+        idstr = '{pretty:6}:{id}'.format(
+            pretty = Identifier.pretty(self.uniqueid),
+            id = self.uniqueid)
+        fields = mainstr.split(':')
+        fields.insert(1, idstr)
+        return ':'.join(fields)     
+

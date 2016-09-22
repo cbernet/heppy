@@ -285,11 +285,14 @@ class Particle(BaseParticle):
             if self.q():
                 self.track = Track(self.p3(), self.q(), self.path)
     
-    def __substr__(self):
-        return '{pretty:6}:{id}: {info}'.format(
+    def __str__(self):
+        mainstr =  super(Particle, self).__str__()
+        idstr = '{pretty:6}:{id}'.format(
             pretty = Identifier.pretty(self.uniqueid),
-            id = self.uniqueid,
-            info = super(Particle, self).__substr__())  
+            id = self.uniqueid)
+        fields = mainstr.split(':')
+        fields.insert(1, idstr)
+        return ':'.join(fields) 
 
     
 if __name__ == '__main__':
