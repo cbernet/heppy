@@ -86,6 +86,6 @@ class Identifier(long):
     @classmethod
     def reset(cls):
         cls._id=count(1)
-        debugger.info("reset ID")
+        pdebugger.info("reset ID")
         pass
         return

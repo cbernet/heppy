@@ -110,8 +110,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.layer,
                                           cluster.particle )
         pdebugger.info(str('Made {}'.format(smeared_cluster) ))
-        # smeared_cluster.set_energy(energy)
-        pdebugger.info(str('Made {}'.format(smeared_cluster) ))
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster
@@ -171,8 +169,6 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
         '''Simulate a hadron, neutral or charged.
         ptc should behave as pfobjects.Particle.
         '''
-
-        pdebugger.info("Simulating Hadron")
 
         #implement beam pipe scattering
 
