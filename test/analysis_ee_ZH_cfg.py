@@ -56,7 +56,22 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
+
+
+# Use a Filter to select stable gen particles for simulation
+# from the output of "source" 
+# help(Filter) for more information
+from heppy.analyzers.Filter import Filter
+gen_particles_stable = cfg.Analyzer(
+    Filter,
+    output = 'gen_particles_stable',
+    # output = 'particles',
+    input_objects = 'gen_particles',
+    filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5  
+)
+
 from heppy.analyzers.PapasSim import PapasSim
+from heppy.test.papas_cfg import detector
 #from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
 papas = cfg.Analyzer(
@@ -265,23 +280,23 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     pdebug,
     source,
-        gen_particles_stable,
-        papas,
-        pfblocks,
-        pfreconstruct,
-        papashistory,     
-    leptons_true,
-    iso_leptons,
-    sel_iso_leptons,
-    zeds,
-    recoil,
-    missing_energy,
-    particles_not_zed,
-    jets,
-    btag,
-    higgses,
-    selection, 
-    tree
+    gen_particles_stable,
+    papas,
+    pfblocks,
+    pfreconstruct,
+    papashistory,     
+    #leptons_true,
+    #iso_leptons,
+    #sel_iso_leptons,
+    #zeds,
+    #recoil,
+    #missing_energy,
+    #particles_not_zed,
+    #jets,
+    #btag,
+    #higgses,
+    #selection, 
+    #tree
 )
 
 # Specifics to read FCC events 
