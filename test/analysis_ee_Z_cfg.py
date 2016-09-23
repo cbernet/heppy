@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*jet*']
+Event.print_patterns=['*jet*', 'sum*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -51,15 +51,46 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
-from heppy.test.papas_cfg import papas_sequence, detector, papas
+from heppy.analyzers.P4SumBuilder import P4SumBuilder
+sum_particles = cfg.Analyzer(
+    P4SumBuilder, 
+    output='sum_all_ptcs',
+    #    particles='gen_particles_stable'
+    particles='rec_particles'
+)
 
+sum_gen = cfg.Analyzer(
+    P4SumBuilder, 
+    output='sum_all_gen',
+    particles='gen_particles_stable'
+)
+
+
+from heppy.analyzers.GlobalEventTreeProducer import GlobalEventTreeProducer
+zed_tree = cfg.Analyzer(
+    GlobalEventTreeProducer, 
+    sum_all='sum_all_ptcs', 
+    sum_all_gen='sum_all_gen'
+)
+
+
+from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas
 from jet_tree_cff import jet_tree_sequence
+
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [source] )
-sequence.extend(papas_sequence)
-sequence.extend(jet_tree_sequence('gen_particles_stable','rec_particles'))
+sequence = cfg.Sequence(
+    source,
+    # gen_particles_stable, 
+    papas_sequence,
+    jet_tree_sequence('gen_particles_stable',
+                      'rec_particles',
+                      2, None),
+    sum_particles,
+    sum_gen, 
+    zed_tree
+    )
 
 # Specifics to read FCC events 
 from ROOT import gSystem
@@ -114,7 +145,7 @@ if __name__ == '__main__':
         
     loop = Looper( 'looper', config,
                    nEvents=10,
-                   nPrint=1,
+                   nPrint=5,
                    timeReport=True)
     
     simulation = None
@@ -126,8 +157,6 @@ if __name__ == '__main__':
     if simulator: 
         detector = simulator.detector
     if iev is not None:
-        process(iev)
-        process(iev)
         process(iev)
     else:
         loop.loop()

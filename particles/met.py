@@ -5,6 +5,8 @@ class MET(P4):
     Make sure your code satisfies this interface.
     Specializations in cms, fcc, and tlv packages
     '''
+    def __init__(self, *args, **kwargs):
+        super(MET, self).__init__(*args, **kwargs)
 
     def sum_et(self):
         '''scalar sum of transverse energy'''

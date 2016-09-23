@@ -59,8 +59,8 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         import random
         print random.getstate()
         print mean, sigma
-        self.assertAlmostEqual(mean, 118.3, 1)
-        self.assertAlmostEqual(sigma, 31.0, 1)
+        self.assertAlmostEqual(mean, 119.9, 1)
+        self.assertAlmostEqual(sigma, 23.9, 1)
         
     def test_analysis_sorting(self):
         self.looper.process(0)

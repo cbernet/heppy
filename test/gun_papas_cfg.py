@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*jet*']
+Event.print_patterns=['*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -27,10 +27,10 @@ random.seed(0xdeadbeef)
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 130,
+    pdgid = 211,
     thetamin = -1.5,
     thetamax = 1.5,
-    ptmin = 5,
+    ptmin = 0,
     ptmax = 100,
     flat_pt = False,
 )
@@ -46,13 +46,38 @@ from heppy.test.papas_cfg import papas_sequence, detector, papas
 
 from jet_tree_cff import jet_tree_sequence
 
+from heppy.analyzers.P4SumBuilder import P4SumBuilder
+sum_particles = cfg.Analyzer(
+    P4SumBuilder, 
+    output='sum_all_ptcs',
+    #    particles='gen_particles_stable'
+    particles='rec_particles'
+)
+
+sum_gen = cfg.Analyzer(
+    P4SumBuilder, 
+    output='sum_all_gen',
+    particles='gen_particles_stable'
+)
+
+
+from heppy.analyzers.GlobalEventTreeProducer import GlobalEventTreeProducer
+zed_tree = cfg.Analyzer(
+    GlobalEventTreeProducer, 
+    sum_all='sum_all_ptcs', 
+    sum_all_gen='sum_all_gen'
+)
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source, 
     papas_sequence,
     jet_tree_sequence('gen_particles_stable','rec_particles',
-                      njets=None, ptmin=0.5)
+                      njets=None, ptmin=0.5),
+    sum_particles,
+    sum_gen,
+    zed_tree
     )
 
 # Specifics to read FCC events 
@@ -106,7 +131,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=10,
+                   nEvents=1000,
                    nPrint=1,
                    timeReport=True)
     
