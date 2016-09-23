@@ -5,8 +5,8 @@ import os
 import shutil
 
 
-from analysis_ee_ZH_cfg import config
-from heppy.test.plot_ee_ZH import plot
+from analysis_ee_Z_cfg import config
+from heppy.test.plot_ee_Z import plot
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
@@ -16,26 +16,17 @@ logging.getLogger().setLevel(logging.ERROR)
 import random
 
 
-def test_sorted(ptcs):
-    from heppy.configuration import Collider
-    keyname = 'pt'
-    if Collider.BEAMS == 'ee':
-        keyname = 'e'
-    pt_or_e = getattr(ptcs[0].__class__, keyname)
-    values = [pt_or_e(ptc) for ptc in ptcs]
-    return values == sorted(values, reverse=True)
 
-
-class TestAnalysis_ee_ZH(unittest.TestCase):
+class TestAnalysis_ee_Z(unittest.TestCase):
 
     def setUp(self):
         random.seed(0xdeadbeef)
         self.outdir = tempfile.mkdtemp()
         fname = '/'.join([os.environ['HEPPY'],
-                          'test/data/ee_ZH_Zmumu_Hbb.root'])
+                          'test/data/ee_Z_ddbar.root'])
         config.components[0].files = [fname]
         self.looper = Looper( self.outdir, config,
-                              nEvents=50,
+                              nEvents=100,
                               nPrint=0,
                               timeReport=True)
         import logging
@@ -54,15 +45,10 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         self.looper.loop()
         self.looper.write()
         rootfile = '/'.join([self.outdir,
-                            'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
+                            'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        self.assertAlmostEqual(mean, 119.9, 1)
-        self.assertAlmostEqual(sigma, 23.9, 1)
-        
-    def test_analysis_sorting(self):
-        self.looper.process(0)
-        self.assertTrue(test_sorted(self.looper.event.rec_particles))
-    
+        self.assertAlmostEqual(mean, 92.4, 1)
+        self.assertAlmostEqual(sigma, 14.0, 1)
         
 
 
