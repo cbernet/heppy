@@ -22,6 +22,7 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
         momentum = pt / sintheta
         energy = math.sqrt(momentum**2 + mass**2)
     else:
+        energy = max([energy, mass])
         momentum = math.sqrt(energy**2 - mass**2)
     tlv = TLorentzVector(momentum*sintheta*cosphi,
                          momentum*sintheta*sinphi,
