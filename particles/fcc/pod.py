@@ -6,9 +6,12 @@ class POD(object):
     def __init__(self, fccobj, *args, **kwargs):
         '''make sure to set the fccobj attribute in your base class.'''
         super(POD, self).__init__(*args, **kwargs)
-        self.fccobj = fccobj
-        self._objid = (self.fccobj.getObjectID().index,
-                       self.fccobj.getObjectID().collectionID)
+##        self.fccobj = fccobj
+##        self._objid = (self.fccobj.getObjectID().index,
+##                       self.fccobj.getObjectID().collectionID)
+        self._objid = (fccobj.getObjectID().index,
+                       fccobj.getObjectID().collectionID)
+        
 
     def __eq__(self, other):
         '''Returns true if the internal FCC pod is the same,
