@@ -24,17 +24,25 @@ class PFBlockBuilder(BlockBuilder):
         
         Usage example:
 
-            builder = PFBlockBuilder(pfevent, ruler)
+            builder = PFBlockBuilder(papasdata, ruler)
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self,  pfevent, ruler, history_nodes = None):
+    def __init__(self,  papasdata, ruler):
         '''
-        pfevent is event structure inside which we find
+       
             tracks is a dictionary : {id1:track1, id2:track2, ...}
-            ecal is a dictionary : {id1:ecal1, id2:ecal2, ...}
-            hcal is a dictionary : {id1:hcal1, id2:hcal2, ...}
+            ecal_clusters is a dictionary : {id1:ecal1, id2:ecal2, ...}
+            hcal_clusters is a dictionary : {id1:hcal1, id2:hcal2, ...}
             get_object() which allows a cluster or track to be found from its id
+            history is a dictionary of Nodes : { id:Node1, id: Node2 etc}
+                containing the simulation history 
+                A Node contains the id of an item (cluster, track, particle etc)
+                and says what it is linked to (its parents and children)
+                if hist_nodes is provided it will be added to with the new block information
+                If hist_nodes is not provided one will be created, it will contain nodes
+                corresponding to each of the tracks, ecal etc and also for the blocks that
+                are created by the event block builder.
         ruler is something that measures distance between two objects eg track and hcal
             (see Distance class for example)
             it should take the two objects as arguments and return a tuple
@@ -42,26 +50,18 @@ class PFBlockBuilder(BlockBuilder):
                 link_type = 'ecal_ecal', 'ecal_track' etc
                 is_link = true/false
                 distance = float
-        history_nodes is an optional dictionary of Nodes : { id:Node1, id: Node2 etc}
-            it could for example contain the simulation history nodes
-            A Node contains the id of an item (cluster, track, particle etc)
-            and says what it is linked to (its parents and children)
-            if hist_nodes is provided it will be added to with the new block information
-            If hist_nodes is not provided one will be created, it will contain nodes
-            corresponding to each of the tracks, ecal etc and also for the blocks that
-            are created by the event block builder.
         '''
         
         #given a unique id this can return the underying object
-        self.pfevent = pfevent
+        self.papasdata = papasdata
 
         # collate all the ids of tracks and clusters and, if needed, make history nodes
         uniqueids = []
-        uniqueids = list(pfevent.event.tracks.keys()) + list(pfevent.event.ecal_clusters.keys()) + list(pfevent.event.hcal_clusters.keys()) 
+        uniqueids = list(papasdata.tracks.keys()) + list(papasdata.ecal_clusters.keys()) + list(papasdata.hcal_clusters.keys()) 
         uniqueids = sorted(uniqueids)
 
-        self.history_nodes = history_nodes
-        if history_nodes is None:
+        self.history_nodes = papasdata.history
+        if self.history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
@@ -75,7 +75,7 @@ class PFBlockBuilder(BlockBuilder):
                     edges[edge.key] = edge
 
         #use the underlying BlockBuilder to construct the blocks        
-        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes, pfevent)
+        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes)
 
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items
@@ -90,8 +90,8 @@ class PFBlockBuilder(BlockBuilder):
             objects. 
         '''
         #find the original items and pass to the ruler to get the distance info
-        obj1 = self.pfevent.get_object(id1)
-        obj2 = self.pfevent.get_object(id2)
+        obj1 = self.papasdata.get_object(id1)
+        obj2 = self.papasdata.get_object(id2)
         link_type, is_linked, distance = ruler(obj1,obj2) #some redundancy in link_type as both distance and Edge make link_type
                                                           #not sure which to get rid of
         

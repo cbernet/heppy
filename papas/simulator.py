@@ -1,7 +1,7 @@
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
-from heppy.papas.pfalgo.pfinput import  PFInput
+from heppy.papas.data.papasdata import  PapasData
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 
@@ -305,7 +305,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             self.ptcs.append(ptc)
             
             #self.smeared =  smeared
-            self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)        
+        self.papasdata = PapasData(self.ptcs) 
 
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)

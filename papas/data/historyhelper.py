@@ -1,28 +1,19 @@
 from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
+#from heppy.papas.data.papasdata import PapasData
 import pydot
 import matplotlib
 
 class History(object):
     '''   
        Object to assist with printing and reconstructing histories
-       may need to be merged with pfevent
        only just started ...
     '''    
-    def __init__(self, history_nodes, pfevent):
+    def __init__(self, papasdata):
         #this information information needed to be able to unravel information based on a unique identifier
-        self.history_nodes = history_nodes
-        self.pfevent = pfevent
+        self.history_nodes = papasdata.history
+        self.papasdata = papasdata
                   
-        
-        
-    #def summary_string_id(self, rootid, direction="undirected"):
-        ##find everything that is linked to this id
-        ##and write a summary of what is found
-        ##the BFS search returns a list of the ids that are  connected to the id of interest
-        #BFS = BreadthFirstSearchIterative(self.history_nodes[rootid], direction)
-        #idstring=  "history connected to node:",  self.pfevent.get_object(rootid).__str__()
-        #return idstring + "\n" + self.summary_string_ids([ v.get_value() for v in BFS.result])    
     
     def summary_string_ids(self, nodeids):
         #details all the components in the block
@@ -58,7 +49,7 @@ class History(object):
         rec_particles = {}
         blocks = {}       
         for id in ids:
-            obj = self.pfevent.get_object(id)
+            obj = self.papasdata.get_object(id)
             if Identifier.is_block(id):
                 blocks[id] = obj            
             elif Identifier.is_track(id):
@@ -133,7 +124,7 @@ class History(object):
 
     def object(self, node):
         z = node.get_value()
-        return self.pfevent.get_object(z) 
+        return self.papasdata.get_object(z) 
               
     def graph_items (self, ids):
         #DAG plot for set of ids
@@ -141,7 +132,7 @@ class History(object):
         #   ids: list of uniqueids
         graph = pydot.Dot(graph_type='digraph')   
         self._graph_ids(ids, graph)
-        namestring='event_' + str(self.pfevent.event.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
+        namestring='event_' + str(self.papasdata.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
     
     def graph_event(self, nodeids): 
@@ -150,7 +141,7 @@ class History(object):
          #   ids: list of uniqueids  for full event      
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(nodeids, graph)
-        namestring = 'event_' + str(self.pfevent.event.iEv)  + '_dag.png'
+        namestring = 'event_' + str(self.papasdata.iEv)  + '_dag.png'
         graph.write_png(namestring)    
         
     def _graph_add_block (self,graph, graphnodes, pfblock):
@@ -191,7 +182,7 @@ class History(object):
         graph.Draw()
         can.Draw()
         gPad.Update()
-        gPad.SaveAs('event_' + str(self.pfevent.event.iEv) + '_root_dag.png')   
+        gPad.SaveAs('event_' + str(self.papasdata.iEv) + '_root_dag.png')   
         pass
     
     def graph_items_root (self, ids):
@@ -203,7 +194,7 @@ class History(object):
         graph.Draw()
         can.Draw()
         gPad.Update()
-        gPad.SaveAs('event_' + str(self.pfevent.event.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
+        gPad.SaveAs('event_' + str(self.papasdata.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
         
     
     def _graph_ids_root (self, nodeids,graph ):  

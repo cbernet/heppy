@@ -2,8 +2,6 @@ import itertools
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.data.identifier import Identifier
 
-#todo remove pfevent from this class once we have written a helper class to print the block and its elements
-
 class PFBlock(object):
     
     
@@ -14,40 +12,33 @@ class PFBlock(object):
      
      uniqueid : the block's unique id generated from Identifier class
      element_uniqueids : list of uniqueids of its elements
-     pfevent : contains the tracks and clusters and a get_object method to allow access to the
+     papasdata : contains the tracks and clusters and a get_object method to allow access to the
                underlying objects given their uniqueid
      edges : Dictionary of all the edge cominations in the block dict{edgekey : Edge} 
              use  get_edge(id1,id2) to find an edge
      is_active : bool true/false, set to false if the block is subsequently subdivided
      
      Usage:
-            block = PFBlock(element_ids,  edges, pfevent) 
+            block = PFBlock(element_ids,  edges) 
             for uid in block.element_uniqueids:
-                 print pfevent.get_object(uid).__str__() + "\n"
+                 print papasdata.get_object(uid).__str__() + "\n"
             
      '''
     
     temp_block_count = 0 #sequential numbering of blocks, not essential but helpful for debugging
     
-    def __init__(self, element_ids, edges, pfevent): 
+    def __init__(self, element_ids, edges): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
             edges: is a dictionary of edges, it must contain at least all needed edges. It is not a problem if it contains
                    additional edges as only the ones needed will be extracted
-            pfevent: allows access to the underlying elements given a uniqueid 
-                     must provide a get_object function
+           
         '''
         #make a uniqueid for this block
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK) 
         self.is_active = True # if a block is subsequently split it will be deactivated
         
-        #allow access to the underlying objects
-        self.pfevent=pfevent        
-        
-        #order the elements by element type (ecal, hcal, track) and then by energy
-        #this is a bit yucky but needed to make sure the order returned is consistent
-
-        #maybe should live outside of this class
+        #todo energy via identifier
         #comment out energy for now as not available C++
         self.element_uniqueids = sorted(element_ids, key = lambda  x: Identifier.type_short_code(x)) #,-self.pfevent.get_object(x).energy) )
 
@@ -122,44 +113,45 @@ class PFBlock(object):
                         linked_ids.append(edge.id1)
             return sorted(linked_ids)
     
-    def sort_distance_energy( self, uniqueid, otherids):
-        ''' returns a list of the otherids sorted by distance to uniqueid and by decreasing energies
+    #TODO with id
+    #def sort_distance_energy( self, uniqueid, otherids):
+        #''' returns a list of the otherids sorted by distance to uniqueid and by decreasing energies
             
-            eg if uniqueid is an hcal
-               and other ids are  track1 energy = 18, dist to hcal = 0.1
-                                  track2 energy = 9,  dist to hcal = 0
-                                  track3 energy = 4,  dist to hcal = 0
-            this will return {track2, track3, track1}
+            #eg if uniqueid is an hcal
+               #and other ids are  track1 energy = 18, dist to hcal = 0.1
+                                  #track2 energy = 9,  dist to hcal = 0
+                                  #track3 energy = 4,  dist to hcal = 0
+            #this will return {track2, track3, track1}
             
             
-            '''
-        #this is ""needed"" for particle reconstruction
-        #this is a bit yucky and may only be a  temporary work around
-        # maybe should live outside of this class        
-        return sorted(otherids, key = lambda x: (self.get_edge(x,uniqueid).distance is None, 
-                                                 self.get_edge(x,uniqueid).distance, 
-                                                 -self.pfevent.get_object(x).energy))
+            #'''
+        ##this is ""needed"" for particle reconstruction
+        ##this is a bit yucky and may only be a  temporary work around
+        ## maybe should live outside of this class        
+        #return sorted(otherids, key = lambda x: (self.get_edge(x,uniqueid).distance is None, 
+                                                 #self.get_edge(x,uniqueid).distance, 
+                                                 #-self.pfevent.get_object(x).energy))
     
-    def elements_string(self): 
-        ''' Construct a string descrip of each of the elements in a block:-
-        The elements are given a short name E/H/T according to ecal/hcal/track
-        and then sequential numbering starting from 0, this naming is also used to index the 
-        matrix of distances. The full unique id is also given.
-        For example:-
-        elements: {
-        E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
-        H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
-        T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
-        }
-        '''
-        count = 0
-        elemdetails = "\n      elements: {\n"  
-        for uid in self.element_uniqueids:
-            elemdetails += "      {shortname}{count}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
-                                                                           count=count,
-                                                                          strdescrip=self.pfevent.get_object(uid).__str__() )
-            count = count + 1            
-        return elemdetails + "      }\n"
+    #def elements_string(self): 
+        #''' Construct a string descrip of each of the elements in a block:-
+        #The elements are given a short name E/H/T according to ecal/hcal/track
+        #and then sequential numbering starting from 0, this naming is also used to index the 
+        #matrix of distances. The full unique id is also given.
+        #For example:-
+        #elements: {
+        #E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
+        #H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
+        #T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
+        #}
+        #'''
+        #count = 0
+        #elemdetails = "\n      elements: {\n"  
+        #for uid in self.element_uniqueids:
+            #elemdetails += "      {shortname}{count}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
+                                                                           #count=count,
+                                                                          #strdescrip=self.pfevent.get_object(uid).__str__() )
+            #count = count + 1            
+        #return elemdetails + "      }\n"
     
     def short_elements_string(self):
         ''' Construct a string descrip of each of the elements in a block:-

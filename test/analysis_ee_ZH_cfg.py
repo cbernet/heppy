@@ -80,14 +80,6 @@ papas = cfg.Analyzer(
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    sim_ecals='sim_ecal_clusters',
-    sim_hcals='sim_ecal_clusters',
-    smeared_ecals = 'smeared_ecal_clusters',
-    smeared_hcals = 'smeared_hcal_clusters',    
-    merged_ecals = 'merged_ecal_clusters',
-    merged_hcals = 'merged_hcal_clusters',
-    tracks = 'tracks', 
-    output_history = 'history_nodes', 
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
@@ -118,7 +110,7 @@ pfreconstruct = cfg.Analyzer(
     output_particles_list = 'particles_list'
 )
 
-from heppy.analyzers.PapasHistory import PapasHistory
+from heppy.analyzers.PapasHistoryExplorer import PapasHistory
 papashistory = cfg.Analyzer(
     PapasHistory,
     instance_label = 'papas_history', 

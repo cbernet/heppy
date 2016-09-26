@@ -1,7 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 import logging
 import heppy.utils.pdebug as pdebugging
-from heppy.papas.data.pfevent import PFEvent
 import sys
 
 

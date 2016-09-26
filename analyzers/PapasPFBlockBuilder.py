@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-from heppy.papas.data.pfevent import PFEvent
+from heppy.papas.data.papasdata import PapasData
 from heppy.papas.pfalgo.distance  import Distance
 
 
@@ -30,29 +30,18 @@ class PapasPFBlockBuilder(Analyzer):
     def __init__(self, *args, **kwargs):
         super(PapasPFBlockBuilder, self).__init__(*args, **kwargs)
         
-        self.tracksname = self.cfg_ana.tracks;    
-        self.ecalsname = self.cfg_ana.ecals; 
-        self.hcalsname = self.cfg_ana.hcals;
-        self.blocksname = self.cfg_ana.output_blocks;
-        self.historyname = self.cfg_ana.history;
-        #self.outhistoryname = self.cfg_ana.outhistory;
         
                 
     def process(self, event):
         
-        pfevent=PFEvent(event) 
+        papasdata = event.papasdata
         
         distance = Distance()
         
-        history_nodes =  None
-        if hasattr(event, self.historyname) :
-            history_nodes = getattr(event,  self.historyname)
-        else:
-            pass
-        blockbuilder = PFBlockBuilder(pfevent, distance, history_nodes)
+        blockbuilder = PFBlockBuilder(papasdata, distance)
         #print blockbuilder
             
-        setattr(event, "blocks", blockbuilder.blocks)
+        setattr(papasdata, "blocks", blockbuilder.blocks)
         #setattr(event, self.outhistoryname, blockbuilder.history_nodes)
         
         

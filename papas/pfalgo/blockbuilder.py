@@ -3,8 +3,6 @@ from heppy.papas.pfalgo.pfblock import PFBlock
 from heppy.papas.graphtools.graphbuilder import GraphBuilder
 from heppy.utils.pdebug import pdebugger
 
-#todo remove pfevent from this class once we have written a helper class to print the block and its elements
-
         
 class BlockBuilder(GraphBuilder):
     ''' BlockBuilder takes a set of identifiers and a dict of associated edges which have distance and link info
@@ -22,8 +20,6 @@ class BlockBuilder(GraphBuilder):
         history_nodes : dictionary of nodes that describe which elements are parents of which blocks 
                         if a history_nodes tree is passed in then 
                         the additional history will be added into the exisiting history 
-        pfevent : the particle flow event object which is needed so that the underlying object can 
-                be retrieved
         nodes : a set of nodes corresponding to the unique ids which is used to construct a graph
                 and thus find distinct blocks
         blocks: the resulting blocks
@@ -31,26 +27,21 @@ class BlockBuilder(GraphBuilder):
         
         Usage example:
 
-            builder = BlockBuilder(ids, edges, history_nodes, pfevent)
+            builder = BlockBuilder(ids, edges, history)
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self, ids, edges, history_nodes = None, pfevent = None):
+    def __init__(self, ids, edges, history = None):
         '''
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
                 an edge records the distance/link between two ids
-        history_nodes : optional dictionary of nodes that describe which elements are parents of which blocks 
-                        if a history_nodes tree is passed in then 
-                        the additional history will be added into the exisiting history 
-        pfevent : particle flow event object  needed so that the underlying object can 
-                be retrieved
+        papasdata : set of dicts that can be accessed via id
        
         '''
         
         #given a unique id this can return the underying object
-        self.pfevent = pfevent
-        self.history_nodes = history_nodes
+        self.history_nodes = history
         
         super(BlockBuilder, self).__init__(ids, edges)       
 
@@ -68,7 +59,7 @@ class BlockBuilder(GraphBuilder):
         ''' 
         for subgraph in self.subgraphs:
             #make the block
-            block = PFBlock(subgraph,  self.edges, self.pfevent)        
+            block = PFBlock(subgraph,  self.edges)        
             pdebugger.info("Made {}".format(block))
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] = block        
