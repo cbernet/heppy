@@ -1,20 +1,13 @@
 from heppy.framework.analyzer import Analyzer
-#from heppy.particles.fcc.particle import Particle 
+from heppy.papas.papas_exceptions import PropagationError, SimulationError
 
 import math
 from heppy.papas.data.papasdata import PapasData
 from heppy.papas.simulator import Simulator
 
 from heppy.papas.pfobjects import Particle as PFSimParticle
-#from heppy.papas.toyevents import particles
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
-#from heppy.display.pfobjects import GTrajectories
-#from heppy.papas.pfalgo.distance  import Distance
-
-
-#from heppy.papas.data.comparer import ClusterComparer, TrackComparer
-#from ROOT import TLorentzVector, TVector3
 
 
 #todo following Alices merge and reconstruction work

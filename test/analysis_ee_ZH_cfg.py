@@ -79,7 +79,7 @@ papas = cfg.Analyzer(
     instance_label = 'papas',
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
-    sim_particles = 'sim_particles',
+    sim_particles = 'papas_sim_particles',
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
@@ -93,8 +93,8 @@ pfblocks = cfg.Analyzer(
     tracks = 'tracks', 
     ecals = 'ecal_clusters', 
     hcals = 'hcal_clusters', 
-    history = 'history_nodes',  
-    output_blocks = 'reconstruction_blocks'
+    #history = 'history_nodes',  
+    #output_blocks = 'reconstruction_blocks'
 )
 
 
@@ -104,19 +104,69 @@ pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
     instance_label = 'papas_PFreconstruction', 
     detector = CMS(),
-    input_blocks = 'reconstruction_blocks',
-    history = 'history_nodes',     
-    output_particles_dict = 'particles_dict', 
-    output_particles_list = 'particles_list'
+    #input_blocks = 'reconstruction_blocks',
+    #history = 'history_nodes',     
+    #output_particles_dict = 'particles_dict', 
+    output_particles_list = 'papas_PFreconstruction_particles_list'
 )
 
 from heppy.analyzers.PapasHistoryExplorer import PapasHistory
 papashistory = cfg.Analyzer(
     PapasHistory,
+    is_display = False,
     instance_label = 'papas_history', 
     detector = CMS(),
     history = 'history'
 )
+
+
+
+
+
+
+# Use a Filter to select leptons from the output of papas simulation.
+# Currently, we're treating electrons and muons transparently.
+# we could use two different instances for the Filter module
+# to get separate collections of electrons and muons
+# help(Filter) for more information
+from heppy.analyzers.Filter import Filter
+select_leptons = cfg.Analyzer(
+    Filter,
+    'sel_all_leptons',
+    output = 'sim_leptons',
+    input_objects = 'papas_sim_particles',
+    filter_func = lambda ptc: abs(ptc.pdgid()) in [11, 13]
+)
+
+# Applying a simple resolution and efficiency model to electrons and muons.
+# Indeed, papas simply copies generated electrons and muons
+# from its input gen particle collection to its output reconstructed
+# particle collection.
+# Setting up the electron and muon models is left to the user,
+# and the LeptonSmearer is just an example
+# help(LeptonSmearer) for more information
+from heppy.analyzers.examples.zh.LeptonSmearer import LeptonSmearer
+smear_leptons = cfg.Analyzer(
+    LeptonSmearer,
+    'smear_leptons',
+    output = 'smeared_leptons',
+    input_objects = 'sim_leptons',
+)
+
+
+#merge smeared leptons with the reconstructed particles
+from heppy.analyzers.Merger import Merger
+from heppy.particles.p4 import P4
+
+merge_particles = cfg.Analyzer(
+    Merger,
+    instance_label = 'merge_particles', 
+    inputA = 'papas_PFreconstruction_particles_list',
+    inputB = 'smeared_leptons',
+    output = 'rec_particles',
+    sort_key = P4.sort_key
+)
+
 
 
 
@@ -276,19 +326,22 @@ sequence = cfg.Sequence(
     papas,
     pfblocks,
     pfreconstruct,
-    papashistory,     
-    #leptons_true,
-    #iso_leptons,
-    #sel_iso_leptons,
-    #zeds,
-    #recoil,
-    #missing_energy,
-    #particles_not_zed,
-    #jets,
-    #btag,
-    #higgses,
-    #selection, 
-    #tree
+    select_leptons,
+        smear_leptons, 
+        merge_particles,     
+    #papashistory,     
+    leptons_true,
+    iso_leptons,
+    sel_iso_leptons,
+    zeds,
+    recoil,
+    missing_energy,
+    particles_not_zed,
+    jets,
+    btag,
+    higgses,
+    selection, 
+    tree
 )
 
 # Specifics to read FCC events 

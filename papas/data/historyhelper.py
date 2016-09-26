@@ -132,7 +132,7 @@ class History(object):
         #   ids: list of uniqueids
         graph = pydot.Dot(graph_type='digraph')   
         self._graph_ids(ids, graph)
-        namestring='event_' + str(self.papasdata.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
+        namestring='graphs/event_' + str(self.papasdata.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
     
     def graph_event(self, nodeids): 
@@ -141,7 +141,7 @@ class History(object):
          #   ids: list of uniqueids  for full event      
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(nodeids, graph)
-        namestring = 'event_' + str(self.papasdata.iEv)  + '_dag.png'
+        namestring = 'graphs/event_' + str(self.papasdata.iEv)  + '_dag.png'
         graph.write_png(namestring)    
         
     def _graph_add_block (self,graph, graphnodes, pfblock):

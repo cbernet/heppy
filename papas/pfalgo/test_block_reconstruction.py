@@ -3,7 +3,6 @@ from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative,DAGFloo
 from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-#from heppy.papas.pfalgo.pfblockbuilder import BlockSplitter
 from heppy.papas.pfalgo.pfblock import PFBlock as realPFBlock
 
 
@@ -89,7 +88,7 @@ class Event(object):
         self.ecal_clusters = dict() 
         self.hcal_clusters = dict()
         self.tracks = dict()         #tracks 
-        self.history_nodes = dict()  #Nodes used in simulation/reconstruction (contain uniqueid)
+        self.history = dict()  #Nodes used in simulation/reconstruction (contain uniqueid)
         self.nodes = dict()          #Contains links/ distances between nodes
         self.blocks = dict()         #Blocks to be made for use in reconstuction
         self.ruler = distance
@@ -153,31 +152,31 @@ class Simulator(object):
         clust = Cluster(id,'ecal_in')# make a cluster
         uniqueid = clust.uniqueid 
         self.event.ecal_clusters[uniqueid] = clust     # add into the collection of clusters
-        self.event.history_nodes[uniqueid] = Node(uniqueid)  #add into the collection of History Nodes
+        self.event.history[uniqueid] = Node(uniqueid)  #add into the collection of History Nodes
                  
     def add_hcal_cluster(self, id):
         clust = Cluster(id,'hcal_in')
         uniqueid = clust.uniqueid 
         self.event.hcal_clusters[uniqueid] = clust
-        self.event.history_nodes[uniqueid] = Node(uniqueid)
+        self.event.history[uniqueid] = Node(uniqueid)
         
     def add_track(self, id):
         track = Track(id)
         uniqueid = track.uniqueid 
         self.event.tracks[uniqueid] =  track
-        self.event.history_nodes[uniqueid] =  Node(uniqueid) 
+        self.event.history[uniqueid] =  Node(uniqueid) 
         
     def add_particle(self, id, pdgid):
         particle = Particle(id,pdgid)
         uniqueid = particle.uniqueid
         self.event.sim_particles[uniqueid] =  particle
-        self.event.history_nodes[uniqueid] =  Node(uniqueid) 
+        self.event.history[uniqueid] =  Node(uniqueid) 
     
     def UID(self, id): #Takes the test case short id and find the unique id
         ''' id is the short id of the element
             this returns the corresponding long unique id
         '''
-        for h in self.event.history_nodes :
+        for h in self.event.history :
             obj = self.event.get_object(h)
             if hasattr(obj, "id"):
                 if obj.id  == id :
@@ -188,7 +187,7 @@ class Simulator(object):
         ''' uniqueid is the long unique id of the element
             this returns the corresponding short integer id
         '''
-        for h in self.event.history_nodes :
+        for h in self.event.history :
             obj = self.event.get_object(h)
             if hasattr(obj, "id"):
                 if obj.uniqueid  == uniqueid :
@@ -199,7 +198,7 @@ class Simulator(object):
         ''' create a parent child link in the history nodes between two elements
             uniqueid1, uniqueid2 are the elements unique ids
         '''
-        self.event.history_nodes[uniqueid1].add_child(self.event.history_nodes[uniqueid2])
+        self.event.history[uniqueid1].add_child(self.event.history[uniqueid2])
         
 
     
@@ -266,9 +265,9 @@ class Reconstructor(object):
         self.event.reconstructed_particles[particle.uniqueid] =  particle
         #Now create the history node and links
         particle_node = Node(particle.uniqueid)
-        self.event.history_nodes[particle.uniqueid] =  particle_node
+        self.event.history[particle.uniqueid] =  particle_node
         for parent in parents :
-            self.event.history_nodes[parent].add_child(particle_node)
+            self.event.history[parent].add_child(particle_node)
         
     def new_id(self):
         #new short id for the next reconstucted particle
@@ -320,10 +319,10 @@ class TestBlockReconstruction(unittest.TestCase):
         sim  =  Simulator(event)
         event=sim.event
         
-        pfblocker = PFBlockBuilder( event, distance, event.history_nodes)
+        pfblocker = PFBlockBuilder( event, distance)
         
         event.blocks = pfblocker.blocks
-        #event.history_nodes = pfblocker.history_nodes
+        #event.history = pfblocker.history
         
         
         ##test block splitting
@@ -336,7 +335,7 @@ class TestBlockReconstruction(unittest.TestCase):
                 #unlink.append(b.edges[Edge.make_key(ids[0], ids[2])])
                 #unlink.append(b.edges[Edge.make_key(ids[0], ids[1])])
                 #print unlink
-                #splitter=BlockSplitter(b,unlink,event.history_nodes)
+                #splitter=BlockSplitter(b,unlink,event.history)
                 #print splitter.blocks
         
         #blocksplitter=BlockSplitter()
@@ -354,7 +353,7 @@ class TestBlockReconstruction(unittest.TestCase):
         
         #(1) what is connected to the the HCAL CLUSTER
         ids = []
-        BFS  =  BreadthFirstSearchIterative(event.history_nodes[nodeuid],"undirected")
+        BFS  =  BreadthFirstSearchIterative(event.history[nodeuid],"undirected")
         for n in BFS.result :
             ids.append(n.get_value())
          
@@ -391,7 +390,7 @@ class TestBlockReconstruction(unittest.TestCase):
         
         for rp in event.reconstructed_particles :
             ids=[]
-            BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"parents")
+            BFS  =  BreadthFirstSearchIterative(event.history[rp],"parents")
             #print "Rec particle: ", event.reconstructed_particles[rp], " from "            
                   
             for n in BFS.result :

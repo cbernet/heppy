@@ -21,8 +21,8 @@ class PapasHistory(Analyzer):
         self.detector = self.cfg_ana.detector
         
         #TODO self.is_display = self.cfg_ana.display
-        self.is_display = True
-        if self.is_display:
+        self.is_display = False
+        if self.cfg_ana.is_display:
             self.init_display()        
     
     def init_display(self):
@@ -122,12 +122,12 @@ class PapasHistory(Analyzer):
             self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', False), layer=2) 
             self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', True), layer=1) 
             self.display.draw()        
-            gPad.SaveAs('event_' + str(event.iEv) + '_rec.png') 
+            gPad.SaveAs('graphs/event_' + str(event.iEv) + '_rec.png') 
             self.display.clear() 
             self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', True), layer=1) 
             self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', False), layer=2) 
             self.display.draw()       
-            gPad.SaveAs('event_' + str(event.iEv) + '_sim.png') 
+            gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim.png') 
             self.display.clear()             
             
             #display event display for each of the history blocks 
@@ -138,12 +138,12 @@ class PapasHistory(Analyzer):
                     self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'rec_particles', False), layer=2) 
                     self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'sim_particles', True), layer=1) 
                     self.display.draw()        
-                    gPad.SaveAs('event_' + str(event.iEv)+ '_item_' + Identifier.pretty(s[0]) + '_rec.png') 
+                    gPad.SaveAs('graphs/event_' + str(event.iEv)+ '_item_' + Identifier.pretty(s[0]) + '_rec.png') 
                     self.display.clear()                
             
                     self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'rec_particles', True), layer=1) 
                     self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'sim_particles', False), layer=2) 
                     self.display.draw()        
-                    gPad.SaveAs('event_' + str(event.iEv) + '_item_' +  Identifier.pretty(s[0]) + '_sim.png') 
+                    gPad.SaveAs('graphs/event_' + str(event.iEv) + '_item_' +  Identifier.pretty(s[0]) + '_sim.png') 
                     self.display.clear()                                     
         pass         

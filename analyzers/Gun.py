@@ -1,6 +1,8 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pdt import particle_data
-from heppy.papas.pfobjects import Particle 
+from heppy.papas.pfobjects import Particle #so that Gun can be used in papas (needs uniqueid)
+from ROOT import TVector3
+#from heppy.particles.tlv.particle import Particle 
 
 import math
 import heppy.statistics.rrandom as random
@@ -16,7 +18,8 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
     sintheta = math.sin(math.pi/2. - theta)
     tantheta = sintheta / costheta
     cosphi = math.cos(phi)
-    sinphi = math.sin(phi)        
+    sinphi = math.sin(phi)    
+    vertex = TVector3(0,0,0)
     if flat_pt:
         pt = energy
         momentum = pt / sintheta
@@ -27,7 +30,8 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    return Particle(pdgid, charge, tlv) 
+    #return Particle(pdgid, vertex, charge, tlv) #tlv
+    return Particle(tlv, vertex, charge, pdgid) #pfobjectrs
     
 
 class Gun(Analyzer):
