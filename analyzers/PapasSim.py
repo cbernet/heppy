@@ -70,7 +70,7 @@ class PapasSim(Analyzer):
         super(PapasSim, self).__init__(*args, **kwargs)
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector, self.mainLogger)
-        self.simname = self.cfg_ana.sim_particles
+        self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
 
         self.is_display = self.cfg_ana.display
         if self.is_display:

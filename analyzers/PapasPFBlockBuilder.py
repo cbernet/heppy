@@ -42,7 +42,5 @@ class PapasPFBlockBuilder(Analyzer):
         #print blockbuilder
             
         setattr(papasdata, "blocks", blockbuilder.blocks)
-        #setattr(event, self.outhistoryname, blockbuilder.history_nodes)
-        
         
         

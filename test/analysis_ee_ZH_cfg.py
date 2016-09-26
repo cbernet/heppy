@@ -79,7 +79,7 @@ papas = cfg.Analyzer(
     instance_label = 'papas',
     detector = CMS(),
     gen_particles = 'gen_particles_stable',
-    sim_particles = 'papas_sim_particles',
+    sim_particles = 'sim_particles',
     display_filter_func = lambda ptc: ptc.e()>1.,
     display = False,
     verbose = True
@@ -90,9 +90,9 @@ papas = cfg.Analyzer(
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
-    tracks = 'tracks', 
-    ecals = 'ecal_clusters', 
-    hcals = 'hcal_clusters', 
+    #tracks = 'tracks', 
+    #ecals = 'ecal_clusters', 
+    #hcals = 'hcal_clusters', 
     #history = 'history_nodes',  
     #output_blocks = 'reconstruction_blocks'
 )
@@ -107,7 +107,7 @@ pfreconstruct = cfg.Analyzer(
     #input_blocks = 'reconstruction_blocks',
     #history = 'history_nodes',     
     #output_particles_dict = 'particles_dict', 
-    output_particles_list = 'papas_PFreconstruction_particles_list'
+    output_particles_list = 'particles_list'
 )
 
 from heppy.analyzers.PapasHistoryExplorer import PapasHistory

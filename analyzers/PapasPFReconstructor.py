@@ -29,7 +29,7 @@ class PapasPFReconstructor(Analyzer):
         super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
         self.detector = self.cfg_ana.detector
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
-        self.output_particleslistname =  self.cfg_ana.output_particles_list
+        self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
            reconstructed paricles and updated history_nodes to the event object
