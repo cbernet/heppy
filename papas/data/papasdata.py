@@ -110,44 +110,48 @@ class PapasData(object):
 
 
     def get_object(self, uniqueid):
-            ''' given a uniqueid return the underlying obejct
-            '''
-            type = Identifier.get_type(uniqueid)
-            if type == Identifier.PFOBJECTTYPE.TRACK:
-                if uniqueid in self.tracks :
-                    return self.tracks[uniqueid] 
-                elif uniqueid in self.gen_tracks :
-                    return self.gen_tracks[uniqueid] 
-                else:
-                    assert(False)            
-            elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
-                if uniqueid in self.ecal_clusters:            
-                    return self.ecal_clusters[uniqueid] 
-                elif uniqueid in self.smeared_ecals:            
-                    return self.smeared_ecals[uniqueid]             
-                elif uniqueid in self.gen_ecals:            
-                    return self.gen_ecals[uniqueid] 
-                else:
-                    assert(False)            
-            elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
-                if uniqueid in self.hcal_clusters:            
-                    return self.hcal_clusters[uniqueid] 
-                elif uniqueid in self.smeared_hcals:            
-                    return self.smeared_hcals[uniqueid]             
-                elif uniqueid in self.gen_hcals:            
-                    return self.gen_hcals[uniqueid] 
-                else:
-                    assert(False)            
-            elif type == Identifier.PFOBJECTTYPE.PARTICLE:
-                return self.gen_stable_particles[uniqueid] 
-            elif type == Identifier.PFOBJECTTYPE.SIMPARTICLE:
-                return self.sim_particles[uniqueid]          
-            elif type == Identifier.PFOBJECTTYPE.RECPARTICLE:
-                return self.rec_particles[uniqueid]               
-            elif type == Identifier.PFOBJECTTYPE.BLOCK:
-                return self.blocks[uniqueid]               
+        ''' given a uniqueid return the underlying obejct
+        '''
+        type = Identifier.get_type(uniqueid)
+        subtype = Identifier.get_subtype(uniqueid)
+        if type == Identifier.PFOBJECTTYPE.TRACK:
+            if uniqueid in self.tracks :
+                return self.tracks[uniqueid] 
+            elif uniqueid in self.gen_tracks :
+                return self.gen_tracks[uniqueid] 
             else:
-                assert(False)   
+                assert(False)            
+        elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
+            if uniqueid in self.ecal_clusters:            
+                return self.ecal_clusters[uniqueid] 
+            elif uniqueid in self.smeared_ecals:            
+                return self.smeared_ecals[uniqueid]             
+            elif uniqueid in self.gen_ecals:            
+                return self.gen_ecals[uniqueid] 
+            else:
+                assert(False)            
+        elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
+            if uniqueid in self.hcal_clusters:            
+                return self.hcal_clusters[uniqueid] 
+            elif uniqueid in self.smeared_hcals:            
+                return self.smeared_hcals[uniqueid]             
+            elif uniqueid in self.gen_hcals:            
+                return self.gen_hcals[uniqueid] 
+            else:
+                assert(False)            
+        elif type == Identifier.PFOBJECTTYPE.PARTICLE:
+            if subtype == 'g':            
+                return self.gen_stable_particles[uniqueid] 
+            elif uniqueid in self.sim_particles:            
+                return self.sim_particles[uniqueid]             
+            elif uniqueid in self.rec_particles:            
+                return self.rec_particles[uniqueid] 
+            else:  
+                assert false
+        elif type == Identifier.PFOBJECTTYPE.BLOCK:
+            return self.blocks[uniqueid]               
+        else:
+            assert(False)   
    
    
    

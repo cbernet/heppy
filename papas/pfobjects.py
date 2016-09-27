@@ -21,14 +21,14 @@ class PFObject(object):
     block_label : label of the block the PFObject belongs to. The block label is a unique identifier for the block.
     ''' 
 
-    def __init__(self,pfobjecttype=Identifier.PFOBJECTTYPE.NONE):
+    def __init__(self,pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype ='u'):
    #def __init__(self):
         super(PFObject, self).__init__()
 
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(pfobjecttype)
+        self.uniqueid=Identifier.make_id(pfobjecttype, subtype)
         
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -62,12 +62,13 @@ class Cluster(PFObject):
     max_energy = 0.
     
     def __init__(self, energy, position, size_m, layer='ecal_in', particle=None):
-        
+        if not hasattr(self, 'subtype'):
+            self.subtype = 'g'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
         if (layer=='ecal_in') :
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype)
         elif (layer=='hcal_in') :
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype)
         else :
             assert False
         self.position = position
@@ -195,13 +196,15 @@ class Cluster(PFObject):
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
-        super(SmearedCluster, self).__init__(*args, **kwargs)
+        self.subtype = 's'
+        super(SmearedCluster, self).__init__( *args, **kwargs)
 
 class MergedCluster(Cluster):
     '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
 
     def __init__(self, mother ):
         self.mother = mother
+        self.subtype = 'm'
         super(MergedCluster, self).__init__( mother.energy, mother.position, mother._size, mother.layer, mother.particle)
         self.subclusters = [mother]  
 
@@ -228,8 +231,10 @@ class Track(PFObject):
     - path : contains the trajectory parameters and points  
     '''
     
-    def __init__(self, p3, charge, path, particle=None):
-        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK)
+    def __init__(self, p3, charge, path, particle=None, subtype = 'g'):
+        if not hasattr(self, 'subtype'):
+            self.subtype = subtype        
+        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, self.subtype)
         self.p3 = p3
         self.pt = p3.Perp()
         self.energy = p3.Mag()  #TODO clarify energy and momentum
@@ -257,15 +262,17 @@ class SmearedTrack(Track):
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
         self.path = mother.path
+        self.subtype = 's'
         super(SmearedTrack, self).__init__(*args, **kwargs)
    
         
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge,
                  pdgid=None,
-                 ParticleType=Identifier.PFOBJECTTYPE.SIMPARTICLE):
+                 subtype='s'):
+        self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.make_id(ParticleType)
+        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -343,6 +350,7 @@ class Particle(BaseParticle):
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)
+
 
 if __name__ == '__main__':
     from ROOT import TVector3

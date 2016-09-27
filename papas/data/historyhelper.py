@@ -53,30 +53,31 @@ class History(object):
             if Identifier.is_block(id):
                 blocks[id] = obj            
             elif Identifier.is_track(id):
-                if type(obj).__name__ == "Track":
+                if Identifier.get_subtype(id) == 'g':
                     gen_tracks[id] = obj  
-                if type(obj).__name__ == "SmearedTrack":
+                if Identifier.get_subtype(id) == 's':
                     tracks[id] = obj                   
             elif Identifier.is_ecal(id):
-                if type(obj).__name__ == "Cluster":
+                if Identifier.get_subtype(id) == 'g':
                     gen_ecals[id] = obj   
-                elif type(obj).__name__ == "SmearedCluster":
+                elif Identifier.get_subtype(id) ==  's':
                     smeared_ecals[id] = obj   
                 else:
                     ecals[id] = obj   
             elif Identifier.is_hcal(id):
-                if type(obj).__name__ == "Cluster":
+                if Identifier.get_subtype(id) == 'g':
                     gen_hcals[id] = obj   
-                elif type(obj).__name__ == "SmearedCluster":
-                    smeared_hcals[id] = obj    
+                elif Identifier.get_subtype(id) ==  's':
+                    smeared_hcals[id] = obj 
                 else:
                     hcals[id] = obj          
-            elif Identifier.is_rec_particle(id):
-                rec_particles[id] = obj  
             elif Identifier.is_particle(id):
-                gen_particles[id] = obj  
-            elif Identifier.is_sim_particle(id):
-                sim_particles[id] = obj           
+                if Identifier.get_subtype(id) == 'r':                
+                    rec_particles[id] = obj  
+                if Identifier.get_subtype(id) == 'g':
+                    gen_particles[id] = obj  
+                elif Identifier.get_subtype(id) == 's':
+                    sim_particles[id] = obj           
     
         linked_objects["blocks"] = blocks
         linked_objects["tracks"] = tracks
@@ -106,11 +107,11 @@ class History(object):
     
     def short(self, node):
         z = node.get_value()
-        return Identifier.type_short_code(z) 
+        return Identifier.type_code(z) 
         
     def short_info(self, node):
         obj=self.object(node)
-        return Identifier.type_short_code(obj.uniqueid) +obj.shortinfo()       
+        return Identifier.type_code(obj.uniqueid) +obj.shortinfo()       
        
     def color(self, node):
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]

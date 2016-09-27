@@ -16,9 +16,9 @@ class Cluster(object):
               layer is ecal/hcal
         '''
         if (layer == 'ecal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER)
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 'g')
         elif (layer == 'hcal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER)
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER,  'g')
         else:
             assert false
         self.layer = layer
@@ -35,7 +35,7 @@ class Track(object):
     def __init__(self, id):
         ''' id is unique integer from 1-99
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 'g')
         self.id = id
         self.layer = 'tracker'
         self.energy=0
@@ -51,7 +51,7 @@ class Particle(object):
         ''' id is unique integer from 301-399
             pdgid is particle id eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,'g')
         #print "particle: ",self.uniqueid," ",id
         self.pdgid = pdgid
         self.id = id
@@ -67,7 +67,7 @@ class ReconstructedParticle(Particle):
         ''' id is unique integer from 601-699
             pdgid is particle id eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.RECPARTICLE)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, 'r')
         self.pdgid = pdgid
         self.id = id
         
@@ -98,6 +98,7 @@ class Event(object):
         ''' given a uniqueid return the underlying obejct
         '''
         type = Identifier.get_type(uniqueid)
+        subtype = Identifier.get_subtype(uniqueid)
         if type == Identifier.PFOBJECTTYPE.TRACK:
             return self.tracks[uniqueid]       
         elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
@@ -105,11 +106,10 @@ class Event(object):
         elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
             return self.hcal_clusters[uniqueid]            
         elif type == Identifier.PFOBJECTTYPE.PARTICLE:
-            return self.sim_particles[uniqueid]   
-        elif type == Identifier.PFOBJECTTYPE.RECPARTICLE:
-            return self.reconstructed_particles[uniqueid]               
-        elif type == Identifier.PFOBJECTTYPE.BLOCK:
-            return self.blocks[uniqueid]               
+            if subtype == 'g':
+                return self.sim_particles[uniqueid]       
+            elif subtype == 'r':
+                return self.reconstructed_particles[uniqueid]  
         else:
             assert(False)   
 

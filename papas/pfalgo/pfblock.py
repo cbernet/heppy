@@ -35,7 +35,7 @@ class PFBlock(object):
            
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK) 
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, 'r') 
         self.is_active = True # if a block is subsequently split it will be deactivated
         
         #todo energy via identifier

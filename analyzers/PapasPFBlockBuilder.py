@@ -30,7 +30,6 @@ class PapasPFBlockBuilder(Analyzer):
     def __init__(self, *args, **kwargs):
         super(PapasPFBlockBuilder, self).__init__(*args, **kwargs)
         
-        
                 
     def process(self, event):
         
@@ -42,5 +41,5 @@ class PapasPFBlockBuilder(Analyzer):
         #print blockbuilder
             
         setattr(papasdata, "blocks", blockbuilder.blocks)
-        
+
         

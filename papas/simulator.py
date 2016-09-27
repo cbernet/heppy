@@ -107,6 +107,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                           cluster.layer,
                                           cluster.particle )
         pdebugger.info(str('Made {}'.format(smeared_cluster) ))
+
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             return smeared_cluster

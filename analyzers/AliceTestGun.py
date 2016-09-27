@@ -20,7 +20,7 @@ def fixed_particle(pdgid, theta, phi, energy   ):
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    return Particle(pdgid, charge, tlv, Identifier.PFOBJECTTYPE.PARTICLE) 
+    return Particle(pdgid, charge, tlv, Identifier.PFOBJECTTYPE.PARTICLE, subtype ='g') 
     
 def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
     mass, charge = particle_data[pdgid]

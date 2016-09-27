@@ -10,7 +10,7 @@ class Particle(BaseParticle, POD):
     
     def __init__(self, fccobj):
         super(Particle, self).__init__(fccobj)
-        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
+        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, 'g')
         self._charge = fccobj.Core().Charge
         self._pid = fccobj.Core().Type
         self._status = fccobj.Core().Status
