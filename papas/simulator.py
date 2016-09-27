@@ -182,7 +182,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
                                            beampipe.volume.outer,
                                            self.detector.elements['field'].magnitude)
         
-        #ajrdebug mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
+        mscat.multiple_scattering( ptc, beampipe, self.detector.elements['field'].magnitude )
             
         #re-propagate after multiple scattering in the beam pipe
         #indeed, multiple scattering is applied within the beam pipe,
@@ -305,7 +305,7 @@ cannot be extrapolated to : {det}\n'''.format( ptc = ptc,
             self.ptcs.append(ptc)
             
             #self.smeared =  smeared
-        self.papasdata = PapasData(self.ptcs) 
+        #self.papasdata = PapasData(self.ptcs) 
 
         #print "number of gen particles: ", len(ptcs)
         #print "number of smeared particles: ", len(smeared)

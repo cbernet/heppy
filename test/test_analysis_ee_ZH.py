@@ -4,7 +4,7 @@ import copy
 import os
 import shutil
 
-from analysis_ee_ZH_cfg import config  
+from analysis_ee_ZH_cfg import config
 from heppy.test.plot_ee_ZH import plot
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
