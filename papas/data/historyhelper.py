@@ -100,7 +100,6 @@ class History(object):
             self.subgraphs.append(sorted(element_ids)) 
         return self.subgraphs
           
-
     def short_name(self, node):
         z = node.get_value()
         return Identifier.pretty(z)

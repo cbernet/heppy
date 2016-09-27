@@ -3,6 +3,10 @@
     
 '''
 
+import pprint
+#import copy
+import collections 
+import fnmatch
 from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
@@ -14,6 +18,7 @@ class PapasData(object):
     - collects all smeared tracks and clusters
     - merges overlapping clusters 
     '''
+    print_nstrip = 10 # ask colin
     
     def __init__(self, ptcs):
         '''
@@ -143,15 +148,46 @@ class PapasData(object):
                 return self.blocks[uniqueid]               
             else:
                 assert(False)   
-
+   
+   
+   
+    def lines(self):
+        #copied from event.py - improvements possible
+        stripped_attrs = dict()
+        for name, value in {"tracks" : self.tracks ,
+                            "gen tracks" :self.gen_tracks ,
+                            "ecal_clusters": self.ecal_clusters ,
+                            "hcal_clusters": self.hcal_clusters ,
+                            "gen_ecals": self.gen_ecals ,
+                            "gen_hcals": self.gen_hcals ,
+                            "smeared_hcals": self.smeared_ecals ,
+                            "smeared_hcals": self.smeared_hcals ,
+                            #"history": self.history ,
+                            "sim_particles": self.sim_particles ,
+                            "gen_stable_particles": self.gen_stable_particles }.iteritems() :
+            stripped_attrs[name] = value
+        for name, value in stripped_attrs.iteritems():
+            if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
+                # taking the first 10 elements and converting to a python list 
+                # note that value could be a wrapped C++ vector
+                if isinstance(value, collections.Mapping):
+                    entries = [entry for entry in value.iteritems()]
+                    entries = entries[:self.__class__.print_nstrip]
+                    entries
+                    stripped_attrs[name] = dict(entries)
+                else:
+                    stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
+                    stripped_attrs[name].append('...')
+                    stripped_attrs[name].append(value[-1])    
+        return stripped_attrs
                 
     def __str__(self):
-        lines = ['PapasData:']
-        #TODO
-        for layer, elements in sorted(self.elements.iteritems()):
-            lines.append(tab(layer))
-            for element in elements:
-                lines.append(tab(str(element), 3))
-        return '\n'.join(lines)
-
-                
+        header = 'PapasData:'
+        
+        stripped_attrs = self.lines()
+    
+        contents = pprint.pformat(stripped_attrs, indent=4)
+        #return stripped_attrs
+        return '\n'.join([header, contents])
+        
+        

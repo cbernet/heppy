@@ -40,6 +40,7 @@ class PapasHistory(Analyzer):
         
         hist = History(event.papasdata)
         
+        
         #Colin Question2: What reconstructed particles derive from a given generated particle?
         ##eg generated charged hadron -> reconstructed photon + neutral hadron
         
