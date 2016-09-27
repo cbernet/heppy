@@ -58,6 +58,19 @@ source = cfg.Analyzer(
 
 from heppy.test.papas_cfg import papas_sequence, detector, papas
 
+
+from heppy.analyzers.PapasHistoryExplorer import PapasHistory
+#from heppy.papas.detectors.CMS import CMS
+papas_history = cfg.Analyzer(
+    PapasHistory,
+    is_display = False,
+    is_printout = False,
+    instance_label = 'papas_history', 
+    detector = detector,
+    history = 'history'
+)
+
+
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
 # we could use two different instances for the Filter module
@@ -208,7 +221,8 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     pdebug,
     source,
-    papas_sequence, 
+    papas_sequence,
+    papas_history,
     leptons_true,
     iso_leptons,
     sel_iso_leptons,

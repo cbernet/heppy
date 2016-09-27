@@ -21,8 +21,9 @@ class PapasHistory(Analyzer):
         self.detector = self.cfg_ana.detector
         
         #TODO self.is_display = self.cfg_ana.display
-        self.is_display = False
-        if self.cfg_ana.is_display:
+        self.is_display = self.cfg_ana.is_display
+        self.is_printout = self.cfg_ana.is_printout
+        if self.is_display:
             self.init_display()        
     
     def init_display(self):
