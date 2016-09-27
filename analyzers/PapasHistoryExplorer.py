@@ -1,7 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfreconstructor import PFReconstructor as PFReconstructor
 from heppy.papas.pfalgo.distance  import Distance
-from heppy.papas.data.historyhelper import History
+from heppy.papas.data.historyhelper import HistoryHelper, HistoryPlotHelper
 
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -38,8 +38,8 @@ class PapasHistory(Analyzer):
         
         #experimental for the timebeing
         
-        hist = History(event.papasdata)
-        
+        hist = HistoryHelper(event.papasdata)
+        histplot = HistoryPlotHelper(event.papasdata)
         
         #Colin Question2: What reconstructed particles derive from a given generated particle?
         ##eg generated charged hadron -> reconstructed photon + neutral hadron
@@ -98,7 +98,7 @@ class PapasHistory(Analyzer):
             linked=hist.get_linked_objects(rp.uniqueid)
             #just produce outputs for more interesting groups
             if len(linked['blocks'])>1 or len(linked['blocks'].itervalues().next().element_uniqueids)>6 :
-                hist.graph_items(linked["ids"])
+                histplot.graph_items(linked["ids"])
                 print "history connected to node:",  rp.__str__()
                 print hist.summary_string_ids(linked["ids"])
             pass
@@ -109,7 +109,7 @@ class PapasHistory(Analyzer):
             linked=hist.get_linked_object_dict(s)
             #set to prouce graphs only for big groups
             if len(s)>20 : #for example
-                hist.graph_items(s) 
+                histplot.graph_items(s) 
                 #hist.graph_items_root(s) 
                 print "Linked History Block \n" + hist.summary_string_ids(linked["ids"])
                 pass        
@@ -118,7 +118,7 @@ class PapasHistory(Analyzer):
         if self.is_display  :
             #whole event as DAG
             history=event.papasdata.history
-            hist.graph_event(history)
+            histplot.graph_event(history)
         
             #whole event as ROOT
             self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', False), layer=2) 

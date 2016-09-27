@@ -156,7 +156,7 @@ class PapasData(object):
    
    
     def lines(self):
-        #copied from event.py - improvements possible
+        #approach copied from event.py and results used in printing this as part of event - improvements likely to be needed
         stripped_attrs = dict()
         for name, value in {"tracks" : self.tracks ,
                             "gen tracks" :self.gen_tracks ,
@@ -187,11 +187,8 @@ class PapasData(object):
                 
     def __str__(self):
         header = 'PapasData:'
-        
         stripped_attrs = self.lines()
-    
         contents = pprint.pformat(stripped_attrs, indent=4)
-        #return stripped_attrs
         return '\n'.join([header, contents])
         
         

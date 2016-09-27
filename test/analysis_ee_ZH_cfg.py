@@ -63,13 +63,12 @@ from heppy.analyzers.PapasHistoryExplorer import PapasHistory
 #from heppy.papas.detectors.CMS import CMS
 papas_history = cfg.Analyzer(
     PapasHistory,
-    is_display = False,
-    is_printout = False,
+    is_display = True,
+    is_printout = False, #not implemented yet
     instance_label = 'papas_history', 
     detector = detector,
     history = 'history'
 )
-
 
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.

@@ -1,7 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfreconstructor import PFReconstructor as PFReconstructor
 from heppy.papas.pfalgo.distance  import Distance
-from heppy.papas.data.historyhelper import History
+
 
 
 class PapasPFReconstructor(Analyzer):

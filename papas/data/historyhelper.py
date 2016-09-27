@@ -1,10 +1,9 @@
 from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
-#from heppy.papas.data.papasdata import PapasData
 import pydot
-import matplotlib
+#import matplotlib
 
-class History(object):
+class HistoryHelper(object):
     '''   
        Object to assist with printing and reconstructing histories
        only just started ...
@@ -34,7 +33,6 @@ class History(object):
         return linked;
     
     def get_linked_object_dict(self, ids): #get object dict
-        
         linked_objects = {}    
         tracks = {}    
         ecals = {}    
@@ -100,7 +98,13 @@ class History(object):
             element_ids = [node.get_value() for node in subgraphlist]            
             self.subgraphs.append(sorted(element_ids)) 
         return self.subgraphs
-          
+ 
+class HistoryPlotHelper(object):
+    def __init__(self, papasdata):
+        #this information information needed to be able to unravel information based on a unique identifier
+        self.history_nodes = papasdata.history
+        self.papasdata = papasdata      
+        
     def short_name(self, node):
         z = node.get_value()
         return Identifier.pretty(z)
