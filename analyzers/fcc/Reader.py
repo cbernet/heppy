@@ -64,7 +64,7 @@ class Reader(Analyzer):
     
     def process(self, event):
         store = event.input
-        
+
         def get_collection(class_object, coll_label, sort=True):
             pycoll = None
             if hasattr(self.cfg_ana, coll_label):

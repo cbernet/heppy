@@ -119,7 +119,7 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
 
-    import random
+    import heppy.statistics.rrandom as random
     random.seed(0xdeadbeef)
 
     def process(iev=None):
@@ -157,9 +157,6 @@ if __name__ == '__main__':
         for j in range(10000) :
             process(iev)
             pass
-            #process(iev) #alice_debug
-            #process(iev) #alice_debug
-            #process(iev) #alice_debug
     else:
         loop.loop()
         loop.write()

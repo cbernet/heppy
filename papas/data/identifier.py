@@ -1,6 +1,7 @@
 # simplified class to provide a unique identifier for each object
 # could also add more information into the identifier as needed
 from itertools import count
+from heppy.utils.pdebug import pdebugger
 
 class Identifier(long):
     '''the Identififier is a uniqueid that contains encoded information about an element
@@ -19,7 +20,9 @@ class Identifier(long):
                 ....
            
         '''    
-    _id = count(0)
+
+    _id = count(1)
+
 
     class PFOBJECTTYPE:
         NONE = 0
@@ -33,16 +36,19 @@ class Identifier(long):
     @classmethod    
     def make_id(cls, type):
         x = cls._id.next()
-        value = type <<40
-        return value | x
+        value = type <<32
+        id = value | x
+        assert (Identifier.get_unique_id(id) == x )
+        assert (Identifier.get_type(id)==type)
+        return id
    
     @staticmethod      
     def get_unique_id( ident):
-        return ident & 0b1111111111111111111111111111111111111111
+        return ident & 0b11111111111111111111111111111111
     
     @staticmethod  
     def get_type ( ident):
-        return ident >> 40
+        return ident >> 32
     
     @staticmethod  
     def is_ecal ( ident):
@@ -67,8 +73,26 @@ class Identifier(long):
     @staticmethod  
     def is_particle ( ident):
         return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.PARTICLE     
-    
+
     @staticmethod
     def type_short_code(ident):
-        typelist=".eht......" #the enum value (0 to 8) will index into this and return E is it is ECAL etc
+        ''' Returns code
+              e = ecal
+              h = hcal
+              t = track
+              p = particle
+              r = reconstructed particle (this will soon go)
+              b = block
+        '''
+        typelist=".ehtprb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
         return typelist[Identifier.get_type(ident)]
+
+    @staticmethod
+    def pretty(ident):
+        return Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))
+    
+    @classmethod
+    def reset(cls):
+        cls._id=count(1)
+        pdebugger.info("reset ID")
+        return

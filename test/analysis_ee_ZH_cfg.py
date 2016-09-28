@@ -11,15 +11,19 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
+import heppy.utils.pdebug
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
-
 # setting the random seed for reproducible results
-import random
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
+import heppy.utils.pdebug
+import heppy.statistics.rrandom as random
 random.seed(0xdeadbeef)
 
 # definition of the collider
@@ -36,6 +40,13 @@ comp = cfg.Component(
 )
 selectedComponents = [comp]
 
+#  Pdebugger
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+    PDebugger,
+    output_to_stdout = False,
+    debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+)
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
@@ -127,7 +138,6 @@ particles_not_zed = cfg.Analyzer(
     output = 'particles_not_zed',
     input = 'rec_particles',
     mask = 'zeds_legs',
-
 )
 
 # Make jets from the particles not used to build the best zed.
@@ -196,6 +206,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
+    pdebug,
     source,
     papas_sequence, 
     leptons_true,
@@ -227,8 +238,7 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-
-    import random
+    import heppy.statistics.rrandom as random
     random.seed(0xdeadbeef)
 
     def process(iev=None):
@@ -278,8 +288,7 @@ if __name__ == '__main__':
         detector = simulator.detector
     if iev is not None:
         process(iev)
-        #process(iev)
-        #process(iev)
+        pass
     else:
         loop.loop()
         loop.write()

@@ -2,13 +2,15 @@ from heppy.particles.particle import Particle as BaseParticle
 from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
-
+from heppy.papas.data.identifier import Identifier
+from heppy.utils.pdebug import pdebugger
 import copy
 
 class Particle(BaseParticle, POD):
     
     def __init__(self, fccobj):
         super(Particle, self).__init__(fccobj)
+        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
         self._charge = fccobj.Core().Charge
         self._pid = fccobj.Core().Type
         self._status = fccobj.Core().Status
@@ -22,6 +24,7 @@ class Particle(BaseParticle, POD):
         self._tlv = TLorentzVector()
         p4 = fccobj.Core().P4
         self._tlv.SetXYZM(p4.Px, p4.Py, p4.Pz, p4.Mass)
+        #write(str('Made Pythia {}').format(self))
         
     def __deepcopy__(self, memodict={}):
         newone = type(self).__new__(type(self))
@@ -29,3 +32,13 @@ class Particle(BaseParticle, POD):
             if attr not in ['fccobj', '_start_vertex', '_end_vertex']:
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
+
+    def __str__(self):
+        mainstr =  super(Particle, self).__str__()
+        idstr = '{pretty:6}:{id}'.format(
+            pretty = Identifier.pretty(self.uniqueid),
+            id = self.uniqueid)
+        fields = mainstr.split(':')
+        fields.insert(1, idstr)
+        return ':'.join(fields)     
+

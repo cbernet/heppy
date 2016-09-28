@@ -4,17 +4,17 @@ import copy
 import os
 import shutil
 
-
 from analysis_ee_ZH_cfg import config
 from heppy.test.plot_ee_ZH import plot
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
+from heppy.papas.data.identifier import Identifier
 
+import heppy.statistics.rrandom as random
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 import random
-
 
 def test_sorted(ptcs):
     from heppy.configuration import Collider
@@ -40,6 +40,8 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
                               timeReport=True)
         import logging
         logging.disable(logging.CRITICAL)
+        random.seed('0xdeadbeef')
+        Identifier.reset()
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
@@ -58,7 +60,7 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         mean, sigma = plot(rootfile)
         self.assertAlmostEqual(mean, 119.9, 1)
         self.assertAlmostEqual(sigma, 23.9, 1)
-        
+       
     def test_analysis_sorting(self):
         self.looper.process(0)
         self.assertTrue(test_sorted(self.looper.event.rec_particles))

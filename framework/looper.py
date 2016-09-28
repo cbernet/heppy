@@ -3,7 +3,6 @@
 
 import ROOT 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 import os
 import sys
 import imp
@@ -277,7 +276,6 @@ Make sure that the configuration object is of class cfg.Analyzer.
         This function can be called directly from
         the python interpreter, to jump to a given event and process it.
         """
-
         if not hasattr(self.events, '__getitem__'):
             msg = '''
 Your events backend, of type 

@@ -3,7 +3,9 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
+from heppy.utils.pdebug import pdebugger
 from heppy.papas.pfobjects import Particle
+from heppy.utils.pdebug import pdebugger
 
 from ROOT import TVector3, TLorentzVector
 import math
@@ -104,6 +106,7 @@ class PFReconstructor(object):
                 #ALICE debugging
                 #if len(block.element_uniqueids)<6:
                 #    continue
+                pdebugger.info('Processing {}'.format(block))
                 self.reconstruct_block(block)                
                 self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
                 
@@ -116,9 +119,10 @@ class PFReconstructor(object):
       
     def _sorted_block_keys(self) :
         #sort blocks (1) by number of elements (2) by mix of ecal, hcal , tracks (the shortname will look like "H1T2" for a block
-        #with one cluster and two tracks)        
-        return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
-        
+        #Alice temporary to match cpp
+        #return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
+        #newsort
+        return sorted(self.blocks.keys());
             
     def simplify_blocks(self, block, history_nodes=None):
         
@@ -157,11 +161,6 @@ class PFReconstructor(object):
                             if (elem.distance==first_dist):
                                 pass
                             to_unlink.append(elem)
-            elif Identifier.is_ecal(id):
-                # this is now handled  elsewhere and so could be removed
-                # remove all ecal-hcal links. ecal linked to hcal give rise to a photon anyway.
-                linked = block.linked_edges(id,"ecal_hcal")
-                to_unlink.extend(linked)
         
         #if there is something to unlink then use the BlockSplitter        
         splitblocks=None        
@@ -175,6 +174,7 @@ class PFReconstructor(object):
         '''
         particles = dict()
         ids = block.element_uniqueids
+        #ids =  sorted( ids,  key = lambda id: Identifier.type_short_code ) 
         self.locked = dict()
         for id in ids:
             self.locked[id] = False
@@ -197,11 +197,10 @@ class PFReconstructor(object):
                 self.insert_particle(block, self.reconstruct_track(block.pfevent.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
-            for id in ids :
+            for id in sorted(ids) : #newsort
                 if Identifier.is_hcal(id):
                     self.reconstruct_hcal(block,id)
-                    
-            for id in ids :
+            for id in sorted(ids) : #newsort
                 if Identifier.is_track(id) and not self.locked[id]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -303,17 +302,21 @@ class PFReconstructor(object):
                 -> each hcal is treated using rules above
         '''
         
-        
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
         ecals = []
         hcal =block.pfevent.hcal_clusters[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
-        trackids =    block.sort_distance_energy(hcalid, block.linked_ids(hcalid, "hcal_track") )
-        for trackid in  trackids:
+
+        #trackids =  block.linked_ids(hcalid, "hcal_track")
+        #alice temporarily disabled
+        #trackids =    block.sort_distance_energy(hcalid, trackids )
+#newsort        
+        trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
+        for trackid in trackids:
             tracks.append(block.pfevent.tracks[trackid])
-            for ecalid in block.linked_ids(trackid, "ecal_track"):
+            for ecalid in block.linked_ids(trackid, "ecal_track"): #new sort
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work
@@ -366,7 +369,7 @@ class PFReconstructor(object):
                         self.insert_particle(block, self.reconstruct_cluster(hcal, 'ecal_in',
                                                                   ecal_energy))
 
-        else: # case whether there are no tracks make a neutral hadron for each hcal
+        else: # case where there are no tracks make a neutral hadron for each hcal
               # note that hcal-ecal links have been removed so hcal should only be linked to 
               # other hcals
                  
@@ -407,8 +410,7 @@ class PFReconstructor(object):
         particle.set_path(path)
         particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
-        if self.debugprint:
-            print "made particle from cluster ",pdg_id,  cluster, particle        
+        pdebugger.info(str('Made {} from {}'.format(particle,  cluster)))
         return particle
         
     def reconstruct_track(self, track, clusters = None): # cluster argument does not ever seem to be used at present
@@ -423,14 +425,13 @@ class PFReconstructor(object):
         particle.set_path(track.path)
         particle.clusters = clusters
         self.locked[track.uniqueid] = True
-        if self.debugprint:
-            print "made particle from track ", pdg_id, track, particle        
+        pdebugger.info(str('Made {} from {}'.format(particle,  track)))
         return particle
 
 
     def __str__(self):
         theStr = ['New Rec Particles:']
-        theStr.extend( map(str, self.particles))
+        theStr.extend( map(str, self.particles.itervalues()))
         theStr.append('Unused:')
         if len(self.unused)==0:
             theStr.append('None')
