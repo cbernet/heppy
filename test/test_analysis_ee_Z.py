@@ -47,8 +47,8 @@ class TestAnalysis_ee_Z(unittest.TestCase):
         rootfile = '/'.join([self.outdir,
                             'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        self.assertAlmostEqual(mean, 92.4, 1)
-        self.assertAlmostEqual(sigma, 14.0, 1)
+        self.assertAlmostEqual(mean, 89.3, 1)
+        self.assertAlmostEqual(sigma, 8.9, 1)
         
 
 
