@@ -30,7 +30,8 @@ class PFBlock(object):
     def __init__(self, element_ids, edges, pfevent):
         '''
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
-            edges: is a dictionary of edges, it must contain at least all needed edges. It is not a problem if it contains
+            edges: is a dictionary of edges, it must contain at least all needed edges.
+                   It is not a problem if it contains
                    additional edges as only the ones needed will be extracted
             pfevent: allows access to the underlying elements given a uniqueid
                      must provide a get_object function
@@ -44,7 +45,7 @@ class PFBlock(object):
 
         #comment out energy sorting  for now as not available C++
         sortby = lambda x: Identifier.type_short_code(x)
-        self.element_uniqueids = sorted(element_ids, key = sortby)
+        self.element_uniqueids = sorted(element_ids, key=sortby)
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
         PFBlock.temp_block_count += 1
@@ -132,7 +133,7 @@ class PFBlock(object):
                                                -self.pfevent.get_object(x).energy))
 
     def elements_string(self):
-        ''' Construct a string descrip of each of the elements in a block:-
+        ''' Construct a string description of each of the elements in a block:-
         The elements are given a short name E/H/T according to ecal/hcal/track
         and then sequential numbering starting from 0, this naming is also used to index the
         matrix of distances. The full unique id is also given.
@@ -146,14 +147,15 @@ class PFBlock(object):
         count = 0
         elemdetails = "\n      elements: {\n"
         for uid in self.element_uniqueids:
-            elemdetails += "      {shortname}{count}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
-                                                                            count=count,
-                                                                            strdescrip=self.pfevent.get_object(uid).__str__())
+            elemdetails += "      {shortname}{count}:{strdescrip}\n".format(
+                shortname=Identifier.type_short_code(uid),
+                count=count,
+                strdescrip=self.pfevent.get_object(uid).__str__())
             count = count + 1
         return elemdetails + "      }\n"
 
     def short_elements_string(self):
-        ''' Construct a string descrip of each of the elements in a block:-
+        ''' Construct a string description of each of the elements in a block.
 
         The elements are given a short name E/H/T according to ecal/hcal/track
         and then sequential numbering starting from 0, this naming is also used to index the
@@ -239,7 +241,8 @@ class PFBlock(object):
 
     def get_edge(self, id1, id2):
         ''' Find the edge corresponding to e1 e2
-            Note that make_key deals with whether it is get_edge(e1, e2) or get_edge(e2, e1) (either order gives same result)
+            Note that make_key deals with whether it is get_edge(e1, e2) or
+                                                        get_edge(e2, e1) (either order gives same result)
             '''
         return self.edges[Edge.make_key(id1, id2)]
 
@@ -259,23 +262,24 @@ class PFBlock(object):
                T2  0.0210   0.0000        .
             }
         '''
-        descrip = self.__repr__() + "\n"
-        descrip += self.short_elements_string()
-        descrip += self.edge_matrix_string()
-        return descrip
+        description = self.__repr__() + "\n"
+        description += self.short_elements_string()
+        description += self.edge_matrix_string()
+        return description
 
     def __repr__(self):
         ''' Short Block description
         '''
         if self.is_active:
-            descrip = "block:"
+            description = "block:"
         else:
-            descrip = "deactivated block:"
-        descrip += str('{shortname:8} :{prettyid:6}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
+            description = "deactivated block:"
+        description += str('{shortname:8} :{prettyid:6}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname=self.short_name(),
             prettyid=Identifier.pretty(self.uniqueid),
             count_ecal=self.count_ecal(),
             count_hcal=self.count_hcal(),
             count_tracks=self.count_tracks())
-                       )
-        return descrip
+                           )
+        return description
+

@@ -76,6 +76,14 @@ class Identifier(long):
 
     @staticmethod
     def type_short_code(ident):
+        ''' Returns code
+              e = ecal
+              h = hcal
+              t = track
+              p = particle
+              r = reconstructed particle (this will soon go)
+              b = block
+        '''
         typelist=".ehtprb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
         return typelist[Identifier.get_type(ident)]
 
