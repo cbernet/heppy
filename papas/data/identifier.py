@@ -87,5 +87,4 @@ class Identifier(long):
     def reset(cls):
         cls._id=count(1)
         pdebugger.info("reset ID")
-        pass
         return

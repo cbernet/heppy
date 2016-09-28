@@ -1,36 +1,36 @@
 import unittest
 import os
 import logging
-import pdebug as pdebugging
+import pdebug as pdebug
 from StringIO import StringIO
 
 class TestPDebug(unittest.TestCase):
 
     def test_debug_output(self):
         out = StringIO()
-        pdebugging.pdebugger.setLevel(logging.ERROR)
-        pdebugging.set_stream(out)
-        pdebugging.pdebugger.error('error console')
-        pdebugging.pdebugger.info('info console')
-        pdebugging.pdebugger.info('debug console')
+        pdebug.pdebugger.setLevel(logging.ERROR)
+        pdebug.set_stream(out)
+        pdebug.pdebugger.error('error console')
+        pdebug.pdebugger.info('info console')
+        pdebug.pdebugger.info('debug console')
         output = out.getvalue().strip()
         assert output == "error console"
 
 
-        pdebugging.pdebugger.setLevel(logging.INFO)
-        pdebugging.pdebugger.error('error console')
-        pdebugging.pdebugger.info('info console')
-        pdebugging.pdebugger.debug('debug console')
+        pdebug.pdebugger.setLevel(logging.INFO)
+        pdebug.pdebugger.error('error console')
+        pdebug.pdebugger.info('info console')
+        pdebug.pdebugger.debug('debug console')
         output = out.getvalue().strip()
         assert output == "error console\nerror console\ninfo console"
 
 
         #add in file handler
         filename = "tempunittestdebug.log"
-        pdebugging.set_file(filename)
-        pdebugging.pdebugger.error('error file')
-        pdebugging.pdebugger.info('info file')
-        pdebugging.pdebugger.debug('debug file')
+        pdebug.set_file(filename)
+        pdebug.pdebugger.error('error file')
+        pdebug.pdebugger.info('info file')
+        pdebug.pdebugger.debug('debug file')
         with open(filename, 'r') as dbfile:
             data=dbfile.read()
         assert data == "error file\ninfo file\n"

@@ -157,6 +157,3 @@ class PapasSim(Analyzer):
         merged_hcals = MergedClusterBuilder(pfevent.hcal_clusters, ruler, merged_ecals.history_nodes)
         setattr(event, self.mergedhcalsname, merged_hcals.merged)
         setattr(event,  self.historyname,  merged_hcals.history_nodes)
-        pass
-
-        

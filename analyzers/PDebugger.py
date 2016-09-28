@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 import logging
-import heppy.utils.pdebug as pdebugging
+import heppy.utils.pdebug as pdebug
 from heppy.papas.data.pfevent import PFEvent
 import sys
 
@@ -15,16 +15,15 @@ class PDebugger(Analyzer):
 
         #turn on output to stdout if requested
         if hasattr(self.cfg_ana, 'output_to_stdout') and self.cfg_ana.output_to_stdout:
-                pdebugging.set_stream(sys.stdout,level=logging.INFO)
-                pdebugging.pdebugger.setLevel(logging.INFO)
+                pdebug.set_stream(sys.stdout,level=logging.INFO)
+                pdebug.pdebugger.setLevel(logging.INFO)
 
         #turn on output to file if requested
         if hasattr(self.cfg_ana, 'debug_filename'):
-            pdebugging.set_file(self.cfg_ana.debug_filename)
-            pdebugging.pdebugger.setLevel(logging.INFO)
-        pass
+            pdebug.set_file(self.cfg_ana.debug_filename)
+            pdebug.pdebugger.setLevel(logging.INFO)
 
     def process(self, event):
-        pdebugging.pdebugger.info(str('Event: {}'.format(event.iEv)))
-        pass 
+        pdebug.pdebugger.info(str('Event: {}'.format(event.iEv)))
+
 

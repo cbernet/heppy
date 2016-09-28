@@ -36,7 +36,6 @@ class TestRandom(unittest.TestCase):
         self.assertEqual(a0,b0)
         self.assertEqual(a1,b1)
         self.assertEqual(a2,b2)
-        pass
 
 
 if __name__ == '__main__':

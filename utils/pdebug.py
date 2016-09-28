@@ -7,27 +7,27 @@ import sys
      is based on Python logging.
 
      To set it up
-       import heppy.utils.pdebug as pdebugging
+       import heppy.utils.pdebug as pdebug
        from heppy.utils.pdebug import pdebugger
 
      Use following 3 lines and comment out as needed to obtain desired behaviour
        #pdebugger.setLevel(logging.ERROR)  # turns off all output
        pdebugger.setLevel(logging.INFO) # turns on ouput
-       pdebugging.set_file("pdebug.log",level=logging.INFO) #optional writes to file
+       pdebug.set_file("pdebug.log",level=logging.INFO) #optional writes to file
        pdebugger.set_stream(level=logging.ERROR)
 
     For example
      (1) file and console:
        pdebugger.setLevel(logging.INFO)
-       pdebugging.set_file("pdebug.log")
+       pdebug.set_file("pdebug.log")
 
      (2) console only:
        pdebugger.setLevel(logging.INFO)
 
      (3) file only:
        pdebugger.setLevel(logging.INFO)
-       pdebugging.set_file("pdebug.log")
-       pdebugging.set_stream(level=logging.ERROR)
+       pdebug.set_file("pdebug.log")
+       pdebug.set_stream(level=logging.ERROR)
 
      (4) no output
        pdebugger.setLevel(logging.ERROR)
@@ -64,4 +64,3 @@ if __name__ == '__main__':
     set_stream(sys.stdout)
     set_file("pdebug.log")
     pdebugger.info('blah')
-    pass
