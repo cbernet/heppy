@@ -11,19 +11,15 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
-import heppy.utils.pdebug
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
+
 # setting the random seed for reproducible results
-from ROOT import gSystem
-gSystem.Load("libdatamodelDict")
-from EventStore import EventStore as Events
-import heppy.utils.pdebug
-import heppy.statistics.rrandom as random
+import random
 random.seed(0xdeadbeef)
 
 # definition of the collider
@@ -35,18 +31,11 @@ Collider.SQRTS = 240.
 comp = cfg.Component(
     'example',
     files = [
-        os.getcwd()+'/data/ee_ZH_Zmumu_Hbb.root'
+        'ee_ZH_Z_Hbb.root'
     ]
 )
 selectedComponents = [comp]
 
-#  Pdebugger
-from heppy.analyzers.PDebugger import PDebugger
-pdebug = cfg.Analyzer(
-    PDebugger,
-    output_to_stdout = False,
-    debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
-)
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
@@ -58,30 +47,18 @@ source = cfg.Analyzer(
 
 from heppy.test.papas_cfg import papas_sequence, detector, papas
 
-
-from heppy.analyzers.PapasHistoryExplorer import PapasHistory
-#from heppy.papas.detectors.CMS import CMS
-papas_history = cfg.Analyzer(
-    PapasHistory,
-    is_display = True,
-    is_printout = False, #not implemented yet
-    instance_label = 'papas_history', 
-    detector = detector,
-    history = 'history'
-)
-
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
 # we could use two different instances for the Filter module
 # to get separate collections of electrons and muons
 # help(Filter) for more information
 from heppy.analyzers.Filter import Filter
-leptons_true = cfg.Analyzer(
+leptons = cfg.Analyzer(
     Filter,
     'sel_leptons',
-    output = 'leptons_true',
+    output = 'leptons',
     input_objects = 'rec_particles',
-    filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
+    filter_func = lambda ptc: ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13]
 )
 
 # Compute lepton isolation w/r other particles in the event.
@@ -90,7 +67,7 @@ from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     LeptonAnalyzer,
-    leptons = 'leptons_true',
+    leptons = 'leptons',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
@@ -106,84 +83,42 @@ sel_iso_leptons = cfg.Analyzer(
     Filter,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
-    input_objects = 'leptons_true',
+    input_objects = 'leptons',
     # filter_func = relative_isolation
     filter_func = lambda lep : lep.iso.sumpt/lep.pt()<0.3 # fairly loose
 )
 
-# Building Zeds
-# help(ResonanceBuilder) for more information
-from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
-zeds = cfg.Analyzer(
-    ResonanceBuilder,
-    output = 'zeds',
-    leg_collection = 'sel_iso_leptons',
-    pdgid = 23
+
+# Rejecting events that contain a loosely isolated lepton
+from heppy.analyzers.EventFilter import EventFilter
+lepton_veto = cfg.Analyzer(
+    EventFilter,
+    'lepton_veto',
+    input_objects='sel_iso_leptons',
+    min_number=1,
+    veto=True
 )
 
-# Computing the recoil p4 (here, p_initial - p_zed)
-# help(RecoilBuilder) for more information
-sqrts = Collider.SQRTS 
 
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
-recoil = cfg.Analyzer(
-    RecoilBuilder,
-    instance_label = 'recoil',
-    output = 'recoil',
-    sqrts = sqrts,
-    to_remove = 'zeds_legs'
-) 
-
 missing_energy = cfg.Analyzer(
     RecoilBuilder,
     instance_label = 'missing_energy',
     output = 'missing_energy',
-    sqrts = sqrts,
+    sqrts = Collider.SQRTS,
     to_remove = 'rec_particles'
 ) 
 
-# Creating a list of particles excluding the decay products of the best zed.
-# help(Masker) for more information
-from heppy.analyzers.Masker import Masker
-particles_not_zed = cfg.Analyzer(
-    Masker,
-    output = 'particles_not_zed',
-    input = 'rec_particles',
-    mask = 'zeds_legs',
-)
 
-# Make jets from the particles not used to build the best zed.
-# Here the event is forced into 2 jets to target ZH, H->b bbar)
-# help(JetClusterizer) for more information
+# Make 4 jets 
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 jets = cfg.Analyzer(
     JetClusterizer,
     output = 'jets',
-    particles = 'particles_not_zed',
-    fastjet_args = dict( njets = 2)  
+    particles = 'rec_particles',
+    fastjet_args = dict( njets = 4)  
 )
 
-from heppy.analyzers.ImpactParameter import ImpactParameter
-btag = cfg.Analyzer(
-    ImpactParameter,
-    jets = 'jets',
-    # num_IP = ("histo_stat_IP_ratio_bems.root","h_b"),
-    # denom_IP = ("histo_stat_IP_ratio_bems.root","h_u"),
-    # num_IPs = ("histo_stat_IPs_ratio_bems.root","h_b"),
-    # denom_IPs = ("histo_stat_IPs_ratio_bems.root","h_u"),
-    pt_min = 1, # pt threshold for charged hadrons in b tagging 
-    dxy_max = 2e-3, # 2mm
-    dz_max = 17e-2, # 17cm
-    detector = detector
-    )
-
-# Build Higgs candidates from pairs of jets.
-higgses = cfg.Analyzer(
-    ResonanceBuilder,
-    output = 'higgses',
-    leg_collection = 'jets',
-    pdgid = 25
-)
 
 
 # Just a basic analysis-specific event Selection module.
@@ -191,49 +126,42 @@ higgses = cfg.Analyzer(
 # After running the example as
 #    heppy_loop.py Trash/ analysis_ee_ZH_cfg.py -f -N 100 
 # this counter can be found in:
-#    Trash/example/heppy.analyzers.examples.zh.selection.Selection_cuts/cut_flow.txt
+#    Trash/example/heppy.analyzers.examples.zh_had.selection.Selection_cuts/cut_flow.txt
 # Counter cut_flow :
 #         All events                                     100      1.00    1.0000
 #         At least 2 leptons                              87      0.87    0.8700
 #         Both leptons e>30                               79      0.91    0.7900
 # For more information, check the code of the Selection class,
-from heppy.analyzers.examples.zh.selection import Selection
-selection = cfg.Analyzer(
-    Selection,
-    instance_label='cuts'
-)
+##from heppy.analyzers.examples.zh_had.selection import Selection
+##selection = cfg.Analyzer(
+##    Selection,
+##    instance_label='cuts'
+##)
 
 # Analysis-specific ntuple producer
 # please have a look at the ZHTreeProducer class
-from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
-tree = cfg.Analyzer(
-    ZHTreeProducer,
-    zeds = 'zeds',
-    jets = 'jets',
-    higgses = 'higgses',
-    recoil  = 'recoil',
-    misenergy = 'missing_energy'
-)
+##from heppy.analyzers.examples.zh_had.TreeProducer import TreeProducer
+##tree = cfg.Analyzer(
+##    TreeProducer,
+##    zed = 'zed',
+##    higg = 'higg',
+##    misenergy = 'missing_energy'
+##)
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
-    pdebug,
     source,
-    papas_sequence,
-   # papas_history,
-    leptons_true,
+    papas_sequence, 
+    leptons,
     iso_leptons,
     sel_iso_leptons,
-    zeds,
-    recoil,
-    missing_energy,
-    particles_not_zed,
-    jets,
-    btag,
-    higgses,
-    selection, 
-    tree
+    lepton_veto, 
+    jets, 
+#    zeds,
+#    higgses,
+#    selection, 
+#    tree
 )
 
 # Specifics to read FCC events 
@@ -251,7 +179,8 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-    import heppy.statistics.rrandom as random
+
+    import random
     random.seed(0xdeadbeef)
 
     def process(iev=None):
@@ -288,7 +217,7 @@ if __name__ == '__main__':
         
     loop = Looper( 'looper', config,
                    nEvents=10,
-                   nPrint=1,
+                   nPrint=10,
                    timeReport=True)
     
     simulation = None
@@ -301,7 +230,6 @@ if __name__ == '__main__':
         detector = simulator.detector
     if iev is not None:
         process(iev)
-        pass
     else:
         loop.loop()
         loop.write()

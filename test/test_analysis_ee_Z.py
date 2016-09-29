@@ -4,44 +4,33 @@ import copy
 import os
 import shutil
 
-from analysis_ee_ZH_cfg import config
-from heppy.test.plot_ee_ZH import plot
+
+from analysis_ee_Z_cfg import config
+from heppy.test.plot_ee_Z import plot
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
-from heppy.papas.data.identifier import Identifier
 
-import heppy.statistics.rrandom as random
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 import random
 
-def test_sorted(ptcs):
-    from heppy.configuration import Collider
-    keyname = 'pt'
-    if Collider.BEAMS == 'ee':
-        keyname = 'e'
-    pt_or_e = getattr(ptcs[0].__class__, keyname)
-    values = [pt_or_e(ptc) for ptc in ptcs]
-    return values == sorted(values, reverse=True)
 
 
-class TestAnalysis_ee_ZH(unittest.TestCase):
+class TestAnalysis_ee_Z(unittest.TestCase):
 
     def setUp(self):
         random.seed(0xdeadbeef)
         self.outdir = tempfile.mkdtemp()
         fname = '/'.join([os.environ['HEPPY'],
-                          'test/data/ee_ZH_Zmumu_Hbb.root'])
+                          'test/data/ee_Z_ddbar.root'])
         config.components[0].files = [fname]
         self.looper = Looper( self.outdir, config,
-                              nEvents=50,
+                              nEvents=100,
                               nPrint=0,
                               timeReport=True)
         import logging
         logging.disable(logging.CRITICAL)
-        random.seed('0xdeadbeef')
-        Identifier.reset()
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
@@ -56,15 +45,10 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         self.looper.loop()
         self.looper.write()
         rootfile = '/'.join([self.outdir,
-                            'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
+                            'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        self.assertAlmostEqual(mean, 119.0, 1)
-        self.assertAlmostEqual(sigma, 31.2, 1)
-       
-    def test_analysis_sorting(self):
-        self.looper.process(0)
-        self.assertTrue(test_sorted(self.looper.event.rec_particles))
-    
+        self.assertAlmostEqual(mean, 89.3, 1)
+        self.assertAlmostEqual(sigma, 8.9, 1)
         
 
 

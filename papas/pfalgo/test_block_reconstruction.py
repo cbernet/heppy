@@ -361,8 +361,7 @@ class TestBlockReconstruction(unittest.TestCase):
         x = None
         for id in ids:
             if Identifier.is_block(id) and event.blocks[id].short_name()== "E1H1T1":
-                x =  event.blocks[id]
-        #print x       
+                x =  event.blocks[id]     
                 
         #1c #check that the block contains the expected list of suspects    
         pids = [] 
@@ -379,40 +378,13 @@ class TestBlockReconstruction(unittest.TestCase):
             ids.append(n.get_value())
         expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202)])   
         self.assertEqual(sorted(ids), expected_ids)
-        
-        #(3) Give me all blocks with  one track:
-        #blockids = []
-        #for b in event.blocks.itervalues():
-            #if b.count_tracks():        
-                #print b
-        
-        #(4) Give me all simulation particles attached to each reconstructed particle
-        
+
+        #(3) Give me all simulation particles attached to each reconstructed particle
         for rp in event.reconstructed_particles :
             ids=[]
-            BFS  =  BreadthFirstSearchIterative(event.history[rp],"parents")
-            #print "Rec particle: ", event.reconstructed_particles[rp], " from "            
-                  
+            BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"parents")    
             for n in BFS.result :
                 z=n.get_value()
-                if (Identifier.is_particle(z)):
-                    pass
-                    #print "      sim particle: ", event.sim_particles[z]
-        
-        #pass       
-        # Give me all rec particles attached to each sim particle
-       # for rp in event.sim_particles :
-       #     BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"children")
-       #     print
-       #     print "Sim particle: ", event.sim_particles[rp].pdgid, " gives "            
-       #     for n in BFS.result :
-       ##         #print n
-       ##         if (isReconstructedParticle(n.getValue())):
-       #             ids.append(n.getValue())
-       #             print "     rec particle: ", event.reconstructed_particles[n.getValue()].pdgid 
-    
-                
-        #print("end")
         
 if __name__  ==  '__main__':        
     unittest.main()

@@ -1,11 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
-
-import math
 from heppy.papas.data.papasdata import PapasData
 from heppy.papas.simulator import Simulator
-
-from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 
@@ -20,8 +16,10 @@ from heppy.display.geometry import GDetector
 
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
+    
+    #This will need to redocumented once new papasdata structure arrives
 
-    Example configuration: 
+    Example configuration:
 
     from heppy.analyzers.PapasSim import PapasSim
     from heppy.papas.detectors.CMS import CMS
@@ -35,22 +33,20 @@ class PapasSim(Analyzer):
         merged_hcals = 'hcal_clusters',
         tracks = 'tracks',
         #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a name is provided
-        output_history = 'history_nodes', 
+        output_history = 'history_nodes',
         display_filter_func = lambda ptc: ptc.e()>1.,
         display = False,
         verbose = True
     )
-    
-    detector:      Detector model to be used. 
+    detector:      Detector model to be used.
     gen_particles: Name of the input gen particle collection
-    sim_particles: Name extension for the output sim particle collection. 
-                   Note that the instance label is prepended to this name. 
-                   Therefore, in this particular case, the name of the output 
+    sim_particles: Name extension for the output sim particle collection.
+                   Note that the instance label is prepended to this name.
+                   Therefore, in this particular case, the name of the output
                    sim particle collection is "papas_sim_particles".
-    merged_ecals: Name for the merged clusters created by simulator              
-    merged_hcals: Name for the merged clusters created by simulator             
-    tracks:       Name for smeared tracks created by simulator              
-    
+    merged_ecals: Name for the merged clusters created by simulator
+    merged_hcals: Name for the merged clusters created by simulator
+    tracks:       Name for smeared tracks created by simulator
     rec_particles: Optional. Name extension for the reconstructed particles created by simulator
                    This is retained for the time being to allow two reconstructions to be compared
                    Reconstruction will occur if this parameter  or rec_particles_no_leptons is provided
@@ -60,10 +56,20 @@ class PapasSim(Analyzer):
                    Reconstruction will occur if this parameter  or rec_particles is provided
                    This is retained for the time being to allow two reconstructions to be compared
                    Same comments as for the sim_particles parameter above.
-    smeared: Name for smeared leptons 
+    smeared: Name for smeared leptons
     history: Optional name for the history nodes, set to None if not needed
     display      : Enable the event display
     verbose      : Enable the detailed printout.
+
+        event must contain
+          todo once history is implemented
+        event will gain
+          ecal_clusters:- smeared merged clusters from simulation
+          hcal_clusters:- smeared merged clusters from simulation
+          tracks:       - tracks from simulation
+          baseline_particles:- simulated particles (excluding electrons and muons)
+          sim_particles - simulated particles including electrons and muons
+        
     '''
 
     def __init__(self, *args, **kwargs):
@@ -71,40 +77,30 @@ class PapasSim(Analyzer):
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-
         self.is_display = self.cfg_ana.display
         if self.is_display:
-            self.init_display()        
+            self.init_display()
 
     def init_display(self):
-        self.display = Display(['xy','yz'])
+        self.display = Display(['xy', 'yz'])
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
 
     def process(self, event):
-        '''
-           event must contain
-             todo once history is implemented
-           event will gain
-             ecal_clusters:- smeared merged clusters from simulation
-             hcal_clusters:- smeared merged clusters from simulation
-             tracks:       - tracks from simulation
-             baseline_particles:- simulated particles (excluding electrons and muons)
-             sim_particles - simulated particles including electrons and muons
-        '''
-        event.simulator = self 
+        
+        event.simulator = self
         if self.is_display:
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        try: 
-            self.simulator.simulate( gen_particles)
-        except (PropagationError,SimulationError) as err:
-            self.mainLogger.error( str(err) + ' -> Event discarded')
+        try:
+            self.simulator.simulate(gen_particles)
+        except (PropagationError, SimulationError) as err:
+            self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
         pfsim_particles = self.simulator.ptcs
-        
+
         if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
             return
             
@@ -119,7 +115,6 @@ class PapasSim(Analyzer):
         event.papasdata.iEv = event.iEv
     
         
-        pass
         
        
 

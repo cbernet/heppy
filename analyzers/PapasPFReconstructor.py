@@ -45,6 +45,4 @@ class PapasPFReconstructor(Analyzer):
                                                    key = lambda ptc: ptc.e(), reverse=True)
         
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
-        
-        
-        
+

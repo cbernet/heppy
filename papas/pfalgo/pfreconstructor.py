@@ -253,25 +253,29 @@ class PFReconstructor(object):
                 #    self.history_nodes[element_id].add_child(pnode)    
     
 
-    def neutral_hadron_energy_resolution(self, hcal):
-        '''WARNING CMS SPECIFIC! 
-
+    def neutral_hadron_energy_resolution(self, energy, eta):
+        '''Currently returns the hcal resolution of the detector in use.
+        That's a generic solution, but CMS is doing the following
+        (implementation in commented code)
         http://cmslxr.fnal.gov/source/RecoParticleFlow/PFProducer/src/PFAlgo.cc#3350 
         '''
-        energy = max(hcal.energy, 1.)
-        stoch, const = 1.02, 0.065
-        if abs(hcal.position.Eta())>1.48:
-            stoch, const = 1.2, 0.028
-        resol = math.sqrt(stoch**2/energy + const**2)
-        return resol
+        resolution = self.detector.elements['hcal'].energy_resolution(energy, eta)
+        return resolution
+## energy = max(hcal.energy, 1.)
+## eta = hcal.position.Eta()
+##        stoch, const = 1.02, 0.065
+##        if abs(hcal.position.Eta())>1.48:
+##            stoch, const = 1.2, 0.028
+##        resol = math.sqrt(stoch**2/energy + const**2)
+##        return resol
 
     def nsigma_hcal(self, cluster):
-        '''WARNING CMS SPECIFIC! 
-        
+        '''Currently returns 2.
+        CMS is doing the following (implementation in commented code)
         http://cmslxr.fnal.gov/source/RecoParticleFlow/PFProducer/src/PFAlgo.cc#3365 
         '''
-        
-        return 1. + math.exp(-cluster.energy/100.)
+        return 2
+## return 1. + math.exp(-cluster.energy/100.)
     
       
         
@@ -330,10 +334,13 @@ class PFReconstructor(object):
             delta_e_rel = (hcal_energy + ecal_energy) / track_energy - 1.
             # WARNING
             # calo_eres = self.detector.elements['hcal'].energy_resolution(track_energy)
-            calo_eres = self.neutral_hadron_energy_resolution(hcal)
+            # calo_eres = self.neutral_hadron_energy_resolution(hcal)
+            calo_eres = self.neutral_hadron_energy_resolution(track_energy,
+                                                              hcal.position.Eta())
             self.log.info( 'dE/p, res = {derel}, {res} '.format(
                 derel = delta_e_rel,
                 res = calo_eres ))
+            # if False:
             if delta_e_rel > self.nsigma_hcal(hcal) * calo_eres: # approx means hcal energy + ecal energies > track energies
                 
                 excess = delta_e_rel * track_energy # energy in excess of track energies

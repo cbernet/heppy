@@ -26,6 +26,5 @@ class PapasParticlesComparer(Analyzer):
                    and reconstructed_particles made from the new BlockBuilder approach
         '''
         ParticlesComparer(getattr(event, self.particlesA_name), getattr(event, self.particlesB_name))
-                        
-        pass
+
         

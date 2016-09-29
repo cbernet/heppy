@@ -74,7 +74,13 @@ class Identifier(long):
 
     @staticmethod  
     def get_subtype ( ident):
-        #intended to be single char
+        ''' intended to be single char
+            Some possible existing uses
+            eg 's' simulation or smeared
+             'g' generated
+             'r' reconstructed
+             'u' unspecified
+        '''
         return chr( (ident >> 53 & 0b11111111))
 
     @staticmethod  
@@ -109,8 +115,18 @@ class Identifier(long):
 
     @staticmethod
     def type_code(ident):
+        ''' Returns code
+                      e = ecal
+                      h = hcal
+                      t = track
+                      p = particle
+                      b = block
+                '''        
         typelist=".ehtpb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
         return Identifier.get_subtype(ident) + typelist[Identifier.get_type(ident)]   
+
+        
+        
 
     @staticmethod
     def pretty(ident):
