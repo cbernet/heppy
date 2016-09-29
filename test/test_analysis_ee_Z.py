@@ -4,16 +4,15 @@ import copy
 import os
 import shutil
 
-
 from analysis_ee_Z_cfg import config
 from heppy.test.plot_ee_Z import plot
 from heppy.framework.looper import Looper
-from heppy.framework.exceptions import UserStop
 from ROOT import TFile
 
 import logging
 logging.getLogger().setLevel(logging.ERROR)
-import random
+
+import heppy.statistics.rrandom as random
 
 
 
@@ -47,8 +46,8 @@ class TestAnalysis_ee_Z(unittest.TestCase):
         rootfile = '/'.join([self.outdir,
                             'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        self.assertAlmostEqual(mean, 89.3, 1)
-        self.assertAlmostEqual(sigma, 8.9, 1)
+        self.assertAlmostEqual(mean, 91.1, 1)
+        self.assertAlmostEqual(sigma, 10.7, 1)
         
 
 

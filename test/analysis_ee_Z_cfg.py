@@ -24,6 +24,11 @@ logging.basicConfig(level=logging.WARNING)
 import heppy.statistics.rrandom as random
 random.seed(0xdeadbeef)
 
+# definition of the collider
+from heppy.configuration import Collider
+Collider.BEAMS = 'ee'
+Collider.SQRTS = 91.
+
 # input definition
 ee_Z_ddbar = cfg.Component(
     'ee_Z_ddbar',

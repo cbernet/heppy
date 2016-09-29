@@ -18,13 +18,15 @@ import logging
 logging.shutdown()
 reload(logging)
 logging.basicConfig(level=logging.WARNING)
+
 # setting the random seed for reproducible results
+import heppy.statistics.rrandom as random
+random.seed(0xdeadbeef)
+
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 import heppy.utils.pdebug
-import heppy.statistics.rrandom as random
-random.seed(0xdeadbeef)
 
 # definition of the collider
 from heppy.configuration import Collider

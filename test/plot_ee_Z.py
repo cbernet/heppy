@@ -6,7 +6,6 @@ holder = list()
 def plot(fname):    
     root_file = TFile(fname)
     tree = root_file.Get('events')
-    tree.Print()
     
     canvas = TCanvas("canvas", "canvas", 600,600)
     
