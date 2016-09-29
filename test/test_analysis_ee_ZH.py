@@ -12,9 +12,9 @@ from ROOT import TFile
 from heppy.papas.data.identifier import Identifier
 
 import heppy.statistics.rrandom as random
+# import random
 import logging
 logging.getLogger().setLevel(logging.ERROR)
-import random
 
 def test_sorted(ptcs):
     from heppy.configuration import Collider
@@ -40,7 +40,6 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
                               timeReport=True)
         import logging
         logging.disable(logging.CRITICAL)
-        random.seed('0xdeadbeef')
         Identifier.reset()
         
     def tearDown(self):
@@ -52,7 +51,7 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         Will fail if physics algorithms are modified,
         so should probably be removed from test suite,
         or better: be made optional. 
-        '''
+        '''        
         self.looper.loop()
         self.looper.write()
         rootfile = '/'.join([self.outdir,

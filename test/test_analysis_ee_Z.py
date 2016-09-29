@@ -13,7 +13,8 @@ from ROOT import TFile
 
 import logging
 logging.getLogger().setLevel(logging.ERROR)
-import random
+
+import heppy.statistics.rrandom as random
 
 
 
