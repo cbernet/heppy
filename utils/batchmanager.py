@@ -8,6 +8,7 @@ import os
 import re
 import pprint
 import time
+import socket
 
 
 class BatchManager:
@@ -278,7 +279,7 @@ class BatchManager:
         In all other cases, a CmsBatchException is raised
         '''
         
-        hostName = os.environ['HOSTNAME']
+        hostName = socket.gethostname()
         onLxplus = hostName.startswith('lxplus')
         onPSI    = hostName.startswith('t3ui'  )
         onPISA   = re.match('.*gridui.*',hostName) or  re.match('.*faiwn.*',hostName)

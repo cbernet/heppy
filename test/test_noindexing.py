@@ -1,5 +1,6 @@
 import unittest
 import shutil
+import tempfile
 import os 
 from simple_example_noindexing_cfg import config
 from heppy.utils.testtree import create_tree, remove_tree
@@ -15,7 +16,10 @@ class TestNoIndexing(unittest.TestCase):
         self.fname = create_tree()
         rootfile = TFile(self.fname)
         self.nevents = rootfile.Get('test_tree').GetEntries()
-        self.outdir = 'Out_test'
+        self.outdir = tempfile.mkdtemp()
+        
+    def tearDown(self):
+        shutil.rmtree(self.outdir)    
 
     def test_all_events_processed(self):
         loop = Looper( self.outdir, config,

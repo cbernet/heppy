@@ -41,8 +41,7 @@ class ParticlesComparer(object):
                 print self.A[i].pt().pt(),self.B[i].p4().pt()
                 print self.A[i].p4().M(),self.B[i].p4().M()
                 assert(False)
-                #pass
-            
+          
         
 class ClusterComparer(object):
     '''  Checks that two dicts of clusters are identical. Will 

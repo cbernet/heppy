@@ -12,6 +12,7 @@ from multiprocessing import Pool
 from pprint import pprint
 
 from heppy.framework.looper import Looper
+from heppy.framework.config import split
 
 # global, to be used interactively when only one component is processed.
 loop = None
@@ -72,30 +73,7 @@ def createOutputDir(dir, components, force):
             else:
                 raise ValueError( ' '.join(['answer can not have this value!',
                                             answer]) )
-
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-
-def split(comps):
-    # import pdb; pdb.set_trace()
-    splitComps = []
-    for comp in comps:
-        if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
-            chunkSize = len(comp.files) / comp.splitFactor
-            if len(comp.files) % comp.splitFactor:
-                chunkSize += 1
-            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor
-            for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
-                newComp = copy.deepcopy(comp)
-                newComp.files = chunk
-                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
-                                                       index=ichunk)
-                splitComps.append( newComp )
-        else:
-            splitComps.append( comp )
-    return splitComps
-
-
+            
 
 def main( options, args ):
 

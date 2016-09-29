@@ -5,11 +5,13 @@ get more information:
 
 ipython
 from analysis_ee_ZH_cfg import * 
+
 '''
 
 import os
 import copy
 import heppy.framework.config as cfg
+import heppy.utils.pdebug
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -18,8 +20,18 @@ reload(logging)
 logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
-import random
+import heppy.statistics.rrandom as random
 random.seed(0xdeadbeef)
+
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
+import heppy.utils.pdebug
+
+# definition of the collider
+from heppy.configuration import Collider
+Collider.BEAMS = 'ee'
+Collider.SQRTS = 240.
 
 # input definition
 comp = cfg.Component(
@@ -30,12 +42,18 @@ comp = cfg.Component(
 )
 selectedComponents = [comp]
 
+#  Pdebugger
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+    PDebugger,
+    output_to_stdout = False,
+    debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+)
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
-    mode = 'ee',
     gen_particles = 'GenParticle',
     gen_vertices = 'GenVertex'
 )
@@ -55,7 +73,6 @@ leptons_true = cfg.Analyzer(
     input_objects = 'rec_particles',
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
-
 
 # Compute lepton isolation w/r other particles in the event.
 # help(LeptonAnalyzer) for more information
@@ -96,7 +113,7 @@ zeds = cfg.Analyzer(
 
 # Computing the recoil p4 (here, p_initial - p_zed)
 # help(RecoilBuilder) for more information
-sqrts = 240. 
+sqrts = Collider.SQRTS 
 
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
 recoil = cfg.Analyzer(
@@ -123,7 +140,6 @@ particles_not_zed = cfg.Analyzer(
     output = 'particles_not_zed',
     input = 'rec_particles',
     mask = 'zeds_legs',
-
 )
 
 # Make jets from the particles not used to build the best zed.
@@ -191,9 +207,10 @@ tree = cfg.Analyzer(
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [source] )
-sequence.extend(papas_sequence)
-sequence.extend( [
+sequence = cfg.Sequence(
+    pdebug,
+    source,
+    papas_sequence, 
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
@@ -206,7 +223,7 @@ sequence.extend( [
     higgses,
     selection, 
     tree
-    ] )
+)
 
 # Specifics to read FCC events 
 from ROOT import gSystem
@@ -223,8 +240,7 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-
-    import random
+    import heppy.statistics.rrandom as random
     random.seed(0xdeadbeef)
 
     def process(iev=None):
@@ -274,8 +290,7 @@ if __name__ == '__main__':
         detector = simulator.detector
     if iev is not None:
         process(iev)
-        #process(iev)
-        #process(iev)
+        pass
     else:
         loop.loop()
         loop.write()

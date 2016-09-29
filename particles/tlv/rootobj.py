@@ -17,10 +17,7 @@ class RootObj(object):
         True if object id is the same. 
         So if an object is copied, the two copies are equal.
         '''
-        try:
-            return self._objid == other._objid
-        except AttributeError:
-            import pdb; pdb.set_trace()
+        return self._objid == other._objid
     
     def __hash__(self):
         '''returns a hash built on the object id. 

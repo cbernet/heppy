@@ -1,6 +1,7 @@
 from heppy.papas.graphtools.DAG import Node, DAGFloodFill
 from heppy.papas.pfalgo.pfblock import PFBlock
 from heppy.papas.graphtools.graphbuilder import GraphBuilder
+from heppy.utils.pdebug import pdebugger
 
 #todo remove pfevent from this class once we have written a helper class to print the block and its elements
 
@@ -68,7 +69,7 @@ class BlockBuilder(GraphBuilder):
         for subgraph in self.subgraphs:
             #make the block
             block = PFBlock(subgraph,  self.edges, self.pfevent)        
-           
+            pdebugger.info("Made {}".format(block))
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] = block        
             

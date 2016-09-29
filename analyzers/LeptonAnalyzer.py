@@ -1,5 +1,4 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.utils.deltar import matchObjectCollection, deltaR
 from heppy.particles.isolation import IsolationComputer, IsolationInfo
 
 

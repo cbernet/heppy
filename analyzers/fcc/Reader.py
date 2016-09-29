@@ -3,6 +3,7 @@ from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 from heppy.particles.fcc.met import Met
+import heppy.configuration
 
 import math
 
@@ -55,15 +56,15 @@ class Reader(Analyzer):
     - event.jets: reconstructed jets  
     '''
 
-    def beginLoop(self, setup):
-        super(Reader, self).beginLoop(setup)
-        self.sort_key = lambda ptc: ptc.e()
-        if self.cfg_ana.mode=='pp' or self.cfg_ana.mode=='ep':
-            self.sort_key = lambda ptc: ptc.pt()
+##    def beginLoop(self, setup):
+##        super(Reader, self).beginLoop(setup)
+##        self.sort_key = lambda ptc: ptc.e()
+##        if heppy.configuration.Collider.BEAMS in ['pp', 'ep']:
+##            self.sort_key = lambda ptc: ptc.pt()
     
     def process(self, event):
         store = event.input
-        
+
         def get_collection(class_object, coll_label, sort=True):
             pycoll = None
             if hasattr(self.cfg_ana, coll_label):
@@ -75,7 +76,8 @@ class Reader(Analyzer):
                         )
                 pycoll = map(class_object, coll)
                 if sort:
-                    pycoll.sort(key = self.sort_key, reverse=True)
+                    #    pycoll.sort(key = self.sort_key, reverse=True)
+                    pycoll.sort(reverse=True)
                 setattr(event, coll_label, pycoll )
             return pycoll
 
@@ -101,7 +103,7 @@ class Reader(Analyzer):
         electrons = dict()
         if hasattr(self.cfg_ana, 'electrons'):
             event.electrons = map(Particle, store.get(self.cfg_ana.electrons))
-            event.electrons.sort(key = self.sort_key, reverse=True)
+            event.electrons.sort(reverse=True)
             for ele in event.electrons:
                 ele.iso = Iso()
                 electrons[ele]=ele
@@ -113,7 +115,7 @@ class Reader(Analyzer):
         muons = dict()
         if hasattr(self.cfg_ana, 'muons'):
             event.muons = map(Particle, store.get(self.cfg_ana.muons))
-            event.muons.sort(key = self.sort_key, reverse=True)   
+            event.muons.sort(reverse=True)   
             for mu in event.muons:
                 mu.iso = Iso()
                 muons[mu]=mu

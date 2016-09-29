@@ -1,4 +1,3 @@
-from heppy.utils.deltar import deltaR
 
 class Distance(object):
     '''Concrete distance calculator.
@@ -19,7 +18,7 @@ class Distance(object):
         elif layers == ('hcal_in', 'tracker'):
             func = self.hcal_track
         elif layers == ('ecal_in', 'hcal_in'):
-            func = self.ecal_hcal
+            func = self.no_link #Alice needed to make align with cpp ecal_hcal
         elif layers == ('ecal_in', 'ecal_in'):
             func = self.ecal_ecal
         elif layers == ('hcal_in', 'hcal_in'):
@@ -39,12 +38,6 @@ class Distance(object):
         return ('ecal_in', 'ecal_in'), link_ok,  dist
 
     def hcal_hcal(self, ele1, ele2):
-        #dR = deltaR(ele1.position.Theta(),
-                    #ele1.position.Phi(),
-                    #ele2.position.Theta(),
-                    #ele2.position.Phi())
-        #link_ok = dR < ele1.angular_size() + ele2.angular_size()
-        #modified this to also deal with clusters that are merged clusters        
         link_ok, dist = ele1.is_inside_clusters(ele2)
         return ('hcal_in', 'hcal_in'), link_ok, dist 
     
@@ -65,13 +58,6 @@ class Distance(object):
         return ('hcal_in', 'tracker'), link_ok, dist
 
     def ecal_hcal(self, ele1, ele2):
-        #TODO eta or theta? 
-        #dR = deltaR(ele1.position.Theta(),
-                    #ele1.position.Phi(),
-                    #ele2.position.Theta(),
-                    #ele2.position.Phi())
-        #link_ok = dR < ele1.angular_size() + ele2.angular_size()
-        #modified this to also deal with clusters that are merged clusters        
         link_ok, dist = ele1.is_inside_clusters(ele2)    
         return ('ecal_in', 'hcal_in'), link_ok, dist 
 
