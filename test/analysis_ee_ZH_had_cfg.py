@@ -89,15 +89,19 @@ sel_iso_leptons = cfg.Analyzer(
 )
 
 
-# Rejecting events that contain a loosely isolated lepton
-from heppy.analyzers.EventFilter import EventFilter
-lepton_veto = cfg.Analyzer(
-    EventFilter,
-    'lepton_veto',
-    input_objects='sel_iso_leptons',
-    min_number=1,
-    veto=True
-)
+##Rejecting events that contain a loosely isolated lepton
+##
+##Instead of using an event filter at this stage, we store in the tree
+##the lepton with lowest energy.
+##
+##from heppy.analyzers.EventFilter import EventFilter
+##lepton_veto = cfg.Analyzer(
+##    EventFilter,
+##    'lepton_veto',
+##    input_objects='sel_iso_leptons',
+##    min_number=1,
+##    veto=True
+##)
 
 
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
@@ -132,7 +136,7 @@ jets = cfg.Analyzer(
 #         At least 2 leptons                              87      0.87    0.8700
 #         Both leptons e>30                               79      0.91    0.7900
 # For more information, check the code of the Selection class,
-from heppy.analyzers.examples.zh_had.selection import Selection
+from heppy.analyzers.examples.zh_had.Selection import Selection
 selection = cfg.Analyzer(
     Selection,
 )
@@ -155,7 +159,7 @@ sequence = cfg.Sequence(
     leptons,
     iso_leptons,
     sel_iso_leptons,
-    lepton_veto, 
+#    lepton_veto, 
     jets,
     selection
 #    zeds,
@@ -213,7 +217,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=10,
+                   nEvents=100,
                    nPrint=10,
                    timeReport=True)
     

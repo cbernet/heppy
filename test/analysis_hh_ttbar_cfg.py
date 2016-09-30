@@ -131,9 +131,9 @@ sel_jets_muon = cfg.Analyzer(
 )
 
 
-from heppy.analyzers.Btagging import Btagging
+from heppy.analyzers.examples.ttbar.BTagging import BTagging
 btagging = cfg.Analyzer(
-    Btagging,
+    BTagging,
     'b_jets_30',
     output = 'b_jets_30',
     input_objects = 'sel_jets_noelectronnomuon_30',
