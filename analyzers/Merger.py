@@ -1,10 +1,10 @@
 from heppy.framework.analyzer import Analyzer
 import copy
-
+import itertools
 
 
 class Merger(Analyzer):
-    '''Returns a new merged list from two input lists  
+    '''Merges collections of particle-like objects into a single collection 
     
         
         Example: 
@@ -12,26 +12,21 @@ class Merger(Analyzer):
         from heppy.analyzers.Merger import Merger
         merge_particles = cfg.Analyzer(
             Merger,
-            instance_label = 'merge_particles', 
-            inputA = 'papas_PFreconstruction_particles_list',
-            inputB = 'smeared_leptons',
-            output = 'rec_particles', 
+            instance_label = 'leptons', 
+            inputs = ['electrons','muons'],
+            output = 'leptons', 
         )
     
-        inputA:      list of things 
-        inputB:      list of things
-        output:      will end up containing merged list of the two above
+        inputs: names of the collections of input
+        output: collection of all particle-like objects in the input collections
         '''        
     def process(self, event):
-        inputA = getattr(event, self.cfg_ana.inputA)
-        inputB = getattr(event, self.cfg_ana.inputB)
-        
-        output = copy.copy(inputA)
-        output.extend(inputB)
+        inputs = [getattr(event, name) for name in self.cfg_ana.inputs]
+        output = list(ptc for ptc in itertools.chain(*inputs))
         if hasattr(self.cfg_ana, 'sort_key'):
             output.sort(key=self.cfg_ana.sort_key,
                         reverse=True)
-        setattr( event, self.cfg_ana.output, output)
+        setattr(event, self.cfg_ana.output, output)
         
         
         

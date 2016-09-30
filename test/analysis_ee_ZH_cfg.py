@@ -35,7 +35,7 @@ Collider.SQRTS = 240.
 
 # input definition
 comp = cfg.Component(
-    'example',
+    'ee_ZH_Zmumu_Hbb',
     files = [
         'ee_ZH_Zmumu_Hbb.root'
     ]

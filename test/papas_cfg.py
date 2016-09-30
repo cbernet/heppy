@@ -69,9 +69,9 @@ pfreconstruct = cfg.Analyzer(
 # to get separate collections of electrons and muons
 # help(Filter) for more information
 from heppy.analyzers.Filter import Filter
-select_leptons = cfg.Analyzer(
+sim_leptons = cfg.Analyzer(
     Filter,
-    'sel_all_leptons',
+    'sim_leptons',
     output = 'sim_leptons',
     input_objects = 'papas_sim_particles',
     filter_func = lambda ptc: abs(ptc.pdgid()) in [11, 13]
@@ -84,24 +84,37 @@ select_leptons = cfg.Analyzer(
 # Setting up the electron and muon models is left to the user,
 # and the LeptonSmearer is just an example
 # help(LeptonSmearer) for more information
-from heppy.analyzers.examples.zh.LeptonSmearer import LeptonSmearer
-smear_leptons = cfg.Analyzer(
-    LeptonSmearer,
-    'smear_leptons',
-    output = 'smeared_leptons',
+from heppy.analyzers.GaussianSmearer import GaussianSmearer     
+def accept_electron(ele):
+    return abs(ele.eta()) < 2.5 and ele.e() > 5.
+electrons = cfg.Analyzer(
+    GaussianSmearer,
+    'electrons',
+    output = 'electrons',
     input_objects = 'sim_leptons',
-)
+    accept=accept_electron, 
+    mu_sigma=(1, 0.1)
+    )
+
+def accept_muon(mu):
+    return abs(mu.eta()) < 2. and mu.e() > 5.
+muons = cfg.Analyzer(
+    GaussianSmearer,
+    'muons',
+    output = 'muons',
+    input_objects = 'sim_leptons',
+    accept=accept_muon, 
+    mu_sigma=(1, 0.05)
+    )
 
 
 #merge smeared leptons with the reconstructed particles
 from heppy.analyzers.Merger import Merger
 from heppy.particles.p4 import P4
-
 merge_particles = cfg.Analyzer(
     Merger,
-    instance_label = 'merge_particles', 
-    inputA = 'papas_PFreconstruction_particles_list',
-    inputB = 'smeared_leptons',
+    instance_label = 'merge_particles',
+    inputs=['papas_PFreconstruction_particles_list', 'electrons', 'muons'], 
     output = 'rec_particles',
     sort_key = P4.sort_key
 )
@@ -111,7 +124,10 @@ papas_sequence = [
     papas,
     pfblocks,
     pfreconstruct,
-    select_leptons,
-    smear_leptons, 
+    sim_leptons, 
+    electrons,
+    muons, 
+#    select_leptons,
+#    smear_leptons,
     merge_particles, 
 ]
