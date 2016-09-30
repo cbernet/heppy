@@ -12,11 +12,14 @@ import os
 import copy
 import heppy.framework.config as cfg
 
+from heppy.framework.event import Event
+Event.print_patterns=['*jet*', 'bquarks', '*higgs*', '*zed*']
+
 import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 
 # setting the random seed for reproducible results
 import heppy.statistics.rrandom as random
@@ -123,19 +126,29 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 4)  
 )
 
+genjets = cfg.Analyzer(
+    JetClusterizer,
+    output = 'genjets',
+    particles = 'gen_particles_stable',
+    fastjet_args = dict( njets = 4)  
+)
 
+bquarks = cfg.Analyzer(
+    Filter,
+    'bquarks',
+    output = 'bquarks',
+    input_objects = 'gen_particles',
+    filter_func = lambda ptc : abs(ptc.pdgid()) == 5 and ptc.status() == 23
+)
 
-# Just a basic analysis-specific event Selection module.
-# this module implements a cut-flow counter
-# After running the example as
-#    heppy_loop.py Trash/ analysis_ee_ZH_cfg.py -f -N 100 
-# this counter can be found in:
-#    Trash/example/heppy.analyzers.examples.zh_had.selection.Selection_cuts/cut_flow.txt
-# Counter cut_flow :
-#         All events                                     100      1.00    1.0000
-#         At least 2 leptons                              87      0.87    0.8700
-#         Both leptons e>30                               79      0.91    0.7900
-# For more information, check the code of the Selection class,
+from heppy.analyzers.Matcher import Matcher
+genjet_to_b_match = cfg.Analyzer(
+    Matcher,
+    match_particles = 'bquarks',
+    particles = 'genjets',
+    delta_r = 0.5
+    )
+
 from heppy.analyzers.examples.zh_had.Selection import Selection
 selection = cfg.Analyzer(
     Selection,
@@ -161,6 +174,9 @@ sequence = cfg.Sequence(
     sel_iso_leptons,
 #    lepton_veto, 
     jets,
+    bquarks,
+    genjets, 
+    genjet_to_b_match, 
     selection
 #    zeds,
 #    higgses,
@@ -217,7 +233,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=100,
+                   nEvents=10,
                    nPrint=10,
                    timeReport=True)
     

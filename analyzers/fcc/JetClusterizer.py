@@ -20,7 +20,8 @@ import math
 class JetClusterizer(Analyzer):
     '''Jet clusterizer. 
     
-    Makes use of the JetClusterizer class compiled in the analysis-cpp package. 
+    Makes use of the JetClusterizer class compiled in the analysis-cpp package
+    (this external package is the only dependence to the FCC software).
 
     Example configuration: 
 
