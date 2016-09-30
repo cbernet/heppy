@@ -28,11 +28,13 @@ class PapasPFReconstructor(Analyzer):
     def __init__(self, *args, **kwargs):
         super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
         self.detector = self.cfg_ana.detector
-        self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
+        self.reconstructed = PFReconstructor(self.detector, self.logger)
         self.blocksname =  self.cfg_ana.input_blocks
         self.historyname = self.cfg_ana.history   
-        self.output_particlesdictname = '_'.join([self.instance_label, self.cfg_ana.output_particles_dict])
-        self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
+        self.output_particlesdictname = '_'.join([self.instance_label,
+                                                  self.cfg_ana.output_particles_dict])
+        self.output_particleslistname = '_'.join([self.instance_label,
+                                                  self.cfg_ana.output_particles_list])
                 
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
@@ -51,6 +53,7 @@ class PapasPFReconstructor(Analyzer):
         
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
-                                                   key = lambda ptc: ptc.e(), reverse=True)
+                                                   key = lambda ptc: ptc.e(),
+                                                   reverse=True)
         
         setattr(event, self.output_particleslistname, reconstructed_particle_list)

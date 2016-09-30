@@ -2,6 +2,7 @@
 # https://github.com/cbernet/heppy/blob/master/LICENSE
 
 import os
+import sys
 import logging
 
 from heppy.statistics.counter import Counters
@@ -39,10 +40,21 @@ class Analyzer(object):
 
 
         # this is the main logger corresponding to the looper.
-        # each analyzer could also declare its own logger
         self.mainLogger = logging.getLogger( looperName )
-        # print self.mainLogger.handlers
+        
+        # this logger is specific to the analyzer
+        self.logger = logging.getLogger(self.name)
+        self.logger.addHandler(logging.FileHandler('/'.join([self.dirName,
+                                                             'log.txt'])))
+        self.logger.propagate = False
+        self.logger.addHandler( logging.StreamHandler(sys.stdout) )
+        log_level = logging.CRITICAL
+        if hasattr(self.cfg_ana, 'log_level'):
+            log_level = self.cfg_ana.log_level
+        self.logger.setLevel(log_level)
+
         self.beginLoopCalled = False
+
 
     def beginLoop(self, setup):
         """Automatically called by Looper, for all analyzers."""
@@ -50,6 +62,7 @@ class Analyzer(object):
         self.averages = Averages()
         self.mainLogger.info( 'beginLoop ' + self.cfg_ana.name )
         self.beginLoopCalled = True
+
 
     def endLoop(self, setup):
         """Automatically called by Looper, for all analyzers."""

@@ -16,7 +16,7 @@ import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 # setting the random seed for reproducible results
 import heppy.statistics.rrandom as random
@@ -132,11 +132,10 @@ jets = cfg.Analyzer(
 #         At least 2 leptons                              87      0.87    0.8700
 #         Both leptons e>30                               79      0.91    0.7900
 # For more information, check the code of the Selection class,
-##from heppy.analyzers.examples.zh_had.selection import Selection
-##selection = cfg.Analyzer(
-##    Selection,
-##    instance_label='cuts'
-##)
+from heppy.analyzers.examples.zh_had.selection import Selection
+selection = cfg.Analyzer(
+    Selection,
+)
 
 # Analysis-specific ntuple producer
 # please have a look at the ZHTreeProducer class
@@ -157,7 +156,8 @@ sequence = cfg.Sequence(
     iso_leptons,
     sel_iso_leptons,
     lepton_veto, 
-    jets, 
+    jets,
+    selection
 #    zeds,
 #    higgses,
 #    selection, 
