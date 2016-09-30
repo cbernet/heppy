@@ -149,6 +149,13 @@ genjet_to_b_match = cfg.Analyzer(
     delta_r = 0.5
     )
 
+from heppy.analyzers.examples.zh_had.JetEnergyComputer import JetEnergyComputer
+compute_jet_energy = cfg.Analyzer(
+    JetEnergyComputer,
+    output_jets='rescaled_jets',
+    input_jets='jets'
+    )
+
 from heppy.analyzers.examples.zh_had.Selection import Selection
 selection = cfg.Analyzer(
     Selection,
@@ -174,6 +181,7 @@ sequence = cfg.Sequence(
     sel_iso_leptons,
 #    lepton_veto, 
     jets,
+    compute_jet_energy, 
     bquarks,
     genjets, 
     genjet_to_b_match, 
