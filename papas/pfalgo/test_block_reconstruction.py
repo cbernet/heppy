@@ -382,7 +382,7 @@ class TestBlockReconstruction(unittest.TestCase):
         #(3) Give me all simulation particles attached to each reconstructed particle
         for rp in event.reconstructed_particles :
             ids=[]
-            BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"parents")    
+            BFS  =  BreadthFirstSearchIterative(event.history[rp],"parents")    
             for n in BFS.result :
                 z=n.get_value()
         
