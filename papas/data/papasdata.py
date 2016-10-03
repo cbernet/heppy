@@ -101,7 +101,7 @@ class PapasData(object):
                                 history[clust.uniqueid].add_child(history[smclust.uniqueid])
     
     
-    def merge_clusters(self):
+    def merge_clusters(self): # move elsewhere
         #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
         ruler = Distance()
         self.ecal_clusters = MergedClusterBuilder(self.smeared_ecals, ruler, self.history).merged
