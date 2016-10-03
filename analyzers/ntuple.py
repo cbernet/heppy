@@ -75,30 +75,26 @@ def fillComponent(tree, pName, component):
     
 pdgids = [211, 22, 130, 11, 13]
     
-def bookJet( tree, pName ):
+def bookJet( tree, pName, taggers=None):
     bookP4(tree, pName )
     for pdgid in pdgids:
         bookComponent(tree, '{pName}_{pdgid:d}'.format(pName=pName, pdgid=pdgid))
-    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y',\
-                    'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr', 'TCHP', 'TCHP_IP']:
-        var(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger))
-    for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
-        var(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc))
+    if taggers:
+        for tagger in taggers:
+            var(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger))
 
-def fillJet( tree, pName, jet ):
+
+def fillJet( tree, pName, jet, taggers=None):
     fillP4(tree, pName, jet )
-    for tagger in ['IP_b_LL', 'IPs_b_LL', 'TCHE', 'TCHE_IP', 'TCHE_x', 'TCHE_y',\
-                    'TCHE_z', 'TCHE_xy', 'TCHE_pt', 'TCHE_dr', 'TCHP', 'TCHP_IP']:
-        if tagger in jet.tags:
-            fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), jet.tags.get(tagger, None))
-        else:
-            fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), -99)
+    if taggers:
+        for tagger in taggers:
+            if tagger in jet.tags:
+                fill(tree,
+                     '{pName}_{tagger}'.format(pName=pName, tagger=tagger),
+                     jet.tags.get(tagger, None))
+            else:   
+                fill(tree, '{pName}_{tagger}'.format(pName=pName, tagger=tagger), -99)
                 
-    for ptc in ['K0s', 'Kp', 'L0', 'S0', 'Sp', 'Sm', 'Muons'] :
-        if ptc in jet.tags:
-            fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), jet.tags.get('{ptc}'.format(ptc=ptc), None))
-        else:
-            fill(tree, '{pName}_{ptc}'.format(pName=pName, ptc=ptc), -99)
     for pdgid in pdgids:
         component = jet.constituents.get(pdgid, None)
         if component is not None:

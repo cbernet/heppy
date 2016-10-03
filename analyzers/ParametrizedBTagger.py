@@ -3,8 +3,6 @@ from heppy.framework.analyzer import Analyzer
 class ParametrizedBTagger(Analyzer):
 
     def process(self, event):
-        print '*' * 50
-        print event
         jets = getattr(event, self.cfg_ana.input_jets)
         for jet in jets:
             is_bjet = False 
