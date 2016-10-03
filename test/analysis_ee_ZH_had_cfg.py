@@ -1,10 +1,11 @@
-'''Example configuration file for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
+'''Example configuration file for an ee->ZH analysis in the 4 jet channel,
+with the FCC-ee
 
 While studying this file, open it in ipython as well as in your editor to 
 get more information: 
 
 ipython
-from analysis_ee_ZH_cfg import * 
+from analysis_ee_ZH_had_cfg import * 
 
 '''
 
@@ -19,7 +20,7 @@ import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
-logging.basicConfig(level=logging.ERROR)
+logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
 import heppy.statistics.rrandom as random
@@ -32,7 +33,7 @@ Collider.SQRTS = 240.
 
 # input definition
 comp = cfg.Component(
-    'example',
+    'ee_ZH_Z_Hbb',
     files = [
         'ee_ZH_Z_Hbb.root'
     ]
@@ -172,20 +173,31 @@ btag = cfg.Analyzer(
     roc=cms_roc
 )
 
+from heppy.analyzers.examples.zh_had.ZHReconstruction import ZHReconstruction
+zhreco = cfg.Analyzer(
+    ZHReconstruction,
+    output_higgs='higgs',
+    output_zed='zed', 
+    input_jets='rescaled_jets'
+)
+
 from heppy.analyzers.examples.zh_had.Selection import Selection
 selection = cfg.Analyzer(
     Selection,
+    input_jets='rescaled_jets', 
+    log_level=logging.INFO
 )
 
 # Analysis-specific ntuple producer
 # please have a look at the ZHTreeProducer class
-##from heppy.analyzers.examples.zh_had.TreeProducer import TreeProducer
-##tree = cfg.Analyzer(
-##    TreeProducer,
-##    zed = 'zed',
-##    higg = 'higg',
-##    misenergy = 'missing_energy'
-##)
+from heppy.analyzers.examples.zh_had.TreeProducer import TreeProducer
+tree = cfg.Analyzer(
+    TreeProducer,
+    misenergy = 'missing_energy', 
+    jets='rescaled_jets',
+    higgs='higgs',
+    zed='zed'
+)
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -202,12 +214,11 @@ sequence = cfg.Sequence(
     genjets, 
     genjet_to_b_match,
     jet_to_genjet_match, 
-    btag, 
-    selection
-#    zeds,
-#    higgses,
-#    selection, 
-#    tree
+    btag,
+    missing_energy, 
+    selection, 
+    zhreco, 
+    tree
 )
 
 # Specifics to read FCC events 
