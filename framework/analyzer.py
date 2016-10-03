@@ -83,6 +83,11 @@ class Analyzer(object):
         Just overload it if you have histograms to write."""
         self.counters.write( self.dirName )
         self.averages.write( self.dirName )
+        if len(self.counters):
+            self.logger.info(str(self.counters))
+        if len(self.averages):
+            self.logger.info(str(self.averages))
+        
 
     def __str__(self):
         """A multipurpose printout. Should do the job for most analyzers."""
