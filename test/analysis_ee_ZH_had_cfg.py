@@ -146,8 +146,15 @@ genjet_to_b_match = cfg.Analyzer(
     Matcher,
     match_particles = 'bquarks',
     particles = 'genjets',
-    delta_r = 0.5
+    delta_r = 0.4
     )
+
+jet_to_genjet_match = cfg.Analyzer(
+    Matcher,
+    match_particles='genjets',
+    particles='rescaled_jets',
+    delta_r=0.5
+)
 
 from heppy.analyzers.examples.zh_had.JetEnergyComputer import JetEnergyComputer
 compute_jet_energy = cfg.Analyzer(
@@ -155,6 +162,15 @@ compute_jet_energy = cfg.Analyzer(
     output_jets='rescaled_jets',
     input_jets='jets'
     )
+
+from heppy.analyzers.ParametrizedBTagger import ParametrizedBTagger
+from heppy.analyzers.roc import cms_roc
+cms_roc.set_working_point(0.7)
+btag = cfg.Analyzer(
+    ParametrizedBTagger,
+    input_jets='rescaled_jets',
+    roc=cms_roc
+)
 
 from heppy.analyzers.examples.zh_had.Selection import Selection
 selection = cfg.Analyzer(
@@ -184,7 +200,9 @@ sequence = cfg.Sequence(
     compute_jet_energy, 
     bquarks,
     genjets, 
-    genjet_to_b_match, 
+    genjet_to_b_match,
+    jet_to_genjet_match, 
+    btag, 
     selection
 #    zeds,
 #    higgses,
