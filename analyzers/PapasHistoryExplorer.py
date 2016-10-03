@@ -3,7 +3,7 @@ from heppy.papas.pfalgo.pfreconstructor import PFReconstructor as PFReconstructo
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.historyhelper import HistoryHelper, HistoryPlotHelper
 
-from heppy.display.core import Display
+from heppy.display.core import Display, DoubleDisplay
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories, GHistoryBlock
 
@@ -27,7 +27,7 @@ class PapasHistory(Analyzer):
             self.init_display()        
     
     def init_display(self):
-        self.display = Display(['dag','xy','yz'])
+        self.display = DoubleDisplay(['dag','xy','yz'], pads=("simulated", "reconstructed"))
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
@@ -120,32 +120,27 @@ class PapasHistory(Analyzer):
             history=event.papasdata.history
             histplot.graph_event(history)
         
-            #whole event as ROOT
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', False), layer=2) 
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', True), layer=1) 
-            self.display.draw()        
-            gPad.SaveAs('graphs/event_' + str(event.iEv) + '_rec.png') 
-            self.display.clear() 
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', True), layer=1) 
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', False), layer=2) 
+            #whole event 
+            #reconstructed on right half
+            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', False), layer=2, sides = [1]) 
+            #self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', True), layer=1, sides = [1]) 
+            #simulated on left half
+            #self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', True), layer=1, sides = [0]) 
+            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', False), layer=2,sides = [0])
             self.display.draw()       
-            gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim.png') 
+            gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim_rec.png') 
             self.display.clear()             
             
-            #display event display for each of the history blocks 
-            for s in subgraphs:  
-                linked=hist.get_linked_object_dict(s)
-                if len(s)>20 : #for example  
-                    #not 100% right for these plots yet
-                    self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'rec_particles', False), layer=2) 
-                    self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'sim_particles', True), layer=1) 
-                    self.display.draw()        
-                    gPad.SaveAs('graphs/event_' + str(event.iEv)+ '_item_' + Identifier.pretty(s[0]) + '_rec.png') 
-                    self.display.clear()                
-            
-                    self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'rec_particles', True), layer=1) 
-                    self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'sim_particles', False), layer=2) 
-                    self.display.draw()        
-                    gPad.SaveAs('graphs/event_' + str(event.iEv) + '_item_' +  Identifier.pretty(s[0]) + '_sim.png') 
-                    self.display.clear()                                     
+            ##display event display for each of the history blocks 
+            #for s in subgraphs:  
+                #linked=hist.get_linked_object_dict(s)
+                #if len(s)>20 : #for example  
+                    ##not 100% right for these plots yet
+                    #self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'rec_particles', False), layer=2,sides = [1]) 
+                    #self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'sim_particles', True), layer=1,sides = [1]) 
+                    #self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'rec_particles', True), layer=1,sides = [0]) 
+                    #self.display.register( GHistoryBlock(s, event.simulator.detector, hist, 'sim_particles', False), layer=2,sides = [0]) 
+                    #self.display.draw()        
+                    #gPad.SaveAs('graphs/event_' + str(event.iEv) + '_item_' +  Identifier.pretty(s[0]) + '_sim_rec.png') 
+                    #self.display.clear()                                     
         pass         
