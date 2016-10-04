@@ -11,7 +11,11 @@ class JetEnergyComputer(Analyzer):
         scale_factors = [1] * 4
         output = []
         for jet, factor in zip(jets, scale_factors):
-            scaled_jet = copy.deepcopy(jet)
+            # the jets should not be deepcopied
+            # as they are heavy objects containing
+            # in particular a list of consistuent particles 
+            scaled_jet = copy.copy(jet)
+            scaled_jet._tlv = copy.deepcopy(jet._tlv)
             scaled_jet._tlv *= factor
             output.append(scaled_jet)
         setattr(event, self.cfg_ana.output_jets, output)

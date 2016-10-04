@@ -14,7 +14,8 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*jet*', 'bquarks', '*higgs*', '*zed*']
+Event.print_patterns=['*jet*', 'bquarks', '*higgs*',
+                      '*zed*', '*lep*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -81,7 +82,7 @@ iso_leptons = cfg.Analyzer(
 )
 
 # Select isolated leptons with a Filter
-def is_isolated(lepton):
+def is_isolated(lep):
     return lep.iso.sumpt/lep.pt()<0.3  # fairly loose
 
 sel_iso_leptons = cfg.Analyzer(
@@ -211,7 +212,8 @@ tree = cfg.Analyzer(
     misenergy = 'missing_energy', 
     jets='rescaled_jets',
     higgs='higgs',
-    zed='zed'
+    zed='zed',
+    leptons='sel_iso_leptons'
 )
 
 # definition of the sequence of analyzers,
