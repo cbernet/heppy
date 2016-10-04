@@ -37,9 +37,12 @@ class PapasPFBlockBuilder(Analyzer):
         
         distance = Distance()
         
-        blockbuilder = PFBlockBuilder(papasevent, distance)
-        #print blockbuilder
+        
+        uniqueids = []
+        uniqueids = list(papasevent.get_collection('st').keys()) + list(papasevent.get_collection('me').keys()) + list(papasevent.get_collection('mh').keys())   
+        uniqueids = sorted(uniqueids)
+        blockbuilder = PFBlockBuilder(uniqueids, papasevent, distance)
             
-        setattr(papasevent, "blocks", blockbuilder.blocks)
+        papasevent.add_collection(blockbuilder.blocks)
 
         

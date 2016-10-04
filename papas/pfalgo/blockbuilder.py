@@ -31,7 +31,7 @@ class BlockBuilder(GraphBuilder):
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self, ids, edges, history = None):
+    def __init__(self, ids, edges, history = None, subtype = 'r'):
         '''
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
@@ -42,7 +42,7 @@ class BlockBuilder(GraphBuilder):
         
         #given a unique id this can return the underying object
         self.history_nodes = history
-        
+        self.subtype = subtype
         super(BlockBuilder, self).__init__(ids, edges)       
 
         # build the blocks of connected nodes
@@ -59,7 +59,7 @@ class BlockBuilder(GraphBuilder):
         ''' 
         for subgraph in self.subgraphs:
             #make the block
-            block = PFBlock(subgraph,  self.edges)        
+            block = PFBlock(subgraph,  self.edges, subtype= self.subtype)        
             pdebugger.info("Made {}".format(block))
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] = block        

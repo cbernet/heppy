@@ -30,19 +30,30 @@ class PapasPFReconstructor(Analyzer):
         self.detector = self.cfg_ana.detector
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
+        
+        
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
            reconstructed paricles and updated history_nodes to the event object
            arguments:
                     event must contain blocks made using BlockBuilder'''
         
-        self.reconstructed.reconstruct(event.papasevent)
-        setattr(event.papasevent, "rec_particles", self.reconstructed.particles)
+        #todo pass these are argument
+        
+        ecals = event.papasevent.get_collection('me');
+        hcals = event.papasevent.get_collection('mh');
+        tracks = event.papasevent.get_collection('st');
+        blocks = event.papasevent.get_collection('rb');
+        
+        self.reconstructed.reconstruct(ecals, hcals , tracks, blocks, event.papasevent)
+        
+        event.papasevent.add_collection(self.reconstructed.particles)
+        event.papasevent.add_collection(self.reconstructed.splitblocks)
         
         
+        #setattr(event.papasevent, "rec_particles", self.reconstructed.particles)
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
-                                                   key = lambda ptc: ptc.e(), reverse=True)
-        
+                                                   key = lambda ptc: ptc.uniqueid )
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
 

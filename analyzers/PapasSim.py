@@ -4,6 +4,10 @@ from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
+from heppy.papas.data.identifier import Identifier
+from heppy.papas.graphtools.DAG import Node
+from heppy.papas.pfalgo.distance import Distance
+from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
 
 
 #todo following Alices merge and reconstruction work
@@ -76,6 +80,7 @@ class PapasSim(Analyzer):
         super(PapasSim, self).__init__(*args, **kwargs)
         self.detector = self.cfg_ana.detector
         self.simulator = Simulator(self.detector, self.mainLogger)
+        
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
         self.is_display = self.cfg_ana.display
         if self.is_display:
@@ -89,33 +94,102 @@ class PapasSim(Analyzer):
 
     def process(self, event):
         
-        event.simulator = self
+        papasevent = PapasEvent()
+        setattr(event, "papasevent", papasevent)
+        setattr(event, "detector", self.detector)
         if self.is_display:
             self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
+        
         try:
             self.simulator.simulate(gen_particles)
         except (PropagationError, SimulationError) as err:
             self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
         pfsim_particles = self.simulator.ptcs
-
-        if  len(pfsim_particles) == 0 : # deal with case where no particles are produced
-            return
             
-        #these are the particles before simulation   
-
         simparticles = sorted( pfsim_particles,
                                key = lambda ptc: ptc.e(), reverse=True)     
         setattr(event, self.simname, simparticles)
     
-        #create dicts of clusters, particles etc and the history
-        event.papasevent = PapasEvent(pfsim_particles)
+        #create dicts of clusters, particles etc (todo?:move a lot of this into simulator)
+        self.build_collections_and_history(event.papasevent, simparticles)
+        
+        #todo move to separate analyzer
+        self.merge_clusters(event.papasevent) #add to simulator class? 
+        
         event.papasevent.iEv = event.iEv
     
+    def build_collections_and_history(self, papasevent, sim_particles):  
+        #this should be integrated into the simulator in the future
+        simulated_particles = dict()
+        gen_stable_particles = dict()
+        tracks = dict()
+        smeared_tracks=dict()
+        smeared_hcals = dict()
+        true_hcals = dict()
+        smeared_ecals = dict()
+        true_ecals = dict()    
+        smeared_tracks = dict()
+        true_tracks = dict()            
         
-        
-       
+        history =  papasevent.history
+        for ptc in sim_particles:
+            id = ptc.uniqueid
+            simulated_particles[id] = ptc
+            history[id] = Node(id)
+            gen_id = ptc.gen_ptc.uniqueid
+            gen_stable_particles[gen_id] = ptc.gen_ptc
+            history[gen_id] = Node(gen_id)
+            history[gen_id].add_child(history[id])
+    
+            if ptc.track:
+                track_id = ptc.track.uniqueid
+                true_tracks[track_id] = ptc.track
+                history[track_id] = Node(track_id)
+                history[id].add_child(history[track_id])
+                if ptc.track_smeared:
+                    smtrack_id = ptc.track_smeared.uniqueid
+                    smeared_tracks[smtrack_id] = ptc.track_smeared
+                    history[smtrack_id] = Node(smtrack_id)
+                    history[track_id].add_child(history[smtrack_id])    
+            if len(ptc.clusters) > 0 :   
+                for key, clust in ptc.clusters.iteritems():
+                    if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
+                        true_ecals[clust.uniqueid] = clust                       
+                    elif key=="hcal_in" :
+                        true_hcals[clust.uniqueid] = clust
+                    else:
+                        assert false                    
+                    history[clust.uniqueid] = Node(clust.uniqueid)
+                    history[id].add_child(history[clust.uniqueid])  
+    
+            if len(ptc.clusters_smeared) > 0 :   
+                for key1, smclust in ptc.clusters_smeared.iteritems():
+                    if (key ==key1): 
+                        if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
+                            smeared_ecals[smclust.uniqueid]=smclust
+                        elif key=="hcal_in" :
+                            smeared_hcals[smclust.uniqueid]=smclust 
+                        history[smclust.uniqueid] = Node(smclust.uniqueid)
+                        history[clust.uniqueid].add_child(history[smclust.uniqueid])
+                            
+        papasevent.add_collection(simulated_particles)
+        papasevent.add_collection(gen_stable_particles)
+        papasevent.add_collection(tracks)
+        papasevent.add_collection(smeared_tracks)
+        papasevent.add_collection(smeared_hcals)
+        papasevent.add_collection(true_hcals)
+        papasevent.add_collection(smeared_ecals)
+        papasevent.add_collection(true_ecals)    
+        papasevent.add_collection(smeared_tracks)
+        papasevent.add_collection(true_tracks)        
 
-        
+    def merge_clusters(self, papasevent): # todo move to a separate analyzer
+               #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
+        ruler = Distance()
+        merged_ecals = MergedClusterBuilder(papasevent.get_collection('se'), ruler, papasevent.history).merged
+        merged_hcals = MergedClusterBuilder(papasevent.get_collection('sh'), ruler, papasevent.history).merged
+        papasevent.add_collection(merged_ecals)
+        papasevent.add_collection(merged_hcals)

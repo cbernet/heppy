@@ -46,7 +46,7 @@ class PapasHistory(Analyzer):
         #Colin Question2: What reconstructed particles derive from a given generated particle?
         ##eg generated charged hadron -> reconstructed photon + neutral hadron
         
-        for key, gp in event.papasevent.gen_stable_particles.iteritems():
+        for key, gp in event.papasevent.get_collection('gp').iteritems():
             #everything linked to this particle 
             pfall= hist.get_linked_objects(key) 
             rec_particles =pfall['rec_particles']
@@ -64,7 +64,7 @@ class PapasHistory(Analyzer):
                 #hist.graph_item(gp.uniqueid)
                 pass
              
-        for rp in event.papasevent.rec_particles.values():
+        for rp in event.papasevent.get_collection('rp').values():
             # Colins questions
             #(1) Given a reconstructed charged hadron, what are the linked:-
             #smeared ecals/hcals
@@ -96,7 +96,7 @@ class PapasHistory(Analyzer):
             
         #Print/graph what is connected to each rec particle (nb will be overlaps if
         #two rec particles are connected)        
-        for rp in event.papasevent.rec_particles.values():   
+        for rp in event.papasevent.get_collection('rp').values():   
             linked=hist.get_linked_objects(rp.uniqueid)
             #just produce outputs for more interesting groups
             if len(linked['blocks'])>1 or len(linked['blocks'].itervalues().next().element_uniqueids)>6 :
@@ -132,11 +132,11 @@ class PapasHistory(Analyzer):
             ##whole event 
             self.display.clear()  
             #reconstructed on right half
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', False), layer=2, sides = [1]) 
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', True), layer=1, sides = [1]) 
+            self.display.register( GHistoryBlock(history, event.detector, hist, 'rec_particles', False), layer=2, sides = [1]) 
+            self.display.register( GHistoryBlock(history, event.detector, hist, 'sim_particles', True), layer=1, sides = [1]) 
             #simulated on left half
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'rec_particles', True), layer=1, sides = [0]) 
-            self.display.register( GHistoryBlock(history, event.simulator.detector, hist, 'sim_particles', False), layer=2,sides = [0])
+            self.display.register( GHistoryBlock(history, event.detector, hist, 'rec_particles', True), layer=1, sides = [0]) 
+            self.display.register( GHistoryBlock(history, event.detector, hist, 'sim_particles', False), layer=2,sides = [0])
             self.display.draw() 
             pass
             #gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim_rec.png') 

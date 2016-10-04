@@ -16,7 +16,7 @@ class BlockSplitter(BlockBuilder):
            as it will effectively be replaced by the new blocks after the split.
            ** explain how old block fits into history node ** 
     '''
-    def __init__(self,  block, unlink_edges, history_nodes = None):
+    def __init__(self,  block, unlink_edges, history_nodes = None, subtype = 's'):
         '''arguments:
         
         blocks  : dictionary of blocks {id1:block1, id2:block2, ...}
@@ -27,7 +27,7 @@ class BlockSplitter(BlockBuilder):
         for edge in unlink_edges:
             edge.linked = False
         
-        super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes)
+        super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes, subtype = subtype)
         assert( isinstance(self.blocks,dict))
             
         #set the original block to be inactive

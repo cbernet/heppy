@@ -69,58 +69,53 @@ class PFReconstructor(object):
     def __init__(self,  detector, logger):
         self.detector = detector
         self.log = logger
+        self.ecals = dict()
+        self.hcals = dict()
+        self.tracks = dict()
+        self.particles = dict()
+        self.blocks = dict()
+        self.splitblocks = dict()
+        self.history_nodes = dict()        
     #self.reconstruct(links)
 
 
-    def reconstruct(self, papasevent):
+    def reconstruct(self, ecals, hcals, tracks, blocks, papasevent):
         '''arguments event: should contain blocks and optionally history_nodes'''
-        self.blocks = papasevent.blocks
+        
         self.unused = []
-        self.particles = dict()
         self.papasevent = papasevent
         
-        
+        self.blocks =  blocks # papasevent.get_collection('rb')
+        self.ecals = ecals
+        self.hcals = hcals
+        self.tracks = tracks
         # history nodes will be used to connect reconstructed particles into the history
         # its optional at the moment
         self.history_nodes = papasevent.history
         
         # simplify the blocks by editing the links so that each track will end up linked to at most one hcal
         # then recalculate the blocks
-        splitblocks=dict() 
-        
-        for block in self._sorted_block_keys(): #put big interesting blocks first
+    
+        for blockid in sorted(self.blocks.keys()): 
             #print "block: ", len(self.blocks[block]),  self.blocks[block].short_name();
-            newblocks=self.simplify_blocks(self.blocks[block], self.history_nodes)
-            if newblocks != None:
-                splitblocks.update( newblocks)      
-        if len(splitblocks):
-            self.blocks.update(splitblocks)
+            newblocks=self.simplify_blocks(self.blocks[blockid], self.history_nodes)
+            self.splitblocks.update( newblocks)      
+    
         
             
         #reconstruct each of the resulting blocks        
-        for b in self._sorted_block_keys():  #put big interesting blocks first
-            block=self.blocks[b]
-            if block.is_active: # when blocks are split the original gets deactivated                
-                #ALICE debugging
-                #if len(block.element_uniqueids)<6:
-                #    continue
-                pdebugger.info('Processing {}'.format(block))
-                self.reconstruct_block(block)                
-                self.unused.extend( [id for id in block.element_uniqueids if not self.locked[id]])
+        for b in sorted(self.splitblocks.keys()):  #put big interesting blocks first
+            sblock=self.splitblocks[b]
+            pdebugger.info('Processing {}'.format(sblock))
+            self.reconstruct_block(sblock)                
+            self.unused.extend( [id for id in sblock.element_uniqueids if not self.locked[id]])
                 
         #check if anything is unused
         if len(self.unused):
             self.log.warning(str(self.unused))
         self.log.info("Particles:")
         self.log.info(str(self))        
-            
-      
-    def _sorted_block_keys(self) :
-        #sort blocks (1) by number of elements (2) by mix of ecal, hcal , tracks (the shortname will look like "H1T2" for a block
-        #Alice temporary to match cpp
-        #return sorted(self.blocks.keys(), key=lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_name()),reverse =True)
-        #newsort
-        return sorted(self.blocks.keys());
+
             
     def simplify_blocks(self, block, history_nodes=None):
         
@@ -137,33 +132,28 @@ class PFReconstructor(object):
         '''
         
         ids=block.element_uniqueids
+        to_unlink = []
         
+        if len(ids) > 1 :    #no links to remove
+            # work out any links that need to be removed    
+            #   - for tracks unink all hcals except the closest hcal
+            #   - for ecals unlink hcals        
+            for id in ids :
+                if Identifier.is_track(id):
+                    linked = block.linked_edges(id,"hcal_track") # NB already sorted from small to large distance
+                    if linked!=None and len(linked)>1 :
+                        first_hcal = True
+                        for elem in linked:
+                            if first_hcal:
+                                first_dist=elem.distance
+                                first_hcal = False
+                            else:
+                                if (elem.distance==first_dist):
+                                    pass
+                                to_unlink.append(elem)
         
-        if len(ids)<=1 :    #no links to remove
-            return  None    
-        
-        # work out any links that need to be removed    
-        #   - for tracks unink all hcals except the closest hcal
-        #   - for ecals unlink hcals
-        to_unlink = []        
-        for id in ids :
-            if Identifier.is_track(id):
-                linked = block.linked_edges(id,"hcal_track") # NB already sorted from small to large distance
-                if linked!=None and len(linked)>1 :
-                    first_hcal = True
-                    for elem in linked:
-                        if first_hcal:
-                            first_dist=elem.distance
-                            first_hcal = False
-                        else:
-                            if (elem.distance==first_dist):
-                                pass
-                            to_unlink.append(elem)
-        
-        #if there is something to unlink then use the BlockSplitter        
-        splitblocks=None        
-        if len(to_unlink):
-            splitblocks= BlockSplitter(block, to_unlink, history_nodes).blocks
+        #if there is something to unlink then use the BlockSplitter              
+        splitblocks = BlockSplitter(block, to_unlink, history_nodes, subtype = 's').blocks
         
         return splitblocks
             
@@ -182,13 +172,13 @@ class PFReconstructor(object):
             id = ids[0]
             
             if Identifier.is_ecal(id):
-                self.insert_particle(block, self.reconstruct_cluster(self.papasevent.ecal_clusters[id],"ecal_in"))
+                self.insert_particle(block, self.reconstruct_cluster(self.ecals[id],"ecal_in"))
                 
             elif Identifier.is_hcal(id):
-                self.insert_particle(block, self.reconstruct_cluster(self.papasevent.hcal_clusters[id],"hcal_in"))
+                self.insert_particle(block, self.reconstruct_cluster(self.hcals[id],"hcal_in"))
                 
             elif Identifier.is_track(id):
-                self.insert_particle(block, self.reconstruct_track(self.papasevent.tracks[id]))
+                self.insert_particle(block, self.reconstruct_track(self.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
             for id in sorted(ids) : #newsort
@@ -199,7 +189,7 @@ class PFReconstructor(object):
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
                 # ELECTRONS TO BE DEALT WITH.
-                    self.insert_particle(block, self.reconstruct_track(self.papasevent.tracks[id]))
+                    self.insert_particle(block, self.reconstruct_track(self.tracks[id]))
                     
                     # tracks possibly linked to ecal->locking cluster
                     for idlink in block.linked_ids(id,"ecal_track"):
@@ -299,7 +289,7 @@ class PFReconstructor(object):
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
         ecals = []
-        hcal =self.papasevent.hcal_clusters[hcalid]
+        hcal =self.hcals[hcalid]
         
         assert(len(block.linked_ids(hcalid, "hcal_hcal"))==0  )
 
@@ -308,14 +298,14 @@ class PFReconstructor(object):
         #trackids =    block.sort_distance_energy(hcalid, trackids )  
         trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
         for trackid in trackids:
-            tracks.append(self.papasevent.tracks[trackid])
+            tracks.append(self.tracks[trackid])
             for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
                 # Maybe we want to link ecals to their closest track etc?
                 # this might help with history work
                 # ask colin.
                 if not self.locked[ecalid]:
-                    ecals.append(self.papasevent.ecal_clusters[ecalid])
+                    ecals.append(self.ecals[ecalid])
                     self.locked[ecalid]  = True
                 # hcal should be the only remaining linked hcal cluster (closest one)
                 #thcals = [th for th in elem.linked if th.layer=='hcal_in']

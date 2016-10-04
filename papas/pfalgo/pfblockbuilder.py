@@ -28,12 +28,12 @@ class PFBlockBuilder(BlockBuilder):
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self,  papasevent, ruler):
+    def __init__(self,  uniqueids, papasevent, ruler, subtype ='r'):
         '''
        
             tracks is a dictionary : {id1:track1, id2:track2, ...}
-            ecal_clusters is a dictionary : {id1:ecal1, id2:ecal2, ...}
-            hcal_clusters is a dictionary : {id1:hcal1, id2:hcal2, ...}
+            ecals is a dictionary : {id1:ecal1, id2:ecal2, ...}
+            hcals is a dictionary : {id1:hcal1, id2:hcal2, ...}
             get_object() which allows a cluster or track to be found from its id
             history is a dictionary of Nodes : { id:Node1, id: Node2 etc}
                 containing the simulation history 
@@ -52,14 +52,9 @@ class PFBlockBuilder(BlockBuilder):
                 distance = float
         '''
         
-        #given a unique id this can return the underying object
-        self.papasevent = papasevent
-
-        # collate all the ids of tracks and clusters and, if needed, make history nodes
-        uniqueids = []
-        uniqueids = list(papasevent.tracks.keys()) + list(papasevent.ecal_clusters.keys()) + list(papasevent.hcal_clusters.keys()) 
+        
         uniqueids = sorted(uniqueids)
-
+        self.papasevent = papasevent
         self.history_nodes = papasevent.history
         if self.history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
@@ -75,7 +70,7 @@ class PFBlockBuilder(BlockBuilder):
                     edges[edge.key] = edge
 
         #use the underlying BlockBuilder to construct the blocks        
-        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes)
+        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes, subtype = subtype)
 
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items

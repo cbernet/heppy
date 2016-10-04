@@ -38,8 +38,6 @@ class SimulationEvent(Event):
         self.gen_hcals = dict()
         self.smeared_ecals = dict()
         self.smeared_hcals = dict()
-        self.merged_ecals = dict()
-        self.merged_hcals = dict()
         self.sim_particles = dict()
         self.gen_stable_particles = dict()
         

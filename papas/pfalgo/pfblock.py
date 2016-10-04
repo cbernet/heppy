@@ -27,7 +27,7 @@ class PFBlock(object):
     temp_block_count = 0 #sequential numbering of blocks, not essential but helpful for debugging
 
     
-    def __init__(self, element_ids, edges): 
+    def __init__(self, element_ids, edges, subtype = 'r'): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
             edges: is a dictionary of edges, it must contain at least all needed edges.
@@ -36,12 +36,10 @@ class PFBlock(object):
            
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, 'r') 
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype) 
         self.is_active = True # if a block is subsequently split it will be deactivated
         
-        #todo energy via identifier
-        #comment out energy for now as not available C++
-        self.element_uniqueids = sorted(element_ids, key = lambda  x: Identifier.type_short_code(x)) #,-self.pfevent.get_object(x).energy) )
+        self.element_uniqueids = sorted(element_ids, key = lambda  x: Identifier.type_short_code(x)) 
 
         #comment out energy sorting  for now as not available C++
         sortby = lambda x: Identifier.type_short_code(x)
