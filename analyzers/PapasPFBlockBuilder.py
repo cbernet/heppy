@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-from heppy.papas.data.papasdata import PapasData
+from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.pfalgo.distance  import Distance
 
 
@@ -33,13 +33,13 @@ class PapasPFBlockBuilder(Analyzer):
                 
     def process(self, event):
         
-        papasdata = event.papasdata
+        papasevent = event.papasevent
         
         distance = Distance()
         
-        blockbuilder = PFBlockBuilder(papasdata, distance)
+        blockbuilder = PFBlockBuilder(papasevent, distance)
         #print blockbuilder
             
-        setattr(papasdata, "blocks", blockbuilder.blocks)
+        setattr(papasevent, "blocks", blockbuilder.blocks)
 
         

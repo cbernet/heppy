@@ -40,13 +40,13 @@ class PapasHistory(Analyzer):
         
         #experimental for the timebeing
         
-        hist = HistoryHelper(event.papasdata)
-        histplot = HistoryPlotHelper(event.papasdata)
+        hist = HistoryHelper(event.papasevent)
+        histplot = HistoryPlotHelper(event.papasevent)
         
         #Colin Question2: What reconstructed particles derive from a given generated particle?
         ##eg generated charged hadron -> reconstructed photon + neutral hadron
         
-        for key, gp in event.papasdata.gen_stable_particles.iteritems():
+        for key, gp in event.papasevent.gen_stable_particles.iteritems():
             #everything linked to this particle 
             pfall= hist.get_linked_objects(key) 
             rec_particles =pfall['rec_particles']
@@ -64,7 +64,7 @@ class PapasHistory(Analyzer):
                 #hist.graph_item(gp.uniqueid)
                 pass
              
-        for rp in event.papasdata.rec_particles.values():
+        for rp in event.papasevent.rec_particles.values():
             # Colins questions
             #(1) Given a reconstructed charged hadron, what are the linked:-
             #smeared ecals/hcals
@@ -96,7 +96,7 @@ class PapasHistory(Analyzer):
             
         #Print/graph what is connected to each rec particle (nb will be overlaps if
         #two rec particles are connected)        
-        for rp in event.papasdata.rec_particles.values():   
+        for rp in event.papasevent.rec_particles.values():   
             linked=hist.get_linked_objects(rp.uniqueid)
             #just produce outputs for more interesting groups
             if len(linked['blocks'])>1 or len(linked['blocks'].itervalues().next().element_uniqueids)>6 :
@@ -119,7 +119,7 @@ class PapasHistory(Analyzer):
         #output graphics        
         if self.is_display  :
             #whole event as DAG
-            history=event.papasdata.history
+            history=event.papasevent.history
             histplot.graph_event(history)
             
             #old style plots

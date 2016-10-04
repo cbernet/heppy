@@ -36,8 +36,8 @@ class PapasPFReconstructor(Analyzer):
            arguments:
                     event must contain blocks made using BlockBuilder'''
         
-        self.reconstructed.reconstruct(event.papasdata)
-        setattr(event.papasdata, "rec_particles", self.reconstructed.particles)
+        self.reconstructed.reconstruct(event.papasevent)
+        setattr(event.papasevent, "rec_particles", self.reconstructed.particles)
         
         
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare

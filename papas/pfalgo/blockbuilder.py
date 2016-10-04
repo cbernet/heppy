@@ -36,7 +36,7 @@ class BlockBuilder(GraphBuilder):
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
                 an edge records the distance/link between two ids
-        papasdata : set of dicts that can be accessed via id
+        papasevent : set of dicts that can be accessed via id
        
         '''
         

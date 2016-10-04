@@ -24,11 +24,11 @@ class PFBlockBuilder(BlockBuilder):
         
         Usage example:
 
-            builder = PFBlockBuilder(papasdata, ruler)
+            builder = PFBlockBuilder(papasevent, ruler)
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self,  papasdata, ruler):
+    def __init__(self,  papasevent, ruler):
         '''
        
             tracks is a dictionary : {id1:track1, id2:track2, ...}
@@ -53,14 +53,14 @@ class PFBlockBuilder(BlockBuilder):
         '''
         
         #given a unique id this can return the underying object
-        self.papasdata = papasdata
+        self.papasevent = papasevent
 
         # collate all the ids of tracks and clusters and, if needed, make history nodes
         uniqueids = []
-        uniqueids = list(papasdata.tracks.keys()) + list(papasdata.ecal_clusters.keys()) + list(papasdata.hcal_clusters.keys()) 
+        uniqueids = list(papasevent.tracks.keys()) + list(papasevent.ecal_clusters.keys()) + list(papasevent.hcal_clusters.keys()) 
         uniqueids = sorted(uniqueids)
 
-        self.history_nodes = papasdata.history
+        self.history_nodes = papasevent.history
         if self.history_nodes is None:
             self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
@@ -90,8 +90,8 @@ class PFBlockBuilder(BlockBuilder):
             objects. 
         '''
         #find the original items and pass to the ruler to get the distance info
-        obj1 = self.papasdata.get_object(id1)
-        obj2 = self.papasdata.get_object(id2)
+        obj1 = self.papasevent.get_object(id1)
+        obj2 = self.papasevent.get_object(id2)
         link_type, is_linked, distance = ruler(obj1,obj2) #some redundancy in link_type as both distance and Edge make link_type
                                                           #not sure which to get rid of
         

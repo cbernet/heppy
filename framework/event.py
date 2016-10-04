@@ -72,7 +72,7 @@ class Event(object):
                     stripped_attrs[name].append('...')
                     stripped_attrs[name].append(value[-1])
             #todo discuss best way with Colin
-            if name == 'papasdata':
+            if name == 'papasevent':
                 #for item in str(value)
                 stripped_attrs[name]= [ ]
                 for subname, subvalue in value.lines().iteritems():

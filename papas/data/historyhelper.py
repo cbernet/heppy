@@ -8,10 +8,10 @@ class HistoryHelper(object):
        Object to assist with printing and reconstructing histories
        only just started ...
     '''    
-    def __init__(self, papasdata):
+    def __init__(self, papasevent):
         #this information information needed to be able to unravel information based on a unique identifier
-        self.history_nodes = papasdata.history
-        self.papasdata = papasdata
+        self.history_nodes = papasevent.history
+        self.papasevent = papasevent
                   
     
     def summary_string_ids(self, nodeids):
@@ -47,7 +47,7 @@ class HistoryHelper(object):
         rec_particles = {}
         blocks = {}       
         for id in ids:
-            obj = self.papasdata.get_object(id)
+            obj = self.papasevent.get_object(id)
             if Identifier.is_block(id):
                 blocks[id] = obj            
             elif Identifier.is_track(id):
@@ -100,10 +100,10 @@ class HistoryHelper(object):
         return self.subgraphs
  
 class HistoryPlotHelper(object):
-    def __init__(self, papasdata):
+    def __init__(self, papasevent):
         #this information information needed to be able to unravel information based on a unique identifier
-        self.history_nodes = papasdata.history
-        self.papasdata = papasdata      
+        self.history_nodes = papasevent.history
+        self.papasevent = papasevent      
         
     def short_name(self, node):
         z = node.get_value()
@@ -128,7 +128,7 @@ class HistoryPlotHelper(object):
 
     def object(self, node):
         z = node.get_value()
-        return self.papasdata.get_object(z) 
+        return self.papasevent.get_object(z) 
               
     def graph_items (self, ids):
         #DAG plot for set of ids
@@ -136,7 +136,7 @@ class HistoryPlotHelper(object):
         #   ids: list of uniqueids
         graph = pydot.Dot(graph_type='digraph')   
         self._graph_ids(ids, graph)
-        namestring='graphs/event_' + str(self.papasdata.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
+        namestring='graphs/event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
     
     def graph_event(self, nodeids): 
@@ -145,7 +145,7 @@ class HistoryPlotHelper(object):
          #   ids: list of uniqueids  for full event      
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(nodeids, graph)
-        namestring = 'graphs/event_' + str(self.papasdata.iEv)  + '_dag.png'
+        namestring = 'graphs/event_' + str(self.papasevent.iEv)  + '_dag.png'
         graph.write_png(namestring)    
         
     def _graph_add_block (self,graph, graphnodes, pfblock):
@@ -186,7 +186,7 @@ class HistoryPlotHelper(object):
         graph.Draw()
         can.Draw()
         gPad.Update()
-        gPad.SaveAs('event_' + str(self.papasdata.iEv) + '_root_dag.png')   
+        gPad.SaveAs('event_' + str(self.papasevent.iEv) + '_root_dag.png')   
         pass
     
     def graph_items_root (self, ids):
@@ -198,7 +198,7 @@ class HistoryPlotHelper(object):
         graph.Draw()
         can.Draw()
         gPad.Update()
-        gPad.SaveAs('event_' + str(self.papasdata.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
+        gPad.SaveAs('event_' + str(self.papasevent.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
         
     
     def _graph_ids_root (self, nodeids,graph ):  

@@ -1,8 +1,8 @@
 class HistoryPlotter(object):
-    def __init__(self, papasdata):
+    def __init__(self, papasevent):
         #this information information needed to be able to unravel information based on a unique identifier
-        self.history_nodes = papasdata.history
-        self.papasdata = papasdata      
+        self.history_nodes = papasevent.history
+        self.papasevent = papasevent      
         
     def plot_event(self, event):
         z = node.get_value()
@@ -27,7 +27,7 @@ class HistoryPlotter(object):
 
     def object(self, node):
         z = node.get_value()
-        return self.papasdata.get_object(z) 
+        return self.papasevent.get_object(z) 
               
     def graph_items (self, ids):
         #DAG plot for set of ids
@@ -35,7 +35,7 @@ class HistoryPlotter(object):
         #   ids: list of uniqueids
         graph = pydot.Dot(graph_type='digraph')   
         self._graph_ids(ids, graph)
-        namestring='graphs/event_' + str(self.papasdata.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
+        namestring='graphs/event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
     
     def graph_event(self, nodeids): 
@@ -44,7 +44,7 @@ class HistoryPlotter(object):
          #   ids: list of uniqueids  for full event      
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(nodeids, graph)
-        namestring = 'graphs/event_' + str(self.papasdata.iEv)  + '_dag.png'
+        namestring = 'graphs/event_' + str(self.papasevent.iEv)  + '_dag.png'
         graph.write_png(namestring)    
         
     def _graph_add_block (self,graph, graphnodes, pfblock):
@@ -85,7 +85,7 @@ class HistoryPlotter(object):
         graph.Draw()
         can.Draw()
         gPad.Update()
-        gPad.SaveAs('event_' + str(self.papasdata.iEv) + '_root_dag.png')   
+        gPad.SaveAs('event_' + str(self.papasevent.iEv) + '_root_dag.png')   
         pass
     
     def graph_items_root (self, ids):
@@ -97,7 +97,7 @@ class HistoryPlotter(object):
         graph.Draw()
         can.Draw()
         gPad.Update()
-        gPad.SaveAs('event_' + str(self.papasdata.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
+        gPad.SaveAs('event_' + str(self.papasevent.iEv)+ '_item_' + Identifier.pretty(ids[0]) + '_root_dag.png')   
         
     
     def _graph_ids_root (self, nodeids,graph ):  

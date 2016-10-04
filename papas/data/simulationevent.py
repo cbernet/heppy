@@ -11,9 +11,10 @@ from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
+from heppy.framework.event import Event
 
 
-class PapasData(object):
+class SimulationEvent(Event):
     '''Builds the inputs to particle flow from a collection of simulated particles:
     - collects all smeared tracks and clusters
     - merges overlapping clusters 
@@ -33,21 +34,19 @@ class PapasData(object):
         '''
         self.tracks = dict()
         self.gen_tracks = dict()
-        self.ecal_clusters = dict()
-        self.hcal_clusters = dict()
         self.gen_ecals = dict()
         self.gen_hcals = dict()
         self.smeared_ecals = dict()
         self.smeared_hcals = dict()
-        self.history = dict()
+        self.merged_ecals = dict()
+        self.merged_hcals = dict()
         self.sim_particles = dict()
         self.gen_stable_particles = dict()
-        self.history = dict()
         
-        self.build(ptcs)
-        self.merge_clusters()
         
-    def build(self, sim_particles):
+        
+        
+    def build(self, sim_particles): #temporary
     
         if  len(sim_particles) == 0 : # deal with case where no particles are produced
             return
@@ -59,26 +58,19 @@ class PapasData(object):
         #construct dictionaries of particles, clusters etc
         #and simulataneously construct the history from the simulated particles
         
-        history = self.history
+        
         for ptc in sim_particles:
             id = ptc.uniqueid
             self.sim_particles[id] = ptc
-            history[id] = Node(id)
             gen_id = ptc.gen_ptc.uniqueid
             self.gen_stable_particles[gen_id] = ptc.gen_ptc
-            history[gen_id] = Node(gen_id)
-            history[gen_id].add_child(history[id])
     
             if ptc.track:
                 track_id = ptc.track.uniqueid
                 self.gen_tracks[track_id] = ptc.track
-                history[track_id] = Node(track_id)
-                history[id].add_child(history[track_id])
                 if ptc.track_smeared:
                     smtrack_id = ptc.track_smeared.uniqueid
                     self.tracks[smtrack_id] = ptc.track_smeared
-                    history[smtrack_id] = Node(smtrack_id)
-                    history[track_id].add_child(history[smtrack_id])    
             if len(ptc.clusters) > 0 :   
                 for key, clust in ptc.clusters.iteritems():
                     if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
@@ -87,9 +79,7 @@ class PapasData(object):
                         self.gen_hcals[clust.uniqueid] = clust
                     else:
                         assert false                    
-                    history[clust.uniqueid] = Node(clust.uniqueid)
-                    history[id].add_child(history[clust.uniqueid])  
-    
+                    
                     if len(ptc.clusters_smeared) > 0 :   
                         for key1, smclust in ptc.clusters_smeared.iteritems():
                             if (key ==key1): 
@@ -97,15 +87,56 @@ class PapasData(object):
                                     self.smeared_ecals[smclust.uniqueid]=smclust
                                 elif key=="hcal_in" :
                                     self.smeared_hcals[smclust.uniqueid]=smclust 
+        
+        self.merge_clusters() #add to simulator class?                  
+    
+    
+    def make_history(self, history): # temporary
+        history = dict()
+        for ptc in sim_particles:
+            id = ptc.uniqueid
+            self.sim_particles[id] = ptc
+            history[id] = Node(id)
+            gen_id = ptc.gen_ptc.uniqueid
+            history[gen_id] = Node(gen_id)
+            history[gen_id].add_child(history[id])
+    
+            if ptc.track:
+                track_id = ptc.track.uniqueid
+                history[track_id] = Node(track_id)
+                history[id].add_child(history[track_id])
+                if ptc.track_smeared:
+                    smtrack_id = ptc.track_smeared.uniqueid
+                    history[smtrack_id] = Node(smtrack_id)
+                    history[track_id].add_child(history[smtrack_id])    
+            if len(ptc.clusters) > 0 :   
+                for key, clust in ptc.clusters.iteritems():              
+                    history[clust.uniqueid] = Node(clust.uniqueid)
+                    history[id].add_child(history[clust.uniqueid])  
+    
+                    if len(ptc.clusters_smeared) > 0 :   
+                        for key1, smclust in ptc.clusters_smeared.iteritems():
+                            if (key ==key1): 
                                 history[smclust.uniqueid] = Node(smclust.uniqueid)
-                                history[clust.uniqueid].add_child(history[smclust.uniqueid])
-    
-    
+                                history[clust.uniqueid].add_child(history[smclust.uniqueid])    
+            if len(self.merged_ecals):
+                for key, clust in self.merged_ecals.iteritems():
+                    history[clust.uniqueid] = Node(clust.uniqueid)
+                    for clusterid in clust.subclusterids():
+                        history[clusterid].add_child(history[clust.uniqueid])
+                
+            if len(self.merged_hcals):
+                for key, clust in self.merged_hcals.iteritems():
+                    history[clust.uniqueid] = Node(clust.uniqueid)
+                    for clusterid in clust.subclusterids():
+                        history[clusterid].add_child(history[clust.uniqueid])   
+        return history
+
     def merge_clusters(self): # move elsewhere
         #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
         ruler = Distance()
-        self.ecal_clusters = MergedClusterBuilder(self.smeared_ecals, ruler, self.history).merged
-        self.hcal_clusters = MergedClusterBuilder(self.smeared_hcals, ruler, self.history).merged
+        self.merged_ecals = MergedClusterBuilder(self.smeared_ecals, ruler, None).merged
+        self.merged_hcals = MergedClusterBuilder(self.smeared_hcals, ruler, None).merged
         
 
 
@@ -186,7 +217,7 @@ class PapasData(object):
         return stripped_attrs
                 
     def __str__(self):
-        header = 'PapasData:'
+        header = 'PapasEvent:'
         stripped_attrs = self.lines()
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])

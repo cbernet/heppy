@@ -11,7 +11,7 @@ class PFBlock(object):
 
      uniqueid : the block's unique id generated from Identifier class
      element_uniqueids : list of uniqueids of its elements
-     papasdata : contains the tracks and clusters and a get_object method to allow access to the
+     papasevent : contains the tracks and clusters and a get_object method to allow access to the
                underlying objects given their uniqueid
      edges : Dictionary of all the edge cominations in the block dict{edgekey : Edge}
              use  get_edge(id1,id2) to find an edge
@@ -20,7 +20,7 @@ class PFBlock(object):
      Usage:
             block = PFBlock(element_ids,  edges) 
             for uid in block.element_uniqueids:
-                 print papasdata.get_object(uid).__str__() + "\n"
+                 print papasevent.get_object(uid).__str__() + "\n"
             
      '''
 

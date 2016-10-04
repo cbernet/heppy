@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
-from heppy.papas.data.papasdata import PapasData
+from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -17,7 +17,7 @@ from heppy.display.geometry import GDetector
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
     
-    #This will need to redocumented once new papasdata structure arrives
+    #This will need to redocumented once new papasevent structure arrives
 
     Example configuration:
 
@@ -111,8 +111,8 @@ class PapasSim(Analyzer):
         setattr(event, self.simname, simparticles)
     
         #create dicts of clusters, particles etc and the history
-        event.papasdata = PapasData(pfsim_particles)
-        event.papasdata.iEv = event.iEv
+        event.papasevent = PapasEvent(pfsim_particles)
+        event.papasevent.iEv = event.iEv
     
         
         
