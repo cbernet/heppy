@@ -4,6 +4,7 @@ import copy
 class JetEnergyComputer(Analyzer):
     
     def process(self, event):
+        sqrts = self.cfg_ana.sqrts
         jets = getattr(event, self.cfg_ana.input_jets)
         assert(len(jets) == 4)
         # here solve the equation to get the energy scale factor for each jet.
