@@ -83,8 +83,8 @@ class PapasSim(Analyzer):
         
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
         self.is_display = self.cfg_ana.display
-        if self.is_display:
-            self.init_display()
+        #if self.is_display:
+            #self.init_display()
 
     def init_display(self):
         self.display = Display(['xy', 'yz'])
@@ -97,8 +97,8 @@ class PapasSim(Analyzer):
         papasevent = PapasEvent()
         setattr(event, "papasevent", papasevent)
         setattr(event, "detector", self.detector)
-        if self.is_display:
-            self.display.clear()
+        #if self.is_display:
+        #    self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         

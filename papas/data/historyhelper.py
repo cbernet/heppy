@@ -3,8 +3,25 @@ from heppy.papas.data.identifier import Identifier
 
 class HistoryHelper(object):
     '''   
-       Object to assist with printing and reconstructing histories
-       only just started ...
+       Object to assist with printing and reconstructing histories.
+       It allows extraction of information from the papasevent
+       
+       Usage:
+       hist = HistoryHelper(papasevent)
+       print hist.summary_string_event()
+          
+       rec_particles = self.get_collection('rp').values()
+       #select a reconstructed particle and see what simulated particles are linked to it
+       uid = rec_particles.keys()[0].uniqueid
+       sim_particles = self.get_matched_linked_collection(uid,'sp')
+     
+       #see also examples subroutine below
+       
+       #note the following
+         
+
+          
+       
     '''    
     def __init__(self, papasevent):
         #this information information needed to be able to unravel information based on a unique identifier
@@ -12,10 +29,19 @@ class HistoryHelper(object):
         self.papasevent = papasevent
         
         
-    def event_ids(self):
+    def event_ids(self): 
+        ''' 
+           returns all the ids in the event
+        '''
         return self.history.keys();
     
     def get_linked_ids(self, id, direction="undirected"):
+        '''
+        returns all ids linked to a given id
+        arguments:
+            id = 
+        
+        '''
         BFS = BreadthFirstSearchIterative(self.history[id], direction)
         return [v.get_value() for v in BFS.result] 
     
@@ -32,18 +58,30 @@ class HistoryHelper(object):
         return self.papasevent.get_collection(subtype)
         
     def get_matched_collection(self, ids, subtype):
+        '''return a collection of objects that corresponds to those ids which have the selected subtype
+           ids wich have a different subtype will be ignored.
+        '''        
         matchids = self.get_matched_ids(ids, subtype)  
         maindict = self.get_collection(subtype)
         return { id: maindict[id] for id in matchids}
         
     def get_matched_linked_collection(self, id, subtype, direction="undirected"):
+        '''Get all ids that are linked to the id and have the required subtype
+         
+        arguments:
+        id  = unique identifier
+        subtype = type of object (see header)
+        direction = "undirected"/"parents"/"children"
+    
+        '''
         ids = self.get_linked_ids(id)
         return self.get_matched_collection(ids, subtype)   
     
     def summary_string_ids(self, ids, types = ['gp', 'gt', 'st', 'ge', 'se', 'me', 'gh', 'sh', 'mh', 'rp'], 
                            labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
                   "smeared_hcals","gen_hcals","rec_particles"]):
-        #details all the components in the ids list
+        ''' String to describe the components corresponding to the selected ids
+        '''
         makestring=""
         for i in range(len(types)):
             objdict = self.get_matched_collection(ids, types[i])
@@ -54,12 +92,15 @@ class HistoryHelper(object):
     def summary_string_event(self, types = ['gp', 'gt', 'st', 'ge', 'se', 'me', 'gh', 'sh', 'mh', 'rp'], 
                        labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
                       "smeared_hcals","gen_hcals","rec_particles"]):
-        #details all the components in the papsevent
+        ''' String to describe the papas event
+        '''
         ids = self.event_ids()
         return self.summary_string_ids(ids, types, labels)
     
     def summary_string_subgroups(self, top = None):
-        #Go through whole event and Print anything that is more "interesting" 
+        ''' Divide the event into connected subgroups
+            Produce a summary string for the biggest "top" subgroups
+        '''
         subgraphs=self.get_history_subgroups()  
         result= "Subgroups: \n"
         if top is None:
@@ -69,6 +110,9 @@ class HistoryHelper(object):
         return result    
     
     def get_history_subgroups(self): #get subgroups of linked nodes, largest subgroup first
+        ''' Divide the event into connected subgroups 
+            each subgroup is a list of ids
+        '''        
         self.subgraphs = []
         for subgraphlist in DAGFloodFill(self.history).blocks: # change to subgraphs
             element_ids = [node.get_value() for node in subgraphlist]            
@@ -77,14 +121,13 @@ class HistoryHelper(object):
         return self.subgraphs
     
     def examples(self) :
-        # Colins questions
-        #(1) Given a reconstructed charged hadron, what are the linked:-
-        #           smeared ecals/hcals/tracks etc
-        #(2) What reconstructed particles derive from a given generated particle?
-        #
-        #(3) Given a reconstructed particle, what simulated particles did it derive from?          
-        #eg generated charged hadron -> reconstructed photon + neutral hadron
-    
+        '''Colins questions
+        (1) Given a reconstructed charged hadron, what are the linked:-
+                  smeared ecals/hcals/tracks etc
+        (2) What reconstructed particles derive from a given generated particle?
+        
+        (3) Given a reconstructed particle, what simulated particles did it derive from?          
+        eg generated charged hadron -> reconstructed photon + neutral hadron'''
         #question 2
         for id, gp in self.papasevent.get_collection('gp').iteritems():
             all_linked_ids = self.get_linked_ids(id) 

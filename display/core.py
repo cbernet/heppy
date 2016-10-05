@@ -2,7 +2,6 @@ from ROOT import TCanvas, TH1, TH2F
 import operator
 import math
 import os
-from heppy.papas.pfobjects import Cluster
 
 class Display(object):
     
@@ -89,7 +88,7 @@ class ViewPane(object):
             
         #self.canvas = TCanvas(name, name, tx, ty, width *dx, height*dy)
         self.canvas = TCanvas(name, name, tx, ty, width *dx, height*dy)
-        self.canvas.SetRightMargin(0.);
+        self.canvas.SetRightMargin(0.)
         self.canvas.SetLeftMargin(0.)
         self.canvas.SetTopMargin(0.) 
         self.canvas.SetBottomMargin(0.) 
@@ -98,7 +97,6 @@ class ViewPane(object):
             
         for x in range(0, self.npads):
             c1=self.canvas.cd(x+1)
-            pad = c1.GetPad(1)
             c1.SetLeftMargin(0.0015)  
             c1.SetRightMargin(0.0015)  
             c1.SetTopMargin(0.0015)  
@@ -122,9 +120,12 @@ class ViewPane(object):
         
     def draw(self):
         for x in range(0, self.npads):
-            self.canvas.cd(x+1)
-            self.pads[x].draw()
-        self.canvas.Update()
+            if self.canvas is None:
+                pass
+            else:
+                self.canvas.cd(x+1)
+                self.pads[x].draw()
+                self.canvas.Update()
 
     #def zoom(self, xmin, xmax, ymin, ymax):
         #self.hist.GetXaxis().SetRangeUser(xmin, xmax)

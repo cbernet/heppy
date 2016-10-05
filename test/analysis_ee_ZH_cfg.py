@@ -64,8 +64,8 @@ from heppy.test.papas_cfg import papas_sequence, detector, papas
 from heppy.analyzers.PapasHistoryExplorer import PapasHistory
 papas_history = cfg.Analyzer(
     PapasHistory,
-    is_display = True,
-    is_printout = True, 
+    display = True,
+    printout = True, 
     top = 2,
     dag = True,
     instance_label = 'papas_history', 
@@ -294,14 +294,15 @@ if __name__ == '__main__':
                    nPrint=1,
                    timeReport=True)
     
-    simulation = None
+    history = None
     for ana in loop.analyzers: 
-        if hasattr(ana, 'display'):
-            simulation = ana
-    display = getattr(simulation, 'display', None)
-    simulator = getattr(simulation, 'simulator', None)
-    if simulator: 
-        detector = simulator.detector
+        if hasattr(ana, 'is_display'):
+            history = ana
+    #display = getattr(simulation, 'display', None) #discuss colin
+    display = getattr(history,'display', None) 
+    
+    if history: 
+        detector = history.detector
     if iev is not None:
         process(iev)
         pass
