@@ -71,13 +71,14 @@ class Event(object):
                     stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
                     stripped_attrs[name].append('...')
                     stripped_attrs[name].append(value[-1])
-            #todo discuss best way with Colin
+            ##todo discuss best way with Colin
             if name == 'papasevent':
-                #for item in str(value)
-                stripped_attrs[name]= [ ]
-                for subname, subvalue in value.lines().iteritems():
-                    stripped_attrs[name].append(subname)
-                    stripped_attrs[name].append([val for val in subvalue.itervalues()])
+                stripped_attrs[name]= value.__str__()
+                ##for item in str(value)
+                #stripped_attrs[name]= [ ]
+                #for subname, subvalue in value.lines().iteritems():
+                    #stripped_attrs[name].append(subname)
+                    #stripped_attrs[name].append([val for val in subvalue.itervalues()])
                     
                 
 

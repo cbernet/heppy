@@ -72,9 +72,7 @@ class PFReconstructor(object):
         self.ecals = dict()
         self.hcals = dict()
         self.tracks = dict()
-        self.particles = dict()
         self.blocks = dict()
-        self.splitblocks = dict()
         self.history_nodes = dict()        
     #self.reconstruct(links)
 
@@ -84,7 +82,8 @@ class PFReconstructor(object):
         
         self.unused = []
         self.papasevent = papasevent
-        
+        self.particles = dict()
+        self.splitblocks = dict()
         self.blocks =  blocks # papasevent.get_collection('br')
         self.ecals = ecals
         self.hcals = hcals

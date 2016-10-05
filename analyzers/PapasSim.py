@@ -82,7 +82,7 @@ class PapasSim(Analyzer):
         self.simulator = Simulator(self.detector, self.mainLogger)
         
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        self.is_display = self.cfg_ana.display
+        #self.is_display = self.cfg_ana.display
         #if self.is_display:
             #self.init_display()
 
@@ -95,6 +95,7 @@ class PapasSim(Analyzer):
     def process(self, event):
         
         papasevent = PapasEvent()
+        Identifier.reset()
         setattr(event, "papasevent", papasevent)
         setattr(event, "detector", self.detector)
         #if self.is_display:
@@ -114,12 +115,12 @@ class PapasSim(Analyzer):
         setattr(event, self.simname, simparticles)
     
         #create dicts of clusters, particles etc (todo?:move a lot of this into simulator)
-        self.build_collections_and_history(event.papasevent, simparticles)
+        self.build_collections_and_history(papasevent, simparticles)
         
         #todo move to separate analyzer
-        self.merge_clusters(event.papasevent) #add to simulator class? 
+        self.merge_clusters(papasevent) #add to simulator class? 
         
-        event.papasevent.iEv = event.iEv
+        papasevent.iEv = event.iEv
     
     def build_collections_and_history(self, papasevent, sim_particles):  
         #this should be integrated into the simulator in the future
@@ -177,14 +178,13 @@ class PapasSim(Analyzer):
                             
         papasevent.add_collection(simulated_particles)
         papasevent.add_collection(gen_stable_particles)
-        papasevent.add_collection(tracks)
+        papasevent.add_collection(true_tracks)
         papasevent.add_collection(smeared_tracks)
         papasevent.add_collection(smeared_hcals)
         papasevent.add_collection(true_hcals)
         papasevent.add_collection(smeared_ecals)
         papasevent.add_collection(true_ecals)    
-        papasevent.add_collection(smeared_tracks)
-        papasevent.add_collection(true_tracks)        
+            
 
     def merge_clusters(self, papasevent): # todo move to a separate analyzer
                #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
