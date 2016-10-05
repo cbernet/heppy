@@ -189,7 +189,7 @@ class PapasSim(Analyzer):
     def merge_clusters(self, papasevent): # todo move to a separate analyzer
                #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
         ruler = Distance()
-        merged_ecals = MergedClusterBuilder(papasevent.get_collection('se'), ruler, papasevent.history).merged
-        merged_hcals = MergedClusterBuilder(papasevent.get_collection('sh'), ruler, papasevent.history).merged
+        merged_ecals = MergedClusterBuilder(papasevent.get_collection('es'), ruler, papasevent.history).merged
+        merged_hcals = MergedClusterBuilder(papasevent.get_collection('hs'), ruler, papasevent.history).merged
         papasevent.add_collection(merged_ecals)
         papasevent.add_collection(merged_hcals)

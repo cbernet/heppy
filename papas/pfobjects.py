@@ -61,7 +61,7 @@ class Cluster(PFObject):
 
     def __init__(self, energy, position, size_m, layer='ecal_in', particle=None):
         if not hasattr(self, 'subtype'):
-            self.subtype = 'g'
+            self.subtype = 't'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
         if (layer=='ecal_in') :
             super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype)
@@ -228,7 +228,7 @@ class Track(PFObject):
     - path : contains the trajectory parameters and points
     '''
     
-    def __init__(self, p3, charge, path, particle=None, subtype = 'g'):
+    def __init__(self, p3, charge, path, particle=None, subtype = 't'):
         if not hasattr(self, 'subtype'):
             self.subtype = subtype        
         super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, self.subtype)

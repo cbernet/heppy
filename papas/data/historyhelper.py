@@ -10,10 +10,10 @@ class HistoryHelper(object):
        hist = HistoryHelper(papasevent)
        print hist.summary_string_event()
           
-       rec_particles = self.get_collection('rp').values()
+       rec_particles = self.get_collection('pr').values()
        #select a reconstructed particle and see what simulated particles are linked to it
        uid = rec_particles.keys()[0].uniqueid
-       sim_particles = self.get_matched_linked_collection(uid,'sp')
+       sim_particles = self.get_matched_linked_collection(uid,'ps')
      
        #see also examples subroutine below
        
@@ -77,7 +77,7 @@ class HistoryHelper(object):
         ids = self.get_linked_ids(id)
         return self.get_matched_collection(ids, subtype)   
     
-    def summary_string_ids(self, ids, types = ['gp', 'gt', 'st', 'ge', 'se', 'me', 'gh', 'sh', 'mh', 'rp'], 
+    def summary_string_ids(self, ids, types = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
                            labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
                   "smeared_hcals","gen_hcals","rec_particles"]):
         ''' String to describe the components corresponding to the selected ids
@@ -89,7 +89,7 @@ class HistoryHelper(object):
             makestring = makestring + "\n" + labels[i].rjust(13, ' ') + ":"  +'\n              '.join(newlist)
         return makestring    
     
-    def summary_string_event(self, types = ['gp', 'gt', 'st', 'ge', 'se', 'me', 'gh', 'sh', 'mh', 'rp'], 
+    def summary_string_event(self, types = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
                        labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
                       "smeared_hcals","gen_hcals","rec_particles"]):
         ''' String to describe the papas event
@@ -129,19 +129,19 @@ class HistoryHelper(object):
         (3) Given a reconstructed particle, what simulated particles did it derive from?          
         eg generated charged hadron -> reconstructed photon + neutral hadron'''
         #question 2
-        for id, gp in self.papasevent.get_collection('gp').iteritems():
+        for id, gp in self.papasevent.get_collection('pg').iteritems():
             all_linked_ids = self.get_linked_ids(id) 
-            rec_particles = self.get_matched_collection(all_linked_ids, 'rp')
-            gen_particles = self.get_matched_collection(all_linked_ids, 'gp') #linked gen particles
+            rec_particles = self.get_matched_collection(all_linked_ids, 'pr')
+            gen_particles = self.get_matched_collection(all_linked_ids, 'pg') #linked gen particles
             print self.summary_string_ids(all_linked_ids)
     
         #questions 1  & 3
-        for rp in self.event.papasevent.get_collection('rp').values():
+        for rp in self.event.papasevent.get_collection('pr').values():
             if abs(rp.pdgid())>100 and rp.q() != 0: #charged hadron
                 parent_ids= self.get_linked_ids(rp.uniqueid,"parents")
-                smeared_ecals = self.get_matched_collection(parent_ids, 'se') 
+                smeared_ecals = self.get_matched_collection(parent_ids, 'es') 
                 #alternatively
-                sim_particles = self.get_matched_linked_collection(rp.uniqueid,'sp')
+                sim_particles = self.get_matched_linked_collection(rp.uniqueid,'ps')
     
             pass            
  

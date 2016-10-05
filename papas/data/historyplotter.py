@@ -59,9 +59,9 @@ class HistoryPlotter(object):
         if self.is_display  :
             #whole event as DAG
             history=self.papasevent.history
-            particles = self.papasevent.get_collection('sp')
-            ecals = self.helper.get_matched_collection(ids,'se')
-            hcals = self.helper.get_matched_collection(ids,'sh')             
+            particles = self.papasevent.get_collection('ps')
+            ecals = self.helper.get_matched_collection(ids,'es')
+            hcals = self.helper.get_matched_collection(ids,'hs')             
             self.display.clear()  
             self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey), layer=layer, sides = [position])            
             self.display.draw()       
@@ -82,12 +82,12 @@ class HistoryPlotter(object):
         
     def plot_ids_compare(self, ids, offset = 0):
         #reconstructed on right half
-        sim_particles = self.helper.get_matched_collection(ids, 'sp')
-        rec_particles = self.helper.get_matched_collection(ids,'rp')
-        sim_ecals = self.helper.get_matched_collection(ids,'se')
-        sim_hcals = self.helper.get_matched_collection(ids,'sh') 
-        rec_ecals = self.helper.get_matched_collection(ids,'me')
-        rec_hcals = self.helper.get_matched_collection(ids,'mh')             
+        sim_particles = self.helper.get_matched_collection(ids, 'ps')
+        rec_particles = self.helper.get_matched_collection(ids,'pr')
+        sim_ecals = self.helper.get_matched_collection(ids,'es')
+        sim_hcals = self.helper.get_matched_collection(ids,'hs') 
+        rec_ecals = self.helper.get_matched_collection(ids,'em')
+        rec_hcals = self.helper.get_matched_collection(ids,'hm')             
         self.add_particles(sim_particles, sim_ecals, sim_hcals, position= 0 + offset*2, is_grey = False, layer = 2)
         self.add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
         self.add_particles(rec_particles, rec_ecals, rec_hcals, position= 0 + offset*2, is_grey = True, layer = 1)
@@ -171,7 +171,7 @@ class HistoryPlotter(object):
                     
         for nodeid in nodeids:
             node = self.history[nodeid]
-            if self.short(node)== 'sb':
+            if self.short(node)== 'bs':
                 bl=self.object(node)
                 if len(bl.element_uniqueids)>1:
                     self._graph_add_block(graph, graphnodes, bl) 

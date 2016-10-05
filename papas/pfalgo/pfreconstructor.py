@@ -85,7 +85,7 @@ class PFReconstructor(object):
         self.unused = []
         self.papasevent = papasevent
         
-        self.blocks =  blocks # papasevent.get_collection('rb')
+        self.blocks =  blocks # papasevent.get_collection('br')
         self.ecals = ecals
         self.hcals = hcals
         self.tracks = tracks

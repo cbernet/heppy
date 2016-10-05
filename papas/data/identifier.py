@@ -78,10 +78,14 @@ class Identifier(long):
     def get_subtype ( ident):
         ''' intended to be single char
             Some possible existing uses
-            eg 's' simulation or smeared
+            eg 
              'g' generated
              'r' reconstructed
              'u' unspecified
+             't' true
+             's' simulated (particles)
+                 smeared (tracks ecals hcals)
+                 split (blocks)
         '''
         return chr( (ident >> 53 & 0b11111111))
 
@@ -125,14 +129,14 @@ class Identifier(long):
                       b = block
                 '''        
         typelist=".ehtpb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
-        return Identifier.get_subtype(ident) + typelist[Identifier.get_type(ident)]   
+        return  typelist[Identifier.get_type(ident)]  + Identifier.get_subtype(ident) 
 
         
         
 
     @staticmethod
     def pretty(ident):
-        return Identifier.get_subtype(ident) + Identifier.type_short_code(ident) + str(Identifier.get_unique_id(ident))
+        return  Identifier.type_short_code(ident) + Identifier.get_subtype(ident) + str(Identifier.get_unique_id(ident))
 
     @staticmethod
     def _float_to_bits (floatvalue):  #standard float packing

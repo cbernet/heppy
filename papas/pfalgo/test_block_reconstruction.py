@@ -16,9 +16,9 @@ class Cluster(object):
               layer is ecal/hcal
         '''
         if (layer == 'ecal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 'g')
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't')
         elif (layer == 'hcal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER,  'g')
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER,  't')
         else:
             assert false
         self.layer = layer
@@ -35,7 +35,7 @@ class Track(object):
     def __init__(self, id):
         ''' id is unique integer from 1-99
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 'g')
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 't')
         self.id = id
         self.layer = 'tracker'
         self.energy=0

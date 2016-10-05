@@ -40,10 +40,10 @@ class PapasPFReconstructor(Analyzer):
         
         #todo pass these are argument
         
-        ecals = event.papasevent.get_collection('me');
-        hcals = event.papasevent.get_collection('mh');
-        tracks = event.papasevent.get_collection('st');
-        blocks = event.papasevent.get_collection('rb');
+        ecals = event.papasevent.get_collection('em');
+        hcals = event.papasevent.get_collection('hm');
+        tracks = event.papasevent.get_collection('ts');
+        blocks = event.papasevent.get_collection('br');
         
         self.reconstructed.reconstruct(ecals, hcals , tracks, blocks, event.papasevent)
         
