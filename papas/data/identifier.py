@@ -45,6 +45,8 @@ class Identifier(long):
 
     @classmethod    
     def make_id(cls, type, subtype='u', value = 0.):
+        
+        assert(value >= 0) #actually I would like it to work with negative numbers but need to change float to bit conversions
         x = cls._id.next()
         #shift all the parts and join together	
         typeshift = type << 61
@@ -56,7 +58,7 @@ class Identifier(long):
 
         #verify		
         assert (Identifier.get_unique_id(id) == x )
-        if value > 0:
+        if value != 0:
             assert(abs(Identifier.get_value(id) - value) < abs(value) * 10 ** -6)
         assert (Identifier.get_type(id) == type)
         assert (Identifier.get_subtype(id) == subtype)
@@ -151,10 +153,16 @@ class Identifier(long):
 
 if __name__ == '__main__':
 
-    id = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 1.23456) 
-    print Identifier.get_subtype(id)
-    print Identifier.get_type(id)
-    id = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 12.782) 
-    print Identifier.get_subtype(id)
-    print Identifier.get_type(id)
+    id = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 1.23456)
+    id1 = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 12.782) 
+   
+    assert Identifier.pretty(id1) == 'st2'
+    ids = []
+    for i in range(0,100):
+        id = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 2**(-i) )
+        ids.append(id)
+    ids = sorted(ids, reverse = True)
+    for id in ids:
+        print Identifier.pretty(id) + ": " + str(Identifier.get_value(id))
+    
     pass

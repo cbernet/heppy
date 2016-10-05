@@ -62,11 +62,12 @@ from heppy.test.papas_cfg import papas_sequence, detector, papas
 
 
 from heppy.analyzers.PapasHistoryExplorer import PapasHistory
-#from heppy.papas.detectors.CMS import CMS
 papas_history = cfg.Analyzer(
     PapasHistory,
     is_display = True,
-    is_printout = False, #not implemented yet
+    is_printout = True, 
+    top = 2,
+    dag = True,
     instance_label = 'papas_history', 
     detector = detector,
     history = 'history'

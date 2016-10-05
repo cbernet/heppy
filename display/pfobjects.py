@@ -201,10 +201,7 @@ class GNewTrajectory(object):
 
     draw_smeared_clusters = True
     
-    def __init__(self, detector, particle, ecals, hcals,linestyle=1, linecolor=1, grey = False):
-        self.path = StraightLine(particle.p4(), particle.vertex)
-        if abs(particle.q())>0.5:
-            self.path = Helix(detector.elements['field'].magnitude, particle.q(), particle.p4(), particle.vertex)
+    def __init__(self, detector, particle, ecals = dict(), hcals = dict(),linestyle=1, linecolor=1, grey = False):
         
         if grey:
             linecolor=17
@@ -230,6 +227,11 @@ class GNewTrajectory(object):
         set_graph_style(self.graph_xz)
         set_graph_style(self.graph_thetaphi)
         #i=0
+        #for particle in particles.values():
+        self.path = StraightLine(particle.p4(), particle.vertex)
+        if abs(particle.q())>0.5:
+            self.path = Helix(detector.elements['field'].magnitude, particle.q(), particle.p4(), particle.vertex)
+        
         for i in range(npoints):
             position=self.path.position(detector.cylinders()[i])
             if position!=None:
@@ -265,7 +267,7 @@ class GNewTrajectory(object):
 
             
 class GNewStraightTrajectory(GNewTrajectory):
-    def __init__(self,  detector, particle, ecals, hcals, grey=False):
+    def __init__(self,  detector, particle, ecals =dict(), hcals = dict(), grey=False):
         super(GNewStraightTrajectory, self).__init__( detector, particle, ecals, hcals,
                                                   linestyle=2, linecolor=1, grey= grey)
 
@@ -274,7 +276,7 @@ class GNewStraightTrajectory(GNewTrajectory):
    
 
 class GNewHelixTrajectory(GNewTrajectory):    
-    def __init__(self, detector, particle, ecals, hcals,linestyle=1, linecolor=1, grey=False):
+    def __init__(self, detector, particle, ecals = dict(), hcals= dict(),linestyle=1, linecolor=1, grey=False):
         super(GNewHelixTrajectory, self).__init__( detector, particle, ecals, hcals, linestyle, linecolor, grey=grey)
         helix = self.path
         self.helix_xy = TArc(helix.center_xy.X(),
@@ -305,6 +307,7 @@ class GNewHelixTrajectory(GNewTrajectory):
         self.graphline_xy.SetMarkerColor(linecolor)
         self.graphline_yz.SetMarkerColor(linecolor)
         self.graphline_xz.SetMarkerColor(linecolor) 
+        
         
         for i, time in enumerate(np.linspace(0, max_time, npoints)):
             point = helix.point_at_time(time)
@@ -346,15 +349,18 @@ class GNewHelixTrajectory(GNewTrajectory):
                         
 class GHistoryBlock(list):
     
-    def __init__(self, ids, detector, history, particles_name, is_grey=False):
+    def __init__(self, particles, ecals, hcals, detector, is_grey=False):
+        first = True
+        for ptc in particles.values():
+            is_neutral = abs(ptc.q())<0.5
+            TrajClass = GNewStraightTrajectory if is_neutral else GNewHelixTrajectory     
+            if first:
+                first = False
+                gtraj = TrajClass(detector, ptc, ecals, hcals,grey=is_grey)
+            else:
+                gtraj = TrajClass(detector, ptc,grey=is_grey)
+            self.append(gtraj)  
                      
-            
-            linked=history.get_linked_object_dict(ids)
-            for ptc in linked[particles_name].values():
-                is_neutral = abs(ptc.q())<0.5
-                TrajClass = GNewStraightTrajectory if is_neutral else GNewHelixTrajectory                  
-                gtraj = TrajClass(detector, ptc, linked['smeared_ecals'], linked['smeared_hcals'],grey=is_grey)
-                self.append(gtraj)              
             
 
                          

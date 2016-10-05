@@ -1,6 +1,7 @@
 from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
 import pydot
+from subprocess import call
 #import matplotlib
 
 class HistoryHelper(object):
@@ -12,91 +13,129 @@ class HistoryHelper(object):
         #this information information needed to be able to unravel information based on a unique identifier
         self.history_nodes = papasevent.history
         self.papasevent = papasevent
-                  
-    
-    def summary_string_ids(self, nodeids):
-        #details all the components in the block
-        linked=self.get_linked_object_dict(nodeids)
-        makestring=""
-        for k in ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
-                  "smeared_hcals","gen_hcals","rec_particles"]:
-            newlist = [v.__str__() for a, v in linked[k].items()]
-            
-            makestring = makestring + "\n" + k.rjust(13, ' ') + ":"  +'\n              '.join(newlist)
-        return makestring          
         
-    def get_linked_objects(self, id, direction="undirected"): #get linked nodes
+        
+    def ids(self):
+        return self.history_nodes.keys();
+    
+    def get_linked_ids(self, id, direction="undirected"):
         BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction)
-        linked = self.get_linked_object_dict([v.get_value() for v in BFS.result])
-        linked['rootid'] = id
-        linked['direction'] = direction
-        return linked;
+        return [v.get_value() for v in BFS.result] 
     
-    def get_linked_object_dict(self, ids): #get object dict
-        linked_objects = {}    
-        tracks = {}    
-        ecals = {}    
-        hcals = {}    
-        sim_particles = {}
-        smeared_ecals = {}
-        smeared_hcals = {}
-        gen_particles = {}
-        gen_tracks = {}
-        gen_ecals = {}
-        gen_hcals = {}         
-        rec_particles = {}
-        blocks = {}       
-        for id in ids:
-            obj = self.papasevent.get_object(id)
-            if Identifier.is_block(id):
-                blocks[id] = obj            
-            elif Identifier.is_track(id):
-                if Identifier.get_subtype(id) == 'g':
-                    gen_tracks[id] = obj  
-                if Identifier.get_subtype(id) == 's':
-                    tracks[id] = obj                   
-            elif Identifier.is_ecal(id):
-                if Identifier.get_subtype(id) == 'g':
-                    gen_ecals[id] = obj   
-                elif Identifier.get_subtype(id) ==  's':
-                    smeared_ecals[id] = obj   
-                else:
-                    ecals[id] = obj   
-            elif Identifier.is_hcal(id):
-                if Identifier.get_subtype(id) == 'g':
-                    gen_hcals[id] = obj   
-                elif Identifier.get_subtype(id) ==  's':
-                    smeared_hcals[id] = obj 
-                else:
-                    hcals[id] = obj          
-            elif Identifier.is_particle(id):
-                if Identifier.get_subtype(id) == 'r':                
-                    rec_particles[id] = obj  
-                if Identifier.get_subtype(id) == 'g':
-                    gen_particles[id] = obj  
-                elif Identifier.get_subtype(id) == 's':
-                    sim_particles[id] = obj           
+    def id_from_pretty(self, pretty):
+        for id in self.ids():
+            if Identifier.pretty(id) == pretty:
+                return id
+        return None
     
-        linked_objects["blocks"] = blocks
-        linked_objects["tracks"] = tracks
-        linked_objects["ecals"] = ecals
-        linked_objects["hcals"] = hcals
-        linked_objects["sim_particles"] = sim_particles
-        linked_objects["smeared_ecals"] = smeared_ecals
-        linked_objects["smeared_hcals"] = smeared_hcals
-        linked_objects["gen_particles"] = gen_particles
-        linked_objects["gen_tracks"] = gen_tracks
-        linked_objects["gen_ecals"] = gen_ecals
-        linked_objects["gen_hcals"] = gen_hcals
-        linked_objects["rec_particles"] = rec_particles
-        linked_objects["ids"] = ids
-        return  linked_objects   
     
-    def get_history_blocks(self): #get linked nodes
+    def get_matched_ids(self, ids, subtype):
+        return [id for id in ids if Identifier.type_code(id) == subtype]
+    
+    def get_collection(self, subtype):
+        return self.papasevent.get_collection(subtype)
+        
+    def get_matched_collection(self, ids, subtype):
+        matchids = self.get_matched_ids(ids, subtype)  
+        maindict = self.get_collection(subtype)
+        return { id: maindict[id] for id in matchids}
+        
+    def get_matched_linked_collection(self, id, subtype, direction="undirected"):
+        ids = self.get_linked_ids(id)
+        return self.get_matched_collection(ids, subtype)   
+    
+    def summary_string_ids(self, ids, types = ['gp', 'gt', 'st', 'ge', 'se', 'me', 'gh', 'sh', 'mh', 'rp'], labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
+                  "smeared_hcals","gen_hcals","rec_particles"]):
+        #details all the components in the block
+        
+        makestring=""
+        for i in range(len(types)):
+            objdict = self.get_matched_collection(ids, types[i])
+            newlist = [v.__str__() for a, v in objdict.items()] 
+            makestring = makestring + "\n" + labels[i].rjust(13, ' ') + ":"  +'\n              '.join(newlist)
+        return makestring    
+    
+    def summary_string(self, types = ['gp', 'gt', 'st', 'ge', 'se', 'me', 'gh', 'sh', 'mh', 'rp'], labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
+                      "smeared_hcals","gen_hcals","rec_particles"]):
+        #details all the components in the hist
+        ids = self.history_nodes.keys()
+        return self.summary_string_ids(ids, types, labels)
+        
+            
+        
+    #def get_linked_objects(self, id, direction="undirected"): #get linked nodes
+        #BFS = BreadthFirstSearchIterative(self.history_nodes[id], direction)
+        #linked = self.get_linked_object_dict([v.get_value() for v in BFS.result])
+        #linked['rootid'] = id
+        #linked['direction'] = direction
+        #return linked;
+    
+    #def get_linked_object_dict(self, ids): #get object dict
+        #linked_objects = {}    
+        #tracks = {}    
+        #ecals = {}    
+        #hcals = {}    
+        #sim_particles = {}
+        #smeared_ecals = {}
+        #smeared_hcals = {}
+        #gen_particles = {}
+        #gen_tracks = {}
+        #gen_ecals = {}
+        #gen_hcals = {}         
+        #rec_particles = {}
+        #blocks = {}       
+        #for id in ids:
+            #obj = self.papasevent.get_object(id)
+            #if Identifier.is_block(id):
+                #blocks[id] = obj            
+            #elif Identifier.is_track(id):
+                #if Identifier.get_subtype(id) == 'g':
+                    #gen_tracks[id] = obj  
+                #if Identifier.get_subtype(id) == 's':
+                    #tracks[id] = obj                   
+            #elif Identifier.is_ecal(id):
+                #if Identifier.get_subtype(id) == 'g':
+                    #gen_ecals[id] = obj   
+                #elif Identifier.get_subtype(id) ==  's':
+                    #smeared_ecals[id] = obj   
+                #else:
+                    #ecals[id] = obj   
+            #elif Identifier.is_hcal(id):
+                #if Identifier.get_subtype(id) == 'g':
+                    #gen_hcals[id] = obj   
+                #elif Identifier.get_subtype(id) ==  's':
+                    #smeared_hcals[id] = obj 
+                #else:
+                    #hcals[id] = obj          
+            #elif Identifier.is_particle(id):
+                #if Identifier.get_subtype(id) == 'r':                
+                    #rec_particles[id] = obj  
+                #if Identifier.get_subtype(id) == 'g':
+                    #gen_particles[id] = obj  
+                #elif Identifier.get_subtype(id) == 's':
+                    #sim_particles[id] = obj           
+    
+        #linked_objects["blocks"] = blocks
+        #linked_objects["tracks"] = tracks
+        #linked_objects["ecals"] = ecals
+        #linked_objects["hcals"] = hcals
+        #linked_objects["sim_particles"] = sim_particles
+        #linked_objects["smeared_ecals"] = smeared_ecals
+        #linked_objects["smeared_hcals"] = smeared_hcals
+        #linked_objects["gen_particles"] = gen_particles
+        #linked_objects["gen_tracks"] = gen_tracks
+        #linked_objects["gen_ecals"] = gen_ecals
+        #linked_objects["gen_hcals"] = gen_hcals
+        #linked_objects["rec_particles"] = rec_particles
+        #linked_objects["ids"] = ids
+        #return  linked_objects   
+    
+    def get_history_subgroups(self): #get linked nodes
         self.subgraphs = []
         for subgraphlist in DAGFloodFill(self.history_nodes).blocks: # change to subgraphs
             element_ids = [node.get_value() for node in subgraphlist]            
-            self.subgraphs.append(sorted(element_ids)) 
+            self.subgraphs.append(sorted(element_ids, reverse = True)) 
+        self.subgraphs.sort(key = len, reverse = True) #biggest to smallest group
         return self.subgraphs
  
 class HistoryPlotHelper(object):
@@ -115,7 +154,7 @@ class HistoryPlotHelper(object):
         
     def short_info(self, node):
         obj=self.object(node)
-        return Identifier.type_code(obj.uniqueid) +obj.shortinfo()       
+        return Identifier.pretty(obj.uniqueid) + "\n " +obj.shortinfo()        
        
     def color(self, node):
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]
@@ -130,7 +169,7 @@ class HistoryPlotHelper(object):
         z = node.get_value()
         return self.papasevent.get_object(z) 
               
-    def graph_items (self, ids):
+    def graph_items (self, ids, show = True):
         #DAG plot for set of ids
         #input:
         #   ids: list of uniqueids
@@ -138,15 +177,19 @@ class HistoryPlotHelper(object):
         self._graph_ids(ids, graph)
         namestring='graphs/event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
+        if show:
+            call(["open", namestring])        
     
-    def graph_event(self, nodeids): 
+    def graph_event(self, nodeids, show = False): 
         #DAG plot for whole event
         #input:
          #   ids: list of uniqueids  for full event      
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(nodeids, graph)
         namestring = 'graphs/event_' + str(self.papasevent.iEv)  + '_dag.png'
-        graph.write_png(namestring)    
+        graph.write_png(namestring) 
+        if show:
+            call(["open", namestring])
         
     def _graph_add_block (self,graph, graphnodes, pfblock):
         #this adds the block links (distance, is_linked) onto the DAG in red
@@ -172,7 +215,7 @@ class HistoryPlotHelper(object):
                     
         for nodeid in nodeids:
             node = self.history_nodes[nodeid]
-            if self.short(node)== 'b':
+            if self.short(node)== 'sb':
                 bl=self.object(node)
                 if len(bl.element_uniqueids)>1:
                     self._graph_add_block(graph, graphnodes, bl)             
