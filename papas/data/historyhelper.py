@@ -17,13 +17,16 @@ class HistoryHelper(object):
      
        #see also examples subroutine below
        
-       #note the following
-         
-
-          
-       
+       #see also papsevent documentation for details of the labelling of collections
+         eg 'pr' is a collections of particles that have been reconstructed
+        
     '''    
     def __init__(self, papasevent):
+        ''' arguments
+           papasevent is a PapasEvent which contains collections and history.
+                        
+           
+        '''
         #this information information needed to be able to unravel information based on a unique identifier
         self.history = papasevent.history
         self.papasevent = papasevent
@@ -46,15 +49,23 @@ class HistoryHelper(object):
         return [v.get_value() for v in BFS.result] 
     
     def id_from_pretty(self, pretty):
+        ''' Searches to find the true id given a pretty id string
+            eg uid = self.id_from_pretty('et103')
+        '''
         for id in self.ids():
             if Identifier.pretty(id) == pretty:
                 return id
         return None
     
-    def get_matched_ids(self, ids, subtype):
-        return [id for id in ids if Identifier.type_code(id) == subtype]
+    def get_matched_ids(self, ids, typecode):
+        ''' returns a subset of ids which have a typecode that matchs the typecode argument
+            eg merged_ecal_ids = get_matched_ids(ids, 'em')
+        '''
+        return [id for id in ids if Identifier.type_code(id) == typecode]
     
     def get_collection(self, subtype):
+        '''returns an entire collection of the given subtype
+        '''
         return self.papasevent.get_collection(subtype)
         
     def get_matched_collection(self, ids, subtype):

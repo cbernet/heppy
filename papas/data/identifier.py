@@ -19,12 +19,12 @@ class Identifier(long):
     Note that sorting on id will result in sorting by:
     type
     subtype
-    value
+    value (small to large)
     uniqueid
 
     Custom sorting can be obtained using methods that access each of the subcomponents of Id
 
-        usage:
+    Usage:
            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 1.23456) 
            if Identifier.is_track(self.uniqueid):
                 ....

@@ -3,11 +3,28 @@ from heppy.papas.data.historyhelper import HistoryHelper
 from heppy.papas.data.historyplotter import HistoryPlotter
 
 class PapasHistory(Analyzer):
-    ''' Module make use of History
-        Produces experimental History outputs for the event (plots or text summary)
-        by using the HistoryHelper and HistoryPlotter to work with the papasevent.
-            TODO: more configuration of options after discussion
-                  perhaps separate out into two?
+    '''Produces experimental History outputs for a papasevent (plots or text summary)
+        
+        Example: 
+        from heppy.analyzers.PapasHistoryExplorer import PapasHistory
+        papas_history = cfg.Analyzer(
+            PapasHistory,
+            display = True,
+            printout = True, 
+            top = 2,
+            dag = True,
+            instance_label = 'papas_history', 
+            detector = detector,
+            history = 'history'
+        )
+    
+        * display - whether to send output to screen
+        * top - produce outputs for the largest n subgroups, set to None to get everything
+        * dag  - produce dag graphs
+        * printout  - turn on/off outut to screen
+     
+    TODO: more configuration of options after discussion
+          perhaps separate out into two?
         
     '''
 

@@ -1,31 +1,47 @@
-''' Class to hold all the needed papas data collections
-    This includes ...
-    
-'''
-
-import pprint
-#import copy
-import collections 
-import fnmatch
 from heppy.papas.data.identifier import Identifier
-from heppy.papas.graphtools.DAG import Node
-from heppy.papas.pfalgo.distance import Distance
-from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
 from heppy.framework.event import Event
 
 
 class PapasEvent(Event):
-    '''Builds the inputs to particle flow from a collection of simulated particles:
-    - collects all smeared tracks and clusters
-    - merges overlapping clusters 
+    ''' Contains all the papas event data eg tracks, clusters, particles, blocks
+        together with the hisotry whcih descibes the linkages between the data
+        The collections and history are required to match perfectly,
+        ie if in identifier is in the hostory it will be in one of the collections and vice versa
+
+        The collections dict object contains a numbe of dicts one dict per object type,
+        eg all smeared_ecasl in the papasevent will be stored as one dict inside the collections.
+        
+        The type_code is used to label the collections in the papasevent
+        it is a two letter code formed out of 'type' + 'subtype'
+        For example
+          'pr' is particle that has reconstructed subtype
+          'es' contains ecals that are smeared
+
+        Type codes
+                      e = ecal
+                      h = hcal
+                      t = track
+                      p = particle
+
+        Subtype_codes are a single letter, current usage is:
+            eg 
+             'g' generated
+             'r' reconstructed
+             'u' unspecified
+             't' true
+             's' simulated (particles)
+                 smeared (tracks ecals hcals)
+                 split (blocks)
+                 
+        Usage:
+
+        papasevent.add_collection(true_ecals)
+        smeared_ecals=papasevent.get_collection('es')
+            
     '''
-    #print_nstrip = 10 # ask colin
     
     def __init__(self):
-        '''
-        arguments
-            
-        '''
+        super(PapasEvent, self).__init__(self)
         self.collections = dict()
         self.history = dict()
         self.iEv = None
@@ -37,7 +53,7 @@ class PapasEvent(Event):
         for id in collection.iterkeys():
             if first:
                 collectiontype = Identifier.type_code(id)
-                first =False
+                first = False
             if collectiontype != Identifier.type_code(id):
                 assert "mixed types not allowed in a collection"
         self.collections[collectiontype] = collection
@@ -49,9 +65,9 @@ class PapasEvent(Event):
         return self.collections[Identifier.type_code(id)][id]
     
     def get_objects(self, ids, type_code):
-        return self.collections[Identifier.type_code][ids]    
+        return self.collections[type_code][id in ids]    
 
-    
+    #TODO check printout via event
     #def __str__(self):
         #header = 'PapasEvent:'
         #stripped_attrs = self.lines()
@@ -60,7 +76,8 @@ class PapasEvent(Event):
         
         
     #def lines(self):
-        ##approach copied from event.py and results used in printing this as part of event - improvements likely to be needed
+        ##approach copied from event.py and results used in printing this as part of 
+        ##event - improvements likely to be needed
         #stripped_attrs = dict()
         #for name, value in {"tracks" : self.tracks ,
         #"gen tracks" :self.gen_tracks ,

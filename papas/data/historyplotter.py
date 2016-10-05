@@ -7,7 +7,26 @@ from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories, GHistoryBlock
 
 class HistoryPlotter(object):
+    '''   
+           Object to assist with plotting histories.
+           It allows extraction of information from the papasevent
+    
+           Usage:
+           hist = HistoryHelper(papasevent)
+           histplot = HistoryPlotter(papapasevent, detector, True)
+           histplot.plot_event_compare() 
+           histplot.plot_dag_event(True)        
+           histplot.plot_dag_subgroups(top=3 , True) 
+    
+    
+        '''        
     def __init__(self, papasevent, detector, is_display):
+        '''
+        * papasevent is a PapasEvent
+        * detector
+        * is_display True/False
+        
+        '''
         self.history = papasevent.history
         self.papasevent = papasevent  
         self.helper = HistoryHelper(papasevent)
@@ -17,45 +36,43 @@ class HistoryPlotter(object):
             self.init_display()        
 
     def init_display(self):
+        #double paned Display
+        #make this a choice via parameters somehow
         self.display = Display(['xy','yz'], pads=("simulated", "reconstructed"))
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)        
         
-    def short_name(self, node):
-        z = node.get_value()
-        return Identifier.pretty(z)
+    def pretty(self, node):
+        ''' pretty form of the unique identifier'''
+        return Identifier.pretty(node.get_value())
     
-    def short(self, node):
-        z = node.get_value()
-        return Identifier.type_code(z) 
+    def type_code(self, node):
+        return Identifier.type_code(node.get_value()) 
         
     def short_info(self, node):
+        '''used to label plotted dag nodes'''
         obj=self.object(node)
         return Identifier.pretty(obj.uniqueid) + "\n " +obj.shortinfo()        
        
     def color(self, node):
+        '''used to color dag nodes'''
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]
         intcols =[1,2,3,4,5,6,7,8]
         return cols[Identifier.get_type(node.get_value())]            
             
-    def intcolor(self, node):
-        intcols =[1,2,3,4,5,6,7,8]
-        return intcols[Identifier.get_type(node.get_value())]            
+    #def intcolor(self, node):
+        #intcols =[1,2,3,4,5,6,7,8]
+        #return intcols[Identifier.get_type(node.get_value())]            
 
     def object(self, node):
         z = node.get_value()
         return self.papasevent.get_object(z) 
 
-            
-    def plot_dag_subgroups(self, top = None, show = False):
-        if self.is_display  :
-            subgraphs=self.helper.get_history_subgroups()  
-            if top is None:
-                top = len(subgraphs)
-            for i in range(top):   
-                self.plot_dag_ids(subgraphs[i], show)   
+    
  
     def plot_event(self):
+        '''Event plot containing Simulated particles and smeared clusters 
+        '''
         if self.is_display  :
             #whole event as DAG
             history=self.papasevent.history
@@ -68,36 +85,45 @@ class HistoryPlotter(object):
             gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim.png')  
 
     def plot_event_compare(self):
+        '''Double event plot for full event
+            containing Simulated particles and smeared clusters on left
+            and reconstructed particles and merged clusters on right side
+            '''    
         self.display.clear()       
-        self.plot_ids_compare(self.helper.event_ids())             
+        self._plot_ids_compare(self.helper.event_ids())             
         self.display.draw() 
         pass  
         
     def plot_subgroup_compare(self, ids):
+        '''Double event plot for a subgroup of an event
+                containing Simulated particles and smeared clusters on left
+                and reconstructed particles and merged clusters on right side
+                    '''          
         if self.is_display  :
             self.display.clear()       
-            self.plot_ids_compare(ids)
+            self._plot_ids_compare(ids)
             self.display.draw() 
             pass   
         
-    def plot_ids_compare(self, ids, offset = 0):
-        #reconstructed on right half
+    def _plot_ids_compare(self, ids, offset = 0):
+        #handles plotting the sim and rec particles on a double event plot
         sim_particles = self.helper.get_matched_collection(ids, 'ps')
         rec_particles = self.helper.get_matched_collection(ids,'pr')
         sim_ecals = self.helper.get_matched_collection(ids,'es')
         sim_hcals = self.helper.get_matched_collection(ids,'hs') 
         rec_ecals = self.helper.get_matched_collection(ids,'em')
         rec_hcals = self.helper.get_matched_collection(ids,'hm')             
-        self.add_particles(sim_particles, sim_ecals, sim_hcals, position= 0 + offset*2, is_grey = False, layer = 2)
-        self.add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
-        self.add_particles(rec_particles, rec_ecals, rec_hcals, position= 0 + offset*2, is_grey = True, layer = 1)
-        self.add_particles(rec_particles, rec_ecals, rec_hcals, position= 1 + offset*2, is_grey = False, layer = 2)   
+        self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 0 + offset*2, is_grey = False, layer = 2)
+        self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
+        self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 0 + offset*2, is_grey = True, layer = 1)
+        self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 1 + offset*2, is_grey = False, layer = 2)   
     
         
-    def add_particles(self, particles, ecals, hcals, position, is_grey=False , layer = 1):
+    def _add_particles(self, particles, ecals, hcals, position, is_grey=False , layer = 1):
         self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey), layer=layer, sides = [position]) 
          
     def plot_subevents_compare(self):
+        ''' An experiment to plot largest 8 subgroups in an event all at once'''
         if self.is_display:
             self.display.clear() 
             
@@ -114,19 +140,16 @@ class HistoryPlotter(object):
             self.display = Display(['xy','yz'], pads=result)
             self.display.register(self.gdetector, layer=0, clearable=False)             
             
-                       
-            #tofo sort by length
             for i in range(0, 8):     
                 s = subgraphs[i]
-                self.plot_ids_compare(s, offset = i)      
+                self._plot_ids_compare(s, offset = i)      
         self.display.draw()         
         #gPad.SaveAs('graphs/event_' + str(self.event.iEv) + '_sim_rec_compare.png') 
                              
               
     def plot_dag_ids (self, ids, show = True):
-        #DAG plot for set of ids
-        #input:
-        #   ids: list of uniqueids
+        '''DAG plot for a set of ids
+        '''
         graph = pydot.Dot(graph_type='digraph')   
         self._graph_ids(ids, graph)
         namestring='graphs/event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
@@ -135,9 +158,8 @@ class HistoryPlotter(object):
             call(["open", namestring])        
     
     def plot_dag_event(self, show = False): 
-        #DAG plot for whole event
-        #input:
-         #   ids: list of uniqueids  for full event
+        '''DAG plot for an event
+        '''
         ids = self.helper.event_ids()
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(ids, graph)
@@ -145,7 +167,17 @@ class HistoryPlotter(object):
         graph.write_png(namestring) 
         if show:
             call(["open", namestring])
-    
+            
+    def plot_dag_subgroups(self, top = None, show = False):
+        '''produces DAG plots of event subgroups (one per subgroup)
+           If top is specified then the top n largest subgroups are plotted
+        '''
+        if self.is_display  :
+            subgraphs=self.helper.get_history_subgroups()  
+            if top is None:
+                top = len(subgraphs)
+            for i in range(top):   
+                self.plot_dag_ids(subgraphs[i], show)       
         
     def _graph_add_block (self,graph, graphnodes, pfblock):
         #this adds the block links (distance, is_linked) onto the DAG in red
@@ -160,18 +192,18 @@ class HistoryPlotter(object):
         graphnodes = dict() 
         for nodeid in nodeids:
             node = self.history[nodeid]
-            if  graphnodes.has_key(self.short_name(node))==False:
-                graphnodes[self.short_name(node)] = pydot.Node(self.short_name(node), style="filled", label=self.short_info(node), fillcolor=self.color(node))
-                graph.add_node( graphnodes[self.short_name(node)]) 
+            if  graphnodes.has_key(self.pretty(node))==False:
+                graphnodes[self.pretty(node)] = pydot.Node(self.pretty(node), style="filled", label=self.short_info(node), fillcolor=self.color(node))
+                graph.add_node( graphnodes[self.pretty(node)]) 
         for nodeid in nodeids:
             node = self.history[nodeid]
             for c in node.parents:
-                if len(graph.get_edge(graphnodes[self.short_name(c)],graphnodes[self.short_name(node)]))==0:
-                    graph.add_edge(pydot.Edge(  graphnodes[self.short_name(c)],graphnodes[self.short_name(node)])) 
+                if len(graph.get_edge(graphnodes[self.pretty(c)],graphnodes[self.pretty(node)]))==0:
+                    graph.add_edge(pydot.Edge(  graphnodes[self.pretty(c)],graphnodes[self.pretty(node)])) 
                     
         for nodeid in nodeids:
             node = self.history[nodeid]
-            if self.short(node)== 'bs':
+            if self.type_code(node)== 'bs':
                 bl=self.object(node)
                 if len(bl.element_uniqueids)>1:
                     self._graph_add_block(graph, graphnodes, bl) 
@@ -208,16 +240,16 @@ class HistoryPlotter(object):
         #graphnodes=dict()
         #for nodeid in nodeids:
             #node = self.history[nodeid]
-            #if   graphnodes.has_key(self.short_name(node))==False:
-                #n=TGraphNode(self.short_name(node), self.short_info(node))
-                #graphnodes[self.short_name(node)] = n
+            #if   graphnodes.has_key(self.pretty(node))==False:
+                #n=TGraphNode(self.pretty(node), self.short_info(node))
+                #graphnodes[self.pretty(node)] = n
                 #n.SetFillColor(self.intcolor(node))
                 #n.SetTextSize(0.02)
-                #graph.AddNode( graphnodes[self.short_name(node)])
+                #graph.AddNode( graphnodes[self.pretty(node)])
         #for nodeid in nodeids:
             #node = self.history[nodeid]
             #for c in node.parents:
-                #edge=TGraphEdge(graphnodes[self.short_name(c)],graphnodes[self.short_name(node)])
+                #edge=TGraphEdge(graphnodes[self.pretty(c)],graphnodes[self.pretty(node)])
                 #edge.SetLineStyle(1)
                 #graph.AddEdge( edge)
         #for nodeid in nodeids:
@@ -257,13 +289,13 @@ class HistoryPlotter(object):
             #graphnodes = {}
     
             #for node in BFS.result:
-                #if   graphnodes.has_key(self.short_name(node))==False:
-                    #graphnodes[self.short_name(node)] = pydot.Node(self.short_name(node), style="filled", label=self.short_info(node), fillcolor=self.color(node))
-                    #graph.add_node( graphnodes[self.short_name(node)])
+                #if   graphnodes.has_key(self.pretty(node))==False:
+                    #graphnodes[self.pretty(node)] = pydot.Node(self.pretty(node), style="filled", label=self.short_info(node), fillcolor=self.color(node))
+                    #graph.add_node( graphnodes[self.pretty(node)])
             #for node in BFS.result:
                     #for c in node.parents:
-                        #if len(graph.get_edge(graphnodes[self.short_name(c)],graphnodes[self.short_name(node)]))==0:
-                            #graph.add_edge(pydot.Edge(  graphnodes[self.short_name(c)],graphnodes[self.short_name(node)]))
+                        #if len(graph.get_edge(graphnodes[self.pretty(c)],graphnodes[self.pretty(node)]))==0:
+                            #graph.add_edge(pydot.Edge(  graphnodes[self.pretty(c)],graphnodes[self.pretty(node)]))
             #for node in BFS.result:
                     #if self.short(node)== 'b':
                         #bl=self.object(node)
@@ -386,13 +418,13 @@ class HistoryPlotter(object):
 
         #BFS = BreadthFirstSearchIterative(self.history[id], direction) 
         #for node in BFS.result:
-            #G.add_node(self.short_name(node),  style="filled",fillcolor=self.color(node),label=self.short_info(node))
-            #labels[self.short_name(node)] = self.short_info(node)
-            #colors[self.short_name(node)] = self.color(node)                
+            #G.add_node(self.pretty(node),  style="filled",fillcolor=self.color(node),label=self.short_info(node))
+            #labels[self.pretty(node)] = self.short_info(node)
+            #colors[self.pretty(node)] = self.color(node)                
 
         #for node in BFS.result:
             #for c in node.parents:
-                #G.add_edge(self.short_name(c),self.short_name(node),width=2, weight=1)
+                #G.add_edge(self.pretty(c),self.pretty(node),width=2, weight=1)
 
         #d = to_pydot(G) # d is a pydot graph object, dot options can be easily set
         #if isinstance(colors, dict):
