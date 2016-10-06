@@ -8,7 +8,7 @@ class PapasEvent(Event):
         The collections and history are required to match perfectly,
         ie if in identifier is in the hostory it will be in one of the collections and vice versa
 
-        The collections dict object contains a numbe of dicts one dict per object type,
+        The collections dict object contains dicts one dict per object type,
         eg all smeared_ecasl in the papasevent will be stored as one dict inside the collections.
         
         The type_code is used to label the collections in the papasevent
@@ -47,12 +47,18 @@ class PapasEvent(Event):
         self.iEv = None
         
     def add_collection(self, collection):
+        '''Add a new collection into the PapasEvent. The collection should contain only one object type
+           and only one collection of each type should be stored in the PapasEvent        
+        '''
         first = True
         collectiontype = None
         #make sure everything is the same type
+    
         for id in collection.iterkeys():
             if first:
                 collectiontype = Identifier.type_code(id)
+                if collectiontype in self.collections.keys():
+                    assert "Collection Type must be unique"
                 first = False
             if collectiontype != Identifier.type_code(id):
                 assert "mixed types not allowed in a collection"
@@ -62,9 +68,21 @@ class PapasEvent(Event):
         return self.collections[type_code]
     
     def get_object(self, id):
+        '''get an object corresponding to a unique id'''
         return self.collections[Identifier.type_code(id)][id]
     
     def get_objects(self, ids, type_code):
+        ''' ids must all be of type type_code
+        get a dict of objects of the type_code '''
+        first = True
+        collectiontype = None        
+        for id in collection.iterkeys():
+            if first:
+                collectiontype = Identifier.type_code(id)
+                first = False
+            if collectiontype != Identifier.type_code(id):
+                assert "mixed types not allowed in a collection"        
+        
         return self.collections[type_code][id in ids]    
 
     #TODO check printout via event

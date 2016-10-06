@@ -11,23 +11,21 @@ class HistoryHelper(object):
        print hist.summary_string_event()
           
        rec_particles = self.get_collection('pr').values()
+       
        #select a reconstructed particle and see what simulated particles are linked to it
        uid = rec_particles.keys()[0].uniqueid
        sim_particles = self.get_matched_linked_collection(uid,'ps')
      
        #see also examples subroutine below
        
-       #see also papsevent documentation for details of the labelling of collections
+       #see also papasevent documentation for details of the labelling of collections
          eg 'pr' is a collections of particles that have been reconstructed
         
     '''    
     def __init__(self, papasevent):
         ''' arguments
-           papasevent is a PapasEvent which contains collections and history.
-                        
-           
+           papasevent is a PapasEvent which contains collections and history. 
         '''
-        #this information information needed to be able to unravel information based on a unique identifier
         self.history = papasevent.history
         self.papasevent = papasevent
         
@@ -42,14 +40,15 @@ class HistoryHelper(object):
         '''
         returns all ids linked to a given id
         arguments:
-            id = 
-        
+            id = unique identifier
+            direction = parents/children/undirected
         '''
         BFS = BreadthFirstSearchIterative(self.history[id], direction)
         return [v.get_value() for v in BFS.result] 
     
     def id_from_pretty(self, pretty):
         ''' Searches to find the true id given a pretty id string
+            Not super efficient but OK for occasional use
             eg uid = self.id_from_pretty('et103')
         '''
         for id in self.ids():
@@ -58,7 +57,7 @@ class HistoryHelper(object):
         return None
     
     def get_matched_ids(self, ids, typecode):
-        ''' returns a subset of ids which have a typecode that matchs the typecode argument
+        ''' returns the subset of ids which have a typecode that matchs the typecode argument
             eg merged_ecal_ids = get_matched_ids(ids, 'em')
         '''
         return [id for id in ids if Identifier.type_code(id) == typecode]
@@ -69,7 +68,7 @@ class HistoryHelper(object):
         return self.papasevent.get_collection(subtype)
         
     def get_matched_collection(self, ids, subtype):
-        '''return a collection of objects that corresponds to those ids which have the selected subtype
+        '''return a collection of objects of subtype using only those ids which have the selected subtype
            ids wich have a different subtype will be ignored.
         '''        
         matchids = self.get_matched_ids(ids, subtype)  
@@ -81,7 +80,7 @@ class HistoryHelper(object):
          
         arguments:
         id  = unique identifier
-        subtype = type of object (see header)
+        subtype = type of object (eg 'es')
         direction = "undirected"/"parents"/"children"
     
         '''
@@ -90,7 +89,7 @@ class HistoryHelper(object):
     
     def summary_string_ids(self, ids, types = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
                            labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
-                  "smeared_hcals","gen_hcals","rec_particles"]):
+                                     "smeared_hcals","gen_hcals","rec_particles"]):
         ''' String to describe the components corresponding to the selected ids
         '''
         makestring=""
@@ -151,7 +150,6 @@ class HistoryHelper(object):
             if abs(rp.pdgid())>100 and rp.q() != 0: #charged hadron
                 parent_ids= self.get_linked_ids(rp.uniqueid,"parents")
                 smeared_ecals = self.get_matched_collection(parent_ids, 'es') 
-                #alternatively
                 sim_particles = self.get_matched_linked_collection(rp.uniqueid,'ps')
     
             pass            

@@ -48,16 +48,15 @@ class Event(object):
         self.eventWeight = eventWeight
 
 
-    def __str__(self):
-        header = '{type}: {iEv}'.format( type=self.__class__.__name__,
-                                         iEv = self.iEv)
+    def _get_stripped_attrs(self, subname = "",):
         selected_attrs = copy.copy( self.__dict__ )
         selected_attrs.pop('setup')
         selected_attrs.pop('input')
         stripped_attrs = dict()
+        papas_attrs=dict()
         for name, value in selected_attrs.iteritems():
             if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]):
-                stripped_attrs[name] = value
+                stripped_attrs[subname + name] = value
         for name, value in stripped_attrs.iteritems():
             if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
                 # taking the first 10 elements and converting to a python list 
@@ -73,14 +72,17 @@ class Event(object):
                     stripped_attrs[name].append(value[-1])
             ##todo discuss best way with Colin
             if name == 'papasevent':
-                stripped_attrs[name]= value.__str__()
-                ##for item in str(value)
-                #stripped_attrs[name]= [ ]
-                #for subname, subvalue in value.lines().iteritems():
-                    #stripped_attrs[name].append(subname)
-                    #stripped_attrs[name].append([val for val in subvalue.itervalues()])
-                    
-                
-
+                papas_attrs = self.papasevent._get_stripped_attrs("papasevent: ")  
+        stripped_attrs.update(papas_attrs) 
+        return stripped_attrs
+    
+    #def _stripped_first_n_elements(self, thing):
+        
+    
+    
+    def __str__(self):
+        header = '{type}: {iEv}'.format( type=self.__class__.__name__,
+                                         iEv = self.iEv)
+        stripped_attrs = self._get_stripped_attrs()
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])

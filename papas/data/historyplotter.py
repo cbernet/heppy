@@ -47,6 +47,7 @@ class HistoryPlotter(object):
         return Identifier.pretty(node.get_value())
     
     def type_code(self, node):
+        ''' For example 'pg', 'ht' etc'''
         return Identifier.type_code(node.get_value()) 
         
     def short_info(self, node):
@@ -58,18 +59,13 @@ class HistoryPlotter(object):
         '''used to color dag nodes'''
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]
         intcols =[1,2,3,4,5,6,7,8]
-        return cols[Identifier.get_type(node.get_value())]            
-            
-    #def intcolor(self, node):
-        #intcols =[1,2,3,4,5,6,7,8]
-        #return intcols[Identifier.get_type(node.get_value())]            
+        return cols[Identifier.get_type(node.get_value())]                     
 
     def object(self, node):
+        '''returns object corresponding to a node'''
         z = node.get_value()
         return self.papasevent.get_object(z) 
 
-    
- 
     def plot_event(self):
         '''Event plot containing Simulated particles and smeared clusters 
         '''
@@ -171,6 +167,7 @@ class HistoryPlotter(object):
     def plot_dag_subgroups(self, top = None, show = False):
         '''produces DAG plots of event subgroups (one per subgroup)
            If top is specified then the top n largest subgroups are plotted
+           otherwise all subgroups are plotted
         '''
         if self.is_display  :
             subgraphs=self.helper.get_history_subgroups()  
@@ -189,6 +186,7 @@ class HistoryPlotter(object):
         pass      
                          
     def _graph_ids (self, nodeids, graph):
+        #creates graphnodes and graph edges for the dot plot based on the nodes
         graphnodes = dict() 
         for nodeid in nodeids:
             node = self.history[nodeid]
