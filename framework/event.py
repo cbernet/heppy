@@ -48,7 +48,8 @@ class Event(object):
         self.eventWeight = eventWeight
 
 
-    def _get_stripped_attrs(self, subname = "",):
+    def _get_stripped_attrs(self, subname = ""):
+
         selected_attrs = copy.copy( self.__dict__ )
         selected_attrs.pop('setup')
         selected_attrs.pop('input')
@@ -59,44 +60,43 @@ class Event(object):
             if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]):
                 stripped_attrs[subname + name] = value
         for name, value in stripped_attrs.iteritems():
-            if isinstance(value, Event):
+            if isinstance(value, Event): # deal with an Event within the Event
                 new_attrs.update(value._get_stripped_attrs(value.__class__.__name__ + ": "))
-            else:
-                new_attrs.update(self._stripped_first_n_elements(name,value))
-            ##todo discuss best way with Colin
+            else: #add in elements of the event but stop after n elements
+                new_attrs.update(self._first_n_elements(name,value))
             
         stripped_attrs.update(new_attrs) 
         return stripped_attrs
     
-      
-        
     
-    def _stripped_first_n_elements(self,name, value):
-        stripped_attrs=dict()
-        
+    def _first_n_elements(self,name, value):
+        #iterative function
+        newdata=dict()
         if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
             # taking the first 10 elements and converting to a python list         
             if isinstance(value, collections.Mapping): #allows printing of first n elements of a dict
+                #not perfect but not too bad
                 i=0
-                new_attrs=dict() 
+                subdict=dict() 
                 for newname, entry in value.iteritems():
                     i = i +1
                     if i<=self.__class__.print_nstrip :
-                        new_attrs.update(self._stripped_first_n_elements(newname, entry))
+                        subdict.update(self._first_n_elements(newname, entry))
                     elif i == self.__class__.print_nstrip + 1:
-                        new_attrs["..."] = "..." # entry to show that there is more than this
-                stripped_attrs[name] = new_attrs
+                        subdict["..."] = "..." # entry to show that there is more than this
+                                                 # no guarantees where abouts this is printed
+                newdata[name] = subdict
             else: #list
-                stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
-                stripped_attrs[name].append('...')
-                stripped_attrs[name].append(value[-1]) 
+                newdata[name] = [ val for val in value[:self.__class__.print_nstrip] ]
+                newdata[name].append('...')
+                newdata[name].append(value[-1]) 
         else:
-            stripped_attrs[name] = value
-        return stripped_attrs
+            newdata[name] = value
+        return newdata
     
     def __str__(self):
         header = '{type}: {iEv}'.format( type=self.__class__.__name__,
                                          iEv = self.iEv)
-        stripped_attrs = self._get_stripped_attrs()
+        stripped_attrs = self._get_stripped_attrs() #allows other events such as papasevent to also be printed like an Event
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])
