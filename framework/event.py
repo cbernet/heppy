@@ -54,31 +54,45 @@ class Event(object):
         selected_attrs.pop('input')
         stripped_attrs = dict()
         papas_attrs=dict()
+        new_attrs=dict()
         for name, value in selected_attrs.iteritems():
             if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]):
                 stripped_attrs[subname + name] = value
         for name, value in stripped_attrs.iteritems():
-            if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
-                # taking the first 10 elements and converting to a python list 
-                # note that value could be a wrapped C++ vector
-                if isinstance(value, collections.Mapping):
-                    entries = [entry for entry in value.iteritems()]
-                    entries = entries[:self.__class__.print_nstrip]
-                    entries
-                    stripped_attrs[name] = dict(entries)
-                else:
-                    stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
-                    stripped_attrs[name].append('...')
-                    stripped_attrs[name].append(value[-1])
+            if isinstance(value, Event):
+                new_attrs.update(value._get_stripped_attrs(value.__class__.__name__ + ": "))
+            else:
+                new_attrs.update(self._stripped_first_n_elements(name,value))
             ##todo discuss best way with Colin
-            if name == 'papasevent':
-                papas_attrs = self.papasevent._get_stripped_attrs("papasevent: ")  
-        stripped_attrs.update(papas_attrs) 
+            
+        stripped_attrs.update(new_attrs) 
         return stripped_attrs
     
-    #def _stripped_first_n_elements(self, thing):
+      
         
     
+    def _stripped_first_n_elements(self,name, value):
+        stripped_attrs=dict()
+        
+        if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
+            # taking the first 10 elements and converting to a python list         
+            if isinstance(value, collections.Mapping): #allows printing of first n elements of a dict
+                i=0
+                new_attrs=dict() 
+                for newname, entry in value.iteritems():
+                    i = i +1
+                    if i<=self.__class__.print_nstrip :
+                        new_attrs.update(self._stripped_first_n_elements(newname, entry))
+                    elif i == self.__class__.print_nstrip + 1:
+                        new_attrs["..."] = "..." # entry to show that there is more than this
+                stripped_attrs[name] = new_attrs
+            else: #list
+                stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
+                stripped_attrs[name].append('...')
+                stripped_attrs[name].append(value[-1]) 
+        else:
+            stripped_attrs[name] = value
+        return stripped_attrs
     
     def __str__(self):
         header = '{type}: {iEv}'.format( type=self.__class__.__name__,
