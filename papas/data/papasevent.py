@@ -11,10 +11,10 @@ class PapasEvent(Event):
         The collections dict object contains dicts one dict per object type,
         eg all smeared_ecasl in the papasevent will be stored as one dict inside the collections.
         
-        The type_code is used to label the collections in the papasevent
+        The type_and_subtype is used to label the collections in the papasevent
         it is a two letter code formed out of 'type' + 'subtype'
         For example
-          'pr' is particle that has reconstructed subtype
+          'pr' is particle that has reconstructed type_and_subtype
           'es' contains ecals that are smeared
 
         Type codes
@@ -56,34 +56,35 @@ class PapasEvent(Event):
     
         for id in collection.iterkeys():
             if first:
-                collectiontype = Identifier.type_code(id)
+                collectiontype = Identifier.type_and_subtype(id)#type_subtype
                 if collectiontype in self.collections.keys():
                     assert "Collection Type must be unique"
                 first = False
-            if collectiontype != Identifier.type_code(id):
+            if collectiontype != Identifier.type_and_subtype(id):
                 assert "mixed types not allowed in a collection"
         self.collections[collectiontype] = collection
     
-    def get_collection(self, type_code):
-        return self.collections[type_code]
+    def get_collection(self, type_and_subtype):
+        #assert
+        return self.collections[type_and_subtype]
     
     def get_object(self, id):
         '''get an object corresponding to a unique id'''
-        return self.collections[Identifier.type_code(id)][id]
+        return self.collections[Identifier.type_and_subtype(id)][id]
     
-    def get_objects(self, ids, type_code):
-        ''' ids must all be of type type_code
-        get a dict of objects of the type_code '''
+    def get_objects(self, ids, type_and_subtype):
+        ''' ids must all be of type type_and_subtype
+        get a dict of objects of the type_and_subtype '''
         first = True
         collectiontype = None        
         for id in collection.iterkeys():
             if first:
-                collectiontype = Identifier.type_code(id)
+                collectiontype = Identifier.type_and_subtype(id)
                 first = False
-            if collectiontype != Identifier.type_code(id):
+            if collectiontype != Identifier.type_and_subtype(id):
                 assert "mixed types not allowed in a collection"        
         
-        return self.collections[type_code][id in ids]    
+        return self.collections[type_and_subtype][id in ids]    
 
     #TODO check printout via event
     #def __str__(self):

@@ -14,7 +14,7 @@ class HistoryHelper(object):
        
        #select a reconstructed particle and see what simulated particles are linked to it
        uid = rec_particles.keys()[0].uniqueid
-       sim_particles = self.get_matched_linked_collection(uid,'ps')
+       sim_particles = self.get_linked_collection(uid,'ps')
      
        #see also examples subroutine below
        
@@ -56,45 +56,44 @@ class HistoryHelper(object):
                 return id
         return None
     
-    def get_matched_ids(self, ids, typecode):
-        ''' returns the subset of ids which have a typecode that matchs the typecode argument
-            eg merged_ecal_ids = get_matched_ids(ids, 'em')
+    def filter_ids(self, ids, type_and_subtype):
+        ''' returns the subset of ids which have a type_and_subtype that matchs the type_and_subtype argument
+            eg merged_ecal_ids = filter_ids(ids, 'em')
         '''
-        return [id for id in ids if Identifier.type_code(id) == typecode]
+        return [id for id in ids if Identifier.type_and_subtype(id) == type_and_subtype]
     
-    def get_collection(self, subtype):
-        '''returns an entire collection of the given subtype
-        '''
-        return self.papasevent.get_collection(subtype)
+    #def get_collection(self, type_and_subtype):
+    #    '''returns an entire collection of the given type_and_subtype
+    #    '''
+    #    return self.papasevent.get_collection(type_and_subtype)
         
-    def get_matched_collection(self, ids, subtype):
-        '''return a collection of objects of subtype using only those ids which have the selected subtype
-           ids wich have a different subtype will be ignored.
-        '''        
-        matchids = self.get_matched_ids(ids, subtype)  
-        maindict = self.get_collection(subtype)
-        return { id: maindict[id] for id in matchids}
+    def get_collection(self, ids, type_and_subtype):
+        '''return a collection of objects of type_and_subtype using only those ids which have the selected type_and_subtype
+           ids wich have a different type_and_subtype will be ignored.
+        '''          
+        maindict = self.papasevent.get_collection(type_and_subtype)
+        return { id: maindict[id] for id in self.filter_ids(ids, type_and_subtype) }
         
-    def get_matched_linked_collection(self, id, subtype, direction="undirected"):
-        '''Get all ids that are linked to the id and have the required subtype
+    def get_linked_collection(self, id, type_and_subtype, direction="undirected"):
+        '''Get all ids that are linked to the id and have the required type_and_subtype
          
         arguments:
         id  = unique identifier
-        subtype = type of object (eg 'es')
+        type_and_subtype = type of object (eg 'es')
         direction = "undirected"/"parents"/"children"
     
         '''
         ids = self.get_linked_ids(id)
-        return self.get_matched_collection(ids, subtype)   
+        return self.get_collection(ids, type_and_subtype)   
     
-    def summary_string_ids(self, ids, types = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
+    def summary_string_ids(self, ids, type_and_subtypes = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
                            labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
                                      "smeared_hcals","gen_hcals","rec_particles"]):
         ''' String to describe the components corresponding to the selected ids
         '''
         makestring=""
-        for i in range(len(types)):
-            objdict = self.get_matched_collection(ids, types[i])
+        for i in range(len(type_and_subtypes)):
+            objdict = self.get_collection(ids, type_and_subtypes[i])
             newlist = [v.__str__() for a, v in objdict.items()] 
             makestring = makestring + "\n" + labels[i].rjust(13, ' ') + ":"  +'\n              '.join(newlist)
         return makestring    
@@ -139,18 +138,17 @@ class HistoryHelper(object):
         (3) Given a reconstructed particle, what simulated particles did it derive from?          
         eg generated charged hadron -> reconstructed photon + neutral hadron'''
         #question 2
-        for id, gp in self.papasevent.get_collection('pg').iteritems():
+        for id, gen_particle in self.papasevent.get_collection('pg').iteritems():
             all_linked_ids = self.get_linked_ids(id) 
-            rec_particles = self.get_matched_collection(all_linked_ids, 'pr')
-            gen_particles = self.get_matched_collection(all_linked_ids, 'pg') #linked gen particles
+            rec_particles = self.get_collection(all_linked_ids, 'pr')
+            gen_particles = self.get_collection(all_linked_ids, 'pg') #linked gen particles
             print self.summary_string_ids(all_linked_ids)
     
         #questions 1  & 3
-        for rp in self.event.papasevent.get_collection('pr').values():
-            if abs(rp.pdgid())>100 and rp.q() != 0: #charged hadron
-                parent_ids= self.get_linked_ids(rp.uniqueid,"parents")
-                smeared_ecals = self.get_matched_collection(parent_ids, 'es') 
-                sim_particles = self.get_matched_linked_collection(rp.uniqueid,'ps')
-    
-            pass            
+        for rec_particle in self.event.papasevent.get_collection('pr').values():
+            if abs(rec_particle.pdgid())>100 and rec_particle.q() != 0: #charged hadron
+                parent_ids= self.get_linked_ids(rec_particle.uniqueid,"parents")
+                smeared_ecals = self.get_collection(parent_ids, 'es') 
+                sim_particles = self.get_linked_collection(rec_particle.uniqueid,'ps')
+            
  

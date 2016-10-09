@@ -120,7 +120,7 @@ class Identifier(long):
         return typelist[Identifier.get_type(ident)]    
 
     @staticmethod
-    def type_code(ident):
+    def type_and_subtype(ident):
         ''' Returns code
                       e = ecal
                       h = hcal

@@ -46,9 +46,9 @@ class HistoryPlotter(object):
         ''' pretty form of the unique identifier'''
         return Identifier.pretty(node.get_value())
     
-    def type_code(self, node):
+    def type_and_subtype(self, node):
         ''' For example 'pg', 'ht' etc'''
-        return Identifier.type_code(node.get_value()) 
+        return Identifier.type_and_subtype(node.get_value()) 
         
     def short_info(self, node):
         '''used to label plotted dag nodes'''
@@ -73,8 +73,8 @@ class HistoryPlotter(object):
             #whole event as DAG
             history=self.papasevent.history
             particles = self.papasevent.get_collection('ps')
-            ecals = self.helper.get_matched_collection(ids,'es')
-            hcals = self.helper.get_matched_collection(ids,'hs')             
+            ecals = self.helper.get_collection(ids,'es')
+            hcals = self.helper.get_collection(ids,'hs')             
             self.display.clear()  
             self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey), layer=layer, sides = [position])            
             self.display.draw()       
@@ -103,12 +103,12 @@ class HistoryPlotter(object):
         
     def _plot_ids_compare(self, ids, offset = 0):
         #handles plotting the sim and rec particles on a double event plot
-        sim_particles = self.helper.get_matched_collection(ids, 'ps')
-        rec_particles = self.helper.get_matched_collection(ids,'pr')
-        sim_ecals = self.helper.get_matched_collection(ids,'es')
-        sim_hcals = self.helper.get_matched_collection(ids,'hs') 
-        rec_ecals = self.helper.get_matched_collection(ids,'em')
-        rec_hcals = self.helper.get_matched_collection(ids,'hm')             
+        sim_particles = self.helper.get_collection(ids, 'ps')
+        rec_particles = self.helper.get_collection(ids,'pr')
+        sim_ecals = self.helper.get_collection(ids,'es')
+        sim_hcals = self.helper.get_collection(ids,'hs') 
+        rec_ecals = self.helper.get_collection(ids,'em')
+        rec_hcals = self.helper.get_collection(ids,'hm')             
         self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 0 + offset*2, is_grey = False, layer = 2)
         self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
         self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 0 + offset*2, is_grey = True, layer = 1)
@@ -201,7 +201,7 @@ class HistoryPlotter(object):
                     
         for nodeid in nodeids:
             node = self.history[nodeid]
-            if self.type_code(node)== 'bs':
+            if self.type_and_subtype(node)== 'bs':
                 bl=self.object(node)
                 if len(bl.element_uniqueids)>1:
                     self._graph_add_block(graph, graphnodes, bl) 

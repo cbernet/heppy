@@ -64,9 +64,9 @@ from heppy.test.papas_cfg import papas_sequence, detector, papas
 from heppy.analyzers.PapasHistoryExplorer import PapasHistory
 papas_history = cfg.Analyzer(
     PapasHistory,
-    display = False,
-    printout = False, 
-    top = 2,
+    display = True,
+    printout = True, 
+    top = 1,
     dag = True,
     instance_label = 'papas_history', 
     detector = detector,
