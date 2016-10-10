@@ -3,18 +3,18 @@ from heppy.framework.event import Event
 
 
 class PapasEvent(Event):
-    ''' Contains all the papas event data eg tracks, clusters, particles, blocks
-        together with the hisotry whcih descibes the linkages between the data
+    ''' Contains all the papas event data eg smeared tracks, merged ecal clusters, reconstructed particles etc
+        together with the history whcih descibes the linkages between the data
         The collections and history are required to match perfectly,
-        ie if in identifier is in the hostory it will be in one of the collections and vice versa
+        ie if in identifier is in the history it will be in one of the collections and vice versa
 
-        The collections dict object contains dicts one dict per object type,
-        eg all smeared_ecasl in the papasevent will be stored as one dict inside the collections.
+        The collections dict object contains dicts, one dict per object type,
+        eg all smeared_ecals in the papasevent will be stored as one dict inside the collections.
         
         The type_and_subtype is used to label the collections in the papasevent
         it is a two letter code formed out of 'type' + 'subtype'
         For example
-          'pr' is particle that has reconstructed type_and_subtype
+          'pr' is particle that has reconstructed subtype
           'es' contains ecals that are smeared
 
         Type codes
@@ -23,8 +23,7 @@ class PapasEvent(Event):
                       t = track
                       p = particle
 
-        Subtype_codes are a single letter, current usage is:
-            eg 
+        Subtype codes are a single letter, current usage includes:
              'g' generated
              'r' reconstructed
              'u' unspecified
@@ -53,10 +52,9 @@ class PapasEvent(Event):
         first = True
         collectiontype = None
         #make sure everything is the same type
-    
         for id in collection.iterkeys():
             if first:
-                collectiontype = Identifier.type_and_subtype(id)#type_subtype
+                collectiontype = Identifier.type_and_subtype(id)
                 if collectiontype in self.collections.keys():
                     assert "Collection Type must be unique"
                 first = False
@@ -65,12 +63,16 @@ class PapasEvent(Event):
         self.collections[collectiontype] = collection
     
     def get_collection(self, type_and_subtype):
-        #assert
-        return self.collections[type_and_subtype]
+        if self.collections.has_key(type_and_subtype):
+            return self.collections[type_and_subtype]
+        assert "collection type_and_subtype not found"
     
     def get_object(self, id):
         '''get an object corresponding to a unique id'''
-        return self.collections[Identifier.type_and_subtype(id)][id]
+        collection = self.get_collection(Identifier.type_and_subtype(id))
+        if collection.has_key(id):      
+            return self.collections[Identifier.type_and_subtype(id)][id]
+        assert "id was not found in collection"
     
     def get_objects(self, ids, type_and_subtype):
         ''' ids must all be of type type_and_subtype
@@ -80,47 +82,11 @@ class PapasEvent(Event):
         for id in collection.iterkeys():
             if first:
                 collectiontype = Identifier.type_and_subtype(id)
+                collection = self.get_collection(type_and_subtype)
                 first = False
+            if not collection.find_key(id):
+                assert "id not found in collection"  
             if collectiontype != Identifier.type_and_subtype(id):
                 assert "mixed types not allowed in a collection"        
         
-        return self.collections[type_and_subtype][id in ids]    
-
-    #TODO check printout via event
-    #def __str__(self):
-        #header = 'PapasEvent:'
-        #stripped_attrs = self.lines()
-        #contents = pprint.pformat(stripped_attrs, indent=4)
-        #return '\n'.join([header, contents])
-        
-        
-    #def lines(self):
-        ##approach copied from event.py and results used in printing this as part of 
-        ##event - improvements likely to be needed
-        #stripped_attrs = dict()
-        #for name, value in {"tracks" : self.tracks ,
-        #"gen tracks" :self.gen_tracks ,
-        #"ecal_clusters": self.ecal_clusters ,
-        #"hcal_clusters": self.hcal_clusters ,
-        #"gen_ecals": self.gen_ecals ,
-        #"gen_hcals": self.gen_hcals ,
-        #"smeared_hcals": self.smeared_ecals ,
-        #"smeared_hcals": self.smeared_hcals ,
-        ##"history": self.history ,
-        #"sim_particles": self.sim_particles ,
-        #"gen_stable_particles": self.gen_stable_particles }.iteritems() :
-        #stripped_attrs[name] = value
-        #for name, value in stripped_attrs.iteritems():
-        #if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
-        ## taking the first 10 elements and converting to a python list 
-        ## note that value could be a wrapped C++ vector
-        #if isinstance(value, collections.Mapping):
-        #entries = [entry for entry in value.iteritems()]
-        #entries = entries[:self.__class__.print_nstrip]
-        #entries
-        #stripped_attrs[name] = dict(entries)
-        #else:
-        #stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
-        #stripped_attrs[name].append('...')
-        #stripped_attrs[name].append(value[-1])    
-        #return stripped_attrs
+        return collection[id in ids]    
