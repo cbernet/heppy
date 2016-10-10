@@ -95,7 +95,6 @@ class PapasSim(Analyzer):
     def process(self, event):
         
         papasevent = PapasEvent()
-        Identifier.reset()
         setattr(event, "papasevent", papasevent)
         setattr(event, "detector", self.detector)
         #if self.is_display:

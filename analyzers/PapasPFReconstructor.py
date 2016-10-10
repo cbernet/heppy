@@ -1,7 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfreconstructor import PFReconstructor as PFReconstructor
 from heppy.papas.pfalgo.distance  import Distance
-
+from heppy.papas.data.identifier import Identifier
 
 
 class PapasPFReconstructor(Analyzer):
@@ -56,4 +56,6 @@ class PapasPFReconstructor(Analyzer):
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
                                                    key = lambda ptc: ptc.uniqueid )
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
+        
+        Identifier.reset()
 

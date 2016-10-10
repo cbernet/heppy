@@ -224,7 +224,7 @@ sequence = cfg.Sequence(
     pdebug,
     source,
     papas_sequence,
-    papas_history,
+    #papas_history,
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
