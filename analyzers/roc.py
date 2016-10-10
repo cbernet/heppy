@@ -5,8 +5,10 @@ import heppy.statistics.rrandom as random
 
 
 class ROC(object):
+    '''background rate vs signal efficiency'''
     
     def __init__(self, sig_bgd_points):
+        '''Provide a few points on the ROC curve '''
         self.sig_bgd_points = sig_bgd_points
         lin_interp = scipy.interpolate.interp1d(sig_bgd_points[:, 0],
                                                 np.log10(sig_bgd_points[:, 1]), 

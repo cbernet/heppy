@@ -21,7 +21,9 @@ class RecoilBuilder(Analyzer):
     
     * sqrts : energy in the center of mass system.
 
-    * to_remove : collection of particles to be subtracted to the initial p4. 
+    * to_remove : collection of particles to be subtracted to the initial p4.
+    if to_remove is set to the whole collection of reconstructed particles
+    in the event, the missing p4 is computed.
 
     '''
     

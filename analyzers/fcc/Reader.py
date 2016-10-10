@@ -22,7 +22,6 @@ class Reader(Analyzer):
     from heppy.analyzers.fcc.Reader import Reader
     source = cfg.Analyzer(
       Reader,
-      mode = 'ee',
       # all the parameters below are optional: 
       gen_particles = 'GenParticle',
       # gen_vertices = '<gen_vertices_name>', 
@@ -30,18 +29,15 @@ class Reader(Analyzer):
       # jets = '<jets_name>',
     )
 
-    * mode: 
-
-    'ee', 'pp', or 'ep'.
-
-    In 'ee' mode, particle-like objects are sorted by decreasing energy. 
-    in other modes, by decreasing pt.
-
-    * gen_particles: 
-
-    Name of the collection of gen particles in the input 
-    root file. Open the root file with root, and print the events TTree 
-    to see which collections are present in your input file.
+    * gen_particles: name of the collection of gen particles
+    in the input FCC-EDM file
+    * gen_vertices: name of the collection of gen vertices
+    * gen_jets: name of the collection of gen jets.
+    * jets: name of the collection of reconstructed jets
+    
+    
+    You can find out about the names of the collections by opening
+    the root file with root, and by printing the events TTree.
 
     Creates: 
     --------    
@@ -55,12 +51,6 @@ class Reader(Analyzer):
     - event.gen_jets: gen jets
     - event.jets: reconstructed jets  
     '''
-
-##    def beginLoop(self, setup):
-##        super(Reader, self).beginLoop(setup)
-##        self.sort_key = lambda ptc: ptc.e()
-##        if heppy.configuration.Collider.BEAMS in ['pp', 'ep']:
-##            self.sort_key = lambda ptc: ptc.pt()
     
     def process(self, event):
         store = event.input

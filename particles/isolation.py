@@ -11,7 +11,9 @@ class Area(object):
         pass
 
 class EtaPhiCircle(Area):
-    '''Circle in (eta, phi) space.'''
+    '''Circle in (eta, phi) space.
+    When running on a lepton collider, eta is replaced by theta. 
+    '''
     def  __init__(self, R):
         '''Create a circle of radius R'''
         self.R = R

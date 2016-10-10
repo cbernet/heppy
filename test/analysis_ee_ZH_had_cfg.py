@@ -67,11 +67,13 @@ leptons = cfg.Analyzer(
     'sel_leptons',
     output = 'leptons',
     input_objects = 'rec_particles',
-    filter_func = is_lepton
+    filter_func = is_lepton 
 )
 
 # Compute lepton isolation w/r other particles in the event.
-# help(LeptonAnalyzer) for more information
+# help(LeptonAnalyzer) 
+# help(isolation) 
+# for more information
 from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
@@ -83,7 +85,10 @@ iso_leptons = cfg.Analyzer(
 
 # Select isolated leptons with a Filter
 def is_isolated(lep):
-    return lep.iso.sumpt/lep.pt()<0.3  # fairly loose
+    '''returns true if the particles around the lepton
+    in the EtaPhiCircle defined above carry less than 30%
+    of the lepton energy.'''
+    return lep.iso.sume/lep.e()<0.3  # fairly loose
 
 sel_iso_leptons = cfg.Analyzer(
     Filter,
@@ -97,7 +102,7 @@ sel_iso_leptons = cfg.Analyzer(
 ##Rejecting events that contain a loosely isolated lepton
 ##
 ##Instead of using an event filter at this stage, we store in the tree
-##the lepton with lowest energy.
+##the lepton with lowest energy (with the name lepton1)
 ##
 ##from heppy.analyzers.EventFilter import EventFilter
 ##lepton_veto = cfg.Analyzer(
@@ -119,7 +124,7 @@ missing_energy = cfg.Analyzer(
 ) 
 
 
-# Make 4 exclusive jets 
+# make 4 exclusive jets 
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 jets = cfg.Analyzer(
     JetClusterizer,
@@ -128,7 +133,7 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 4)  
 )
 
-# Make 4 gen jets with stable gen particles
+# make 4 gen jets with stable gen particles
 genjets = cfg.Analyzer(
     JetClusterizer,
     output = 'genjets',
@@ -136,8 +141,12 @@ genjets = cfg.Analyzer(
     fastjet_args = dict( njets = 4)  
 )
 
-# select the b quarks
+# select b quarks for jet to parton matching
 def is_bquark(ptc):
+    '''returns True if the particle is an outgoing b quark,
+    see
+    http://home.thep.lu.se/~torbjorn/pythia81html/ParticleProperties.html
+    '''
     return abs(ptc.pdgid()) == 5 and ptc.status() == 23
     
 bquarks = cfg.Analyzer(
@@ -175,6 +184,10 @@ compute_jet_energy = cfg.Analyzer(
     )
 
 # parametrized b tagging with CMS performance.
+# the performance of other detectors can be supplied
+# in the roc module
+# cms_roc is a numpy array, so one can easily scale
+# the cms performance, help(numpy.array) for more info.
 from heppy.analyzers.ParametrizedBTagger import ParametrizedBTagger
 from heppy.analyzers.roc import cms_roc
 cms_roc.set_working_point(0.7)
