@@ -1,6 +1,6 @@
 import pprint
 import copy
-import collections 
+import collections
 import fnmatch
 
 from ROOT import TChain
@@ -41,21 +41,18 @@ class Event(object):
     print_nstrip = 10
     print_patterns = ['*']
 
-    def __init__(self, iEv, input_data=None, setup=None, eventWeight=1 ):
+    def __init__(self, iEv, input_data=None, setup=None, eventWeight=1):
         self.iEv = iEv
         self.input = input_data
         self.setup = setup
         self.eventWeight = eventWeight
 
-
-    def _get_stripped_attrs(self, subname = ""):
-
-        selected_attrs = copy.copy( self.__dict__ )
+    def _get_stripped_attrs(self, subname=""):
+        selected_attrs = copy.copy(self.__dict__)
         selected_attrs.pop('setup')
         selected_attrs.pop('input')
         stripped_attrs = dict()
-        papas_attrs=dict()
-        new_attrs=dict()
+        new_attrs = dict()
         for name, value in selected_attrs.iteritems():
             if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]):
                 stripped_attrs[subname + name] = value
@@ -63,40 +60,37 @@ class Event(object):
             if isinstance(value, Event): # deal with an Event within the Event
                 new_attrs.update(value._get_stripped_attrs(value.__class__.__name__ + ": "))
             else: #add in elements of the event but stop after n elements
-                new_attrs.update(self._first_n_elements(name,value))
-            
+                new_attrs.update(self._first_n_elements(name, value))
+
         stripped_attrs.update(new_attrs) 
         return stripped_attrs
-    
-    
-    def _first_n_elements(self,name, value):
-        #iterative function
+
+    def _first_n_elements(self,name,value):
+        #recursive, will return a dict (limited to print_nstrip elements)
+        #Note this function allows for dicts of dicts or lists
+        #contents of lists are not handled recursively
         newdata=dict()
-        if hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1:
-            # taking the first 10 elements and converting to a python list         
-            if isinstance(value, collections.Mapping): #allows printing of first n elements of a dict
-                #not perfect but not too bad
-                i=0
-                subdict=dict() 
-                for newname, entry in value.iteritems():
-                    i = i +1
-                    if i<=self.__class__.print_nstrip :
-                        subdict.update(self._first_n_elements(newname, entry))
-                    elif i == self.__class__.print_nstrip + 1:
-                        subdict["..."] = "..." # entry to show that there is more than this
-                                                 # no guarantees where abouts this is printed
-                newdata[name] = subdict
-            else: #list
-                newdata[name] = [ val for val in value[:self.__class__.print_nstrip] ]
-                newdata[name].append('...')
-                newdata[name].append(value[-1]) 
+        if hasattr(value, '__len__') and isinstance(value, collections.Mapping): #dict:      
+            subdict = dict()
+            for newname, entry in value.iteritems(): #allow recursion in case this dict contains a dict
+                subdict.update(self._first_n_elements(newname, entry)) 
+            if len(value) > self.__class__.print_nstrip+1: #use only part of the dict
+                entries = [entry for  entry in subdict.iteritems()]
+                entries = entries[:self.__class__.print_nstrip]
+                entries.append(("...", "...")) # no guarantees where abouts this is printed
+                newdata[name] = dict(entries) 
+            else: #not too big so using whole dict is OK
+                newdata[name] = subdict 
+        elif hasattr(value, '__len__') and len(value)>self.__class__.print_nstrip+1: #list 
+            newdata[name] = [val for val in value[:self.__class__.print_nstrip]]
+            newdata[name].append('...')
+            newdata[name].append(value[-1])   
         else:
             newdata[name] = value
-        return newdata
-    
+        return newdata    
+
     def __str__(self):
-        header = '{type}: {iEv}'.format( type=self.__class__.__name__,
-                                         iEv = self.iEv)
+        header = '{type}: {iEv}'.format(type=self.__class__.__name__, iEv=self.iEv)
         stripped_attrs = self._get_stripped_attrs() #allows other events such as papasevent to also be printed like an Event
         contents = pprint.pformat(stripped_attrs, indent=4)
         return '\n'.join([header, contents])

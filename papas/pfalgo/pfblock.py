@@ -75,8 +75,8 @@ class PFBlock(object):
             count += Identifier.is_hcal(elem)
         return count
 
-    def __len__(self) :
-        return len(self.element_uniqueids)
+    #def __len__(self) :
+    #    return len(self.element_uniqueids)
 
     def linked_edges(self, uniqueid, edgetype=None) :
         '''
