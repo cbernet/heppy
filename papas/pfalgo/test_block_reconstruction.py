@@ -315,7 +315,7 @@ class TestBlockReconstruction(unittest.TestCase):
     
         
     def test_1(self):
-        
+        Identifier.reset()
         event  =  Event(distance)
         sim  =  Simulator(event)
         event=sim.event
