@@ -25,7 +25,6 @@ class HistoryPlotter(object):
         * papasevent is a PapasEvent
         * detector
         * is_display True/False
-        
         '''
         self.history = papasevent.history
         self.papasevent = papasevent  

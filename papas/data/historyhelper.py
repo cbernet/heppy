@@ -6,20 +6,29 @@ class HistoryHelper(object):
        Object to assist with printing and reconstructing histories.
        It allows extraction of information from the papasevent
        
-       Usage:
-       hist = HistoryHelper(papasevent)
-       print hist.summary_string_event()
-          
-       rec_particles = self.get_collection('pr').values()
+       #Usage:
+       hist = HistoryHelper(event.papasevent)
        
-       #select a reconstructed particle and see what simulated particles are linked to it
-       uid = rec_particles.keys()[0].uniqueid
+       print hist.summary_string_event()
+       
+       #extract a list of all reconstructed particles 
+       rec_particles = event.papasevent.get_collection('pr').values()
+       print rec_particles
+       
+       #find an id from the pretty name
+       uid =hist.id_from_pretty("pg66")
+       
+       #or select a reconstructed particle 
+       #uid = rec_particles.keys()[0].uniqueid
+       
+       #and see what simulated particles are linked to it
        sim_particles = self.get_linked_collection(uid,'ps')
      
        #see also examples subroutine below
+       self.examples()
        
        #see also papasevent documentation for details of the labelling of collections
-         eg 'pr' is a collections of particles that have been reconstructed
+       #  eg 'pr' is a collections of particles that have been reconstructed
         
     '''    
     def __init__(self, papasevent):
@@ -51,7 +60,7 @@ class HistoryHelper(object):
             Not super efficient but OK for occasional use
             eg uid = self.id_from_pretty('et103')
         '''
-        for id in self.ids():
+        for id in self.history.keys():
             if Identifier.pretty(id) == pretty:
                 return id
         return None
@@ -145,7 +154,7 @@ class HistoryHelper(object):
             print self.summary_string_ids(all_linked_ids)
     
         #questions 1  & 3
-        for rec_particle in self.event.papasevent.get_collection('pr').values():
+        for rec_particle in self.papasevent.get_collection('pr').values():
             if abs(rec_particle.pdgid())>100 and rec_particle.q() != 0: #charged hadron
                 parent_ids= self.get_linked_ids(rec_particle.uniqueid,"parents")
                 smeared_ecals = self.get_collection(parent_ids, 'es') 

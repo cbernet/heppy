@@ -50,6 +50,8 @@ class PapasHistory(Analyzer):
             print self.hist.summary_string_event()
             print self.hist.summary_string_subgroups(top=self.top)
 
+        #self.hist.examples()
+        #print self.hist.get_linked_collection(self.hist.id_from_pretty('pg100','ps')
        
         if self.is_display:
             self.histplot.plot_event_compare()

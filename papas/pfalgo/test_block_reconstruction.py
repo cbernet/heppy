@@ -58,7 +58,8 @@ class Particle(object):
         #self.type = PFType.PARTICLE
     
     def __repr__(self):
-        return "particle:"+  str(self.id) + " :"+  str(self.uniqueid)        
+        return "particle:"+  str(self.id) + " :"+  str(self.uniqueid)  
+
 class ReconstructedParticle(Particle):
     ''' Simple Particle class for test case
         Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a ppdgid
@@ -319,7 +320,7 @@ class TestBlockReconstruction(unittest.TestCase):
         sim  =  Simulator(event)
         event=sim.event
         
-        pfblocker = PFBlockBuilder( event, distance)
+        pfblocker = PFBlockBuilder( event.history.keys(), event, distance)
         
         event.blocks = pfblocker.blocks
         #event.history = pfblocker.history
@@ -368,7 +369,7 @@ class TestBlockReconstruction(unittest.TestCase):
         for n in x.element_uniqueids:
             pids.append(n)              
         ids  = sorted(pids)
-        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202)])
+        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202), sim.UID(302)])
         self.assertEqual(ids,expected_ids )
     
         #(2) use edge nodes to see what is connected
@@ -376,7 +377,7 @@ class TestBlockReconstruction(unittest.TestCase):
         BFS  =  BreadthFirstSearchIterative(pfblocker.nodes[nodeuid],"undirected")
         for n in BFS.result :
             ids.append(n.get_value())
-        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202)])   
+        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202),sim.UID(302)])   
         self.assertEqual(sorted(ids), expected_ids)
 
         #(3) Give me all simulation particles attached to each reconstructed particle
