@@ -272,7 +272,7 @@ class Particle(BaseParticle):
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
-        self.track = None # Alice Experiment to match cpp debug Track(self.p3(), self.q(), self.path)
+        self.track = None # to match cpp 
         self.clusters_smeared = dict()
         self.track_smeared = None
 

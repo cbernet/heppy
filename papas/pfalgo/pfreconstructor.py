@@ -317,7 +317,14 @@ class PFReconstructor(object):
             track_energy = sum(track.energy for track in tracks)
             for track in tracks:
                 #make a charged hadron
-                parent_ids = [block.uniqueid, track.uniqueid, hcalid]
+                parent_ids = [block.uniqueid, track.uniqueid]  
+                linked_ecals = [block.linked_ids(track.uniqueid, "ecal_track")]
+                #if len(linked_ecals()>0:
+                parent_ids = parent_ids + block.linked_ids(track.uniqueid, "ecal_track") 
+                parent_ids = parent_ids + block.linked_ids(track.uniqueid, "hcal_track")
+                
+                #removed hcal or put in hcal and ecals but only those linked to this track
+                
                 self.insert_particle(parent_ids, self.reconstruct_track( track))
                 
             delta_e_rel = (hcal_energy + ecal_energy) / track_energy - 1.
@@ -390,10 +397,10 @@ class PFReconstructor(object):
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
         particle = Particle(p4, vertex, charge, pdg_id, subtype='r')
         path = StraightLine(p4, vertex)
-        path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
+        #path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
                                             # nb this only is problem if the cluster and the assigned layer are different
         particle.set_path(path)
-        particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
+        #particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
         pdebugger.info(str('Made {} from {}'.format(particle,  cluster)))
         return particle
@@ -407,8 +414,12 @@ class PFReconstructor(object):
         p4 = TLorentzVector()
         p4.SetVectM(track.p3, mass)
         particle = Particle(p4, vertex, charge, pdg_id, subtype='r')
-        particle.set_path(track.path)
-        particle.clusters = clusters
+        
+        path = StraightLine(p4, vertex)
+        if abs(charge)>0.5:
+            path = Helix(self.detector.elements['field'].magnitude, charge, p4, vertex)
+        particle.set_path(path)
+        #particle.clusters = clusters
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle,  track)))
         return particle

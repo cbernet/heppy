@@ -96,8 +96,8 @@ class HistoryHelper(object):
         return self.get_collection(ids, type_and_subtype)   
     
     def summary_string_ids(self, ids, type_and_subtypes = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
-                           labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
-                                     "smeared_hcals","gen_hcals","rec_particles"]):
+                           labels = ["gen_particles","true_tracks","smeared_tracks", "true_ecals", "smeared_ecals","merged_ecals","true_hcals", 
+                                     "smeared_hcals","merged_hcals","rec_particles"]):
         ''' String to describe the components corresponding to the selected ids
         '''
         makestring=""
@@ -108,8 +108,8 @@ class HistoryHelper(object):
         return makestring    
     
     def summary_string_event(self, types = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
-                       labels = ["gen_particles","gen_tracks","tracks", "ecals", "smeared_ecals","gen_ecals","hcals", 
-                      "smeared_hcals","gen_hcals","rec_particles"]):
+                       labels = ["gen_particles","true_tracks","smeared_tracks", "true_ecals", "smeared_ecals","merged_ecals","true_hcals", 
+                                     "smeared_hcals","merged_hcals","rec_particles"]):
         ''' String to describe the papas event
         '''
         ids = self.event_ids()

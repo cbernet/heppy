@@ -4,7 +4,7 @@ from heppy.papas.data.historyhelper import HistoryHelper
 from subprocess import call
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
-from heppy.display.pfobjects import GTrajectories, GHistoryBlock
+from heppy.display.trajectories import GTrajectories, GHistoryBlock
 from ROOT import gPad
 
 class HistoryPlotter(object):
@@ -38,6 +38,7 @@ class HistoryPlotter(object):
     def init_display(self):
         #double paned Display
         #make this a choice via parameters somehow
+               
         self.display = Display(['xy','yz'], pads=("simulated", "reconstructed"))
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)        
@@ -114,9 +115,9 @@ class HistoryPlotter(object):
         rec_ecals = self.helper.get_collection(ids,'em')
         rec_hcals = self.helper.get_collection(ids,'hm')             
         self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 0 + offset*2, is_grey = False, layer = 2)
-        self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
         self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 0 + offset*2, is_grey = True, layer = 1)
-        self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 1 + offset*2, is_grey = False, layer = 2)   
+        #self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 1 + offset*2, is_grey = False, layer = 2)  
+        #self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
     
         
     def _add_particles(self, particles, ecals, hcals, position, is_grey=False , layer = 1):
@@ -183,10 +184,15 @@ class HistoryPlotter(object):
     def _graph_add_block (self,graph, graphnodes, pfblock):
         #this adds the block links (distance, is_linked) onto the DAG in red
         intcols =[1,2,3,4,5,6,7,8]
+        
         for edge in pfblock.edges.itervalues():
             if  edge.linked: 
+                label ="{:.1E}".format(edge.distance)
+                if edge.distance == 0:
+                    label = "0"                
                 graph.add_edge(pydot.Edge(  graphnodes[Identifier.pretty(edge.id1)],graphnodes[Identifier.pretty(edge.id2)],
-                label=round(edge.distance,1),style="dashed", color="red",arrowhead="none",arrowtail="none",fontsize='7' ))
+                label=label,style="dashed", color="red",arrowhead="none",arrowtail="none",fontsize='7' ))
+                #label=round(edge.distance,1),style="dashed", color="red",arrowhead="none",arrowtail="none",fontsize='7' ))
         pass      
                          
     def _graph_ids (self, nodeids, graph):
