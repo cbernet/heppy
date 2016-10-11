@@ -166,14 +166,13 @@ class PapasSim(Analyzer):
                     history[id].add_child(history[clust.uniqueid])  
     
             if len(ptc.clusters_smeared) > 0 :   
-                for key1, smclust in ptc.clusters_smeared.iteritems():
-                    if (key ==key1): 
-                        if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
-                            smeared_ecals[smclust.uniqueid]=smclust
-                        elif key=="hcal_in" :
-                            smeared_hcals[smclust.uniqueid]=smclust 
-                        history[smclust.uniqueid] = Node(smclust.uniqueid)
-                        history[clust.uniqueid].add_child(history[smclust.uniqueid])
+                for key, smclust in ptc.clusters_smeared.iteritems():
+                    if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
+                        smeared_ecals[smclust.uniqueid]=smclust
+                    elif key=="hcal_in" :
+                        smeared_hcals[smclust.uniqueid]=smclust 
+                    history[smclust.uniqueid] = Node(smclust.uniqueid)
+                    history[clust.uniqueid].add_child(history[smclust.uniqueid])
                             
         papasevent.add_collection(simulated_particles)
         papasevent.add_collection(gen_stable_particles)
