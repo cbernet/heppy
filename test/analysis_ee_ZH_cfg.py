@@ -64,9 +64,9 @@ from heppy.test.papas_cfg import papas_sequence, detector, papas
 from heppy.analyzers.PapasHistoryExplorer import PapasHistory
 papas_history = cfg.Analyzer(
     PapasHistory,
-    display = False,
+    display = True,
     printout = False, 
-    top = 1,
+    top = 10,
     dag = True,
     instance_label = 'papas_history', 
     detector = detector,
@@ -224,7 +224,7 @@ sequence = cfg.Sequence(
     pdebug,
     source,
     papas_sequence,
-    #papas_history,
+    papas_history,
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
@@ -290,7 +290,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=10,
+                   nEvents=1000,
                    nPrint=1,
                    timeReport=True)
     

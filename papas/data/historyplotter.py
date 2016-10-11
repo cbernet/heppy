@@ -5,6 +5,7 @@ from subprocess import call
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories, GHistoryBlock
+from ROOT import gPad
 
 class HistoryPlotter(object):
     '''   
@@ -87,6 +88,7 @@ class HistoryPlotter(object):
         self.display.clear()       
         self._plot_ids_compare(self.helper.event_ids())             
         self.display.draw() 
+        gPad.SaveAs('graphs/event_' + str(self.papasevent.iEv) + '_sim_rec.png')  
         pass  
         
     def plot_subgroup_compare(self, ids):
@@ -98,6 +100,9 @@ class HistoryPlotter(object):
             self.display.clear()       
             self._plot_ids_compare(ids)
             self.display.draw() 
+            
+            gPad.SaveAs('graphs/event_' + str(self.event.iEv) + '_item_' + Identifier.pretty(ids[0]) + '_sim_rec.png') 
+            
             pass   
         
     def _plot_ids_compare(self, ids, offset = 0):
@@ -138,8 +143,8 @@ class HistoryPlotter(object):
             for i in range(0, 8):     
                 s = subgraphs[i]
                 self._plot_ids_compare(s, offset = i)      
-        self.display.draw()         
-        #gPad.SaveAs('graphs/event_' + str(self.event.iEv) + '_sim_rec_compare.png') 
+            self.display.draw()         
+            #gPad.SaveAs('graphs/event_' + str(self.event.iEv) + '_item_' + Identifier.pretty(s[0]) + '_sim_rec_compare.png') 
                              
               
     def plot_dag_ids (self, ids, show = True):
@@ -149,8 +154,8 @@ class HistoryPlotter(object):
         self._graph_ids(ids, graph)
         namestring='graphs/event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
-        if show:
-            call(["open", namestring])        
+        #if show:
+        #    call(["open", namestring])        
     
     def plot_dag_event(self, show = False): 
         '''DAG plot for an event
@@ -160,8 +165,8 @@ class HistoryPlotter(object):
         self._graph_ids(ids, graph)
         namestring = 'graphs/event_' + str(self.papasevent.iEv)  + '_dag.png'
         graph.write_png(namestring) 
-        if show:
-            call(["open", namestring])
+        #if show:
+        #    call(["open", namestring])
             
     def plot_dag_subgroups(self, top = None, show = False):
         '''produces DAG plots of event subgroups (one per subgroup)

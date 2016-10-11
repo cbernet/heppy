@@ -98,6 +98,8 @@ class PFReconstructor(object):
         for blockid in sorted(self.blocks.keys()): 
             #print "block: ", len(self.blocks[block]),  self.blocks[block].short_name();
             newblocks=self.simplify_blocks(self.blocks[blockid], self.history_nodes)
+            if len(newblocks)>1:
+                pass
             self.splitblocks.update( newblocks)      
     
         
@@ -154,6 +156,7 @@ class PFReconstructor(object):
         #if there is something to unlink then use the BlockSplitter              
         splitblocks = BlockSplitter(block, to_unlink, history_nodes, subtype = 's').blocks
         
+        
         return splitblocks
             
     def reconstruct_block(self, block):
@@ -169,15 +172,15 @@ class PFReconstructor(object):
        
         if len(ids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
             id = ids[0]
-            
+            parent_ids = [block.uniqueid, id]
             if Identifier.is_ecal(id):
-                self.insert_particle(block, self.reconstruct_cluster(self.ecals[id],"ecal_in"))
+                self.insert_particle(parent_ids, self.reconstruct_cluster(self.ecals[id],"ecal_in"))
                 
             elif Identifier.is_hcal(id):
-                self.insert_particle(block, self.reconstruct_cluster(self.hcals[id],"hcal_in"))
+                self.insert_particle(parent_ids, self.reconstruct_cluster(self.hcals[id],"hcal_in"))
                 
             elif Identifier.is_track(id):
-                self.insert_particle(block, self.reconstruct_track(self.tracks[id]))
+                self.insert_particle(parent_ids, self.reconstruct_track(self.tracks[id]))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
             for id in sorted(ids) : #newsort
@@ -188,7 +191,8 @@ class PFReconstructor(object):
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
                 # ELECTRONS TO BE DEALT WITH.
-                    self.insert_particle(block, self.reconstruct_track(self.tracks[id]))
+                    parent_ids = [block.uniqueid, id]
+                    self.insert_particle(parent_ids, self.reconstruct_track(self.tracks[id]))
                     
                     # tracks possibly linked to ecal->locking cluster
                     for idlink in block.linked_ids(id,"ecal_track"):
@@ -209,7 +213,7 @@ class PFReconstructor(object):
           
     
        
-    def insert_particle(self, block, newparticle):
+    def insert_particle(self, parent_ids, newparticle):
             ''' The new particle will be inserted into the history_nodes (if present).
                 A new node for the particle will be created if needed.
                 It will have as its parents the block and all the elements of the block.
@@ -225,21 +229,16 @@ class PFReconstructor(object):
                 if (self.history_nodes == None):
                     return
                 
-                #find the node for the block        
-                blocknode = self.history_nodes[block.uniqueid]
-                
                 #find or make a node for the particle            
                 if newid  in self.history_nodes :
-                    pnode = self.history_nodes[newid]
+                    particlenode = self.history_nodes[newid]
                 else :
-                    pnode = Node(newid)
-                    self.history_nodes[newid] = pnode
+                    particlenode = Node(newid)
+                    self.history_nodes[newid] = particlenode
+                #add in parental history
+                for pid in parent_ids:
+                    self.history_nodes[pid].add_child(particlenode)
                 
-                #link particle to the block            
-                blocknode.add_child(pnode)
-                #link particle to block elements
-                #for element_id in block.element_uniqueids:
-                #    self.history_nodes[element_id].add_child(pnode)    
     
 
     def neutral_hadron_energy_resolution(self, energy, eta):
@@ -318,7 +317,8 @@ class PFReconstructor(object):
             track_energy = sum(track.energy for track in tracks)
             for track in tracks:
                 #make a charged hadron
-                self.insert_particle(block, self.reconstruct_track( track))
+                parent_ids = [block.uniqueid, track.uniqueid, hcalid]
+                self.insert_particle(parent_ids, self.reconstruct_track( track))
                 
             delta_e_rel = (hcal_energy + ecal_energy) / track_energy - 1.
             # WARNING
@@ -338,24 +338,27 @@ class PFReconstructor(object):
                 if excess <= ecal_energy: # approx means hcal energy > track energies 
                     # Make a photon from the ecal energy
                     # We make only one photon using only the combined ecal energies
-                    self.insert_particle(block, self.reconstruct_cluster(hcal, 'ecal_in',excess))
+                    parent_ids = [block.uniqueid] + [ecal.uniqueid for ecal in ecals]
+                    self.insert_particle(parent_ids, self.reconstruct_cluster(hcal, 'ecal_in',excess))
                     
                 else: # approx means that hcal energy>track energies so we must have a neutral hadron
                     #excess-ecal_energy is approximately hcal energy  - track energies
-                    self.insert_particle(block, self.reconstruct_cluster(hcal, 'hcal_in',
+                    parent_ids = [block.uniqueid, hcalid] 
+                    self.insert_particle(parent_ids, self.reconstruct_cluster(hcal, 'hcal_in',
                                                         excess-ecal_energy))
                     if ecal_energy:
                         #make a photon from the remaining ecal energies
                         #again history is confusingbecause hcal is used to provide direction
                         #be better to make several smaller photons one per ecal?
-                        self.insert_particle(block, self.reconstruct_cluster(hcal, 'ecal_in',
+                        parent_ids = [block.uniqueid] + [ecal.uniqueid for ecal in ecals]
+                        self.insert_particle(parent_ids, self.reconstruct_cluster(hcal, 'ecal_in',
                                                                   ecal_energy))
 
         else: # case where there are no tracks make a neutral hadron for each hcal
               # note that hcal-ecal links have been removed so hcal should only be linked to 
               # other hcals
-                 
-            self.insert_particle(block,  self.reconstruct_cluster(hcal, 'hcal_in'))
+            parent_ids = [block.uniqueid, hcalid]     
+            self.insert_particle(parent_ids,  self.reconstruct_cluster(hcal, 'hcal_in'))
             
         self.locked[hcalid] = True
         

@@ -20,7 +20,7 @@ class Blob(object):
                 color = 4
         if grey:
             color = 17
-            innercolor=17
+            innercolor = 17
         if color == 1:
             pass
         max_energy = cluster.__class__.max_energy
@@ -216,17 +216,18 @@ class GNewTrajectory(object):
         self.graph_xz = TGraph(npoints)
         self.graph_thetaphi = TGraph(npoints)
         self.graphs = [self.graph_xy, self.graph_yz, self.graph_xz, self.graph_thetaphi]
+        
+            
         def set_graph_style(graph):
             graph.SetMarkerStyle(2)
             graph.SetMarkerSize(0.7)
             graph.SetMarkerColor(linecolor)
             graph.SetLineStyle(linestyle)
             graph.SetLineColor(linecolor)
-        set_graph_style(self.graph_xy)
-        set_graph_style(self.graph_yz)
-        set_graph_style(self.graph_xz)
-        set_graph_style(self.graph_thetaphi)
-        #i=0
+            
+        for g in self.graphs:
+            set_graph_style(g)
+        
         #for particle in particles.values():
         self.path = StraightLine(particle.p4(), particle.vertex)
         if abs(particle.q())>0.5:

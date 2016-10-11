@@ -29,6 +29,21 @@ class BlockSplitter(BlockBuilder):
         
         super(BlockSplitter, self).__init__(block.element_uniqueids, block.edges, history_nodes, subtype = subtype)
         assert( isinstance(self.blocks,dict))
+        
+        
+        #add in history link between block and splitblocks
+        #check if history nodes exists
+        if (history_nodes == None):
+            return
+        
+        #find the node for the block        
+        blocknode = self.history_nodes[block.uniqueid]
+        
+        #find or make a node for the particle            
+        for splitblockid in self.blocks:
+            snode = self.history_nodes[splitblockid]
+            #link particle to the block            
+            blocknode.add_child(snode)        
             
         #set the original block to be inactive
         block.is_active = False 
