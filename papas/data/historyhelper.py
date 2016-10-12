@@ -43,7 +43,7 @@ class HistoryHelper(object):
         ''' 
            returns all the ids in the event
         '''
-        return self.history.keys();
+        return self.history.keys()
     
     def get_linked_ids(self, id, direction="undirected"):
         '''
@@ -92,7 +92,7 @@ class HistoryHelper(object):
         direction = "undirected"/"parents"/"children"
     
         '''
-        ids = self.get_linked_ids(id)
+        ids = self.get_linked_ids(id, direction)
         return self.get_collection(ids, type_and_subtype)   
     
     def summary_string_ids(self, ids, type_and_subtypes = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
@@ -103,7 +103,7 @@ class HistoryHelper(object):
         makestring=""
         for i in range(len(type_and_subtypes)):
             objdict = self.get_collection(ids, type_and_subtypes[i])
-            newlist = [v.__str__() for a, v in objdict.items()] 
+            newlist = [v.__str__() for  v in objdict.itervalues()] 
             makestring = makestring + "\n" + labels[i].rjust(13, ' ') + ":"  +'\n              '.join(newlist)
         return makestring    
     
@@ -115,15 +115,15 @@ class HistoryHelper(object):
         ids = self.event_ids()
         return self.summary_string_ids(ids, types, labels)
     
-    def summary_string_subgroups(self, top = None):
+    def summary_string_subgroups(self, num_subgroups = None):
         ''' Divide the event into connected subgroups
-            Produce a summary string for the biggest "top" subgroups
+            Produce a summary string for the biggest "num_subgroups" subgroups
         '''
         subgraphs=self.get_history_subgroups()  
         result= "Subgroups: \n"
-        if top is None:
-            top = len(subgraphs)
-        for i in range(top):   
+        if num_subgroups is None:
+            num_subgroups = len(subgraphs)
+        for i in range(num_subgroups):   
             result = result +  "\nSubGroup: " + str(i) +"\n" + self.summary_string_ids(subgraphs[i])
         return result    
     

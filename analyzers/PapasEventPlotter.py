@@ -21,12 +21,10 @@ class PapasEventPlotter(Analyzer):
         * to_file- whether to send output to file
         * num_subgroups - (optional) produce outputs for the largest n subgroups, if unset will produce everything
 
-        
     '''
 
     def __init__(self, *args, **kwargs):
         super(PapasEventPlotter, self).__init__(*args, **kwargs)  
-       
         self.to_file = self.cfg_ana.to_file
         self.projections = self.cfg_ana.projections
         self.plottype = self.cfg_ana.plottype

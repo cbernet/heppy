@@ -10,14 +10,12 @@ from ROOT import gPad
 class HistoryPlotter(object):
     '''   
            Object to assist with plotting histories.
-           It allows extraction of information from the papasevent
-    
+          
            Usage:
-           hist = HistoryHelper(papasevent)
            histplot = HistoryPlotter(papapasevent, detector)
-           histplot.plot_event_compare() 
-           histplot.plot_dag_event(True)        
-           histplot.plot_dag_subgroups(top=3 , True) 
+           histplot.plot_event_compare() #plot normal papas event diagram
+           histplot.plot_dag_event()     #write dag event plot to file   
+           histplot.plot_dag_subgroups(num_subgroups=3 ) #write dag subevents to file
     
     
         '''        
@@ -58,7 +56,7 @@ class HistoryPlotter(object):
     def color(self, node):
         '''used to color dag nodes'''
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]
-        intcols =[1,2,3,4,5,6,7,8]
+        #intcols =[1,2,3,4,5,6,7,8]
         return cols[Identifier.get_type(node.get_value())]                     
 
     def object(self, node):
@@ -70,16 +68,15 @@ class HistoryPlotter(object):
         '''Event plot containing Simulated particles and smeared clusters 
         '''
         #whole event 
-        history=self.papasevent.history
         particles = self.papasevent.get_collection('ps')
-        ecals = self.helper.get_collection(ids,'es')
-        hcals = self.helper.get_collection(ids,'hs')             
+        ecals = self.papasevent.get_collection('es')
+        hcals = self.papasevent.get_collection('hs')             
         self.display.clear()  
-        self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey), layer=layer, sides = [position])            
+        self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey = False), layer=1, sides = [0])            
         self.display.draw()       
         #gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim.png')  
 
-    def plot_event_compare(self, to_file):
+    def plot_event_compare(self, to_file = False):
         '''Double event plot for full event
             containing Simulated particles and smeared clusters on left
             and reconstructed particles and merged clusters on right side
@@ -88,19 +85,18 @@ class HistoryPlotter(object):
         self._plot_ids_compare(self.helper.event_ids())             
         self.display.draw() 
         if to_file:
-            gPad.SaveAs('graphs/event_' + str(self.papasevent.iEv) + '_sim_rec.png')  
-        pass  
+            gPad.SaveAs('graphs/event_' + str(self.papasevent.iEv) + '_sim_rec.png')    
 
-    def plot_event_subgroups_compare(self, to_file = True, top = None):
+    def plot_event_subgroups_compare(self, to_file = False, num_subgroups = None):
         '''produces event sub plots of event subgroups (one per subgroup)
-           If top is specified then the top n largest subgroups are plotted
+           If num_subgroups is specified then the num_subgroups n largest subgroups are plotted
            otherwise all subgroups are plotted
         '''
         subgraphs=self.helper.get_history_subgroups()  
         self.init_display()     
-        if top is None:
-            top = len(subgraphs)
-        for i in range(top): 
+        if num_subgroups is None:
+            num_subgroups = len(subgraphs)
+        for i in range(num_subgroups): 
             self.plot_event_ids_compare(subgraphs[i], to_file)      
         
     def plot_event_ids_compare(self, ids, to_file = True):
@@ -108,13 +104,12 @@ class HistoryPlotter(object):
                 containing Simulated particles and smeared clusters on left
                 and reconstructed particles and merged clusters on right side
                     '''          
-        if self.is_display  :
-            self.display.clear()       
-            self._plot_ids_compare(ids)
-            self.display.draw() 
-            if to_file:
-                gPad.SaveAs('graphs/event_' + str(self.event.iEv) + '_item_' + Identifier.pretty(ids[0]) + '_sim_rec.png') 
-            pass   
+        self.display.clear()       
+        self._plot_ids_compare(ids)
+        self.display.draw() 
+        if to_file:
+            gPad.SaveAs('graphs/event_' + str(self.papasevent.iEv) + '_item_' + Identifier.pretty(ids[0]) + '_sim_rec.png') 
+        pass   
         
     def _plot_ids_compare(self, ids, offset = 0):
         #handles plotting the sim and rec particles on a double event plot
@@ -137,9 +132,7 @@ class HistoryPlotter(object):
         ''' An experiment to plot largest 8 subgroups in an event all at once'''
         
         self.display.clear() 
-        
         subgraphs=self.helper.get_history_subgroups()  
-        subsize = len(subgraphs)
         from itertools import product
         subgraphs.sort(key = lambda s: -len(s))
         ids = []
@@ -164,7 +157,6 @@ class HistoryPlotter(object):
         self._graph_ids(ids, graph)
         namestring='graphs/event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'
         graph.write_png(namestring) 
-               
     
     def plot_dag_event(self, show_file = False): 
         '''DAG plot for an event
@@ -177,20 +169,19 @@ class HistoryPlotter(object):
         if show_file:
             call(["open", namestring])
             
-    def plot_dag_subgroups(self, top = None):
+    def plot_dag_subgroups(self, num_subgroups = None):
         '''produces DAG plots of event subgroups (one per subgroup)
-           If top is specified then the top n largest subgroups are plotted
+           If num_subgroups is specified then the num_subgroups n largest subgroups are plotted
            otherwise all subgroups are plotted
         '''
         subgraphs=self.helper.get_history_subgroups()  
-        if top is None:
-            top = len(subgraphs)
-        for i in range(top): 
+        if num_subgroups is None:
+            num_subgroups = len(subgraphs)
+        for i in range(num_subgroups): 
             self.plot_dag_ids(subgraphs[i])       
         
     def _graph_add_block (self,graph, graphnodes, pfblock):
         #this adds the block links (distance, is_linked) onto the DAG in red
-        intcols =[1,2,3,4,5,6,7,8]
         for edge in pfblock.edges.itervalues():
             if  edge.linked: 
                 label ="{:.1E}".format(edge.distance)
