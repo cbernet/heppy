@@ -11,19 +11,19 @@ class Particle(BaseParticle, POD):
     def __init__(self, fccobj):
         super(Particle, self).__init__(fccobj)
         self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
-        self._charge = fccobj.Core().Charge
-        self._pid = fccobj.Core().Type
-        self._status = fccobj.Core().Status
-        if hasattr(fccobj, 'StartVertex'):
-            start = fccobj.StartVertex()
+        self._charge = fccobj.core().charge
+        self._pid = fccobj.core().pdgId
+        self._status = fccobj.core().status
+        if hasattr(fccobj, 'startVertex'):
+            start = fccobj.startVertex()
             self._start_vertex = Vertex(start) if start.isAvailable() \
                                  else None 
-            end = fccobj.EndVertex()
+            end = fccobj.endVertex()
             self._end_vertex = Vertex(end) if end.isAvailable() \
                                else None 
         self._tlv = TLorentzVector()
-        p4 = fccobj.Core().P4
-        self._tlv.SetXYZM(p4.Px, p4.Py, p4.Pz, p4.Mass)
+        p4 = fccobj.core().p4
+        self._tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
         #write(str('Made Pythia {}').format(self))
         
     def __deepcopy__(self, memodict={}):
