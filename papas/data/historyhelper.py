@@ -124,7 +124,7 @@ class HistoryHelper(object):
         if top is None:
             top = len(subgraphs)
         for i in range(top):   
-            result = result +  "SubGroup " + str(i) +"\n" + self.summary_string_ids(subgraphs[i])
+            result = result +  "\nSubGroup: " + str(i) +"\n" + self.summary_string_ids(subgraphs[i])
         return result    
     
     def get_history_subgroups(self): #get subgroups of linked nodes, largest subgroup first

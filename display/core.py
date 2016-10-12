@@ -127,16 +127,17 @@ class ViewPane(object):
                 self.pads[x].draw()
                 self.canvas.Update()
 
-    #def zoom(self, xmin, xmax, ymin, ymax):
-        #self.hist.GetXaxis().SetRangeUser(xmin, xmax)
-        #self.hist.GetYaxis().SetRangeUser(ymin, ymax)
-        #self.canvas.Update()
+    def zoom(self, xmin, xmax, ymin, ymax):
+        for p in self.pads.itervalues():
+            p.zoom(xmin, xmax, ymin, ymax)
+        self.draw()    
 
-    #def unzoom(self):
-        #self.hist.GetXaxis().UnZoom()
-        #self.hist.GetYaxis().UnZoom()
+    def unzoom(self):
+        for p in self.pads.itervalues():
+            p.unzoom()
+            
         #self.canvas.Modified()
-        #self.canvas.Update()
+        self.draw()   
 
     def save(self, outdir, filetype):
         fname = '{outdir}/{name}.{filetype}'.format(outdir=outdir,
@@ -178,14 +179,13 @@ class ViewPad(object):
             obj.draw(self.projection)
         
 
-    #def zoom(self, xmin, xmax, ymin, ymax):
-        #self.hist.GetXaxis().SetRangeUser(xmin, xmax)
-        #self.hist.GetYaxis().SetRangeUser(ymin, ymax)
-        #self.canvas.Update()
+    def zoom(self, xmin, xmax, ymin, ymax):
+        self.hist.GetXaxis().SetRangeUser(xmin, xmax)
+        self.hist.GetYaxis().SetRangeUser(ymin, ymax)
 
-    #def unzoom(self):
-        #self.hist.GetXaxis().UnZoom()
-        #self.hist.GetYaxis().UnZoom()
-        #self.canvas.Modified()
-        #self.canvas.Update()
+    def unzoom(self):
+        self.hist.GetXaxis().UnZoom()
+        self.hist.GetYaxis().UnZoom()
+        
+     
 
