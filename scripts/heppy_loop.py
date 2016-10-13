@@ -8,6 +8,7 @@ import glob
 import sys
 import imp
 import copy
+
 from multiprocessing import Pool
 from pprint import pprint
 
@@ -19,7 +20,7 @@ loop = None
 
 def callBack( result ):
     pass
-    print 'production done:', str(result)
+    # print 'production done:', str(result)
 
 def runLoopAsync(comp, outDir, config, options):
     loop = runLoop( comp, outDir, config, options)
@@ -45,7 +46,6 @@ def runLoop( comp, outDir, config, options):
         iEvent = int(options.iEvent)
         loop.process( iEvent )
     return loop
-
 
 def createOutputDir(dirname, components, force):
     '''Creates the output dir, dealing with the case where dir exists.'''
@@ -113,7 +113,6 @@ def main( options, args ):
         shutil.copy( cfgFileName, outDir )
         pool = Pool(processes=len(selComps))
         for comp in selComps:
-            print 'submitting', comp.name
             pool.apply_async( runLoopAsync, [comp, outDir, cfg.config, options],
                               callback=callBack)
         pool.close()

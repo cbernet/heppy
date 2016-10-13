@@ -5,6 +5,7 @@ import os
 import copy
 from simple_example_cfg import config, stopper 
 from heppy.utils.testtree import create_tree, remove_tree
+from heppy.scripts.heppy_loop import create_parser, main
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
@@ -74,7 +75,6 @@ class TestSimpleExample(unittest.TestCase):
         self.assertRaises(UserStop, loop.process, 10)
   
     def test_rewrite(self):
-        from heppy.scripts.heppy_loop import create_parser, main
         parser = create_parser()
         options, args = parser.parse_args()
         options.iEvent = None
@@ -84,14 +84,6 @@ class TestSimpleExample(unittest.TestCase):
         main(options, [self.outdir, 'simple_example_cfg.py'])
         subdirs = os.listdir(self.outdir)
         self.assertEqual(len(subdirs), 2)
-
-    # def test_multiprocessing(self): 
-    #     from heppy.scripts.heppy_loop import create_parser, main
-    #     parser = create_parser()
-    #     options, args = parser.parse_args()
-    #     options.iEvent = None
-    #     options.nprint = 0
-    #     main(options, [self.outdir, 'simple_example_cfg.py'])
 
 if __name__ == '__main__':
 
