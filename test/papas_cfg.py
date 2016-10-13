@@ -69,13 +69,22 @@ pfreconstruct = cfg.Analyzer(
 # to get separate collections of electrons and muons
 # help(Filter) for more information
 from heppy.analyzers.Filter import Filter
-sim_leptons = cfg.Analyzer(
+sim_electrons = cfg.Analyzer(
     Filter,
-    'sim_leptons',
-    output = 'sim_leptons',
+    'sim_electrons',
+    output = 'sim_electrons',
     input_objects = 'papas_sim_particles',
-    filter_func = lambda ptc: abs(ptc.pdgid()) in [11, 13]
+    filter_func = lambda ptc: abs(ptc.pdgid()) in [11]
 )
+
+sim_muons = cfg.Analyzer(
+    Filter,
+    'sim_muons',
+    output = 'sim_muons',
+    input_objects = 'papas_sim_particles',
+    filter_func = lambda ptc: abs(ptc.pdgid()) in [13]
+)
+
 
 # Applying a simple resolution and efficiency model to electrons and muons.
 # Indeed, papas simply copies generated electrons and muons
@@ -91,20 +100,20 @@ electrons = cfg.Analyzer(
     GaussianSmearer,
     'electrons',
     output = 'electrons',
-    input_objects = 'sim_leptons',
+    input_objects = 'sim_electrons',
     accept=accept_electron, 
     mu_sigma=(1, 0.1)
     )
 
 def accept_muon(mu):
-    return abs(mu.eta()) < 2. and mu.e() > 5.
+    return abs(mu.eta()) < 2.5 and mu.pt() > 5.
 muons = cfg.Analyzer(
     GaussianSmearer,
     'muons',
     output = 'muons',
-    input_objects = 'sim_leptons',
+    input_objects = 'sim_muons',
     accept=accept_muon, 
-    mu_sigma=(1, 0.05)
+    mu_sigma=(1, 0.02)
     )
 
 
@@ -124,7 +133,8 @@ papas_sequence = [
     papas,
     pfblocks,
     pfreconstruct,
-    sim_leptons, 
+    sim_electrons,
+    sim_muons, 
     electrons,
     muons, 
 #    select_leptons,
