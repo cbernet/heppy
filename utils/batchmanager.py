@@ -102,14 +102,13 @@ class BatchManager:
                         # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
                         # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
-        self.ManageOutputDir()
         return (self.options_, self.args_)
 
         
     def PrepareJobs(self, listOfValues, listOfDirNames=None):
+        self.ManageOutputDir()
         print 'PREPARING JOBS ======== '
         self.listOfJobs_ = []
-
         if listOfDirNames is None:
             for value in listOfValues:       
                 self.PrepareJob( value )      
