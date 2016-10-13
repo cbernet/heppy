@@ -43,7 +43,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
-    printer,
+    # printer,
     # stopper,
     tree,
 ] )

@@ -123,11 +123,13 @@ class BatchManager:
 
     # create output dir, if necessary
     def ManageOutputDir( self ):
-        
-        #if the output dir is not specified, generate a name
-        #else 
-        #test if the directory exists 
-        #if yes, returns
+        '''Create output directory, if necessary.
+
+        if the output dir is not specified, generate a name
+        else 
+        test if the directory exists 
+        if yes, returns.
+        '''
 
         outputDir = self.options_.outputDir
 

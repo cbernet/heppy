@@ -19,9 +19,11 @@ class TestSimpleExample(unittest.TestCase):
         rootfile = TFile(self.fname)
         self.nevents = rootfile.Get('test_tree').GetEntries()
         self.outdir = tempfile.mkdtemp()
+        logging.disable(logging.CRITICAL)
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
+        logging.disable(logging.NOTSET)
 
     def test_all_events_processed(self):
         loop = Looper( self.outdir, config,
@@ -71,6 +73,25 @@ class TestSimpleExample(unittest.TestCase):
                        timeReport=True)
         self.assertRaises(UserStop, loop.process, 10)
   
+    def test_rewrite(self):
+        from heppy.scripts.heppy_loop import create_parser, main
+        parser = create_parser()
+        options, args = parser.parse_args()
+        options.iEvent = None
+        options.nprint = 0
+        main(options, [self.outdir, 'simple_example_cfg.py'])
+        options.force = True
+        main(options, [self.outdir, 'simple_example_cfg.py'])
+        subdirs = os.listdir(self.outdir)
+        self.assertEqual(len(subdirs), 2)
+
+    # def test_multiprocessing(self): 
+    #     from heppy.scripts.heppy_loop import create_parser, main
+    #     parser = create_parser()
+    #     options, args = parser.parse_args()
+    #     options.iEvent = None
+    #     options.nprint = 0
+    #     main(options, [self.outdir, 'simple_example_cfg.py'])
 
 if __name__ == '__main__':
 
