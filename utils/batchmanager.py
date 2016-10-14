@@ -129,17 +129,13 @@ class BatchManager:
         test if the directory exists 
         if yes, returns.
         '''
-
         outputDir = self.options_.outputDir
-
         if outputDir==None:
             today = datetime.today()
             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M%S")
-            print 'output directory not specified, using %s' % outputDir            
-            
+            print 'output directory not specified, using %s' % outputDir                
         self.outputDir_ = os.path.abspath(outputDir)
-
-        if( os.path.isdir(self.outputDir_) == True ):
+        if( os.path.isdir(self.outputDir_) == True and os.listdir(self.outputDir_) ):
             input = ''
             if not self.options_.force:
                 while input != 'y' and input != 'n':
