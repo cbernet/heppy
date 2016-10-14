@@ -23,6 +23,13 @@ inputSample = cfg.Component(
 
 selectedComponents  = [inputSample]
 
+
+# add a random variable to the event 
+from heppy.analyzers.examples.simple.RandomAnalyzer import RandomAnalyzer
+random = cfg.Analyzer(
+    RandomAnalyzer
+    )
+
 # creating a simple output tree
 from heppy.analyzers.examples.simple.SimpleTreeProducer import SimpleTreeProducer
 tree = cfg.Analyzer(
@@ -35,8 +42,9 @@ tree = cfg.Analyzer(
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [
-    tree,
+sequence = cfg.Sequence([
+        random,
+        tree,
 ] )
 
 from heppy.framework.services.tfile import TFileService
