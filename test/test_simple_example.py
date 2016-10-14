@@ -79,9 +79,11 @@ class TestSimpleExample(unittest.TestCase):
         options, args = parser.parse_args()
         options.iEvent = None
         options.nprint = 0
-        main(options, [self.outdir, 'simple_example_cfg.py'])
+        cfg = '/'.join( [ os.environ['HEPPY'], 
+                          'test/simple_example_cfg.py' ] )
+        main(options, [self.outdir, cfg], parser)
         options.force = True
-        main(options, [self.outdir, 'simple_example_cfg.py'])
+        main(options, [self.outdir, cfg], parser)
         subdirs = os.listdir(self.outdir)
         self.assertEqual(len(subdirs), 2)
 

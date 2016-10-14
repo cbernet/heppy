@@ -2,6 +2,7 @@ import unittest
 import shutil
 import tempfile
 import os
+import subprocess
 import copy
 import glob
 from simple_example_cfg import config, stopper 
@@ -12,6 +13,9 @@ from ROOT import TFile
 
 import logging
 logging.getLogger().setLevel(logging.ERROR)
+
+class Options(object): 
+    pass
 
 class TestMultiProcessing(unittest.TestCase):
 
@@ -35,31 +39,44 @@ class TestMultiProcessing(unittest.TestCase):
         options, args = parser.parse_args()
         options.iEvent = None
         options.nprint = 0
-        main(options, [self.outdir, 'simple_multi_example_cfg.py'])
+        cfg = '/'.join( [ os.environ['HEPPY'], 
+                          'test/simple_multi_example_cfg.py' ] )
+        main(options, [self.outdir, cfg], parser)
         wcard = '/'.join([self.outdir, 
                           'test_component_Chunk*',
                           'heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer_tree/simple_tree.root'
                           ])
         output_root_files = glob.glob(wcard)
         self.assertEqual(len(output_root_files),2)
-        
-    def test_heppy_batch(self):
-        from heppy.scripts.heppy_batch import create_batch_manager, main
-        batchManager = create_batch_manager() 
-        options, args = batchManager.ParseOptions()
-        options.iEvent = None
-        options.nprint = 0     
-        options.outputDir = self.outdir
-        options.batch = 'nohup ./batchScript.sh &'
-        main(options, ['simple_multi_example_cfg.py'], batchManager)
-        wcard = '/'.join([self.outdir, 
-                          'test_component_Chunk*',
-                          'heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer_tree/simple_tree.root'
-                          ])
-        import time 
-        time.sleep(5)
-        output_root_files = glob.glob(wcard)
-        self.assertEqual(len(output_root_files),2)
+                
+    # def test_heppy_batch(self):
+    #     cmd = ['heppy_batch.py',
+    #            '-o',
+    #            '{}'.format(self.outdir), 
+    #            '-b',
+    #            'nohup ./batchScript.sh &', 
+    #            'simple_multi_example_cfg.py']
+    #     FNULL = open(os.devnull,'w')
+    #     p = subprocess.Popen(cmd, stdout=FNULL, 
+    #                          stderr=subprocess.STDOUT)
+    #     # p.communicate()
+    #     p.wait()
+    #     import time 
+    #     wcard = '/'.join([self.outdir, 
+    #                       'test_component_Chunk*',
+    #                       'heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer_tree/simple_tree.root'
+    #                       ])
+    #     output_root_files = []
+    #     print wcard
+    #     for i in range(50): 
+    #         # waiting for max 10 seconds for the nohup processes
+    #         # to complete and the files to appear.
+    #         print 'wait'
+    #         time.sleep(1)
+    #         output_root_files = glob.glob(wcard)
+    #         if len(output_root_files):
+    #             break 
+    #     self.assertEqual(len(output_root_files),2)
         
 
 if __name__ == '__main__':

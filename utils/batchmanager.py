@@ -49,7 +49,6 @@ class BatchManager:
                                 dest="parametric", default=False,
                                 help="submit jobs parametrically, implemented for IC so far")
 
-        
     def ParseOptions(self):     
         (self.options_,self.args_) = self.parser_.parse_args()
         if self.options_.remoteCopy == None:

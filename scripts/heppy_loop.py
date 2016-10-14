@@ -78,8 +78,7 @@ def createOutputDir(dirname, components, force):
                                                 answer]) )
             
 
-def main( options, args ):
-
+def main( options, args, parser):
     if len(args) != 2:
         parser.print_help()
         print 'ERROR: please provide the processing name and the component list'
@@ -162,4 +161,4 @@ if __name__ == '__main__':
     parser = create_parser()
     (options,args) = parser.parse_args()
     options.iEvent = None
-    main(options, args)
+    main(options, args, parser)
