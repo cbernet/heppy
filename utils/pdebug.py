@@ -7,8 +7,8 @@ import sys
      is based on Python logging.
 
      To set it up
-       import heppy.utils.pdebug as pdebug
-       from heppy.utils.pdebug import pdebugger
+       import pdebug as pdebug
+       from pdebug import pdebugger
 
      Use following 3 lines and comment out as needed to obtain desired behaviour
        #pdebugger.setLevel(logging.ERROR)  # turns off all output
@@ -34,7 +34,7 @@ import sys
        or else no lines of code also gives same result
 
     to use in code
-       from heppy.utils.pdebug import pdebugger
+       from pdebug import pdebugger
        pdebugger.info("A message")
 
 '''
