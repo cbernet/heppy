@@ -75,11 +75,11 @@ leptons_true = cfg.Analyzer(
 )
 
 # Compute lepton isolation w/r other particles in the event.
-# help(LeptonAnalyzer) for more information
-from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
+# help(IsolationAnalyzer) for more information
+from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
-    LeptonAnalyzer,
+    IsolationAnalyzer,
     leptons = 'leptons_true',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
