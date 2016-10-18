@@ -1,7 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.comparer import ParticlesComparer
 
-
 class PapasParticlesComparer(Analyzer):
     ''' Unsophisticated testing Module that checks that two lists of sorted particles match
        

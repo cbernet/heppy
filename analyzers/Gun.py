@@ -18,7 +18,7 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
     sintheta = math.sin(math.pi/2. - theta)
     tantheta = sintheta / costheta
     cosphi = math.cos(phi)
-    sinphi = math.sin(phi)    
+    sinphi = math.sin(phi) 
     vertex = TVector3(0,0,0)
     if flat_pt:
         pt = energy
@@ -31,8 +31,7 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    #return Particle(pdgid, vertex, charge, tlv) #tlv
-    return Particle(tlv, vertex, charge, pdgid, subtype ='g') #pfobjectrs
+    return Particle(tlv, vertex, charge, pdgid, subtype ='g') #pfobjects
     
 
 class Gun(Analyzer):

@@ -16,8 +16,7 @@ class HistoryPlotter(object):
            histplot.plot_event_compare() #plot normal papas event diagram
            histplot.plot_dag_event()     #write dag event plot to file   
            histplot.plot_dag_subgroups(num_subgroups=3 ) #write dag subevents to file
-    
-    
+
         '''        
     def __init__(self, papasevent, detector, projections = ['xy', 'yz']):
         '''
@@ -56,7 +55,6 @@ class HistoryPlotter(object):
     def color(self, node):
         '''used to color dag nodes'''
         cols =["red", "lightblue", "green", "yellow","cyan", "grey", "white","pink"]
-        #intcols =[1,2,3,4,5,6,7,8]
         return cols[Identifier.get_type(node.get_value())]                     
 
     def object(self, node):

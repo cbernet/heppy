@@ -27,7 +27,7 @@ class PFBlock(object):
     temp_block_count = 0 #sequential numbering of blocks, not essential but helpful for debugging
 
     
-    def __init__(self, element_ids, edges, subtype = 'r'): 
+    def __init__(self, element_ids, edges, subtype='r'): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
             edges: is a dictionary of edges, it must contain at least all needed edges.
@@ -39,7 +39,7 @@ class PFBlock(object):
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype) 
         self.is_active = True # if a block is subsequently split it will be deactivated
         
-        self.element_uniqueids = sorted(element_ids, key = lambda  x: Identifier.type_short_code(x)) 
+        self.element_uniqueids = sorted(element_ids, key=lambda  x: Identifier.type_short_code(x)) 
 
         #comment out energy sorting  for now as not available C++
         sortby = lambda x: Identifier.type_short_code(x)
@@ -102,9 +102,9 @@ class PFBlock(object):
     def linked_ids(self, uniqueid, edgetype=None) :
         ''' Returns list of all linked ids of a given edge type that are connected to a given id - 
             sorted in order of increasing distance'''
-        linked_ids = []  
+        linked_ids = []
         linked_edges = []
-        linked_edges = self.linked_edges(uniqueid,edgetype)
+        linked_edges = self.linked_edges(uniqueid, edgetype)
         if len(linked_edges):
             for edge in linked_edges:
                 if edge.id1 == uniqueid:
@@ -113,47 +113,6 @@ class PFBlock(object):
                     linked_ids.append(edge.id1)
         return sorted(linked_ids)
     
-    #TODO with id
-    #def sort_distance_energy( self, uniqueid, otherids):
-        #''' returns a list of the otherids sorted by distance to uniqueid and by decreasing energies
-            
-            #eg if uniqueid is an hcal
-               #and other ids are  track1 energy = 18, dist to hcal = 0.1
-                                  #track2 energy = 9,  dist to hcal = 0
-                                  #track3 energy = 4,  dist to hcal = 0
-            #this will return {track2, track3, track1}
-            
-            
-            #'''
-        ##this is ""needed"" for particle reconstruction
-        ##this is a bit yucky and may only be a  temporary work around
-        ## maybe should live outside of this class        
-        #return sorted(otherids, key = lambda x: (self.get_edge(x,uniqueid).distance is None, 
-                                                 #self.get_edge(x,uniqueid).distance, 
-                                                 #-self.pfevent.get_object(x).energy))
-    
-    #def elements_string(self): 
-        #''' Construct a string descrip of each of the elements in a block:-
-        #The elements are given a short name E/H/T according to ecal/hcal/track
-        #and then sequential numbering starting from 0, this naming is also used to index the 
-        #matrix of distances. The full unique id is also given.
-        #For example:-
-        #elements: {
-        #E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
-        #H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
-        #T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
-        #}
-        #'''
-        #count = 0
-        #elemdetails = "\n      elements: {\n"  
-        #for uid in self.element_uniqueids:
-            #elemdetails += "      {shortname}{count}:{strdescrip}\n".format(shortname=Identifier.type_short_code(uid),
-                                                                           #count=count,
-                                                                          #strdescrip=self.pfevent.get_object(uid).__str__() )
-            #count = count + 1            
-        #return elemdetails + "      }\n"
-    
-
     def short_elements_string(self):
         ''' Construct a string description of each of the elements in a block.
 
@@ -190,8 +149,8 @@ class PFBlock(object):
             shortname = shortname + "H" + str(self.count_hcal())
         if self.count_tracks():
             shortname = shortname + "T" + str(self.count_tracks())
-        return shortname      
-    
+        return shortname
+
     def shortinfo(self):
         return self.short_name()
     
@@ -283,6 +242,6 @@ class PFBlock(object):
             count_ecal=self.count_ecal(),
             count_hcal=self.count_hcal(),
             count_tracks=self.count_tracks())
-                           )
+                          )
         return description
 

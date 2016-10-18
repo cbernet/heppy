@@ -18,8 +18,8 @@ class PapasEventPlotter(Analyzer):
         * projections a list of required projections eg ['xy', 'yz', 'xz' ,'ECAL_thetaphi',
                            'HCAL_thetaphi'
         * plottype = "event" or "subgroups"
-        * to_file- whether to send output to file
-        * num_subgroups - (optional) produce outputs for the largest n subgroups, if unset will produce everything
+        * to_file = True/False - whether to send output to file
+        * num_subgroups = integer (optional) produce outputs for the largest n subgroups, if unset will produce everything
 
     '''
 

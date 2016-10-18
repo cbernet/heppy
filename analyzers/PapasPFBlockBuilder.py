@@ -34,15 +34,11 @@ class PapasPFBlockBuilder(Analyzer):
     def process(self, event):
         
         papasevent = event.papasevent
-        
         distance = Distance()
-        
-        
         uniqueids = []
         uniqueids = list(papasevent.get_keys('ts')) + list(papasevent.get_keys('em')) + list(papasevent.get_keys('hm') )  
         uniqueids = sorted(uniqueids)
-        blockbuilder = PFBlockBuilder(uniqueids, papasevent, distance)
-            
+        blockbuilder = PFBlockBuilder(uniqueids, papasevent, distance)  
         papasevent.add_collection(blockbuilder.blocks)
 
         

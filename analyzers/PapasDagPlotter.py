@@ -23,7 +23,6 @@ class PapasDAGPlotter(Analyzer):
 
     def __init__(self, *args, **kwargs):
         super(PapasDAGPlotter, self).__init__(*args, **kwargs)  
-        #self.detector = self.cfg_ana.detector
         self.show_file = self.cfg_ana.show_file
         self.plottype = self.cfg_ana.plottype
         self.num_subgroups = None

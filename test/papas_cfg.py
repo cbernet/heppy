@@ -27,12 +27,6 @@ papas = cfg.Analyzer(
     detector = detector,
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    merged_ecals = 'ecal_clusters',
-    merged_hcals = 'hcal_clusters',
-    tracks = 'tracks', 
-    output_history = 'history_nodes', 
-    #display_filter_func = lambda ptc: ptc.e()>1.,
-    #display = True, 
     verbose = True
 )
 

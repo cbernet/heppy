@@ -33,10 +33,10 @@ class EventTest(unittest.TestCase):
         
         
     def test_print(self):
-        #Event.print_patterns = ['*list*']
-        #print self.event
-        #Event.print_patterns = ['*subevent*']
-        #print self.pevent
+        # Event.print_patterns = ['*list*']
+        # print self.event
+        # Event.print_patterns = ['*subevent*']
+        # print self.pevent
         str(self.event)
         self.assertTrue(True)
         str(self.pevent)

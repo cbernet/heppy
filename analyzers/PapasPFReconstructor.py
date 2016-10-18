@@ -3,7 +3,6 @@ from heppy.papas.pfalgo.pfreconstructor import PFReconstructor as PFReconstructo
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.data.identifier import Identifier
 
-
 class PapasPFReconstructor(Analyzer):
     ''' Module to reconstruct particles from blocks of events
          
@@ -31,15 +30,12 @@ class PapasPFReconstructor(Analyzer):
         self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
         
-        
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
            reconstructed paricles and updated history_nodes to the event object
            arguments:
                     event must contain blocks made using BlockBuilder'''
-        
-        #todo pass these are argument
-        
+        #should these be passed as analyzer arguments instead?
         ecals = event.papasevent.get_collection('em');
         hcals = event.papasevent.get_collection('hm');
         tracks = event.papasevent.get_collection('ts');

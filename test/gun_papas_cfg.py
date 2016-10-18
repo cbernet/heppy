@@ -27,11 +27,11 @@ random.seed(0xdeadbeef)
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 211, #
+    pdgid = 211,
     thetamin = -1.5,
     thetamax = 1.5,
-    ptmin = 4,
-    ptmax = 10,
+    ptmin = 0,
+    ptmax = 100,
     flat_pt = False,
 )
 
@@ -125,8 +125,8 @@ sequence = cfg.Sequence(
     #papas_print_history_event, 
     papas_plot, 
     #papas_subplot,
-    papas_dag_plot, 
-    papas_dag_subgroups,     
+    #papas_dag_plot, 
+    #papas_dag_subgroups,     
     jet_tree_sequence('gen_particles_stable','rec_particles',
                   njets=None, ptmin=0.5),
     sum_particles,
@@ -185,7 +185,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=30,
+                   nEvents=1000,
                    nPrint=1,
                    timeReport=True)
     

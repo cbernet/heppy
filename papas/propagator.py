@@ -13,21 +13,17 @@ class Propagator(object):
         for ptc in particles:
             for cyl in cylinders:
                 self.propagate_one(ptc, cyl, *args, **kwargs)
-                
-                
+ 
 class StraightLinePropagator(Propagator):        
 
     def propagate_one(self, particle, cylinder, dummy=None):
-        
         line = StraightLine(particle.p4(), particle.vertex) 
         particle.set_path( line ) # TODO 
         position = line.position(cylinder, dummy)
         if position==None:
             return
         particle.points[cylinder.name] = position 
-        
-
-        
+  
 class HelixPropagator(Propagator):
     
     def propagate_one(self, particle, cylinder, field, debug_info=None):
@@ -38,10 +34,6 @@ class HelixPropagator(Propagator):
             return
         particle.points[cylinder.name] = destination['position']
         return destination['info']
-        
-       
-
-        
+ 
 straight_line = StraightLinePropagator()
-
 helix = HelixPropagator() 

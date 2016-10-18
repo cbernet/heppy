@@ -4,7 +4,6 @@ import operator
 import math
 from heppy.papas.path import Helix, StraightLine, Info
 
-
 class Blob(object):
     def __init__(self, cluster, grey=False):
         self.cluster = cluster
@@ -13,7 +12,7 @@ class Blob(object):
         thetaphiradius = cluster.angular_size()
         color = 7
         innercolor=1
-#todo       
+      
         if cluster.particle:
             if cluster.particle.pdgid() == 22 or cluster.particle.pdgid() == 11:
                 color = 2

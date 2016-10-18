@@ -8,7 +8,6 @@ class HistoryHelper(object):
        
        #Usage:
        hist = HistoryHelper(event.papasevent)
-       
        print hist.summary_string_event()
        
        #extract a list of all reconstructed particles 

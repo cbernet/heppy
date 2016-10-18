@@ -25,6 +25,7 @@ class PapasEvent(Event):
 
         Subtype codes are a single letter, current usage includes:
              'g' generated
+             'm' merged
              'r' reconstructed
              'u' unspecified
              't' true
@@ -35,8 +36,7 @@ class PapasEvent(Event):
         Usage:
 
         papasevent.add_collection(true_ecals)
-        smeared_ecals=papasevent.get_collection('es')
-            
+        smeared_ecals=papasevent.get_collection('es')  
     '''
     
     def __init__(self):
@@ -95,5 +95,5 @@ class PapasEvent(Event):
                 assert "id not found in collection"  
             if collectiontype != Identifier.type_and_subtype(id):
                 assert "mixed types not allowed in a collection"        
-        
+  
         return collection[id in ids]    

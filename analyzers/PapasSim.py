@@ -22,8 +22,6 @@ import heppy.statistics.rrandom as random
 
 class PapasSim(Analyzer):
     '''Runs PAPAS, the PArametrized Particle Simulation.
-    
-    #This will need to redocumented once new papasevent structure arrives
 
     Example configuration:
 
@@ -35,13 +33,6 @@ class PapasSim(Analyzer):
         detector = CMS(),
         gen_particles = 'gen_particles_stable',
         sim_particles = 'sim_particles',
-        merged_ecals = 'ecal_clusters',
-        merged_hcals = 'hcal_clusters',
-        tracks = 'tracks',
-        #rec_particles = 'sim_rec_particles', # optional - will only do a simulation reconstruction if a name is provided
-        output_history = 'history_nodes',
-        display_filter_func = lambda ptc: ptc.e()>1.,
-        display = False,
         verbose = True
     )
     detector:      Detector model to be used.
@@ -50,31 +41,13 @@ class PapasSim(Analyzer):
                    Note that the instance label is prepended to this name.
                    Therefore, in this particular case, the name of the output
                    sim particle collection is "papas_sim_particles".
-    merged_ecals: Name for the merged clusters created by simulator
-    merged_hcals: Name for the merged clusters created by simulator
-    tracks:       Name for smeared tracks created by simulator
-    rec_particles: Optional. Name extension for the reconstructed particles created by simulator
-                   This is retained for the time being to allow two reconstructions to be compared
-                   Reconstruction will occur if this parameter  or rec_particles_no_leptons is provided
-                   Same comments as for the sim_particles parameter above.
-    rec_particles_no_leptons: Optional. Name extension for the reconstructed particles created by simulator
-                   without electrons and muons
-                   Reconstruction will occur if this parameter  or rec_particles is provided
-                   This is retained for the time being to allow two reconstructions to be compared
-                   Same comments as for the sim_particles parameter above.
-    smeared: Name for smeared leptons
-    history: Optional name for the history nodes, set to None if not needed
-    display      : Enable the event display
     verbose      : Enable the detailed printout.
 
         event must contain
-          todo once history is implemented
+          gen_particles
         event will gain
-          ecal_clusters:- smeared merged clusters from simulation
-          hcal_clusters:- smeared merged clusters from simulation
-          tracks:       - tracks from simulation
-          baseline_particles:- simulated particles (excluding electrons and muons)
-          sim_particles - simulated particles including electrons and muons
+          papasevent - containing collections of simulated objects and history
+          simparticles - list of simulated particle
         
     '''
 
@@ -97,7 +70,6 @@ class PapasSim(Analyzer):
     def process(self, event):
         
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
-        
         papasevent = PapasEvent()
         setattr(event, "papasevent", papasevent)
         setattr(event, "detector", self.detector)
@@ -190,7 +162,7 @@ class PapasSim(Analyzer):
             
 
     def merge_clusters(self, papasevent): # todo move to a separate analyzer
-               #For Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
+        #For Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
         ruler = Distance()
         merged_ecals = dict()
         merged_hcals = dict()

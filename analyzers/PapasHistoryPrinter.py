@@ -21,7 +21,7 @@ class PapasHistoryPrinter(Analyzer):
         )
     
         * format = "event" or "subgroups"
-        * num_subgroups = optional, only used by subgroups format. If set prints biggest n subgroups otherwise all subgroups are printed.
+        * num_subgroups = optional, only used by subgroups format. If set, prints biggest n subgroups otherwise all subgroups are printed.
      
     '''
 

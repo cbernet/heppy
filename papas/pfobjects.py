@@ -18,7 +18,7 @@ class PFObject(object):
     '''
 
 
-    def __init__(self,pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype ='u'):
+    def __init__(self, pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype='u'):
         super(PFObject, self).__init__()
         self.linked = []
         self.locked = False
@@ -63,9 +63,9 @@ class Cluster(PFObject):
         if not hasattr(self, 'subtype'):
             self.subtype = 't'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
-        if (layer=='ecal_in') :
+        if layer == 'ecal_in':
             super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype)
-        elif (layer=='hcal_in') :
+        elif layer == 'hcal_in':
             super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype)
         else :
             assert False
@@ -186,14 +186,14 @@ class Cluster(PFObject):
 
     def shortinfo(self):
         return '{e:.1f}'.format(
-            e = self.energy,  
+            e = self.energy,
         )     
 
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
         self.subtype = 's'
-        super(SmearedCluster, self).__init__( *args, **kwargs)
+        super(SmearedCluster, self).__init__(*args, **kwargs)
 
 class MergedCluster(Cluster):
     '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
@@ -202,7 +202,7 @@ class MergedCluster(Cluster):
         self.mother = mother
 
         self.subtype = 'm'
-        super(MergedCluster, self).__init__( mother.energy, mother.position, mother._size, mother.layer, mother.particle)
+        super(MergedCluster, self).__init__(mother.energy, mother.position, mother._size, mother.layer, mother.particle)
         self.subclusters = [mother]  
 
     def __iadd__(self, other):
@@ -228,7 +228,7 @@ class Track(PFObject):
     - path : contains the trajectory parameters and points
     '''
     
-    def __init__(self, p3, charge, path, particle=None, subtype = 't'):
+    def __init__(self, p3, charge, path, particle=None, subtype='t'):
         if not hasattr(self, 'subtype'):
             self.subtype = subtype        
         super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, self.subtype)
@@ -251,7 +251,7 @@ class Track(PFObject):
 
     def shortinfo(self):
         return '{e:.1f}'.format(
-            e = self.energy,  
+            e = self.energy,
         )     
 
     
@@ -268,7 +268,7 @@ class Particle(BaseParticle):
                  subtype='s'):
         self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -293,41 +293,17 @@ class Particle(BaseParticle):
             self.path = path
             if self.q():
                 self.track = Track(self.p3(), self.q(), self.path)
-
-    
-    #def info(self):
-        #tmp = 'pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
-        ##needed for now to get match with C++
-        #pid=self.pdgid()      
-        #if self.q() == 0 and pid < 0:
-            #pid = -pid        
-        #p4='pt = {pt:5.1f}, e = {e:5.1f}, eta = {eta:5.2f}, theta = {theta:5.2f}, phi = {phi:5.2f}, mass = {m:5.2f}'.format(
-            #pt = self.pt(),
-            #e = self.e(),
-            #eta = self.eta(),
-            #theta = self.theta(),
-            #phi = self.phi(),
-            #m = self.m()  ) 
-            
-        #return tmp.format(
-            #pdgid =pid,
-            ##pdgid = self.pdgid(),
-            #status = self.status(),
-            #q = self.q(),
-            #p4 = p4
-                    
-        #)
     
     def shortinfo(self):
         tmp = '{pdgid:} ({e:.1f})'
         #needed for now to get match with C++
-        pid=self.pdgid()      
+        pid=self.pdgid()
         if self.q() == 0 and pid < 0:
             pid = -pid        
         
         return tmp.format(
             pdgid =pid,
-            e = self.e()        
+            e = self.e()
         )    
     
     def __repr__(self):
@@ -342,7 +318,6 @@ class Particle(BaseParticle):
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)
-
 
 if __name__ == '__main__':
     from ROOT import TVector3

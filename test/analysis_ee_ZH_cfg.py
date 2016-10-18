@@ -329,7 +329,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=50,
+                   nEvents=10,
                    nPrint=1,
                    timeReport=True)
     
