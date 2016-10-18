@@ -3,7 +3,7 @@ from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 
-#add angular size needs to be fixed since at the moment the angluar size is set by the first element
+#add angular size needs to be fixed since at the moment the angluar size is set by the first elemensizet
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
 
 class PFObject(object):

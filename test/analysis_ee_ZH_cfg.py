@@ -88,8 +88,8 @@ papas_subplot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
     plottype = "subgroups",
-    num_subgroups = 2,
-    to_file = False
+    num_subgroups = 4,
+    to_file = True
 )
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
@@ -258,13 +258,12 @@ sequence = cfg.Sequence(
     pdebug,
     source,
     papas_sequence,
-    #papas_history,
     #papas_print_history, 
-    papas_print_history_event, 
+    #papas_print_history_event, 
     #papas_plot, 
-    papas_subplot,
-    papas_dag_plot, 
-    papas_dag_subgroups, 
+    #papas_subplot,
+    #papas_dag_plot, 
+    #papas_dag_subgroups, 
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
@@ -330,7 +329,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=1000,
+                   nEvents=50,
                    nPrint=1,
                    timeReport=True)
     

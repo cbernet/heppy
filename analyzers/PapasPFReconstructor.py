@@ -44,18 +44,20 @@ class PapasPFReconstructor(Analyzer):
         hcals = event.papasevent.get_collection('hm');
         tracks = event.papasevent.get_collection('ts');
         blocks = event.papasevent.get_collection('br');
-        
-        self.reconstructed.reconstruct(ecals, hcals , tracks, blocks, event.papasevent)
-        
-        event.papasevent.add_collection(self.reconstructed.particles)
-        event.papasevent.add_collection(self.reconstructed.splitblocks)
-        
-        
-        #setattr(event.papasevent, "rec_particles", self.reconstructed.particles)
+        particles = dict()
+        splitblocks = dict()
+
+        if blocks:
+            self.reconstructed.reconstruct(ecals, hcals , tracks, blocks, event.papasevent)
+            particles = self.reconstructed.particles
+            splitblocks = self.reconstructed.splitblocks
+
+        event.papasevent.add_collection(particles)
+        event.papasevent.add_collection(splitblocks)        
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
-        reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
+        reconstructed_particle_list = sorted( particles.values(),
                                                    key = lambda ptc: ptc.uniqueid )
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
-        
+            
         Identifier.reset()
 

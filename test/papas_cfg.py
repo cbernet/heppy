@@ -31,8 +31,8 @@ papas = cfg.Analyzer(
     merged_hcals = 'hcal_clusters',
     tracks = 'tracks', 
     output_history = 'history_nodes', 
-    display_filter_func = lambda ptc: ptc.e()>1.,
-    #display = True, #toundo
+    #display_filter_func = lambda ptc: ptc.e()>1.,
+    #display = True, 
     verbose = True
 )
 

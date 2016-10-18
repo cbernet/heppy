@@ -53,16 +53,21 @@ class Event(object):
         selected_attrs.pop('input')
         stripped_attrs = dict()
         new_attrs = dict()
+        event_names = []
         for name, value in selected_attrs.iteritems():
-            if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]):
+            if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]) \
+              or any([fnmatch.fnmatch(subname, pattern) for pattern in self.__class__.print_patterns]):
                 stripped_attrs[subname + name] = value
         for name, value in stripped_attrs.iteritems():
             if isinstance(value, Event): # deal with an Event within the Event
-                new_attrs.update(value._get_stripped_attrs(value.__class__.__name__ + ": "))
+                event_names.append(name) 
+                new_attrs.update(value._get_stripped_attrs(name + ": "))
             else: #add in elements of the event but stop after n elements
                 new_attrs.update(self._first_n_elements(name, value))
 
         stripped_attrs.update(new_attrs) 
+        for name in event_names:
+            del stripped_attrs[name]
         return stripped_attrs
 
     def _first_n_elements(self,name,value):

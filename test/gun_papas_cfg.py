@@ -27,14 +27,13 @@ random.seed(0xdeadbeef)
 from heppy.analyzers.Gun import Gun
 source = cfg.Analyzer(
     Gun,
-    pdgid = 211,
+    pdgid = 211, #
     thetamin = -1.5,
     thetamax = 1.5,
-    ptmin = 0,
-    ptmax = 100,
+    ptmin = 4,
+    ptmax = 10,
     flat_pt = False,
 )
-
 
 comp = cfg.Component(
     'gun_{}'.format(source.pdgid),
@@ -43,6 +42,54 @@ comp = cfg.Component(
 selectedComponents = [comp]
 
 from heppy.test.papas_cfg import papas_sequence, detector, papas
+
+
+from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
+papas_print_history = cfg.Analyzer(
+    PapasHistoryPrinter,
+    format = "subgroups",
+    num_subgroups = 3 # biggest 3 subgroups will be printed
+)
+
+
+from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
+papas_print_history_event = cfg.Analyzer(
+    PapasHistoryPrinter,
+    format = "event"
+)
+
+from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
+papas_plot = cfg.Analyzer(
+    PapasEventPlotter,
+    projections = ['xy', 'yz'],
+    plottype = "event",
+    to_file = True
+)
+
+from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
+papas_subplot = cfg.Analyzer(
+    PapasEventPlotter,
+    projections = ['xy', 'yz'],
+    plottype = "subgroups",
+    num_subgroups = 2,
+    to_file = False
+)
+
+from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
+papas_dag_plot= cfg.Analyzer(
+    PapasDAGPlotter,
+    plottype = "dag_event",
+    show_file = False
+)
+
+from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
+papas_dag_subgroups= cfg.Analyzer(
+    PapasDAGPlotter,
+    plottype = "dag_subgroups",
+    show_file = False,
+    num_subgroups = 4
+)
+
 
 from jet_tree_cff import jet_tree_sequence
 
@@ -73,8 +120,15 @@ zed_tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source, 
     papas_sequence,
+    #papas_history,
+    papas_print_history, 
+    #papas_print_history_event, 
+    papas_plot, 
+    #papas_subplot,
+    papas_dag_plot, 
+    papas_dag_subgroups,     
     jet_tree_sequence('gen_particles_stable','rec_particles',
-                      njets=None, ptmin=0.5),
+                  njets=None, ptmin=0.5),
     sum_particles,
     sum_gen,
     zed_tree
@@ -131,7 +185,7 @@ if __name__ == '__main__':
             
         
     loop = Looper( 'looper', config,
-                   nEvents=1000,
+                   nEvents=30,
                    nPrint=1,
                    timeReport=True)
     

@@ -32,7 +32,7 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
                          momentum*costheta,
                          energy)
     #return Particle(pdgid, vertex, charge, tlv) #tlv
-    return Particle(tlv, vertex, charge, pdgid) #pfobjectrs
+    return Particle(tlv, vertex, charge, pdgid, subtype ='g') #pfobjectrs
     
 
 class Gun(Analyzer):

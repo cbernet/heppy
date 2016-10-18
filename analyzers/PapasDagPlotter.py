@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.data.historyplotter import HistoryPlotter
+from heppy.papas.pfalgo.historyplotter import HistoryPlotter
 
 class PapasDAGPlotter(Analyzer):
     '''Produces DAG plots for papasevent 

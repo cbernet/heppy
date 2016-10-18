@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-from heppy.papas.data.papasevent import PapasEvent
+from heppy.papas.pfalgo.papasevent import PapasEvent
 from heppy.papas.pfalgo.distance  import Distance
 
 
@@ -39,7 +39,7 @@ class PapasPFBlockBuilder(Analyzer):
         
         
         uniqueids = []
-        uniqueids = list(papasevent.get_collection('ts').keys()) + list(papasevent.get_collection('em').keys()) + list(papasevent.get_collection('hm').keys())   
+        uniqueids = list(papasevent.get_keys('ts')) + list(papasevent.get_keys('em')) + list(papasevent.get_keys('hm') )  
         uniqueids = sorted(uniqueids)
         blockbuilder = PFBlockBuilder(uniqueids, papasevent, distance)
             

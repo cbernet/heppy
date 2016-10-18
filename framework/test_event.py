@@ -21,14 +21,27 @@ class EventTest(unittest.TestCase):
         self.event.list_of_long_stuff = map(LongPrintout, range(10))
         self.event.a_dict = dict([ (val, val**2) for val in range(10)])
         self.event.a_dict_2 = dict([ (val, LongPrintout(val)) for val in range(20)])
+        #test dict of dicts
+        self.event.collection = { 1: self.event.a_dict, 2: self.event.a_dict_2 }
         self.event.setup = None
         self.event.input = 'data'
         
+        #test nested events 
+        self.pevent = Event(1)
+        self.pevent.subevent = self.event
+        self.pevent.collection = self.event.collection
+        
+        
     def test_print(self):
-        # Event.print_patterns = ['*list*']
-        # print self.event
+        #Event.print_patterns = ['*list*']
+        #print self.event
+        #Event.print_patterns = ['*subevent*']
+        #print self.pevent
         str(self.event)
         self.assertTrue(True)
+        str(self.pevent)
+        self.assertTrue(True)        
+        
         
         
 if __name__ == '__main__':

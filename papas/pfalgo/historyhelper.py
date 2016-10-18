@@ -1,4 +1,4 @@
-from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative, DAGFloodFill
+from heppy.papas.graphtools.DAG import BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
 
 class HistoryHelper(object):
@@ -81,7 +81,11 @@ class HistoryHelper(object):
            ids wich have a different type_and_subtype will be ignored.
         '''          
         maindict = self.papasevent.get_collection(type_and_subtype)
-        return { id: maindict[id] for id in self.filter_ids(ids, type_and_subtype) }
+        fids = self.filter_ids(ids, type_and_subtype) 
+        if len(fids):
+            return { id: maindict[id] for id in fids }
+        else:
+            return dict()
         
     def get_linked_collection(self, id, type_and_subtype, direction="undirected"):
         '''Get all ids that are linked to the id and have the required type_and_subtype
@@ -123,6 +127,8 @@ class HistoryHelper(object):
         result= "Subgroups: \n"
         if num_subgroups is None:
             num_subgroups = len(subgraphs)
+        else:
+            num_subgroups = min(num_subgroups, len(subgraphs))
         for i in range(num_subgroups):   
             result = result +  "\nSubGroup: " + str(i) +"\n" + self.summary_string_ids(subgraphs[i])
         return result    

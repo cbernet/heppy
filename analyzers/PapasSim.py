@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
-from heppy.papas.data.papasevent import PapasEvent
+from heppy.papas.pfalgo.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -9,6 +9,8 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
 
+
+import heppy.statistics.rrandom as random
 
 #todo following Alices merge and reconstruction work
 # - add muons and electrons back into the particles, these
@@ -94,6 +96,8 @@ class PapasSim(Analyzer):
 
     def process(self, event):
         
+        #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
+        
         papasevent = PapasEvent()
         setattr(event, "papasevent", papasevent)
         setattr(event, "detector", self.detector)
@@ -154,25 +158,26 @@ class PapasSim(Analyzer):
                     smeared_tracks[smtrack_id] = ptc.track_smeared
                     history[smtrack_id] = Node(smtrack_id)
                     history[track_id].add_child(history[smtrack_id])    
-            if len(ptc.clusters) > 0 :   
+            if len(ptc.clusters) > 0 : 
                 for key, clust in ptc.clusters.iteritems():
-                    if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
+                    if Identifier.get_type(clust.uniqueid) == Identifier.PFOBJECTTYPE.ECALCLUSTER:
                         true_ecals[clust.uniqueid] = clust                       
-                    elif key=="hcal_in" :
+                    elif Identifier.get_type(clust.uniqueid) == Identifier.PFOBJECTTYPE.HCALCLUSTER:
                         true_hcals[clust.uniqueid] = clust
                     else:
                         assert false                    
                     history[clust.uniqueid] = Node(clust.uniqueid)
                     history[id].add_child(history[clust.uniqueid])  
     
-            if len(ptc.clusters_smeared) > 0 :   
-                for key, smclust in ptc.clusters_smeared.iteritems():
-                    if key=="ecal_in" :  #todo check this .or. key=="ecal_decay" :
-                        smeared_ecals[smclust.uniqueid]=smclust
-                    elif key=="hcal_in" :
-                        smeared_hcals[smclust.uniqueid]=smclust 
-                    history[smclust.uniqueid] = Node(smclust.uniqueid)
-                    history[clust.uniqueid].add_child(history[smclust.uniqueid])
+                    if len(ptc.clusters_smeared) > 0 :  #need to put in link between true and smeared cluster 
+                        for key1, smclust in ptc.clusters_smeared.iteritems():
+                            if (key == key1): 
+                                if Identifier.get_type(smclust.uniqueid) == Identifier.PFOBJECTTYPE.ECALCLUSTER:
+                                    smeared_ecals[smclust.uniqueid]=smclust
+                                elif Identifier.get_type(smclust.uniqueid) == Identifier.PFOBJECTTYPE.HCALCLUSTER:
+                                    smeared_hcals[smclust.uniqueid]=smclust 
+                                history[smclust.uniqueid] = Node(smclust.uniqueid)
+                                history[clust.uniqueid].add_child(history[smclust.uniqueid])
                             
         papasevent.add_collection(simulated_particles)
         papasevent.add_collection(gen_stable_particles)
@@ -185,9 +190,15 @@ class PapasSim(Analyzer):
             
 
     def merge_clusters(self, papasevent): # todo move to a separate analyzer
-               #Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
+               #For Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        
         ruler = Distance()
-        merged_ecals = MergedClusterBuilder(papasevent.get_collection('es'), ruler, papasevent.history).merged
-        merged_hcals = MergedClusterBuilder(papasevent.get_collection('hs'), ruler, papasevent.history).merged
+        merged_ecals = dict()
+        merged_hcals = dict()
+        ecals = papasevent.get_collection('es')
+        if ecals:
+            merged_ecals = MergedClusterBuilder(papasevent.get_collection('es'), ruler, papasevent.history).merged
+        hcals = papasevent.get_collection('hs')
+        if hcals:        
+            merged_hcals = MergedClusterBuilder(papasevent.get_collection('hs'), ruler, papasevent.history).merged
         papasevent.add_collection(merged_ecals)
         papasevent.add_collection(merged_hcals)

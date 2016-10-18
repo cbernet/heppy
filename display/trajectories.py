@@ -35,8 +35,9 @@ class GTrajectory(object):
             set_graph_style(g)
         
         for i, position in enumerate(self.points):
-            for g in self.graphs[:2]:
-                g.SetPoint( i, position.X(), position.Y())
+            self.graph_xy.SetPoint(i, position.X(), position.Y())
+            self.graph_yz.SetPoint(i, position.Z(), position.Y())
+            self.graph_xz.SetPoint(i, position.Z(), position.X())
             tppoint = position
             if i == 0:
                 tppoint = particle.p4().Vect()
@@ -115,8 +116,9 @@ class GHelixTrajectory(GTrajectory):
         
         for i, time in enumerate(np.linspace(0, max_time, npoints)):
             point = helix.point_at_time(time)
-            for gl in self.graphlines[:2]:
-                gl.SetPoint(i, point.Z(), point.Y())
+            self.graphline_xy.SetPoint(i, point.X(), point.Y())
+            self.graphline_yz.SetPoint(i, point.Z(), point.Y())
+            self.graphline_xz.SetPoint(i, point.Z(), point.X())
             tppoint = point
             if i == 0:
                 tppoint = particle.p4().Vect()

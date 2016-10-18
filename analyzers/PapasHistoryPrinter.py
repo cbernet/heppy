@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.data.historyhelper import HistoryHelper
+from heppy.papas.pfalgo.historyhelper import HistoryHelper
 
 
 class PapasHistoryPrinter(Analyzer):
@@ -40,7 +40,7 @@ class PapasHistoryPrinter(Analyzer):
         self.papasevent = event.papasevent
         self.hist = HistoryHelper(event.papasevent)
         if self.format == "event":        
-            self.hist.summary_string_event()
+            print self.hist.summary_string_event()
         elif self.format == "subgroups":
             print self.hist.summary_string_subgroups(self.num_subgroups)
 

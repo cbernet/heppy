@@ -1,6 +1,6 @@
 from heppy.papas.data.identifier import Identifier
 import pydot
-from heppy.papas.data.historyhelper import HistoryHelper
+from heppy.papas.pfalgo.historyhelper import HistoryHelper
 from subprocess import call
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -177,6 +177,8 @@ class HistoryPlotter(object):
         subgraphs=self.helper.get_history_subgroups()  
         if num_subgroups is None:
             num_subgroups = len(subgraphs)
+        else:
+            num_subgroups = min(num_subgroups, len(subgraphs))
         for i in range(num_subgroups): 
             self.plot_dag_ids(subgraphs[i])       
         

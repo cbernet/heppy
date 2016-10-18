@@ -67,6 +67,13 @@ class PapasEvent(Event):
             return self.collections[type_and_subtype]
         assert "collection type_and_subtype not found"
     
+    def get_keys(self, type_and_subtype):
+        keys = []
+        coll = self.get_collection(type_and_subtype)  
+        if coll:
+            keys = coll.keys()
+        return keys
+    
     def get_object(self, id):
         '''get an object corresponding to a unique id'''
         collection = self.get_collection(Identifier.type_and_subtype(id))
@@ -79,7 +86,7 @@ class PapasEvent(Event):
         get a dict of objects of the type_and_subtype '''
         first = True
         collectiontype = None        
-        for id in collection.iterkeys():
+        for id in ids:
             if first:
                 collectiontype = Identifier.type_and_subtype(id)
                 collection = self.get_collection(type_and_subtype)
