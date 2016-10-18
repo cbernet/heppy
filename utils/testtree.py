@@ -4,18 +4,20 @@ import os
 
 FNAME="test_tree.root"
 
-def create_tree(filename=FNAME):
-    if os.path.isfile(filename):
-        return filename
+def create_tree(filename=FNAME, nentries=None):
+    if not nentries: 
+        if os.path.isfile(filename):
+            #default number of entries, file exists
+            return filename
+        else: 
+            nentries = 200
+    nentries = int(nentries)
     outfile = TFile(filename, 'recreate')
     tree = Tree('test_tree', 'A test tree')
     tree.var('var1')
-    for i in range(200):
+    for i in range(nentries):
         tree.fill('var1', i)
         tree.tree.Fill()
-    # print 'creating a tree', tree.tree.GetName(),\
-    #    tree.tree.GetEntries(), 'entries in',\
-    #    outfile.GetName()
     outfile.Write()
     outfile.Close()
     return outfile.GetName()

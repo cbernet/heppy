@@ -1,16 +1,21 @@
-'''Example configuration file for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
+'''Example configuration file for an ee->ZH analysis in the 4 jet channel,
+with the FCC-ee
 
 While studying this file, open it in ipython as well as in your editor to 
 get more information: 
 
 ipython
-from analysis_ee_ZH_cfg import * 
+from analysis_ee_ZH_had_cfg import * 
 
 '''
 
 import os
 import copy
 import heppy.framework.config as cfg
+
+from heppy.framework.event import Event
+Event.print_patterns=['*jet*', 'bquarks', '*higgs*',
+                      '*zed*', '*lep*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -29,7 +34,7 @@ Collider.SQRTS = 240.
 
 # input definition
 comp = cfg.Component(
-    'example',
+    'ee_ZH_Z_Hbb',
     files = [
         'ee_ZH_Z_Hbb.root'
     ]
@@ -45,6 +50,7 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
+# the papas simulation and reconstruction sequence
 from heppy.test.papas_cfg import papas_sequence, detector, papas
 
 # Use a Filter to select leptons from the output of papas simulation.
@@ -53,53 +59,61 @@ from heppy.test.papas_cfg import papas_sequence, detector, papas
 # to get separate collections of electrons and muons
 # help(Filter) for more information
 from heppy.analyzers.Filter import Filter
+def is_lepton(ptc):
+    return ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13]
+
 leptons = cfg.Analyzer(
     Filter,
     'sel_leptons',
     output = 'leptons',
     input_objects = 'rec_particles',
-    filter_func = lambda ptc: ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13]
+    filter_func = is_lepton 
 )
 
 # Compute lepton isolation w/r other particles in the event.
-# help(LeptonAnalyzer) for more information
-from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
+# help(IsolationAnalyzer) 
+# help(isolation) 
+# for more information
+from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
-    LeptonAnalyzer,
+    IsolationAnalyzer,
     leptons = 'leptons',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
 
 # Select isolated leptons with a Filter
-# one can pass a function like this one to the filter:
-def relative_isolation(lepton):
-    sumpt = lepton.iso_211.sumpt + lepton.iso_22.sumpt + lepton.iso_130.sumpt
-    sumpt /= lepton.pt()
-    return sumpt
-# ... or use a lambda statement as done below. 
+def is_isolated(lep):
+    '''returns true if the particles around the lepton
+    in the EtaPhiCircle defined above carry less than 30%
+    of the lepton energy.'''
+    return lep.iso.sume/lep.e()<0.3  # fairly loose
+
 sel_iso_leptons = cfg.Analyzer(
     Filter,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons',
-    # filter_func = relative_isolation
-    filter_func = lambda lep : lep.iso.sumpt/lep.pt()<0.3 # fairly loose
+    filter_func = is_isolated
 )
 
 
-# Rejecting events that contain a loosely isolated lepton
-from heppy.analyzers.EventFilter import EventFilter
-lepton_veto = cfg.Analyzer(
-    EventFilter,
-    'lepton_veto',
-    input_objects='sel_iso_leptons',
-    min_number=1,
-    veto=True
-)
+##Rejecting events that contain a loosely isolated lepton
+##
+##Instead of using an event filter at this stage, we store in the tree
+##the lepton with lowest energy (with the name lepton1)
+##
+##from heppy.analyzers.EventFilter import EventFilter
+##lepton_veto = cfg.Analyzer(
+##    EventFilter,
+##    'lepton_veto',
+##    input_objects='sel_iso_leptons',
+##    min_number=1,
+##    veto=True
+##)
 
-
+# compute the missing 4-momentum
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
 missing_energy = cfg.Analyzer(
     RecoilBuilder,
@@ -110,7 +124,7 @@ missing_energy = cfg.Analyzer(
 ) 
 
 
-# Make 4 jets 
+# make 4 exclusive jets 
 from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
 jets = cfg.Analyzer(
     JetClusterizer,
@@ -119,36 +133,103 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 4)  
 )
 
+# make 4 gen jets with stable gen particles
+genjets = cfg.Analyzer(
+    JetClusterizer,
+    output = 'genjets',
+    particles = 'gen_particles_stable',
+    fastjet_args = dict( njets = 4)  
+)
 
+# select b quarks for jet to parton matching
+def is_bquark(ptc):
+    '''returns True if the particle is an outgoing b quark,
+    see
+    http://home.thep.lu.se/~torbjorn/pythia81html/ParticleProperties.html
+    '''
+    return abs(ptc.pdgid()) == 5 and ptc.status() == 23
+    
+bquarks = cfg.Analyzer(
+    Filter,
+    'bquarks',
+    output = 'bquarks',
+    input_objects = 'gen_particles',
+    filter_func =is_bquark
+)
 
-# Just a basic analysis-specific event Selection module.
-# this module implements a cut-flow counter
-# After running the example as
-#    heppy_loop.py Trash/ analysis_ee_ZH_cfg.py -f -N 100 
-# this counter can be found in:
-#    Trash/example/heppy.analyzers.examples.zh_had.selection.Selection_cuts/cut_flow.txt
-# Counter cut_flow :
-#         All events                                     100      1.00    1.0000
-#         At least 2 leptons                              87      0.87    0.8700
-#         Both leptons e>30                               79      0.91    0.7900
-# For more information, check the code of the Selection class,
-##from heppy.analyzers.examples.zh_had.selection import Selection
-##selection = cfg.Analyzer(
-##    Selection,
-##    instance_label='cuts'
-##)
+# match genjets to b quarks 
+from heppy.analyzers.Matcher import Matcher
+genjet_to_b_match = cfg.Analyzer(
+    Matcher,
+    match_particles = 'bquarks',
+    particles = 'genjets',
+    delta_r = 0.4
+    )
+
+# match jets to genjets (so jets are matched to b quarks through gen jets)
+jet_to_genjet_match = cfg.Analyzer(
+    Matcher,
+    match_particles='genjets',
+    particles='rescaled_jets',
+    delta_r=0.5
+)
+
+# rescale the jet energy taking according to initial p4
+from heppy.analyzers.examples.zh_had.JetEnergyComputer import JetEnergyComputer
+compute_jet_energy = cfg.Analyzer(
+    JetEnergyComputer,
+    output_jets='rescaled_jets',
+    input_jets='jets',
+    sqrts=Collider.SQRTS
+    )
+
+# parametrized b tagging with CMS performance.
+# the performance of other detectors can be supplied
+# in the roc module
+# cms_roc is a numpy array, so one can easily scale
+# the cms performance, help(numpy.array) for more info.
+from heppy.analyzers.ParametrizedBTagger import ParametrizedBTagger
+from heppy.analyzers.roc import cms_roc
+cms_roc.set_working_point(0.7)
+btag = cfg.Analyzer(
+    ParametrizedBTagger,
+    input_jets='rescaled_jets',
+    roc=cms_roc
+)
+
+# reconstruction of the H and Z resonances.
+# for now, use for the Higgs the two b jets with the mass closest to mH
+# the other 2 jets are used for the Z.
+# implement a chi2? 
+from heppy.analyzers.examples.zh_had.ZHReconstruction import ZHReconstruction
+zhreco = cfg.Analyzer(
+    ZHReconstruction,
+    output_higgs='higgs',
+    output_zed='zed', 
+    input_jets='rescaled_jets'
+)
+
+# simple cut flow printout
+from heppy.analyzers.examples.zh_had.Selection import Selection
+selection = cfg.Analyzer(
+    Selection,
+    input_jets='rescaled_jets', 
+    log_level=logging.INFO
+)
 
 # Analysis-specific ntuple producer
 # please have a look at the ZHTreeProducer class
-##from heppy.analyzers.examples.zh_had.TreeProducer import TreeProducer
-##tree = cfg.Analyzer(
-##    TreeProducer,
-##    zed = 'zed',
-##    higg = 'higg',
-##    misenergy = 'missing_energy'
-##)
+from heppy.analyzers.examples.zh_had.TreeProducer import TreeProducer
+tree = cfg.Analyzer(
+    TreeProducer,
+    misenergy = 'missing_energy', 
+    jets='rescaled_jets',
+    higgs='higgs',
+    zed='zed',
+    leptons='sel_iso_leptons'
+)
 
-# definition of a sequence of analyzers,
+# definition of the sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
@@ -156,12 +237,18 @@ sequence = cfg.Sequence(
     leptons,
     iso_leptons,
     sel_iso_leptons,
-    lepton_veto, 
-    jets, 
-#    zeds,
-#    higgses,
-#    selection, 
-#    tree
+#    lepton_veto, 
+    jets,
+    compute_jet_energy, 
+    bquarks,
+    genjets, 
+    genjet_to_b_match,
+    jet_to_genjet_match, 
+    btag,
+    missing_energy, 
+    selection, 
+    zhreco, 
+    tree
 )
 
 # Specifics to read FCC events 
@@ -193,12 +280,12 @@ if __name__ == '__main__':
             display.draw()            
 
     iev = None
-    usage = '''usage: python analysis_ee_ZH_cfg.py [ievent]
+    usage = '''usage: python analysis_ee_ZH_had_cfg.py [ievent]
     
     Provide ievent as an integer, or loop on the first events.
     You can also use this configuration file in this way: 
     
-    heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
+    heppy_loop.py OutDir/ analysis_ee_ZH_had_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
         papas.display = True

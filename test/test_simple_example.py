@@ -5,6 +5,7 @@ import os
 import copy
 from simple_example_cfg import config, stopper 
 from heppy.utils.testtree import create_tree, remove_tree
+from heppy.scripts.heppy_loop import create_parser, main
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile
@@ -19,9 +20,11 @@ class TestSimpleExample(unittest.TestCase):
         rootfile = TFile(self.fname)
         self.nevents = rootfile.Get('test_tree').GetEntries()
         self.outdir = tempfile.mkdtemp()
+        logging.disable(logging.CRITICAL)
         
     def tearDown(self):
         shutil.rmtree(self.outdir)
+        logging.disable(logging.NOTSET)
 
     def test_all_events_processed(self):
         loop = Looper( self.outdir, config,
@@ -71,6 +74,18 @@ class TestSimpleExample(unittest.TestCase):
                        timeReport=True)
         self.assertRaises(UserStop, loop.process, 10)
   
+    def test_rewrite(self):
+        parser = create_parser()
+        options, args = parser.parse_args()
+        options.iEvent = None
+        options.nprint = 0
+        cfg = '/'.join( [ os.environ['HEPPY'], 
+                          'test/simple_example_cfg.py' ] )
+        main(options, [self.outdir, cfg], parser)
+        options.force = True
+        main(options, [self.outdir, cfg], parser)
+        subdirs = os.listdir(self.outdir)
+        self.assertEqual(len(subdirs), 2)
 
 if __name__ == '__main__':
 

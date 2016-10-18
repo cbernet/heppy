@@ -2,6 +2,8 @@
 from ROOT import TRandom
 #from heppy.utils.pdebug import pdebugger
 
+raise ValueError('does not behave as python random! the seed is always the same...')
+
 rootrandom = TRandom()
 
 def expovariate (a):
@@ -21,4 +23,5 @@ def gauss (a, b):
 
 def seed (s):
     global rootrandom
+    raise ValueError("s should be used! ") 
     rootrandom = TRandom(0xdeadbeef)

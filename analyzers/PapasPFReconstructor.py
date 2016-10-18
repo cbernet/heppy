@@ -27,9 +27,10 @@ class PapasPFReconstructor(Analyzer):
     def __init__(self, *args, **kwargs):
         super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
         self.detector = self.cfg_ana.detector
-        self.reconstructed = PFReconstructor(self.detector, self.mainLogger)
+        self.reconstructed = PFReconstructor(self.detector, self.mainLogger) #merge could also be self.logger?
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
         
+
     def process(self, event):
         ''' Calls the particle reconstruction algorithm and returns the 
            reconstructed paricles and updated history_nodes to the event object
@@ -51,8 +52,10 @@ class PapasPFReconstructor(Analyzer):
         event.papasevent.add_collection(particles)
         event.papasevent.add_collection(splitblocks)        
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
-        reconstructed_particle_list = sorted( particles.values(),
-                                                   key = lambda ptc: ptc.uniqueid )
+
+        reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
+                                                   key = lambda ptc: ptc.e(),
+                                                   reverse=True)
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
             
         Identifier.reset()

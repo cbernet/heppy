@@ -49,7 +49,6 @@ class BatchManager:
                                 dest="parametric", default=False,
                                 help="submit jobs parametrically, implemented for IC so far")
 
-        
     def ParseOptions(self):     
         (self.options_,self.args_) = self.parser_.parse_args()
         if self.options_.remoteCopy == None:
@@ -102,14 +101,13 @@ class BatchManager:
                         # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
                         # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
-        self.ManageOutputDir()
         return (self.options_, self.args_)
 
         
     def PrepareJobs(self, listOfValues, listOfDirNames=None):
+        self.ManageOutputDir()
         print 'PREPARING JOBS ======== '
         self.listOfJobs_ = []
-
         if listOfDirNames is None:
             for value in listOfValues:       
                 self.PrepareJob( value )      
@@ -123,22 +121,20 @@ class BatchManager:
 
     # create output dir, if necessary
     def ManageOutputDir( self ):
-        
-        #if the output dir is not specified, generate a name
-        #else 
-        #test if the directory exists 
-        #if yes, returns
+        '''Create output directory, if necessary.
 
+        if the output dir is not specified, generate a name
+        else 
+        test if the directory exists 
+        if yes, returns.
+        '''
         outputDir = self.options_.outputDir
-
         if outputDir==None:
             today = datetime.today()
             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M%S")
-            print 'output directory not specified, using %s' % outputDir            
-            
+            print 'output directory not specified, using %s' % outputDir                
         self.outputDir_ = os.path.abspath(outputDir)
-
-        if( os.path.isdir(self.outputDir_) == True ):
+        if( os.path.isdir(self.outputDir_) == True and os.listdir(self.outputDir_) ):
             input = ''
             if not self.options_.force:
                 while input != 'y' and input != 'n':

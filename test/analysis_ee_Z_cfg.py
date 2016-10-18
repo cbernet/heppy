@@ -30,12 +30,13 @@ Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
 
 # input definition
+import glob
+files = glob.glob(os.environ['HEPPY']+'/test/ee_Z_ddbar_*.root')
 ee_Z_ddbar = cfg.Component(
     'ee_Z_ddbar',
-    files = [
-        'ee_Z_ddbar.root'
-    ]
-)
+    files = files 
+    )
+ee_Z_ddbar.splitFactor = len(ee_Z_ddbar.files)
 
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
@@ -80,7 +81,7 @@ zed_tree = cfg.Analyzer(
 
 
 from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas
-from jet_tree_cff import jet_tree_sequence
+from heppy.test.jet_tree_cff import jet_tree_sequence
 
 
 # definition of a sequence of analyzers,

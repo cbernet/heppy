@@ -5,16 +5,21 @@ class Filter(Analyzer):
     '''Filter objects from the input_objects collection 
     and store them in the output collection 
 
-    Example: 
-
+    Example:
+    
     from heppy.analyzers.Filter import Filter
-    leptons_true = cfg.Analyzer(
+    def is_lepton(ptc):
+      """Returns true if the particle energy is larger than 5 GeV
+      and if its pdgid is +-11 (electrons) or +-13 (muons)
+      return ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13]
+
+    leptons = cfg.Analyzer(
       Filter,
       'sel_leptons',
-      output = 'leptons_true',
-      input_objects = 'particles',
-      filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
-    )
+      output = 'leptons',
+      input_objects = 'rec_particles',
+      filter_func = is_lepton 
+      )
 
     * input_objects : the input collection.
         if a dictionary, the filtering function is applied to the dictionary values,
@@ -22,13 +27,10 @@ class Filter(Analyzer):
 
     * output : the output collection 
 
-    * filter_func : a function object. 
-    You may define a function in the usual way in your configuration file, 
-    or use a lambda statement as done above. 
-    This lambda statement is the definition of a function. It means: 
-    given ptc, return ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]. 
-    In other words, return True if the particle has an energy larger than 10 GeV, 
-    and a pdgid equal to +-11 (electrons) or +-13 (muons).
+    * filter_func : a function object.
+    IMPORTANT NOTE: lambda statements should not be used, as they
+    do not work in multiprocessing mode. looking for a solution...
+    
     '''
 
     def process(self, event):

@@ -7,9 +7,10 @@ import os
 import shutil
 import pickle
 import math
-from heppy.utils.batchmanager import BatchManager
 
+from heppy.utils.batchmanager import BatchManager
 from heppy.framework.config import split
+
 
 def batchScriptPADOVA( index, jobDir='./'):
    '''prepare the LSF version of the batch script, to run on LSF'''
@@ -262,19 +263,21 @@ class MyBatchManager( BatchManager ):
    def PrepareJobUser(self, jobDir, value ):
       '''Prepare one job. This function is called by the base class.'''
       print value
-      print components[value]
+      print self.components[value]
 
       #prepare the batch script
       scriptFileName = jobDir+'/batchScript.sh'
       scriptFile = open(scriptFileName,'w')
       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
-      mode = self.RunningMode(options.batch)
+      mode = self.RunningMode(self.options_.batch)
       if mode == 'LXPLUS':
          scriptFile.write( batchScriptCERN( jobDir, storeDir) ) 
       elif mode == 'PSI':
-         scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) # storeDir not implemented at the moment
+         # storeDir not implemented at the moment
+         scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) 
       elif mode == 'LOCAL':
-         scriptFile.write( batchScriptLocal( storeDir, value) )  # watch out arguments are swapped (although not used)
+         # watch out arguments are swapped (although not used)         
+         scriptFile.write( batchScriptLocal( storeDir, value) ) 
       elif mode == 'PISA' :
          scriptFile.write( batchScriptPISA( storeDir, value) ) 	
       elif mode == 'PADOVA' :
@@ -284,16 +287,16 @@ class MyBatchManager( BatchManager ):
       scriptFile.close()
       os.system('chmod +x %s' % scriptFileName)
 
-      shutil.copyfile(cfgFileName, jobDir+'/pycfg.py')
+      shutil.copyfile(self.cfgFileName, jobDir+'/pycfg.py')
 #      jobConfig = copy.deepcopy(config)
-#      jobConfig.components = [ components[value] ]
+#      jobConfig.self.components = [ self.components[value] ]
       cfgFile = open(jobDir+'/config.pck','w')
-      pickle.dump(  components[value] , cfgFile )
+      pickle.dump(  self.components[value] , cfgFile )
       # pickle.dump( cfo, cfgFile )
       cfgFile.close()
 
 
-if __name__ == '__main__':
+def create_batch_manager(): 
    batchManager = MyBatchManager()
    batchManager.parser_.usage="""
     %prog [options] <cfgFile>
@@ -301,21 +304,29 @@ if __name__ == '__main__':
     Run Colin's python analysis system on the batch.
     Job splitting is determined by your configuration file.
     """
+   return batchManager
 
-   options, args = batchManager.ParseOptions()
 
-   cfgFileName = args[0]
+def main(options, args, batchManager): 
+   batchManager.cfgFileName = args[0]
 
-   handle = open(cfgFileName, 'r')
-   cfo = imp.load_source("pycfg", cfgFileName, handle)
+   handle = open(batchManager.cfgFileName, 'r')
+   cfo = imp.load_source("pycfg", batchManager.cfgFileName, handle)
    config = cfo.config
    handle.close()
 
-   components = split( [comp for comp in config.components if len(comp.files)>0] )
-   listOfValues = range(0, len(components))
-   listOfNames = [comp.name for comp in components]
+   batchManager.components = split( [comp for comp in config.components \
+                                        if len(comp.files)>0] )
+   listOfValues = range(0, len(batchManager.components))
+   listOfNames = [comp.name for comp in batchManager.components]
 
    batchManager.PrepareJobs( listOfValues, listOfNames )
    waitingTime = 0.1
    batchManager.SubmitJobs( waitingTime )
+   
 
+if __name__ == '__main__':
+   
+   batchManager = create_batch_manager() 
+   options, args = batchManager.ParseOptions()
+   main(options, args, batchManager)

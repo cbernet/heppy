@@ -8,6 +8,7 @@ import glob
 import sys
 import imp
 import copy
+
 from multiprocessing import Pool
 from pprint import pprint
 
@@ -19,7 +20,7 @@ loop = None
 
 def callBack( result ):
     pass
-    print 'production done:', str(result)
+    # print 'production done:', str(result)
 
 def runLoopAsync(comp, outDir, config, options):
     loop = runLoop( comp, outDir, config, options)
@@ -46,37 +47,38 @@ def runLoop( comp, outDir, config, options):
         loop.process( iEvent )
     return loop
 
-
-def createOutputDir(dir, components, force):
+def createOutputDir(dirname, components, force):
     '''Creates the output dir, dealing with the case where dir exists.'''
     answer = None
     try:
-        os.mkdir(dir)
+        os.mkdir(dirname)
         return True
     except OSError:
-        print 'directory %s already exists' % dir
-        print 'contents: '
-        dirlist = [path for path in os.listdir(dir) if os.path.isdir( '/'.join([dir, path]) )]
-        pprint( dirlist )
-        print 'component list: '
-        print [comp.name for comp in components]
-        if force is True:
-            print 'force mode, continue.'
-            return True
-        else:
-            while answer not in ['Y','y','yes','N','n','no']:
-                answer = raw_input('Continue? [y/n]')
-            if answer.lower().startswith('n'):
-                return False
-            elif answer.lower().startswith('y'):
+        if not os.listdir(dirname):
+            return True 
+        else: 
+            if force is True:
                 return True
-            else:
-                raise ValueError( ' '.join(['answer can not have this value!',
-                                            answer]) )
+            else: 
+                print 'directory %s already exists' % dirname
+                print 'contents: '
+                dirlist = [path for path in os.listdir(dirname) \
+                               if os.path.isdir( '/'.join([dirname, path]) )]
+                pprint( dirlist )
+                print 'component list: '
+                print [comp.name for comp in components]
+                while answer not in ['Y','y','yes','N','n','no']:
+                    answer = raw_input('Continue? [y/n]')
+                if answer.lower().startswith('n'):
+                    return False
+                elif answer.lower().startswith('y'):
+                    return True
+                else:
+                    raise ValueError( ' '.join(['answer can not have this value!',
+                                                answer]) )
             
 
-def main( options, args ):
-
+def main( options, args, parser):
     if len(args) != 2:
         parser.print_help()
         print 'ERROR: please provide the processing name and the component list'
@@ -110,7 +112,6 @@ def main( options, args ):
         shutil.copy( cfgFileName, outDir )
         pool = Pool(processes=len(selComps))
         for comp in selComps:
-            print 'submitting', comp.name
             pool.apply_async( runLoopAsync, [comp, outDir, cfg.config, options],
                               callback=callBack)
         pool.close()
@@ -122,8 +123,7 @@ def main( options, args ):
         loop = runLoop( comp, outDir, cfg.config, options )
 
 
-
-if __name__ == '__main__':
+def create_parser(): 
     from optparse import OptionParser
 
     parser = OptionParser()
@@ -155,8 +155,10 @@ if __name__ == '__main__':
                       action='store_true',
                       help="do not print log messages to screen.",
                       default=False)
- 
-    (options,args) = parser.parse_args()
+    return parser
 
+if __name__ == '__main__':
+    parser = create_parser()
+    (options,args) = parser.parse_args()
     options.iEvent = None
-    main(options, args)
+    main(options, args, parser)
