@@ -37,7 +37,7 @@ Collider.SQRTS = 240.
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
-        'ee_ZH_Zmumu_Hbb.root'
+        os.path.abspath('ee_ZH_Zmumu_Hbb.root')
     ]
 )
 selectedComponents = [comp]

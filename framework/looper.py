@@ -11,7 +11,7 @@ import pprint
 from math import ceil
 from event import Event
 import timeit
-from exceptions import UserStop
+from heppy.framework.exceptions import UserStop
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -317,4 +317,43 @@ possibly skipping a number of events at the beginning.
             analyzer.write(self.setup)
         self.setup.close() 
 
+
+if __name__ == '__main__':
+
+    import pickle
+    import sys
+    import os
+    from heppy.framework.heppy_loop import _heppyGlobalOptions
+    from optparse import OptionParser
+    parser = OptionParser(usage='%prog cfgFileName compFileName [--options=optFile.json]')
+    parser.add_option('--options',dest='options',default='',help='options json file')
+    (options,args) = parser.parse_args()
+
+    if options.options!='':
+        jsonfilename = options.options
+        jfile = open (jsonfilename, 'r')
+        opts=json.loads(jfile.readline())
+        for k,v in opts.iteritems():
+            _heppyGlobalOptions[k]=v
+        jfile.close()
+
+    if len(args) == 1 :
+        cfgFileName = args[0]
+        pckfile = open( cfgFileName, 'r' )
+        config = pickle.load( pckfile )
+        comp = config.components[0]
+        events_class = config.events_class
+    elif len(args) == 2 :
+        cfgFileName = args[0]
+        file = open( cfgFileName, 'r' )
+        cfg = imp.load_source( 'cfg', cfgFileName, file)
+        compFileName = args[1]
+        pckfile = open( compFileName, 'r' )
+        comp = pickle.load( pckfile )
+        cfg.config.components=[comp]
+        events_class = cfg.config.events_class
+
+    looper = Looper( 'Loop', cfg.config,nPrint = 5)
+    looper.loop()
+    looper.write()
 
