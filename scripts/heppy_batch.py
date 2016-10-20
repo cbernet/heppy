@@ -150,14 +150,11 @@ fi"""
    script = """#!/bin/bash
 #BSUB -q 8nm
 # ulimit -v 3000000 # NO
+unset LD_LIBRARY_PATH
 echo 'copying job dir to worker'
-# source /afs/cern.ch/exp/fcc/sw/0.7/init_fcc_stack.sh
-# cd $HEPPY
-# source ./init.sh
-# stripping cms dirs from PATH
-export PATH=`echo $PATH | sed -e 's#/afs/cern.ch/group/zh/bin:/afs/cern.ch/user/c/cbern/scripts:/afs/cern.ch/cms/caf/scripts:/cvmfs/cms.cern.ch/common:/cvmfs/cms.cern.ch/bin:/usr/kerberos/sbin:/bin:/usr/bin:##g'`
-# and re-adding stuff that was removed
-export PATH=$PATH:/bin:/usr/bin
+source /afs/cern.ch/exp/fcc/sw/0.7/init_fcc_stack.sh
+cd $HEPPY
+source ./init.sh
 echo 'environment:'
 echo
 env | sort
