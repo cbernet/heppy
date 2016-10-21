@@ -41,6 +41,11 @@ class ChainTestCase(unittest.TestCase):
         chain = Chain(testfname.replace('.root', '*.root'), 'test_tree')
         self.assertEqual(len(chain), self.nevents*2)
         os.remove(tmpfile)
+    
+    def test_load_3(self):
+        '''Test LFN/root-fn loading'''
+        chain = Chain(["root://{0}".format(os.path.abspath(testfname))], 'test_tree')
+        self.assertEqual(len(chain), self.nevents)
 
     def test_iterate(self):
         '''Test iteration'''
