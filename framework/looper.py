@@ -12,6 +12,8 @@ from math import ceil
 from event import Event
 import timeit
 from heppy.framework.exceptions import UserStop
+import resource
+import json
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -56,7 +58,8 @@ class Looper(object):
                   firstEvent=0,
                   nPrint=0,
                   timeReport=False,
-                  quiet=False):
+                  quiet=False,
+                  memCheckFromEvent=-1):
         """Handles the processing of an event sample.
         An Analyzer is built for each Config.Analyzer present
         in sequence. The Looper can then be used to process an event,
@@ -70,12 +73,9 @@ class Looper(object):
         nPrint  : number of events to print at the beginning
         """
 
+        self.config = config
         self.name = self._prepareOutput(name)
         self.outDir = self.name
-        # self.logger writes to stdout and to log.txt.
-        # configured in the users cfg by doing:
-        # import logging
-        #   logging.basicConfig(level=logging.ERROR)
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))
@@ -90,6 +90,8 @@ class Looper(object):
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
         self.timeReport = [ {'time':0.0,'events':0} for a in self.analyzers ] if timeReport else False
+        self.memReportFirstEvent = memCheckFromEvent
+        self.memLast=0
         tree_name = None
         if( hasattr(self.cfg_comp, 'tree_name') ):
             tree_name = self.cfg_comp.tree_name
@@ -112,7 +114,7 @@ class Looper(object):
             fineSplitIndex, fineSplitFactor = self.cfg_comp.fineSplit
             if fineSplitFactor > 1:
                 if len(self.cfg_comp.files) != 1:
-                    raise RuntimeError, "Any component with fineSplit > 1 is supposed to have just a single file, while %s has %s" % (self.cfg_comp.name, self.cfg_comp.files)
+                    raise RuntimeError("Any component with fineSplit > 1 is supposed to have just a single file, while %s has %s" % (self.cfg_comp.name, self.cfg_comp.files))
                 totevents = min(len(self.events),int(nEvents)) if (nEvents and int(nEvents) not in [-1,0]) else len(self.events)
                 self.nEvents = int(ceil(totevents/float(fineSplitFactor)))
                 self.firstEvent = firstEvent + fineSplitIndex * self.nEvents
@@ -210,7 +212,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
                     self.process( iEv )
                     self.nEvProcessed += 1
                     if iEv<self.nPrint:
-                        print self.event.__str__() 
+                        self.logger.info(self.event.__str__())
                 except UserStop as err:
                     print 'Stopped loop following a UserStop exception:'
                     print err
@@ -235,7 +237,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
                     self._run_analyzers_on_event()
                     self.nEvProcessed += 1
                     if iEv<self.nPrint:
-                        print self.event.__str__() 
+                        self.logger.info(self.event.__str__())
                 except UserStop as err:
                     print 'Stopped loop following a UserStop exception:'
                     print err
@@ -298,7 +300,17 @@ possibly skipping a number of events at the beginning.
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop(self.setup)
             start = timeit.default_timer()
+            if self.memReportFirstEvent >=0 and iEv >= self.memReportFirstEvent:           
+                memNow=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                if memNow > self.memLast :
+                   print  "Mem Jump detected before analyzer %s at event %s. RSS(before,after,difference) %s %s %s "%( analyzer.name, iEv, self.memLast, memNow, memNow-self.memLast)
+                self.memLast=memNow
             ret = analyzer.process( self.event )
+            if self.memReportFirstEvent >=0 and iEv >= self.memReportFirstEvent:           
+                memNow=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+                if memNow > self.memLast :
+                   print "Mem Jump detected in analyzer %s at event %s. RSS(before,after,difference) %s %s %s "%( analyzer.name, iEv, self.memLast, memNow, memNow-self.memLast)
+                self.memLast=memNow
             if self.timeReport:
                 self.timeReport[i]['events'] += 1
                 if self.timeReport[i]['events'] > 0:
@@ -307,7 +319,6 @@ possibly skipping a number of events at the beginning.
                 return (False, analyzer.name)
         return (True, analyzer.name)
 
-    
     def write(self):
         """Writes all analyzers.
 

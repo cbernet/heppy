@@ -1,7 +1,7 @@
 import unittest
 
 from eventstfile import Events
-from PhysicsTools.HeppyCore.utils.testtree import create_tree
+from heppy.utils.testtree import create_tree
 
 testfname = 'test_tree.root'
 
