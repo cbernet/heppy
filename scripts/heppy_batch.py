@@ -11,6 +11,7 @@ import math
 from heppy.utils.batchmanager import BatchManager
 from heppy.framework.config import split
 
+import heppy.framework.looper as looper
 
 def batchScriptPADOVA( index, jobDir='./'):
    '''prepare the LSF version of the batch script, to run on LSF'''
@@ -32,12 +33,12 @@ echo 'copying job dir to worker'
 eval `scram runtime -sh`
 ls
 echo 'running'
-python $CMSSW_BASE/src/heppy/python/framework/looper.py pycfg.py config.pck >& local.output
+python {looper} pycfg.py config.pck >& local.output
 exit $? 
 #echo
 #echo 'sending the job directory back'
 #echo cp -r Loop/* $LS_SUBCWD 
-""".format(jdir=jobDir)
+""".format(looper=looper.__file__, jdir=jobDir)
 
    return script
 
@@ -65,12 +66,12 @@ eval `scramv1 runtime -sh`
 ls
 echo `find . -type d | grep /`
 echo 'running'
-python $CMSSW_BASE/src/heppy/python/framework/looper.py pycfg.py config.pck >& local.output
+python {looper} pycfg.py config.pck >& local.output
 exit $? 
 #echo
 #echo 'sending the job directory back'
 #echo cp -r Loop/* $LS_SUBCWD 
-"""
+""".format(looper=looper.__file__)
    return script
 
 def batchScriptCERN( jobDir, remoteDir=''):
@@ -125,10 +126,49 @@ cp -rf $LS_SUBCWD .
 ls
 cd `find . -type d | grep /`
 echo 'running'
-python $CMSSW_BASE/src/heppy/python/framework/looper.py pycfg.py config.pck
+python {looper} pycfg.py config.pck
 echo
 {copy}
-""".format(copy=cpCmd)
+""".format(looper=looper.__file__, copy=cpCmd)
+
+   return script
+
+
+
+def batchScriptCERN_FCC( jobDir ):
+   '''prepare the LSF version of the batch script, to run on LSF'''
+
+   dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
+cp -r Loop/* $LS_SUBCWD
+if [ $? -ne 0 ]; then
+   echo 'ERROR: problem copying job directory back'
+else
+   echo 'job directory copy succeeded'
+fi"""
+   cpCmd=dirCopy
+
+   script = """#!/bin/bash
+#BSUB -q 8nm
+# ulimit -v 3000000 # NO
+unset LD_LIBRARY_PATH
+echo 'copying job dir to worker'
+source /afs/cern.ch/exp/fcc/sw/0.7/init_fcc_stack.sh
+cd $HEPPY
+source ./init.sh
+echo 'environment:'
+echo
+env | sort
+echo
+which python
+cd -
+cp -rf $LS_SUBCWD .
+ls
+cd `find . -type d | grep /`
+echo 'running'
+python {looper} pycfg.py config.pck
+echo
+{copy}
+""".format(looper=looper.__file__, copy=cpCmd)
 
    return script
 
@@ -209,8 +249,7 @@ cp -rf $SUBMISIONDIR .
 ls
 cd `find . -type d | grep /`
 echo 'running'
-#python $CMSSW_BASE/src/CMGTools/RootTools/python/fwlite/looper.py config.pck
-python {cmssw}/src/CMGTools/RootTools/python/fwlite/looper.py pycfg.py config.pck
+python {looper} pycfg.py config.pck
 echo
 {copy}
 ###########################################################################
@@ -220,7 +259,7 @@ echo "################################################################"
 echo "Job finished at " `date`
 echo "Wallclock running time: $RUNTIME s"
 exit 0
-""".format(jdir=jobDir, vo=VO_CMS_SW_DIR,cmssw=cmssw_release, copy=cpCmd)
+""".format(jdir=jobDir, vo=VO_CMS_SW_DIR,cmssw=cmssw_release, looper=looper.__file__, copy=cpCmd)
 
    return script
 
@@ -237,11 +276,11 @@ cd {cmssw}/src
 eval `scramv1 ru -sh`
 cd -
 echo 'running'
-python {cmssw}/src/heppy/python/framework/looper.py pycfg.py config.pck
+python {looper} pycfg.py config.pck
 echo
 echo 'sending the job directory back'
 mv Loop/* ./ && rm -r Loop
-""".format(jobdir = jobDir,cmssw = cmssw_release)
+""".format(jobdir = jobDir, looper=looper.__file__, cmssw = cmssw_release)
    return script
 
 def batchScriptLocal(  remoteDir, index ):
@@ -271,7 +310,13 @@ class MyBatchManager( BatchManager ):
       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
       mode = self.RunningMode(self.options_.batch)
       if mode == 'LXPLUS':
-         scriptFile.write( batchScriptCERN( jobDir, storeDir) ) 
+         if 'CMSSW_BASE' in os.environ and not 'PODIO' in os.environ:  
+            scriptFile.write( batchScriptCERN( jobDir, storeDir) )
+         elif 'PODIO' in os.environ:
+            #FCC case
+            scriptFile.write( batchScriptCERN_FCC( jobDir ) )
+         else: 
+            assert(False)
       elif mode == 'PSI':
          # storeDir not implemented at the moment
          scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) 
