@@ -47,11 +47,35 @@ from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 
+
+##################
+##   Gen Ana   ##
+##################
+
 from heppy.analyzers.Filter import Filter
-photons = cfg.Analyzer(
+gen_leptons = cfg.Analyzer(
+    Filter,
+    'gen_leptons',
+    output = 'gen_leptons',
+    input_objects = 'gen_particles',
+    filter_func = lambda ptc: (abs(ptc.pdgid()) == 11 or (abs(ptc.pdgid()) == 13) ) and ptc.status() == 1
+)
+
+from heppy.analyzers.examples.hzz4l.HTo4lGenTreeProducer import HTo4lGenTreeProducer
+gen_tree = cfg.Analyzer(
+    HTo4lGenTreeProducer,
+    leptons = 'gen_leptons',
+)
+
+##################
+##   Reco Tree   ##
+##################
+
+from heppy.analyzers.Filter import Filter
+sel_photons = cfg.Analyzer(
     Filter,
     'sel_photons',
-    output = 'photons',
+    output = 'sel_photons',
     input_objects = 'photons',
     filter_func = lambda ptc: ptc.pt()>2
 )
@@ -67,92 +91,129 @@ iso_candidates = cfg.Analyzer(
 # Compute photon isolation w/r other particles in the event.
 from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
+
 iso_photons = cfg.Analyzer(
     IsolationAnalyzer,
-    leptons = 'photons',
+    candidates = 'photons',
     particles = 'iso_candidates',
     iso_area = EtaPhiCircle(0.3)
 )
-
-# one can pass a function like this one to the filter:
-def relative_isolation(photon):
-    sumpt = photon.iso_211.sumpt + photon.iso_130.sumpt
-    sumpt /= photon.pt()
-    return sumpt
-# ... or use a lambda statement as done below. 
-
 
 sel_iso_photons = cfg.Analyzer(
     Filter,
     'sel_iso_photons',
     output = 'sel_iso_photons',
-    input_objects = 'photons_true',
-    # filter_func = relative_isolation
-    filter_func = lambda lep : lep.iso.sumpt/lep.pt()<1.0
+    input_objects = 'sel_photons',
+    filter_func = lambda ptc : ptc.iso.sumpt/ptc.pt()<1.0
 )
 
-muons = cfg.Analyzer(
+
+from heppy.analyzers.Subtractor import Subtractor
+pfphotons_nofsr = cfg.Analyzer(
+      Subtractor,
+      instance_label = 'pfphotons_nofsr', 
+      inputA = 'pfphotons',
+      inputB = 'sel_iso_photons',
+      output = 'pfphotons_nofsr'
+)
+
+iso_candidates_nofsr = cfg.Analyzer(
+      Merger,
+      instance_label = 'iso_candidates_nofsr', 
+      inputs = ['pfphotons_nofsr','pfcharged','pfneutrals'],
+      output = 'iso_candidates_nofsr'
+)
+
+sel_muons = cfg.Analyzer(
     Filter,
     'sel_muons',
-    output = 'muons',
+    output = 'sel_muons',
     input_objects = 'muons',
     filter_func = lambda ptc: ptc.pt()>5
 )
 
 iso_muons = cfg.Analyzer(
-    Filter,
-    'iso_muons',
-    output = 'iso_muons',
-    input_objects = 'muons',
-    filter_func = lambda ptc: ptc.iso.sumpt/ptc.pt()<0.4
+    IsolationAnalyzer,
+    candidates = 'muons',
+    particles = 'iso_candidates_nofsr',
+    iso_area = EtaPhiCircle(0.4)
 )
 
-electrons = cfg.Analyzer(
+sel_iso_muons = cfg.Analyzer(
+    Filter,
+    'sel_iso_muons',
+    output = 'sel_iso_muons',
+    input_objects = 'sel_muons',
+    filter_func = lambda ptc: ptc.iso.sumpt/ptc.pt()<0.4
+)
+ 
+from heppy.analyzers.Dresser import Dresser
+dressed_muons = cfg.Analyzer(
+    Dresser,
+    output = 'dressed_muons',
+    particles = 'sel_iso_photons',
+    candidates = 'sel_iso_muons',
+    area = EtaPhiCircle(0.3)
+)
+
+
+sel_electrons = cfg.Analyzer(
     Filter,
     'sel_electrons',
-    output = 'electrons',
+    output = 'sel_electrons',
     input_objects = 'electrons',
     filter_func = lambda ptc: ptc.pt()>7
 )
 
 iso_electrons = cfg.Analyzer(
+    IsolationAnalyzer,
+    candidates = 'electrons',
+    particles = 'iso_candidates_nofsr',
+    iso_area = EtaPhiCircle(0.4)
+)
+
+sel_iso_electrons = cfg.Analyzer(
     Filter,
-    'iso_electrons',
-    output = 'iso_electrons',
-    input_objects = 'electrons',
+    'sel_iso_electrons',
+    output = 'sel_iso_electrons',
+    input_objects = 'sel_electrons',
     filter_func = lambda ptc: ptc.iso.sumpt/ptc.pt()<0.4
 )
 
-
-from heppy.analyzers.Merger import Merger
-iso_leptons = cfg.Analyzer(
-      Merger,
-      instance_label = 'merge_leptons', 
-      inputs = ['iso_electrons','iso_muons']
-      inputB = 'iso_muons',
+dressed_electrons = cfg.Analyzer(
+    Dresser,
+    output = 'dressed_electrons',
+    particles = 'sel_iso_photons',
+    candidates = 'sel_iso_electrons',
+    area = EtaPhiCircle(0.3)
 )
 
+from heppy.analyzers.Merger import Merger
+dressed_leptons = cfg.Analyzer(
+      Merger,
+      instance_label = 'dressed_leptons', 
+      inputs = ['dressed_electrons','dressed_muons']
+)
 
 from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
 zeds_muons = cfg.Analyzer(
       ResonanceBuilder,
       output = 'zeds_muons',
-      leg_collection = 'iso_muons',
+      leg_collection = 'dressed_muons',
       pdgid = 23
 )
 
 zeds_electrons = cfg.Analyzer(
       ResonanceBuilder,
       output = 'zeds_electrons',
-      leg_collection = 'iso_electrons',
+      leg_collection = 'dressed_electrons',
       pdgid = 23
 )
 
 zeds = cfg.Analyzer(
       Merger,
-      instance_label = 'merge_zeds',
-      inputA = 'zeds_electrons',
-      inputB = 'zeds_muons',
+      instance_label = 'zeds',
+      inputs = ['zeds_electrons','zeds_muons'],
       output = 'zeds'
 )
 
@@ -171,9 +232,8 @@ selection = cfg.Analyzer(
 )
 
 from heppy.analyzers.examples.hzz4l.HTo4lTreeProducer import HTo4lTreeProducer
-gen_tree = cfg.Analyzer(
+reco_tree = cfg.Analyzer(
     HTo4lTreeProducer,
-    #zeds = 'zeds_electrons',
     zeds = 'zeds',
     higgses = 'higgses',
 )
@@ -183,18 +243,28 @@ gen_tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence( [
     source,
-    iso_photons, 
-    muons,
-    electrons,
+    gen_leptons,
+    gen_tree,
+    iso_candidates,
+    sel_photons,
+    iso_photons,
+    sel_iso_photons, 
+    pfphotons_nofsr,
+    iso_candidates_nofsr,
+    sel_muons,
     iso_muons,
+    sel_iso_muons,
+    dressed_muons,
+    sel_electrons,
     iso_electrons,
-    iso_leptons,
+    sel_iso_electrons,
+    dressed_electrons,
     zeds_electrons,
     zeds_muons,
     zeds,
     selection,
     higgses,
-    gen_tree,
+    reco_tree,
     ] )
 
 # comp.files.append('example_2.root')
