@@ -28,7 +28,6 @@ loop = None
 
 def callBack( result ):
     pass
-    # print 'production done:', str(result)
 
 def runLoopAsync(comp, outDir, configName, options):
     try:
@@ -95,38 +94,6 @@ def createOutputDir(dirname, components, force):
                                                 answer]) )
             
 
-def chunks(l, n):
-    return [l[i:i+n] for i in range(0, len(l), n)]
-
-def split(comps):
-    # import pdb; pdb.set_trace()
-    splitComps = []
-    for comp in comps:
-        if hasattr( comp, 'fineSplitFactor') and comp.fineSplitFactor>1:
-            subchunks = range(comp.fineSplitFactor)
-            for ichunk, chunk in enumerate([(f,i) for f in comp.files for i in subchunks]):
-                newComp = copy.deepcopy(comp)
-                newComp.files = [chunk[0]]
-                newComp.fineSplit = ( chunk[1], comp.fineSplitFactor )
-                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
-                                                       index=ichunk)
-                splitComps.append( newComp )
-        elif hasattr( comp, 'splitFactor') and comp.splitFactor>1:
-            chunkSize = len(comp.files) / comp.splitFactor
-            if len(comp.files) % comp.splitFactor:
-                chunkSize += 1
-            # print 'chunk size',chunkSize, len(comp.files), comp.splitFactor
-            for ichunk, chunk in enumerate( chunks( comp.files, chunkSize)):
-                newComp = copy.deepcopy(comp)
-                newComp.files = chunk
-                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
-                                                       index=ichunk)
-                splitComps.append( newComp )
-        else:
-            splitComps.append( comp )
-    return splitComps
-
-
 _heppyGlobalOptions = {}
 
 def getHeppyOption(name,default=None):
@@ -171,7 +138,8 @@ def main( options, args, parser ):
 
     file = open( cfgFileName, 'r' )
     sys.path.append( os.path.dirname(cfgFileName) )
-    cfg = imp.load_source( 'heppy.__cfg_to_run__', cfgFileName, file)
+    cfg = imp.load_source( 'heppy.__cfg_to_run__', 
+                           cfgFileName, file)
 
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
