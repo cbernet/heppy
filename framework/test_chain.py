@@ -17,7 +17,6 @@ class ChainTestCase(unittest.TestCase):
         self.nevents = rootfile.Get('test_tree').GetEntries()
         self.chain = Chain(testfname, 'test_tree')
 
-
     def test_file(self):
         '''Test that the test file exists'''
         self.assertTrue(os.path.isfile(testfname))

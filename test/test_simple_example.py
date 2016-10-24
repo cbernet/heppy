@@ -5,7 +5,7 @@ import os
 import copy
 from simple_example_cfg import config, stopper 
 from heppy.utils.testtree import create_tree, remove_tree
-from heppy.scripts.heppy_loop import create_parser, main
+from heppy.framework.heppy_loop import create_parser, main
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
 from ROOT import TFile

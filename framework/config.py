@@ -283,10 +283,12 @@ class Component( CFG ):
                                           files = files,
                                           tree_name = tree_name,
                                           triggers = triggers, **kwargs)
+        self.name = name 
         self.dataset_entries = 0
         self.isData = False
         self.isMC = False
         self.isEmbed = False
+        
 
 
 class DataComponent( Component ):
