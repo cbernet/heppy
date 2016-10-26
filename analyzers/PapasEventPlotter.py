@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.pfalgo.historyplotter import HistoryPlotter
+from heppy.papas.data.eventplotter import EventPlotter
 
 class PapasEventPlotter(Analyzer):
     '''Produces Standard Papas Event plots for a papasevent including simulation and reconstruction
@@ -25,19 +25,16 @@ class PapasEventPlotter(Analyzer):
 
     def __init__(self, *args, **kwargs):
         super(PapasEventPlotter, self).__init__(*args, **kwargs)  
-        self.to_file = self.cfg_ana.to_file
-        self.projections = self.cfg_ana.projections
-        self.plottype = self.cfg_ana.plottype
-        self.num_subgroups = None
-        if hasattr(self.cfg_ana, "num_subgroups"):
-            self.num_subgroups = self.cfg_ana.num_subgroups
 
     def process(self, event):
         '''
          The event must contain a papasevent.
         '''
-        self.histplot = HistoryPlotter(event.papasevent, event.detector, self.projections)
-        if self.plottype == "event":
-            self.histplot.plot_event_compare(self.to_file)
-        elif self.plottype == "subgroups":
-            self.histplot.plot_event_subgroups_compare(self.to_file, self.num_subgroups)
+        self.eventplot = EventPlotter(event.papasevent, event.detector, self.cfg_ana.projections, self.cfg_ana.dirName)
+        if self.cfg_ana.plottype == "event":
+            self.eventplot.plot_event_compare(self.cfg_ana.to_file)
+        elif self.cfg_ana.plottype == "subgroups":
+            num_subgroups = None
+            if hasattr(self.cfg_ana, "num_subgroups"):
+                num_subgroups = self.cfg_ana.num_subgroups            
+            self.eventplot.plot_event_subgroups_compare(self.cfg_ana.to_file, num_subgroups)

@@ -53,9 +53,7 @@ class PapasSim(Analyzer):
 
     def __init__(self, *args, **kwargs):
         super(PapasSim, self).__init__(*args, **kwargs)
-        self.detector = self.cfg_ana.detector
-        self.simulator = Simulator(self.detector, self.mainLogger)
-        
+        self.simulator = Simulator(self.cfg_ana.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
         #self.is_display = self.cfg_ana.display
         #if self.is_display:
@@ -63,7 +61,7 @@ class PapasSim(Analyzer):
 
     def init_display(self):
         self.display = Display(['xy', 'yz'])
-        self.gdetector = GDetector(self.detector)
+        self.gdetector = GDetector(self.cfg_ana.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
 
@@ -72,7 +70,7 @@ class PapasSim(Analyzer):
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
         papasevent = PapasEvent()
         setattr(event, "papasevent", papasevent)
-        setattr(event, "detector", self.detector)
+        setattr(event, "detector", self.cfg_ana.detector)
         #if self.is_display:
         #    self.display.clear()
         pfsim_particles = []

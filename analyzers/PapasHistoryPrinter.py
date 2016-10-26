@@ -39,10 +39,13 @@ class PapasHistoryPrinter(Analyzer):
         '''
         self.papasevent = event.papasevent
         self.hist = HistoryHelper(event.papasevent)
-        if self.format == "event":        
+        if self.cfg_ana.format == "event":        
             print self.hist.summary_string_event()
-        elif self.format == "subgroups":
-            print self.hist.summary_string_subgroups(self.num_subgroups)
+        elif self.cfg_ana.format == "subgroups":
+            num_subgroups = None
+            if hasattr(self.cfg_ana, "num_subgroups"):
+                num_subgroups = self.cfg_ana.num_subgroups            
+            print self.hist.summary_string_subgroups(num_subgroups)
 
     
 

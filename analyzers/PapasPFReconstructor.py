@@ -26,8 +26,7 @@ class PapasPFReconstructor(Analyzer):
     
     def __init__(self, *args, **kwargs):
         super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
-        self.detector = self.cfg_ana.detector
-        self.reconstructed = PFReconstructor(self.detector, self.mainLogger) #merge could also be self.logger?
+        self.reconstructed = PFReconstructor(self.cfg_ana.detector, self.logger) #merge could also be self.logger?
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
         
 
