@@ -22,12 +22,8 @@ class HistoryPlotter(object):
         * papasevent is a PapasEvent
         * detector
         '''
-        self.history = papasevent.history
         self.papasevent = papasevent  
         self.helper = HistoryHelper(papasevent)
-        self.detector = detector  
-        self.projections = projections
-        self.initialized = False 
         self.directory = directory
 
     
@@ -81,7 +77,8 @@ class HistoryPlotter(object):
         '''
         graph = pydot.Dot(graph_type='digraph')   
         self._graph_ids(ids, graph)
-        namestring='/'.join(self.directory, 'event_' + str(self.papasevent.iEv) +'_item_' + Identifier.pretty(ids[0]) + '_dag.png')
+        filename = 'event_' + str(self.papasevent.iEv)  +'_item_' + Identifier.pretty(ids[0]) + '_dag.png'         
+        namestring = '/'.join([self.directory, filename])    
         graph.write_png(namestring) 
     
     def plot_dag_event(self, show_file = False): 
@@ -90,7 +87,8 @@ class HistoryPlotter(object):
         ids = self.helper.event_ids()
         graph = pydot.Dot(graph_type='digraph')             
         self._graph_ids(ids, graph)
-        namestring = '/'.join(self.directory, 'event_' + str(self.papasevent.iEv)  + '_dag.png')
+        filename = 'event_' + str(self.papasevent.iEv)  + '_dag.png'          
+        namestring = '/'.join([self.directory, filename])
         graph.write_png(namestring) 
         if show_file:
             call(["open", namestring])
@@ -123,13 +121,13 @@ class HistoryPlotter(object):
         #creates graphnodes and graph edges for the dot plot based on the nodes
         graphnodes = dict() 
         for nodeid in nodeids: #first create the collection of nodes
-            node = self.history[nodeid]
+            node = self.papasevent.history[nodeid]
             if  graphnodes.has_key(self.pretty(node))==False:
                 graphnodes[self.pretty(node)] = pydot.Node(self.pretty(node), style="filled", label=self.short_info(node), fillcolor=self.color(node))
                 graph.add_node( graphnodes[self.pretty(node)]) 
         #once all the nodes are made we can now build the edges
         for nodeid in nodeids:
-            node = self.history[nodeid]
+            node = self.papasevent.history[nodeid]
             for c in node.parents:
                 if len(graph.get_edge(graphnodes[self.pretty(c)],graphnodes[self.pretty(node)]))==0:
                     graph.add_edge(pydot.Edge(  graphnodes[self.pretty(c)],graphnodes[self.pretty(node)])) 

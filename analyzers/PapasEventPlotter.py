@@ -30,7 +30,7 @@ class PapasEventPlotter(Analyzer):
         '''
          The event must contain a papasevent.
         '''
-        self.eventplot = EventPlotter(event.papasevent, event.detector, self.cfg_ana.projections, self.cfg_ana.dirName)
+        self.eventplot = EventPlotter(event.papasevent, event.detector, self.cfg_ana.projections, self.dirName)
         if self.cfg_ana.plottype == "event":
             self.eventplot.plot_event_compare(self.cfg_ana.to_file)
         elif self.cfg_ana.plottype == "subgroups":

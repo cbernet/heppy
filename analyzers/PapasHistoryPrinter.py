@@ -3,7 +3,7 @@ from heppy.papas.pfalgo.historyhelper import HistoryHelper
 
 
 class PapasHistoryPrinter(Analyzer):
-    '''Produces experimental History outputs for a papasevent (plots or text summary)
+    '''Produces experimental History outputs for a papasevent (prints text summary)
         
         Examples: 
         from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
@@ -21,6 +21,9 @@ class PapasHistoryPrinter(Analyzer):
         )
     
         * format = "event" or "subgroups"
+        *   "event" orders all elements in papasevent by id (which is in turn sorted by object type, object subtype, object energy)
+        *   "subgroups" groups elements in connected subgroups sorted by id
+        *
         * num_subgroups = optional, only used by subgroups format. If set, prints biggest n subgroups otherwise all subgroups are printed.
      
     '''

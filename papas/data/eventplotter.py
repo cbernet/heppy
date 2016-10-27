@@ -76,7 +76,8 @@ class EventPlotter(object):
         self._plot_ids_compare(self.helper.event_ids())             
         self.display.draw() 
         if to_file:
-            gPad.SaveAs('/'.join(self.directory, "event_" + str(self.papasevent.iEv) + '_sim_rec.png'))    
+            filename = "event_" + str(self.papasevent.iEv) + '_sim_rec.png'
+            gPad.SaveAs('/'.join([self.directory, filename]))   
 
     def plot_event_subgroups_compare(self, to_file = False, num_subgroups = None):
         '''produces event sub plots of event subgroups (one per subgroup)
@@ -99,7 +100,8 @@ class EventPlotter(object):
         self._plot_ids_compare(ids)
         self.display.draw() 
         if to_file:
-            gPad.SaveAs('/'.join(self.directory, 'event_' + str(self.papasevent.iEv) + '_item_' + Identifier.pretty(ids[0]) + '_sim_rec.png')) 
+            filename = "event_" + str(self.papasevent.iEv) + '_item_' + Identifier.pretty(ids[0]) + '_sim_rec.png'
+            gPad.SaveAs('/'.join([self.directory, filename]))               
         pass   
         
     def _plot_ids_compare(self, ids, offset = 0):

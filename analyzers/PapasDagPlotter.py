@@ -54,7 +54,9 @@ class PapasDAGPlotter(Analyzer):
         '''
          The event must contain a papasevent.
         '''
-        self.histplot = HistoryPlotter(event.papasevent, self.cfg_ana.dirName)
+        self.dirName = '/'.join( [self.looperName, self.name] )
+                  
+        self.histplot = HistoryPlotter(event.papasevent, self.dirName)
         if self.cfg_ana.plottype == "dag_event":
             self.histplot.plot_dag_event(self.cfg_ana.show_file) 
         elif self.cfg_ana.plottype == "dag_subgroups":
