@@ -36,7 +36,7 @@ class PapasPFBlockBuilder(Analyzer):
             uniqueids += papasevent.get_collection(self.cfg_ana.ecal_type_and_subtype).keys() 
         if self.cfg_ana.hcal_type_and_subtype:
             uniqueids += papasevent.get_collection(self.cfg_ana.hcal_type_and_subtype).keys()
-        blockbuilder = PFBlockBuilder(uniqueids, papasevent, distance)  
+        blockbuilder = PFBlockBuilder(papasevent, uniqueids, distance)  
         papasevent.add_collection(blockbuilder.blocks)
 
         

@@ -6,6 +6,19 @@ from heppy.papas.data.identifier import Identifier
 class PapasPFReconstructor(Analyzer):
     ''' Module to reconstruct particles from blocks of events
          
+        from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
+        pfreconstruct = cfg.Analyzer(
+            PapasPFReconstructor,
+            track_type_and_subtype = 'ts', 
+            ecal_type_and_subtype = 'em', 
+            hcal_type_and_subtype = 'hm',
+            block_type_and_subtype = 'br',
+            instance_label = 'papas_PFreconstruction', 
+            detector = detector,
+            output_particles_list = 'particles_list'
+        )
+        
+        
         Usage:
         pfreconstruct = cfg.Analyzer(
             PapasPFReconstructor,
@@ -20,13 +33,17 @@ class PapasPFReconstructor(Analyzer):
         
         input_blocks: Name of the the blocks dict in the event
         history: Name of history_nodes
-        output_particles_dict = Name for recosntructed particles (as dict), 
-        output_particles_list =  Name for recosntructed particles (as list)
+        ), 
+        track_type_and_subtype = which tracks collection in papasevent to use 
+        ecal_type_and_subtype = which ecals collection in papasevent to use 
+        hcal_type_and_subtype = which hcals collection in papasevent to use 
+        block_type_and_subtype = 'which blocks collection in papasevent to use 
+        output_particles_list =  Name for reconstructed particles (as list)
     '''
     
     def __init__(self, *args, **kwargs):
         super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
-        self.reconstructed = PFReconstructor(self.cfg_ana.detector, self.logger) #merge could also be self.logger?
+        self.reconstructed = PFReconstructor(self.cfg_ana.detector, self.logger) 
         self.output_particleslistname = '_'.join([self.instance_label, self.cfg_ana.output_particles_list])
         
 
@@ -34,28 +51,27 @@ class PapasPFReconstructor(Analyzer):
         ''' Calls the particle reconstruction algorithm and returns the 
            reconstructed paricles and updated history_nodes to the event object
            arguments:
-                    event must contain blocks made using BlockBuilder'''
-        #should these be passed as analyzer arguments instead?
-        ecals = event.papasevent.get_collection('em');
-        hcals = event.papasevent.get_collection('hm');
-        tracks = event.papasevent.get_collection('ts');
-        blocks = event.papasevent.get_collection('br');
+                    event must contain a papasevent which must contain tracks, ecals, hcals and blocks'''
+    
+        ecals = event.papasevent.get_collection(self.cfg_ana.ecal_type_and_subtype);
+        hcals = event.papasevent.get_collection(self.cfg_ana.hcal_type_and_subtype);
+        tracks = event.papasevent.get_collection(self.cfg_ana.track_type_and_subtype);
+        blocks = event.papasevent.get_collection(self.cfg_ana.block_type_and_subtype);
         particles = dict()
         splitblocks = dict()
 
         if blocks:
-            self.reconstructed.reconstruct(ecals, hcals , tracks, blocks, event.papasevent)
+            self.reconstructed.reconstruct( event.papasevent, self.cfg_ana.block_type_and_subtype)
             particles = self.reconstructed.particles
             splitblocks = self.reconstructed.splitblocks
 
         event.papasevent.add_collection(particles)
         event.papasevent.add_collection(splitblocks)        
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
-
         reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
                                                    key = lambda ptc: ptc.e(),
                                                    reverse=True)
         setattr(event, self.output_particleslistname, reconstructed_particle_list)
-            
+        #TODO look for a better home for this   
         Identifier.reset()
 

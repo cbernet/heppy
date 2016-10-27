@@ -45,11 +45,12 @@ pfblocks = cfg.Analyzer(
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
+    track_type_and_subtype = 'ts', 
+    ecal_type_and_subtype = 'em', 
+    hcal_type_and_subtype = 'hm',
+    block_type_and_subtype = 'br',
     instance_label = 'papas_PFreconstruction', 
     detector = detector,
-    input_blocks = 'reconstruction_blocks',
-    history = 'history_nodes',     
-    output_particles_dict = 'particles_dict', 
     output_particles_list = 'particles_list'
 )
 
