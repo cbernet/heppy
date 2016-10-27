@@ -35,11 +35,9 @@ papas = cfg.Analyzer(
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
-    tracks = 'tracks', 
-    ecals = 'ecal_clusters', 
-    hcals = 'hcal_clusters', 
-    history = 'history_nodes',  
-    output_blocks = 'reconstruction_blocks'
+    track_type_and_subtype = 'ts', 
+    ecal_type_and_subtype = 'em', 
+    hcal_type_and_subtype = 'hm'
 )
 
 

@@ -13,7 +13,6 @@ class PapasHistoryPrinter(Analyzer):
             num_subgroups = 3 # biggest 3 subgroups will be printed
         )
         
-        
         from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
         papas_print_history_event = cfg.Analyzer(
             PapasHistoryPrinter,
@@ -21,18 +20,20 @@ class PapasHistoryPrinter(Analyzer):
         )
     
         * format = "event" or "subgroups"
-        *   "event" orders all elements in papasevent by id (which is in turn sorted by object type, object subtype, object energy)
-        *   "subgroups" groups elements in connected subgroups sorted by id
-        *
-        * num_subgroups = optional, only used by subgroups format. If set, prints biggest n subgroups otherwise all subgroups are printed.
-     
+           "event" orders all elements in papasevent by id (which is in turn sorted 
+                by object type, object subtype, object energy)
+           "subgroups" the output will groups elements that are in a connected 
+                subgroup (subgroup elements are sorted by id)
+        
+        * num_subgroups = optional, only used by subgroups format. If set, 
+                prints biggest n subgroups otherwise all subgroups are printed
     '''
 
     def __init__(self, *args, **kwargs):
         super(PapasHistoryPrinter, self).__init__(*args, **kwargs)  
         
         self.format = self.cfg_ana.format
-        self.num_subgroups = None
+        self.num_subgroups = None #optional argument
         if hasattr(self.cfg_ana, "num_subgroups"):
             self.num_subgroups = self.cfg_ana.num_subgroups
 

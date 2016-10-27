@@ -28,36 +28,24 @@ class PFBlockBuilder(BlockBuilder):
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self,  uniqueids, papasevent, ruler, subtype ='r'):
+    def __init__(self, uniqueids, papasevent, ruler, subtype ='r'):
         '''
-       
-            tracks is a dictionary : {id1:track1, id2:track2, ...}
-            ecals is a dictionary : {id1:ecal1, id2:ecal2, ...}
-            hcals is a dictionary : {id1:hcal1, id2:hcal2, ...}
-            get_object() which allows a cluster or track to be found from its id
-            history is a dictionary of Nodes : { id:Node1, id: Node2 etc}
-                containing the simulation history 
-                A Node contains the id of an item (cluster, track, particle etc)
-                and says what it is linked to (its parents and children)
-                if hist_nodes is provided it will be added to with the new block information
-                If hist_nodes is not provided one will be created, it will contain nodes
-                corresponding to each of the tracks, ecal etc and also for the blocks that
-                are created by the event block builder.
-        ruler is something that measures distance between two objects eg track and hcal
-            (see Distance class for example)
-            it should take the two objects as arguments and return a tuple
-            of the form
-                link_type = 'ecal_ecal', 'ecal_track' etc
-                is_link = true/false
-                distance = float
+            uniqueids list of which ids from papasevent to build blocks out of
+            papasevent contains the collections of objects, 
+                                the history (if not found it will be created)
+                                get_object() which allows a cluster or track to be found from its id
+            ruler is something that measures distance between two objects eg track and hcal
+                (see Distance class for example)
+                it should take the two objects as arguments and return a tuple
+                of the form
+                    link_type = 'ecal_ecal', 'ecal_track' etc
+                    is_link = true/false
+                    distance = float
         '''
-        
-        
         uniqueids = sorted(uniqueids)
         self.papasevent = papasevent
-        self.history_nodes = papasevent.history
-        if self.history_nodes is None:
-            self.history_nodes =  dict( (idt, Node(idt)) for idt in uniqueids )       
+        if self.papasevent.history is None:
+            self.papasevent.history =  dict( (idt, Node(idt)) for idt in uniqueids )       
         
         # compute edges between each pair of nodes
         edges = dict()
@@ -70,7 +58,7 @@ class PFBlockBuilder(BlockBuilder):
                     edges[edge.key] = edge
 
         #use the underlying BlockBuilder to construct the blocks        
-        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.history_nodes, subtype = subtype)
+        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.papasevent.history, subtype = subtype)
 
     def _make_edge(self,id1,id2, ruler):
         ''' id1, id2 are the unique ids of the two items
@@ -89,12 +77,9 @@ class PFBlockBuilder(BlockBuilder):
         obj2 = self.papasevent.get_object(id2)
         link_type, is_linked, distance = ruler(obj1,obj2) #some redundancy in link_type as both distance and Edge make link_type
                                                           #not sure which to get rid of
-        
         #for the event we do not want ehal_hcal links
         if link_type == "ecal_hcal":
             is_linked = False
             
         #make the edge 
         return Edge(id1,id2, is_linked, distance) 
-        
-    
