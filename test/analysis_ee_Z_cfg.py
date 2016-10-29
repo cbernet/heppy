@@ -31,10 +31,9 @@ Collider.SQRTS = 91.
 
 # input definition
 import glob
-files = glob.glob(os.environ['HEPPY']+'/test/ee_Z_ddbar_*.root')
 ee_Z_ddbar = cfg.Component(
     'ee_Z_ddbar',
-    files = files 
+    files = ['ee_Z_ddbar.root'] 
     )
 ee_Z_ddbar.splitFactor = len(ee_Z_ddbar.files)
 

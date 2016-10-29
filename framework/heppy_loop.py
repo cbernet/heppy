@@ -124,7 +124,7 @@ def main( options, args, parser ):
     if options.verbose:
         import logging
         logging.basicConfig(level=logging.INFO)
-
+    
     # Propagate global options to _heppyGlobalOptions within this module
     # I have to import it explicitly, 'global' does not work since the
     # module is not set when executing the main
@@ -138,6 +138,7 @@ def main( options, args, parser ):
 
     file = open( cfgFileName, 'r' )
     sys.path.append( os.path.dirname(cfgFileName) )
+
     cfg = imp.load_source( 'heppy.__cfg_to_run__', 
                            cfgFileName, file)
 

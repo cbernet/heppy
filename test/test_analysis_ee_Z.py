@@ -15,7 +15,6 @@ logging.getLogger().setLevel(logging.ERROR)
 import heppy.statistics.rrandom as random
 
 
-
 class TestAnalysis_ee_Z(unittest.TestCase):
 
     def setUp(self):

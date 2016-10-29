@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-ln -sf $CMSSW_BASE/src/PhysicsTools/HeppyCore/scripts/heppy_loop.py tmp_heppy.py
+ln -sf $HEPPY/scripts/heppy_loop.py tmp_heppy.py
 
 # test the presence of the interactive flag
 interactive=false
