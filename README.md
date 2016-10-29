@@ -5,8 +5,8 @@ Heppy (High Energy Physics with PYthon) is a modular python framework for the an
 
 [Installation instructions](doc/INSTALL.md)
 
-<!--
 [An example analysis workflow](doc/example_analysis.md)
 
 [Papas, the parametrized particle simulation](doc/papas.md)
--->
+
+[Reference guide](doc/reference_guide.md)
