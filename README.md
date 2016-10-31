@@ -3,6 +3,8 @@ Heppy : a python framework for high-energy physics data analysis
 
 Heppy (High Energy Physics with PYthon) is a modular python framework for the analysis of collision events. 
 
+If you're not very familiar with python yet, you will probably find the [Python Tutorial](https://docs.python.org/2.7/tutorial/) useful before you get started with heppy.  
+
 Table of contents: 
 
 1. [Installation](doc/INSTALL.md)

@@ -117,7 +117,7 @@ Component: test_component
         triggers       :   None
 ```
 
-It is even to use all functionalities of python to prepare your heppy configuration file. For example to use all ROOT files in the current directory as input, one could add the following lines to the configuration file. You may run them now: 
+It is even possible to use all functionalities of python to prepare your heppy configuration file. For example to use all ROOT files in the current directory as input, one could add the following lines to the configuration file. You may run them now: 
 
 ```python 
 import glob

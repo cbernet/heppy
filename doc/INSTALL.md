@@ -27,10 +27,13 @@ To check that, do the following:
 Any error message needs to be taken care of before going further. 
 
 
-## Environment 
+## Installation 
 
-From this directory, run the initialization script, which makes a few
-executable scripts available to you:
+First [fork](https://help.github.com/articles/fork-a-repo/) the heppy repository on your github account. 
+
+Then, [clone](https://help.github.com/articles/cloning-a-repository/) your copy of the heppy repository locally.
+
+Move to the `heppy` directory run the initialization script (to be done everytime you want to use heppy):
 
     source ./init.sh
     
