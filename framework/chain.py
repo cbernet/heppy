@@ -23,7 +23,6 @@ def is_rootfn(fn):
 class Chain( object ):
     """Wrapper to TChain, with a python iterable interface.
 
-    Example of use:  #TODO make that a doctest / nose?
        from chain import Chain
        the_chain = Chain('../test/test_*.root', 'test_tree')
        event3 = the_chain[2]
@@ -33,7 +32,7 @@ class Chain( object ):
            print event.var1
     """
 
-    def __init__(self, input, tree_name=None):
+    def __init__(self, input_filenames, tree_name=None):
         """
         Create a chain.
 
@@ -45,11 +44,11 @@ class Chain( object ):
                       if None and if each file contains only one TTree,
                       this TTree is used.
         """
-        self.files = input
-        if isinstance(input, basestring): # input is a pattern
-            self.files = glob.glob(input)
+        self.files = input_filenames
+        if isinstance(input_filenames, basestring): # input is a pattern
+            self.files = glob.glob(input_filenames)
             if len(self.files)==0:
-                raise ValueError('no matching file name: '+input)
+                raise ValueError('no matching file name: '+input_filenames)
         else: # case of a list of files
             if False in [
                 ((is_pfn(fnam) and os.path.isfile(fnam)) or
@@ -59,7 +58,7 @@ class Chain( object ):
                 err += pprint.pformat(self.files)
                 raise ValueError(err)
         if tree_name is None:
-            tree_name = self._guessTreeName(input)
+            tree_name = self._guessTreeName(input_filenames)
         self.chain = TChain(tree_name)
         for file in self.files:
             self.chain.Add(file)
