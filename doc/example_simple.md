@@ -1,7 +1,9 @@
 # A very simple heppy example
 
-* [A very simple heppy example](#a-very-simple-heppy-example)
-  * [Running the example](#running-the-example)
+Contents:
+
+  * [A very simple heppy example](#a-very-simple-heppy-example)
+    * [Running the example](#running-the-example)
     * [Using python to inspect and modify the configuration](#using-python-to-inspect-and-modify-the-configuration)
     * [Configuration file structure](#configuration-file-structure)
       * [Importing a few useful modules](#importing-a-few-useful-modules)
