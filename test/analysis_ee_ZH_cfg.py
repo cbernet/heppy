@@ -28,6 +28,10 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 import heppy.utils.pdebug
 
+# setting the event printout
+from heppy.framework.event import Event
+Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable']
+
 # definition of the collider
 from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
@@ -219,7 +223,7 @@ sequence = cfg.Sequence(
     missing_energy,
     particles_not_zed,
     jets,
-    btag,
+#    btag,
     higgses,
     selection, 
     tree
