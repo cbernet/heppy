@@ -10,6 +10,7 @@ import pprint
 import time
 import socket
 
+import eostools as castortools
 
 class BatchManager:
     """
@@ -20,8 +21,8 @@ class BatchManager:
 
     # constructor
     # self is this
-    # parse batch manager options 
-    def __init__(self):    
+    # parse batch manager options
+    def __init__(self):
         self.DefineOptions()
 
 
@@ -45,20 +46,20 @@ class BatchManager:
         self.parser_.add_option("-b", "--batch", dest="batch",
                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
                                 default="bsub -q 8nh < ./batchScript.sh")
-        self.parser_.add_option("-p", "--parametric", action="store_true",
-                                dest="parametric", default=False,
-                                help="submit jobs parametrically, implemented for IC so far")
+        self.parser_.add_option( "--option",
+                                dest="extraOptions",
+                                type="string",
+                                action="append",
+                                default=[],
+                                help="Save one extra option (either a flag, or a key=value pair) that can be then accessed from the job config file")
 
-        
     def ParseOptions(self):     
         (self.options_,self.args_) = self.parser_.parse_args()
         if self.options_.remoteCopy == None:
             self.remoteOutputDir_ = ""
         else: 
             # removing possible trailing slash
-            import CMGTools.Production.eostools as castortools
             self.remoteOutputDir_ = self.options_.remoteCopy.rstrip('/')
-    
             if "psi.ch" in self.remoteOutputDir_: # T3 @ PSI:
                 # overwriting protection to be improved
                 if self.remoteOutputDir_.startswith("/pnfs/psi.ch"):
@@ -66,7 +67,7 @@ class BatchManager:
                     if ld_lib_path != "None":
                         os.environ['LD_LIBRARY_PATH'] = "/usr/lib64/:"+ld_lib_path  # to solve gfal conflict with CMSSW
                     os.system("gfal-mkdir srm://t3se01.psi.ch/"+self.remoteOutputDir_)
-                    outputDir = self.options_.outputDir.rstrip("/").split("/")[-1] # to for instance direct output to /afs/cern.ch/work/u/user/outputDir
+                    outputDir = self.options_.outputDir
                     if outputDir==None:
                         today = datetime.today()
                         outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M")
@@ -99,17 +100,14 @@ class BatchManager:
                     if self.options_.negate is False and self.options_.force is False:
                         #COLIN need to reimplement protectedRemove in eostools
                         raise ValueError(  ' '.join(['directory ', self.remoteOutputDir_, ' already exists.']))
-                        # if not castortools.protectedRemove( self.remoteOutputDir_, '.*root'):
-                        # the user does not want to delete the root files                          
         self.remoteOutputFile_ = ""
-        self.ManageOutputDir()
         return (self.options_, self.args_)
 
         
     def PrepareJobs(self, listOfValues, listOfDirNames=None):
+        self.ManageOutputDir()
         print 'PREPARING JOBS ======== '
         self.listOfJobs_ = []
-
         if listOfDirNames is None:
             for value in listOfValues:       
                 self.PrepareJob( value )      
@@ -123,22 +121,20 @@ class BatchManager:
 
     # create output dir, if necessary
     def ManageOutputDir( self ):
-        
-        #if the output dir is not specified, generate a name
-        #else 
-        #test if the directory exists 
-        #if yes, returns
+        '''Create output directory, if necessary.
 
+        if the output dir is not specified, generate a name
+        else 
+        test if the directory exists 
+        if yes, returns.
+        '''
         outputDir = self.options_.outputDir
-
         if outputDir==None:
             today = datetime.today()
             outputDir = 'OutCmsBatch_%s' % today.strftime("%d%h%y_%H%M%S")
-            print 'output directory not specified, using %s' % outputDir            
-            
+            print 'output directory not specified, using %s' % outputDir                
         self.outputDir_ = os.path.abspath(outputDir)
-
-        if( os.path.isdir(self.outputDir_) == True ):
+        if( os.path.isdir(self.outputDir_) == True and os.listdir(self.outputDir_) ):
             input = ''
             if not self.options_.force:
                 while input != 'y' and input != 'n':
@@ -178,57 +174,27 @@ class BatchManager:
             print '*NOT* SUBMITTING JOBS - exit '
             return
         print 'SUBMITTING JOBS ======== '
-
-        mode = self.RunningMode(self.options_.batch)
-
-        #  If at IC write all the job directories to a file then submit a parameteric
-        # job that depends on the file number. This is required to circumvent the 2000
-        # individual job limit at IC
-        if mode=="IC" and self.options_.parametric:
-
-            jobDirsFile = os.path.join(self.outputDir_,"jobDirectories.txt")
-            with open(jobDirsFile, 'w') as f:
-                for jobDir in self.listOfJobs_:
-                    print>>f,jobDir
-
-            readLine = "readarray JOBDIR < "+jobDirsFile+"\n"
-
-            submitScript = os.path.join(self.outputDir_,"parametricSubmit.sh")
-            with open(submitScript,'w') as batchScript:
-                batchScript.write("#!/bin/bash\n")
-                batchScript.write("#$ -e /dev/null -o /dev/null \n")
-                batchScript.write("cd "+self.outputDir_+"\n") 
-                batchScript.write(readLine)
-                batchScript.write("cd ${JOBDIR[${SGE_TASK_ID}-1]}\n")
-                batchScript.write( "./batchScript.sh > BATCH_outputLog.txt 2> BATCH_errorLog.txt" )
-
-            #Find the queue
-            splitBatchOptions = self.options_.batch.split()
-            if '-q' in splitBatchOptions: queue =  splitBatchOptions[splitBatchOptions.index('-q')+1]
-            else: queue = "hepshort.q"
-
-            os.system("qsub -q "+queue+" -t 1-"+str(len(self.listOfJobs_))+" "+submitScript)
-            
-        else:
-        #continue as before, submitting one job per directory
-
-            for jobDir  in self.listOfJobs_:
-                root = os.getcwd()
-                # run it
-                print 'processing ', jobDir
-                os.chdir( jobDir )
-                self.SubmitJob( jobDir )
-                # and come back
-                os.chdir(root)
-                print 'waiting %s seconds...' % waitingTimeInSec
-                time.sleep( waitingTimeInSec )
-                print 'done.'
+        for jobDir  in self.listOfJobs_:
+            root = os.getcwd()
+            # run it
+            print 'processing ', jobDir
+            os.chdir( jobDir )
+            self.SubmitJob( jobDir )
+            # and come back
+            os.chdir(root)
+            print 'waiting %s seconds...' % waitingTimeInSec
+            time.sleep( waitingTimeInSec )
+            print 'done.'
 
     def SubmitJob( self, jobDir ):
         '''Hook for job submission.'''
         print 'submitting (to be customized): ', jobDir  
         os.system( self.options_.batch )
 
+
+    def SubmitJobArray( self, numbOfJobs = 1 ):
+        '''Hook for array job submission.'''
+        print 'Submitting array with %s jobs'  % numbOfJobs
 
     def CheckBatchScript( self, batchScript ):
 
@@ -270,53 +236,50 @@ class BatchManager:
        
 
     def RunningMode(self, batch):
-        '''Returns "LXPLUS", "PSI", "LOCAL", or None,
-        
+
+        '''Return "LXPUS", "PSI", "NAF", "LOCAL", or None,
+
         "LXPLUS" : batch command is bsub, and logged on lxplus
         "PSI"    : batch command is qsub, and logged to t3uiXX
-        "IC"     : batch command is qsub, and logged to hep.ph.ic.ac.uk
+        "NAF"    : batch command is qsub, and logged on naf
+        "IC"     : batch command is qsub, and logged on hep.ph.ic.ac.uk
         "LOCAL"  : batch command is nohup.
+
         In all other cases, a CmsBatchException is raised
         '''
         
         hostName = socket.gethostname()
         onLxplus = hostName.startswith('lxplus')
-        onPSI    = hostName.startswith('t3ui'  )
-        onPISA   = re.match('.*gridui.*',hostName) or  re.match('.*faiwn.*',hostName)
-        onPADOVA = ( hostName.startswith('t2-ui') and re.match('.*pd.infn.*',hostName) ) or ( hostName.startswith('t2-cld') and re.match('.*lnl.infn.*',hostName) )
-        onIC = 'hep.ph.ic.ac.uk' in hostName
+        onPSI    = hostName.startswith('t3ui')
+        onNAF =  hostName.startswith('naf')
+
         batchCmd = batch.split()[0]
         
         if batchCmd == 'bsub':
-            if not (onLxplus or onPISA or onPADOVA) :
+            if not onLxplus:
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
-            elif onPISA :
-                print 'running on LSF pisa : %s from %s' % (batchCmd, hostName)
-                return 'PISA'
-            elif onPADOVA:
-                print 'running on LSF padova: %s from %s' % (batchCmd, hostName)
-                return 'PADOVA'
             else:
-                print 'running on LSF lxplus: %s from %s' % (batchCmd, hostName)
+                print 'running on LSF : %s from %s' % (batchCmd, hostName)
                 return 'LXPLUS'
-        elif batchCmd == "qsub":
-            #if not onPSI:
-            #    err = 'Cannot run %s on %s' % (batchCmd, hostName)
-            #    raise ValueError( err )
 
-            if onIC: 
+        elif batchCmd == "qsub":
+            if onPSI:
+                print 'running on SGE : %s from %s' % (batchCmd, hostName)
+                return 'PSI'
+            elif onNAF:
+                print 'running on NAF : %s from %s' % (batchCmd, hostName)
+                return 'NAF'
+            elif onIC:
                 print 'running on IC : %s from %s' % (batchCmd, hostName)
                 return 'IC'
-
             else:
-		if onPSI:
-                	print 'running on SGE : %s from %s' % (batchCmd, hostName)
-                	return 'PSI'
+                err = 'Cannot run %s on %s' % (batchCmd, hostName)
+                raise ValueError( err )
 
         elif batchCmd == 'nohup' or batchCmd == './batchScript.sh':
             print 'running locally : %s on %s' % (batchCmd, hostName)
             return 'LOCAL'
         else:
             err = 'unknown batch command: X%sX' % batchCmd
-            raise ValueError( err )           
+            raise ValueError( err )

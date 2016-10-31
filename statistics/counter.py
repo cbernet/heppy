@@ -111,3 +111,6 @@ class Counters(object):
         
     def __getitem__(self, name):
         return self.counter(name)
+
+    def __len__(self):
+        return len(self.counters)

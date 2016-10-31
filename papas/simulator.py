@@ -271,6 +271,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         self.ptcs = []
 
         #newsort
+        # import pdb; pdb.set_trace()
         for gen_ptc in sorted(ptcs, key=lambda ptc: ptc.uniqueid):
             pdebugger.info(str('{}'.format(gen_ptc)))
         for gen_ptc in ptcs:
@@ -295,7 +296,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)
+        self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)
 
 if __name__ == '__main__':
 

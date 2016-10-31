@@ -75,7 +75,6 @@ class Matcher(Analyzer):
             self.match_collections.append( (self.cfg_ana.match_particles, None) )
         else:
             self.match_collections = self.cfg_ana.match_particles
-        self.dr2=self.cfg_ana.delta_r**2
         
     def process(self, event):
         particles = getattr(event, self.cfg_ana.particles)
@@ -87,7 +86,7 @@ class Matcher(Analyzer):
                 match_ptcs_filtered = [ptc for ptc in match_ptcs
                                        if ptc.pdgid()==pdgid]
             pairs = matchObjectCollection(particles, match_ptcs_filtered,
-                                          self.dr2)
+                                          self.cfg_ana.delta_r)
             for ptc in particles:
                 matchname = 'match'
                 if pdgid: 

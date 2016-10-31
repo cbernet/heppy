@@ -39,10 +39,10 @@ leptons = cfg.Analyzer(
     filter_func = lambda ptc: ptc.pt()>30 and abs(ptc.pdgid()) in [11, 13]
 )
 
-from heppy.analyzers.LeptonAnalyzer import LeptonAnalyzer
+from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
-    LeptonAnalyzer,
+    IsolationAnalyzer,
     leptons = 'leptons',
     particles = 'gen_particles_stable',
     iso_area = EtaPhiCircle(0.4)

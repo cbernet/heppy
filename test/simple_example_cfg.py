@@ -1,13 +1,13 @@
 
 import os
 import heppy.framework.config as cfg
-from heppy.framework.chain import Chain as Events
 import logging
 logging.basicConfig(level=logging.INFO)
 
 # input component 
 # several input components can be declared,
 # and added to the list of selected components
+
 inputSample = cfg.Component(
     'test_component',
     # create the test file by running
@@ -17,10 +17,20 @@ inputSample = cfg.Component(
 
 selectedComponents  = [inputSample]
 
-# just prints a variable in the input test tree
+# use a simple event reader based on the ROOT TChain class
+from heppy.framework.chain import Chain as Events
+
+# add a random variable to the event 
+from heppy.analyzers.examples.simple.RandomAnalyzer import RandomAnalyzer
+random = cfg.Analyzer(
+    RandomAnalyzer
+    )
+
+# just print a variable in the input test tree
 from heppy.analyzers.examples.simple.Printer import Printer
 printer = cfg.Analyzer(
-    Printer
+    Printer,
+    log_level=logging.INFO
     )
 
 # illustrates how to use an exception to stop processing at event 10
@@ -42,10 +52,11 @@ tree = cfg.Analyzer(
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
-sequence = cfg.Sequence( [
-    printer,
-    # stopper,
-    tree,
+sequence = cfg.Sequence([
+        random,
+        # printer,
+        # stopper,
+        tree,
 ] )
 
 from heppy.framework.services.tfile import TFileService

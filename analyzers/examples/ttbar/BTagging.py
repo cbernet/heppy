@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 
-class Btagging(Analyzer):
+class BTagging(Analyzer):
     
     def process(self, event):
         jets = getattr(event, self.cfg_ana.input_objects)
