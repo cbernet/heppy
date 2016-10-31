@@ -1,5 +1,15 @@
 # A very simple heppy example
 
+* [A very simple heppy example](#a-very-simple-heppy-example)
+  * [Running the example](#running-the-example)
+    * [Using python to inspect and modify the configuration](#using-python-to-inspect-and-modify-the-configuration)
+    * [Configuration file structure](#configuration-file-structure)
+      * [Importing a few useful modules](#importing-a-few-useful-modules)
+      * [Definition of the input events](#definition-of-the-input-events)
+      * [Configuration of the analyzers](#configuration-of-the-analyzers)
+      * [Scheduling of the event processing sequence](#scheduling-of-the-event-processing-sequence)
+      * [Definition of global services](#definition-of-global-services)
+      * [finalization of the configuration object](#finalization-of-the-configuration-object)
 
 A [simple heppy example](../test/simple_example_cfg.py) based on ROOT is provided in the test/ directory.
 
