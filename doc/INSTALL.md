@@ -1,8 +1,7 @@
-Heppy : Installation Instructions 
-=================================
+#Heppy : Installation Instructions 
 
-Prerequisites
--------------
+
+## Prerequisites
 
 Heppy only depends on python and ROOT (if you intend to read events from a ROOT file), making the installation fairly simple. If you're using heppy in the context of the CMS or FCC software on SLC6, you're all set and you can proceed to the [next section](#environment)
 
@@ -28,8 +27,7 @@ To check that, do the following:
 Any error message needs to be taken care of before going further. 
 
 
-Environment 
------------
+## Environment 
 
 From this directory, run the initialization script, which makes a few
 executable scripts available to you:
