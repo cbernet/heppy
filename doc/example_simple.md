@@ -89,7 +89,7 @@ class Chain(__builtin__.object)
  |      list of weak references to the object (if defined)
 ```
 
-To access object attributes or methods:
+It is possible to access the attributes and the methods of the various objects, and for example to print them: 
 
 ```python
 print inputSample
@@ -104,7 +104,8 @@ Component: test_component
         tree_name      :   None
         triggers       :   None
 ```
-Or even to use python functionalities to prepare your heppy configuration file. For example to use all ROOT files in the current directory as input, one could add the following lines to the configuration file. You may run them now: 
+
+It is even to use all functionalities of python to prepare your heppy configuration file. For example to use all ROOT files in the current directory as input, one could add the following lines to the configuration file. You may run them now: 
 
 ```python 
 import glob
@@ -163,6 +164,15 @@ Other Events classes could be provided e.g for ATLAS events or plain text files 
 
 ### Configuration of the analyzers
 
+This section of the configuration file specifies the configuration of four very simple analyzers: 
+
+* [RandomAnalyzer](../analyzers/examples/simple/RandomAnalyzer.py) : draw a value from a random distribution for a variable and put it into the event.
+* [Printer](../analyzers/examples/simple/Printer.py) : access this variable and print it. 
+* [Stopper](../analyzers/examples/simple/Stopper.py) : stop processing at event 10.
+* [SimpleTreeProducer](../analyzers/examples/simple/SimpleTreeProducer.py): define an output ntuple (TTree) to store the random variable. 
+
+Please study the sequence below, and the code of each analyzer. 
+
 ```python
 
 # add a random variable to the event 
@@ -170,7 +180,6 @@ from heppy.analyzers.examples.simple.RandomAnalyzer import RandomAnalyzer
 random = cfg.Analyzer(
     RandomAnalyzer
     )
-
 
 # just print a variable in the input test tree
 from heppy.analyzers.examples.simple.Printer import Printer
@@ -196,7 +205,10 @@ tree = cfg.Analyzer(
     )
 ```
 
+
 ### Scheduling of the event processing sequence
+
+The following lines define which analyzers will run, and in which order they will process each event. The `printer` and the `stopper` are left out from the sequence on purpose. The analyzer `random` runs first so that the resulting random variable can be stored in the ntuple by `tree` later on.
 
 ```python
 # definition of a sequence of analyzers,
@@ -209,7 +221,11 @@ sequence = cfg.Sequence([
 ] )
 ```
 
-### Definition of a global service
+Please include `printer` and `stopper` to the sequence, and run again.
+
+### Definition of global services
+
+_Services_ are created at the beginning of the event processing and can be used in all analyzers. They are usually not needed but are worth mentioning. For example, the service defined below configures a global output root file that can be used by all analyzers. Please note however that each analyzer can also have its own output ROOT file. 
 
 ```python
 from heppy.framework.services.tfile import TFileService
@@ -225,6 +241,8 @@ services = [output_rootfile]
 
 ### finalization of the configuration object
 
+A global configuration file named `config` must be present. It contains all the information needed by heppy to process your events. 
+
 ```python
 # finalization of the configuration object. 
 config = cfg.Config( components = selectedComponents,
@@ -236,11 +254,4 @@ config = cfg.Config( components = selectedComponents,
 ```
 
 
-### Specification of the event reader
-
-### Configuration of the analyzers
-
-### Scheduling of the analysis sequence
-
-### Creation of the configuration object
 

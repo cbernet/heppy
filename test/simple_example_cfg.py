@@ -26,7 +26,6 @@ random = cfg.Analyzer(
     RandomAnalyzer
     )
 
-
 # just print a variable in the input test tree
 from heppy.analyzers.examples.simple.Printer import Printer
 printer = cfg.Analyzer(
