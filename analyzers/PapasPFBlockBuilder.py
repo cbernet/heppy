@@ -31,11 +31,17 @@ class PapasPFBlockBuilder(Analyzer):
         distance = Distance()
         uniqueids= []
         if self.cfg_ana.track_type_and_subtype:
-            uniqueids += papasevent.get_collection(self.cfg_ana.track_type_and_subtype).keys() 
+            collection = papasevent.get_collection(self.cfg_ana.track_type_and_subtype)
+            if collection:
+                uniqueids += collection.keys()
         if self.cfg_ana.ecal_type_and_subtype:
-            uniqueids += papasevent.get_collection(self.cfg_ana.ecal_type_and_subtype).keys() 
+            collection = papasevent.get_collection(self.cfg_ana.ecal_type_and_subtype) 
+            if collection:
+                uniqueids += collection.keys()            
         if self.cfg_ana.hcal_type_and_subtype:
-            uniqueids += papasevent.get_collection(self.cfg_ana.hcal_type_and_subtype).keys()
+            collection = papasevent.get_collection(self.cfg_ana.hcal_type_and_subtype)
+            if collection:
+                uniqueids += collection.keys()            
         blockbuilder = PFBlockBuilder(papasevent, uniqueids, distance)  
         papasevent.add_collection(blockbuilder.blocks)
 

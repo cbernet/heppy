@@ -50,6 +50,8 @@ class PapasEvent(Event):
            and only one collection of each type should be stored in the PapasEvent        
         '''
         #find all the type_and_subtypes in the incoming collection
+        if len(collection) == 0:
+            return
         types = set(map(Identifier.type_and_subtype, collection.keys()))
         if len(types) > 1:
             raise ValueError('More than one type')
@@ -59,7 +61,7 @@ class PapasEvent(Event):
         self.collections[the_type] = collection        
     
     def get_collection(self, type_and_subtype):
-        return self.collections[type_and_subtype]
+        return self.collections.get(type_and_subtype, None)
 
     def get_object(self, uid):
         '''get an object corresponding to a unique uid'''
@@ -67,7 +69,7 @@ class PapasEvent(Event):
         #would it be better to let it fail when asking for something that does not exist like this:
         #    return self.get_collections(Identifier.type_and_subtype(uid))[uid]
         #
-        collection = self.collections.get(Identifier.type_and_subtype(uid), None)
+        collection = self.get_collection(Identifier.type_and_subtype(uid))
         if collection:
             return collection.get(uid, None)
         return None

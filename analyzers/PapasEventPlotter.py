@@ -31,11 +31,14 @@ class PapasEventPlotter(Analyzer):
         '''
          The event must contain a papasevent.
         '''
-        self.eventplot = EventPlotter(event.papasevent, self.cfg_ana.detector, self.cfg_ana.projections, self.dirName)
-        if self.cfg_ana.plottype == "event":
-            self.eventplot.plot_event_compare(self.cfg_ana.to_file)
-        elif self.cfg_ana.plottype == "subgroups":
-            num_subgroups = None
-            if hasattr(self.cfg_ana, "num_subgroups"):
-                num_subgroups = self.cfg_ana.num_subgroups            
-            self.eventplot.plot_event_subgroups_compare(self.cfg_ana.to_file, num_subgroups)
+        
+        if self.cfg_ana.display:
+            self.eventplot = EventPlotter(event.papasevent, self.cfg_ana.detector, self.cfg_ana.projections, self.dirName)
+            if self.cfg_ana.plottype == "event":
+                self.eventplot.plot_event_compare(self.cfg_ana.to_file)
+            elif self.cfg_ana.plottype == "subgroups":
+                num_subgroups = None
+                if hasattr(self.cfg_ana, "num_subgroups"):
+                    num_subgroups = self.cfg_ana.num_subgroups            
+                self.eventplot.plot_event_subgroups_compare(self.cfg_ana.to_file, num_subgroups)
+        self.cfg_ana.display = False #only do display for first event in a loop

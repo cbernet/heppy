@@ -76,22 +76,24 @@ papas_print_history_event = cfg.Analyzer(
 )
 
 from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
-papas_plot = cfg.Analyzer(
+papas_event_plot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
     detector = detector,
     plottype = "event",
-    to_file = True
+    to_file = True,
+    display = True
 )
 
 from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
-papas_subplot = cfg.Analyzer(
+papas_event_subplot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
     detector = detector,
     plottype = "subgroups",
     num_subgroups = 4,
-    to_file = True
+    to_file = True,
+    display = False  
 )
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
@@ -261,9 +263,9 @@ sequence = cfg.Sequence(
     source,
     papas_sequence,
     #papas_print_history, 
-    papas_print_history_event, 
-    #papas_plot, 
-    #papas_subplot,
+    #papas_print_history_event, 
+    papas_event_plot, 
+    #papas_event_subplot,
     #papas_dag_plot, 
     #papas_dag_subgroups, 
     leptons_true,
@@ -302,8 +304,7 @@ if __name__ == '__main__':
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
-        if display:
-            display.draw()
+        display = False #only display first event in a loop
 
     def next():
         loop.process(loop.iEvent+1)
@@ -318,8 +319,9 @@ if __name__ == '__main__':
     
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
+    display = False
     if len(sys.argv)==2:
-        papas.display = True
+        display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -329,21 +331,15 @@ if __name__ == '__main__':
         print usage
         sys.exit(1)
             
-        
     loop = Looper( 'looper', config,
                    nEvents=10,
                    nPrint=1,
                    timeReport=True)
     
-    history = None
     for ana in loop.analyzers: 
-        if hasattr(ana, 'is_display'):
-            history = ana
-    #display = getattr(simulation, 'display', None) #discuss colin
-    display = getattr(history,'display', None) 
+        if hasattr(ana, 'display') and ana.display == True:
+            display = True # will display first event in a loop
     
-    if history: 
-        detector = history.detector
     if iev is not None:
         process(iev)
         pass

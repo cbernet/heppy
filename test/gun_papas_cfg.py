@@ -33,6 +33,7 @@ source = cfg.Analyzer(
     ptmin = 0,
     ptmax = 100,
     flat_pt = False,
+    papas = True
 )
 
 comp = cfg.Component(
@@ -63,6 +64,7 @@ papas_plot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
     plottype = "event",
+    detector = detector,
     to_file = True
 )
 
@@ -72,6 +74,7 @@ papas_subplot = cfg.Analyzer(
     projections = ['xy', 'yz'],
     plottype = "subgroups",
     num_subgroups = 2,
+    detector = detector,
     to_file = False
 )
 
