@@ -28,6 +28,10 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 import heppy.utils.pdebug
 
+# setting the event printout
+from heppy.framework.event import Event
+Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*']
+
 # definition of the collider
 from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
@@ -37,7 +41,7 @@ Collider.SQRTS = 240.
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
-        'ee_ZH_Zmumu_Hbb.root'
+        os.path.abspath('ee_ZH_Zmumu_Hbb.root')
     ]
 )
 selectedComponents = [comp]
@@ -219,7 +223,7 @@ sequence = cfg.Sequence(
     missing_energy,
     particles_not_zed,
     jets,
-    btag,
+#    btag,
     higgses,
     selection, 
     tree

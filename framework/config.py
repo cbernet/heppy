@@ -35,7 +35,6 @@ def printComps(comps, details=False):
     print '# components with files = ', nCompsWithFiles
     print '# jobs                  = ', nJobs
 
-
 def split(comps):
     '''takes a list of components, split the ones that need to be splitted, 
     and return a new (bigger) list'''
@@ -46,7 +45,16 @@ def split(comps):
 
     splitComps = []
     for comp in comps:
-        if hasattr( comp, 'splitFactor') and comp.splitFactor>1:
+        if hasattr( comp, 'fineSplitFactor') and comp.fineSplitFactor>1:
+            subchunks = range(comp.fineSplitFactor)
+            for ichunk, chunk in enumerate([(f,i) for f in comp.files for i in subchunks]):
+                newComp = copy.deepcopy(comp)
+                newComp.files = [chunk[0]]
+                newComp.fineSplit = ( chunk[1], comp.fineSplitFactor )
+                newComp.name = '{name}_Chunk{index}'.format(name=newComp.name,
+                                                       index=ichunk)
+                splitComps.append( newComp )
+        elif hasattr( comp, 'splitFactor') and comp.splitFactor>1:
             chunkSize = len(comp.files) / comp.splitFactor
             if len(comp.files) % comp.splitFactor:
                 chunkSize += 1
@@ -79,6 +87,33 @@ class CFG(object):
         all = [ header ]
         all.extend(varlines)
         return '\n'.join( all )
+
+    def clone(self, **kwargs):
+        '''Make a copy of this object, redefining (or adding) some parameters, just
+           like in the CMSSW python configuration files. 
+
+           For example, you can do
+              module1 = cfg.Analyzer(SomeClass, 
+                          param1 = value1, 
+                          param2 = value2, 
+                          param3 = value3, 
+                          ...)
+              module2 = module1.clone(
+                         param2 = othervalue,
+                         newparam = newvalue)
+           and module2 will inherit the configuration of module2 except for
+           the value of param2, and for having an extra newparam of value newvalue
+           (the latter may be useful if e.g. newparam were optional, and needed
+           only when param2 == othervalue)
+
+           Note that, just like in CMSSW, this is a shallow copy and not a deep copy,
+           i.e. if in the example above value1 were to be an object, them module1 and
+           module2 will share the same instance of value1, and not have two copies.
+        '''
+        other = copy.copy(self)
+        for k,v in kwargs.iteritems():
+            setattr(other, k, v)
+        return other
     
 class Analyzer( CFG ):
     '''Base analyzer configuration, see constructor'''
@@ -173,6 +208,12 @@ class Analyzer( CFG ):
                     self.__dict__['instance_label'] = self.instance_label
         return name 
 
+    def clone(self, **kwargs):
+        other = super(Analyzer, self).clone(**kwargs)
+        if 'class_object' in kwargs and 'name' not in kwargs:
+            other.name = other._build_name()
+        return other
+
     def __repr__(self):
         baserepr = super(Analyzer, self).__repr__()
         return ':'.join([baserepr, self.name])
@@ -193,7 +234,20 @@ class Service( CFG ):
                                self.class_object.__name__])
         name = '_'.join([class_name, self.instance_label])
         return name 
-   
+
+    def __setattr__(self, name, value):
+        '''You may decide to copy an existing analyzer and change
+        its instance_label. In that case, one must stay consistent.'''
+        self.__dict__[name] = value
+        if name == 'instance_label':
+            self.name = self._build_name()   
+
+    def clone(self, **kwargs):
+        other = super(Service, self).clone(**kwargs)
+        if 'class_object' in kwargs and 'name' not in kwargs:
+            other.name = other._build_name()
+        return other
+
 
 class Sequence( list ):
     '''A list with print functionalities.
@@ -231,14 +285,18 @@ class Component( CFG ):
     def __init__(self, name, files, tree_name=None, triggers=None, **kwargs):
         if isinstance(triggers, basestring):
             triggers = [triggers]
-        super(Component, self).__init__(files = files,
-                                        tree_name = tree_name,
-                                        triggers = triggers, **kwargs)
-        self.name = name
+        if type(files) == str:
+            files = sorted(glob.glob(files))
+        super( Component, self).__init__( name = name,
+                                          files = files,
+                                          tree_name = tree_name,
+                                          triggers = triggers, **kwargs)
+        self.name = name 
         self.dataset_entries = 0
         self.isData = False
         self.isMC = False
         self.isEmbed = False
+        
 
 
 class DataComponent( Component ):

@@ -12,7 +12,7 @@ import copy
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
-Event.print_patterns=['*jet*', 'sum*']
+Event.print_patterns=['sum*']
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -31,10 +31,9 @@ Collider.SQRTS = 91.
 
 # input definition
 import glob
-files = glob.glob(os.environ['HEPPY']+'/test/ee_Z_ddbar_*.root')
 ee_Z_ddbar = cfg.Component(
     'ee_Z_ddbar',
-    files = files 
+    files = ['ee_Z_ddbar.root'] 
     )
 ee_Z_ddbar.splitFactor = len(ee_Z_ddbar.files)
 
@@ -90,9 +89,9 @@ sequence = cfg.Sequence(
     source,
     # gen_particles_stable, 
     papas_sequence,
-    jet_tree_sequence('gen_particles_stable',
-                      'rec_particles',
-                      2, None),
+#    jet_tree_sequence('gen_particles_stable',
+#                      'rec_particles',
+#                      2, None),
     sum_particles,
     sum_gen, 
     zed_tree
