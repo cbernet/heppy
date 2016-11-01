@@ -4,18 +4,24 @@ from heppy.framework.event import Event
 
 class PapasEvent(Event):
     ''' Contains all the papas event data eg smeared tracks, merged ecal clusters, reconstructed particles etc
-        together with the history whcih descibes the linkages between the data
+        together with the history which descibes the linkages between the data
         The collections and history are required to match perfectly,
-        ie if in identifier is in the history it will be in one of the collections and vice versa
+        ie if an identifier is used in the history it must also be in one of the collections and vice versa
 
-        The collections dict object contains dicts, one dict per object type,
-        eg all smeared_ecals in the papasevent will be stored as one dict inside the collections.
+        The collections dict object itself contains dicts of each object type, 
+        eg the collections object might look something like:
+        collections = { 'et':true_ecals,  'ht':true_hcals, 'ts':smeared_tracks, 
+                         'pr' = reconstrcted_particles, 'br':reconstructed_blocks, ...}
+        where true_ecals is a dict of true ecals etc
         
-        The type_and_subtype is used to label the collections in the papasevent
+        Each object-type in the collections dict must be unique 
+        eg all smeared_ecals in the papasevent must be stored as one single dict inside the collections.
+        
+        The type_and_subtype seen above is used to label the collections in the papasevent
         it is a two letter code formed out of 'type' + 'subtype'
         For example
           'pr' is particle that has reconstructed subtype
-          'es' contains ecals that are smeared
+          'et' contains the true ecals 
 
         Type codes
                       e = ecal
@@ -31,60 +37,39 @@ class PapasEvent(Event):
              't' true
              's' simulated (particles)
                  smeared (tracks ecals hcals)
-                 split (blocks)
-                 
-        Usage:
-
-        papasevent.add_collection(true_ecals)
-        smeared_ecals=papasevent.get_collection('es')  
+                 split (blocks) 
     '''
     
-    def __init__(self):
-        super(PapasEvent, self).__init__(self)
+    def __init__(self, iEv):
+        super(PapasEvent, self).__init__(iEv)
         self.collections = dict()
         self.history = dict()
-        self.iEv = None
         
     def add_collection(self, collection):
         '''Add a new collection into the PapasEvent. The collection should contain only one object type
            and only one collection of each type should be stored in the PapasEvent        
         '''
-        first = True
-        collectiontype = None
-        #make sure everything is the same type
-        for id in collection.iterkeys():
-            if first:
-                collectiontype = Identifier.type_and_subtype(id)
-                if collectiontype in self.collections.keys():
-                    assert "Collection Type must be unique"
-                first = False
-            if collectiontype != Identifier.type_and_subtype(id):
-                assert "mixed types not allowed in a collection"
-        self.collections[collectiontype] = collection
+        #find all the type_and_subtypes in the incoming collection
+        types = set(map(Identifier.type_and_subtype, collection.keys()))
+        if len(types) > 1:
+            raise ValueError('More than one type')
+        the_type = types.pop()
+        if the_type in self.collections:
+            raise ValueError('type already present')
+        self.collections[the_type] = collection        
     
     def get_collection(self, type_and_subtype):
         return self.collections[type_and_subtype]
 
-    def get_object(self, id):
-        '''get an object corresponding to a unique id'''
-        collection = self.get_collection(Identifier.type_and_subtype(id))
-        if collection.has_key(id):      
-            return self.collections[Identifier.type_and_subtype(id)][id]
-        assert "id was not found in collection"
+    def get_object(self, uid):
+        '''get an object corresponding to a unique uid'''
+        #I am still not sure about this
+        #would it be better to let it fail when asking for something that does not exist like this:
+        #    return self.get_collections(Identifier.type_and_subtype(uid))[uid]
+        #
+        collection = self.collections.get(Identifier.type_and_subtype(uid), None)
+        if collection:
+            return collection.get(uid, None)
+        return None
+
     
-    def get_objects(self, ids, type_and_subtype):
-        ''' ids must all be of type type_and_subtype
-        get a dict of objects of the type_and_subtype '''
-        first = True
-        collectiontype = None        
-        for id in ids:
-            if first:
-                collectiontype = Identifier.type_and_subtype(id)
-                collection = self.get_collection(type_and_subtype)
-                first = False
-            if not collection.find_key(id):
-                assert "id not found in collection"  
-            if collectiontype != Identifier.type_and_subtype(id):
-                assert "mixed types not allowed in a collection"        
-  
-        return collection[id in ids]    

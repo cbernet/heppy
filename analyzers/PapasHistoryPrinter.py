@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.pfalgo.historyhelper import HistoryHelper
+from heppy.papas.data.historyhelper import HistoryHelper
 
 
 class PapasHistoryPrinter(Analyzer):
@@ -50,7 +50,3 @@ class PapasHistoryPrinter(Analyzer):
             if hasattr(self.cfg_ana, "num_subgroups"):
                 num_subgroups = self.cfg_ana.num_subgroups            
             print self.hist.summary_string_subgroups(num_subgroups)
-
-    
-
-    

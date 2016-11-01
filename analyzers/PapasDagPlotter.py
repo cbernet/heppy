@@ -65,3 +65,4 @@ class PapasDAGPlotter(Analyzer):
                 num_subgroups = self.cfg_ana.num_subgroups            
             self.histplot.plot_dag_subgroups(num_subgroups)
 
+

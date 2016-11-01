@@ -1,6 +1,6 @@
 from heppy.papas.data.identifier import Identifier
 import pydot
-from heppy.papas.pfalgo.historyhelper import HistoryHelper
+from heppy.papas.data.historyhelper import HistoryHelper
 from subprocess import call
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -14,13 +14,13 @@ class HistoryPlotter(object):
            Usage:
            histplot = HistoryPlotter(papapasevent, detector)
            histplot.plot_dag_event()     #write dag event plot to file   
-           histplot.plot_dag_subgroups(num_subgroups=3 ) #write dag subevents to file
+           histplot.plot_dag_subgroups(num_subgroups=3 ) #write dag subevent plots to file
 
         '''        
     def __init__(self, papasevent, directory):
         '''
         * papasevent is a PapasEvent
-        * detector
+        * diretory is where the output plots go
         '''
         self.papasevent = papasevent  
         self.helper = HistoryHelper(papasevent)
@@ -38,7 +38,7 @@ class HistoryPlotter(object):
     def short_info(self, node):
         '''used to label plotted dag nodes'''
         obj=self.object(node)
-        return Identifier.pretty(obj.uniqueid) + "\n " +obj.shortinfo()        
+        return Identifier.pretty(obj.uniqueid) + "\n " +obj.short_info()        
        
     def color(self, node):
         '''used to color dag nodes'''
@@ -62,7 +62,7 @@ class HistoryPlotter(object):
             ids.append( Identifier.pretty(subgraphs[i][0]))
         lists = [ ids ,["simulated", "reconstructed"]]
         result = ['_'.join(map(str,x)) for x in product(*lists)]   
-        self.display = Display(self.projections, pads=result)
+        self.display = Display(self.projections, subscreens=result)
         self.display.register(self.gdetector, layer=0, clearable=False)             
         
         for i in range(0, 8):     

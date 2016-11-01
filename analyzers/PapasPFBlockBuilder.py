@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-from heppy.papas.pfalgo.papasevent import PapasEvent
+from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.pfalgo.distance  import Distance
 
 

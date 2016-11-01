@@ -79,6 +79,7 @@ from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
 papas_plot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
+    detector = detector,
     plottype = "event",
     to_file = True
 )
@@ -87,6 +88,7 @@ from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
 papas_subplot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
+    detector = detector,
     plottype = "subgroups",
     num_subgroups = 4,
     to_file = True
@@ -260,9 +262,9 @@ sequence = cfg.Sequence(
     papas_sequence,
     #papas_print_history, 
     papas_print_history_event, 
-    papas_plot, 
+    #papas_plot, 
     #papas_subplot,
-    papas_dag_plot, 
+    #papas_dag_plot, 
     #papas_dag_subgroups, 
     leptons_true,
     iso_leptons,

@@ -5,21 +5,30 @@ import math
 from heppy.papas.path import Helix, StraightLine, Info
 
 class Blob(object):
+    ''' Blob is used to plot clusters on an event diagram
+    '''
     def __init__(self, cluster, grey=False):
+        ''' cluster = a cluster object
+            grey = True/False an option to plot the cluster all in grey
+                   used for comparing reconstructed and simulated particles
+            '''
         self.cluster = cluster
         pos = cluster.position
         radius = cluster.size()
         thetaphiradius = cluster.angular_size()
-        color = 7
-        innercolor=1
+        #color is for the circle showing the cluster resolution
+        color = 7 
+        #innercolor is for the the shaded energy scaled cluster sie
+        innercolor=1 
       
         if cluster.particle:
             if cluster.particle.pdgid() == 22 or cluster.particle.pdgid() == 11:
                 color = 2
             else:
                 color = 4
-        if grey:
-            color = 17
+        if grey: #option that can be used to compare reconstructed and simulated
+            #if set the blob will be in grey
+            color = 17 #grey!
             innercolor = 17
         if color == 1:
             pass
@@ -71,7 +80,7 @@ class Blob(object):
         
 
 class GTrajectory(object):
-
+    #NB there are newer alternative versions of this class in trajectories.py
     draw_smeared_clusters = True
     
     def __init__(self, description, linestyle=1, linecolor=1):
@@ -123,6 +132,7 @@ class GTrajectory(object):
             raise ValueError('implement drawing for projection ' + projection )
             
 class GStraightTrajectory(GTrajectory):
+    #NB there are newer alternative versions of this class in trajectories.py
     def __init__(self, description):
         super(GStraightTrajectory, self).__init__(description,
                                                   linestyle=2, linecolor=1)
@@ -131,7 +141,8 @@ class GStraightTrajectory(GTrajectory):
         super(GStraightTrajectory, self).draw(projection, 'l')
    
 
-class GHelixTrajectory(GTrajectory):    
+class GHelixTrajectory(GTrajectory):   
+    #NB there are newer alternative versions of this class in trajectories.py
     def __init__(self, description):
         super(GHelixTrajectory, self).__init__(description)
         helix = description.path
@@ -164,7 +175,6 @@ class GHelixTrajectory(GTrajectory):
             set_graph_style(self.graphline_yz)
             set_graph_style(self.graphline_thetaphi)
 
-
     def draw(self, projection):
         if projection == 'xy':
             # self.helix_xy.Draw("onlysame")
@@ -178,7 +188,3 @@ class GHelixTrajectory(GTrajectory):
         else:
             raise ValueError('implement drawing for projection ' + projection )
         super(GHelixTrajectory, self).draw(projection)
-        
-
-
-  

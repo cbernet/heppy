@@ -4,7 +4,7 @@ import shelve
 from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
-from heppy.papas.pfalgo.papasevent import  PapasEvent
+from heppy.papas.data.papasevent import  PapasEvent
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 import heppy.papas.multiple_scattering as mscat

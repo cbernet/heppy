@@ -1,6 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
-from heppy.papas.pfalgo.papasevent import PapasEvent
+from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -46,18 +46,14 @@ class PapasSim(Analyzer):
         event must contain
           gen_particles
         event will gain
-          papasevent - containing collections of simulated objects and history
-          simparticles - list of simulated particle
-        
+          papasevent - simulated objects (simulated particles, tracks, and clusters) and history
+          simparticles - simulated particles of the papasevent, as a list. 
     '''
 
     def __init__(self, *args, **kwargs):
         super(PapasSim, self).__init__(*args, **kwargs)
         self.simulator = Simulator(self.cfg_ana.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        #self.is_display = self.cfg_ana.display
-        #if self.is_display:
-            #self.init_display()
 
     def init_display(self):
         self.display = Display(['xy', 'yz'])
@@ -68,23 +64,18 @@ class PapasSim(Analyzer):
     def process(self, event):
         
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
-        papasevent = PapasEvent()
+        papasevent = PapasEvent(event.iEv)
         setattr(event, "papasevent", papasevent)
-        setattr(event, "detector", self.cfg_ana.detector)
-        #if self.is_display:
-        #    self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        
         try:
             self.simulator.simulate(gen_particles)
         except (PropagationError, SimulationError) as err:
             self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
         pfsim_particles = self.simulator.ptcs
-            
-        simparticles = sorted( pfsim_particles,
-                               key = lambda ptc: ptc.e(), reverse=True)     
+        simparticles = sorted(pfsim_particles,
+                               key=lambda ptc: ptc.e(), reverse=True)     
         setattr(event, self.simname, simparticles)
     
         #create dicts of clusters, particles etc (todo?:move a lot of this into simulator)
@@ -92,11 +83,11 @@ class PapasSim(Analyzer):
         
         #todo move to separate analyzer
         self.merge_clusters(papasevent) #add to simulator class? 
-        
+        #useful when producing outputs from a papasevent
         papasevent.iEv = event.iEv
     
     def build_collections_and_history(self, papasevent, sim_particles):  
-        #this should be integrated into the simulator in the future
+        #todo this should be integrated into the simulator in the future
         simulated_particles = dict()
         gen_stable_particles = dict()
         tracks = dict()
@@ -110,19 +101,19 @@ class PapasSim(Analyzer):
         
         history =  papasevent.history
         for ptc in sim_particles:
-            id = ptc.uniqueid
-            simulated_particles[id] = ptc
-            history[id] = Node(id)
+            uid = ptc.uniqueid
+            simulated_particles[uid] = ptc
+            history[uid] = Node(uid)
             gen_id = ptc.gen_ptc.uniqueid
             gen_stable_particles[gen_id] = ptc.gen_ptc
             history[gen_id] = Node(gen_id)
-            history[gen_id].add_child(history[id])
+            history[gen_id].add_child(history[uid])
     
             if ptc.track:
                 track_id = ptc.track.uniqueid
                 true_tracks[track_id] = ptc.track
                 history[track_id] = Node(track_id)
-                history[id].add_child(history[track_id])
+                history[uid].add_child(history[track_id])
                 if ptc.track_smeared:
                     smtrack_id = ptc.track_smeared.uniqueid
                     smeared_tracks[smtrack_id] = ptc.track_smeared
@@ -135,9 +126,9 @@ class PapasSim(Analyzer):
                     elif Identifier.get_type(clust.uniqueid) == Identifier.PFOBJECTTYPE.HCALCLUSTER:
                         true_hcals[clust.uniqueid] = clust
                     else:
-                        assert false                    
+                        assert(False)                    
                     history[clust.uniqueid] = Node(clust.uniqueid)
-                    history[id].add_child(history[clust.uniqueid])  
+                    history[uid].add_child(history[clust.uniqueid])  
     
                     if len(ptc.clusters_smeared) > 0 :  #need to put in link between true and smeared cluster 
                         for key1, smclust in ptc.clusters_smeared.iteritems():

@@ -47,38 +47,42 @@ class Event(object):
         self.setup = setup
         self.eventWeight = eventWeight
 
-    def _get_stripped_attrs(self, subname=""):
-        selected_attrs = copy.copy(self.__dict__)
-        selected_attrs.pop('setup')
+    def _get_print_attrs(self, subname=""):
+        '''returns a dict of printable information of an event
+        arguments
+        * subname is used when called recursively and is the name of the parent object'''
+        selected_attrs = copy.copy(self.__dict__) #initial selection of what we can print
+        selected_attrs.pop('setup') #get rid of some bits
         selected_attrs.pop('input')
-        stripped_attrs = dict()
-        new_attrs = dict()
-        event_names = []
+        matched_attrs = dict() #this applies pattern matching to obtain a subset of selected_attrs
+        print_attrs=dict() #ready for printing
+        
+        #first of all check for matches with print patterns
         for name, value in selected_attrs.iteritems():
             if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]) \
               or any([fnmatch.fnmatch(subname, pattern) for pattern in self.__class__.print_patterns]):
-                stripped_attrs[subname + name] = value
-        for name, value in stripped_attrs.iteritems():
-            if isinstance(value, Event): # deal with an Event within the Event
-                event_names.append(name) 
-                new_attrs.update(value._get_stripped_attrs(name + ": "))
-            else: #add in elements of the event but stop after n elements
-                new_attrs.update(self._first_n_elements(name, value))
+                matched_attrs[subname + name] = value
+        #now fill out lists and dicts and  look for any nested Events (such as a PapasEvent)
+        for name, value in matched_attrs.iteritems():
+            if isinstance(value, Event): # deal with an Event within the Event 
+                print_attrs.update(value._get_print_attrs(name + ": ")) #recursive call
+            else: #print this item (at most n elements of it)
+                print_attrs.update(self._print_elements(name, value))
+        return print_attrs
 
-        stripped_attrs.update(new_attrs) 
-        for name in event_names:
-            del stripped_attrs[name]
-        return stripped_attrs
-
-    def _first_n_elements(self,name,value):
-        #recursive, will return a dict (limited to print_nstrip elements)
-        #Note this function allows for dicts of dicts or lists
-        #contents of lists are not handled recursively
+    def _print_elements(self, name, value):
+        '''returns a dict ready for printing (limited to print_nstrip elements)
+        Note this function allows for lists or for dicts of dicts
+        contents of lists are not handled recursively
+        arguments 
+        * name = name of attribute
+        * value = its value
+        '''
         newdata=dict()
         if hasattr(value, '__len__') and isinstance(value, collections.Mapping): #dict:      
             subdict = dict()
             for newname, entry in value.iteritems(): #allow recursion in case this dict contains a dict
-                subdict.update(self._first_n_elements(newname, entry)) 
+                subdict.update(self._print_elements(newname, entry)) 
             if len(value) > self.__class__.print_nstrip+1: #use only part of the dict
                 entries = [entry for  entry in subdict.iteritems()]
                 entries = entries[:self.__class__.print_nstrip]
@@ -95,7 +99,10 @@ class Event(object):
         return newdata    
 
     def __str__(self):
+        #prints an event showing at most print_nstrip elements of lists and dicts
+        # if an event contains an event (such as a papasevent)
+        # it will print the papasevent in the same way
         header = '{type}: {iEv}'.format(type=self.__class__.__name__, iEv=self.iEv)
-        stripped_attrs = self._get_stripped_attrs() #allows other events such as papasevent to also be printed like an Event
-        contents = pprint.pformat(stripped_attrs, indent=4)
+        print_attrs = self._get_print_attrs()
+        contents = pprint.pformat(print_attrs, indent=4)
         return '\n'.join([header, contents])

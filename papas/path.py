@@ -52,41 +52,41 @@ class StraightLine(Path):
 
     def position(self, cylinder, dummy=None):
          #this code was in propapagator class   
-            theta = self.udir.Theta()
-            if abs(self.origin.Z()) > cylinder.z or \
-               self.origin.Perp() > cylinder.rad:
-                return # particle created outside the cylinder
-            if self.udir.Z(): 
-                destz = cylinder.z if self.udir.Z() > 0. else -cylinder.z
-                length = (destz - self.origin.Z())/math.cos(theta)
-                if length < 0:
-                    print 'HERE!!'
-                    import pdb; pdb.set_trace()
-                    raise PropagationError(particle)
-                destination = self.origin + self.udir * length
-                rdest = destination.Perp()
-                if rdest > cylinder.rad:
-                    udirxy = TVector3(self.udir.X(), self.udir.Y(), 0.)
-                    originxy = TVector3(self.origin.X(), self.origin.Y(), 0.)
-                    # solve 2nd degree equation for intersection
-                    # between the straight line and the cylinder
-                    # in the xy plane to get k,
-                    # the propagation length
-                    a = udirxy.Mag2()
-                    b= 2*udirxy.Dot(originxy)
-                    c= originxy.Mag2()-cylinder.rad**2
-                    delta = b**2 - 4*a*c
-                    if delta<0:
-                        return 
-                        # raise PropagationError(particle)
-                    km = (-b - math.sqrt(delta))/(2*a)
-                    # positive propagation -> correct solution.
-                    kp = (-b + math.sqrt(delta))/(2*a)
-                    # print delta, km, kp
-                    destination = self.origin + self.udir * kp  
-            return destination
-            #TODO deal with Z == 0 
-            #TODO deal with overlapping cylinders
+        theta = self.udir.Theta()
+        if abs(self.origin.Z()) > cylinder.z or \
+           self.origin.Perp() > cylinder.rad:
+            return # particle created outside the cylinder
+        if self.udir.Z(): 
+            destz = cylinder.z if self.udir.Z() > 0. else -cylinder.z
+            length = (destz - self.origin.Z())/math.cos(theta)
+            if length < 0:
+                print 'HERE!!'
+                import pdb; pdb.set_trace()
+                raise PropagationError(particle)
+            destination = self.origin + self.udir * length
+            rdest = destination.Perp()
+            if rdest > cylinder.rad:
+                udirxy = TVector3(self.udir.X(), self.udir.Y(), 0.)
+                originxy = TVector3(self.origin.X(), self.origin.Y(), 0.)
+                # solve 2nd degree equation for intersection
+                # between the straight line and the cylinder
+                # in the xy plane to get k,
+                # the propagation length
+                a = udirxy.Mag2()
+                b= 2*udirxy.Dot(originxy)
+                c= originxy.Mag2()-cylinder.rad**2
+                delta = b**2 - 4*a*c
+                if delta<0:
+                    return 
+                    # raise PropagationError(particle)
+                km = (-b - math.sqrt(delta))/(2*a)
+                # positive propagation -> correct solution.
+                kp = (-b + math.sqrt(delta))/(2*a)
+                # print delta, km, kp
+                destination = self.origin + self.udir * kp  
+        return destination
+        #TODO deal with Z == 0 
+        #TODO deal with overlapping cylinders
                    
     
     

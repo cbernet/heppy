@@ -39,10 +39,10 @@ class PFObject(object):
         return ""
 
     def __str__(self):
-        return '{classname}: {pretty:6}:{id}: {info}'.format(
+        return '{classname}: {pretty:6}:{uid}: {info}'.format(
             classname=self.__class__.__name__,
             pretty=Identifier.pretty(self.uniqueid),
-            id=self.uniqueid,
+            uid=self.uniqueid,
             info=self.info())
 
 
@@ -68,7 +68,7 @@ class Cluster(PFObject):
         elif layer == 'hcal_in':
             super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype)
         else :
-            assert False
+            assert (False)
         self.position = position
         self.set_energy(energy)
         self.set_size(float(size_m))
@@ -154,7 +154,7 @@ class Cluster(PFObject):
         position *= denom
         self.position = position
         self.energy = energy
-        assert len(other.subclusters) == 1
+        assert (len(other.subclusters) == 1)
         self.subclusters.extend(other.subclusters)
 
         #todo recalculate the angular size
@@ -184,7 +184,7 @@ class Cluster(PFObject):
             sub=subclusterstr
         )
 
-    def shortinfo(self):
+    def short_info(self):
         return '{e:.1f}'.format(
             e = self.energy,
         )     
@@ -249,7 +249,7 @@ class Track(PFObject):
             phi=self.p3.Phi()
         )
 
-    def shortinfo(self):
+    def short_info(self):
         return '{e:.1f}'.format(
             e = self.energy,
         )     
@@ -294,7 +294,7 @@ class Particle(BaseParticle):
             if self.q():
                 self.track = Track(self.p3(), self.q(), self.path)
     
-    def shortinfo(self):
+    def short_info(self):
         tmp = '{pdgid:} ({e:.1f})'
         #needed for now to get match with C++
         pid=self.pdgid()
@@ -312,9 +312,9 @@ class Particle(BaseParticle):
 
     def __str__(self):
         mainstr = super(Particle, self).__str__()
-        idstr = '{pretty:6}:{id}'.format(
+        idstr = '{pretty:6}:{uid}'.format(
             pretty=Identifier.pretty(self.uniqueid),
-            id=self.uniqueid)
+            uid=self.uniqueid)
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)

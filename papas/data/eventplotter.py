@@ -1,6 +1,6 @@
 from heppy.papas.data.identifier import Identifier
 import pydot
-from heppy.papas.pfalgo.historyhelper import HistoryHelper
+from heppy.papas.data.historyhelper import HistoryHelper
 from subprocess import call
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
@@ -36,7 +36,7 @@ class EventPlotter(object):
         #double paned Display
         #make this a choice via parameters somehow
         if not self.initialized:      
-            self.display = Display(self.projections, pads=["simulated", "reconstructed"])
+            self.display = Display(self.projections, subscreens=["simulated", "reconstructed"])
             self.gdetector = GDetector(self.detector)
             self.display.register(self.gdetector, layer=0, clearable=False)  
             self.initialized = True 
@@ -133,7 +133,7 @@ class EventPlotter(object):
             ids.append( Identifier.pretty(subgraphs[i][0]))
         lists = [ ids ,["simulated", "reconstructed"]]
         result = ['_'.join(map(str,x)) for x in product(*lists)]   
-        self.display = Display(self.projections, pads=result)
+        self.display = Display(self.projections, subscreens=result)
         self.display.register(self.gdetector, layer=0, clearable=False)             
         
         for i in range(0, 8):     

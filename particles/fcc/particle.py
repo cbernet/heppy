@@ -33,7 +33,7 @@ class Particle(BaseParticle, POD):
                 setattr(newone, attr, copy.deepcopy(val, memodict))
         return newone
 
-    def shortinfo(self):
+    def short_info(self):
         tmp = '{pdgid:} ({e:.1f})'
         #needed for now to get match with C++
         pid=self.pdgid()      
@@ -47,9 +47,9 @@ class Particle(BaseParticle, POD):
     
     def __str__(self):
         mainstr =  super(Particle, self).__str__()
-        idstr = '{pretty:6}:{id}'.format(
+        idstr = '{pretty:6}:{uid}'.format(
             pretty = Identifier.pretty(self.uniqueid),
-            id = self.uniqueid)
+            uid = self.uniqueid)
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)     

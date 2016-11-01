@@ -5,7 +5,7 @@ from heppy.papas.graphtools.DAG import Node
 class PFBlockBuilder(BlockBuilder):
     ''' PFBlockBuilder creates edges to describe distances between particle flow elements 
         taken from a papasevent (clusters,tracks etc)
-        It uses the edges to construct a set of blocks
+        It uses the edges to construct a set of disconnected blocks
         Each element will end up in one (and only one block)
         Blocks retain information of the elements and the distances between elements
         The blocks can then be used for future particle reconstruction

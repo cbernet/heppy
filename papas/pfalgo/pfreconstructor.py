@@ -1,12 +1,13 @@
 import math
+import copy
 from heppy.papas.data.identifier import Identifier
+from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.pfobjects import Particle
-
 from ROOT import TVector3, TLorentzVector
 
 #Discuss with colin self.locked vs ecal.locked
@@ -68,8 +69,7 @@ class PFReconstructor(object):
         self.log = logger
 
     def reconstruct(self, papasevent, block_type_and_subtype):
-        '''papasevent: PapasEvent containing collections of
-                            particle flow objects 
+        '''papasevent: PapasEvent containing collections of particle flow objects 
            block_type_and_subtype: which blocks collection to use'''
         
         self.unused = []
@@ -82,8 +82,6 @@ class PFReconstructor(object):
         # then recalculate the blocks
         for blockid in sorted(blocks.keys()): 
             newblocks = self.simplify_blocks(blocks[blockid], self.papasevent.history)
-            if len(newblocks) > 1:
-                pass
             self.splitblocks.update(newblocks)      
     
         #reconstruct each of the resulting blocks        
@@ -91,8 +89,7 @@ class PFReconstructor(object):
             sblock = self.splitblocks[b]
             pdebugger.info('Processing {}'.format(sblock))
             self.reconstruct_block(sblock)
-            self.unused.extend([uid for uid in sblock.element_uniqueids if not self.locked[uid]])
-                
+
         #check if anything is unused
         if len(self.unused):
             self.log.warning(str(self.unused))
@@ -103,7 +100,7 @@ class PFReconstructor(object):
         ''' Block: a block which contains list of element ids and set of edges that connect them
             history_nodes: optional dictionary of Nodes with element identifiers in each node
         
-        returns None or a dictionary of new split blocks
+        returns a dictionary of new split blocks
             
         The goal is to remove, if needed, some links from the block so that each track links to 
         at most one hcal within a block. In some cases this may separate a block into smaller
@@ -112,27 +109,26 @@ class PFReconstructor(object):
          have the tracks and cluster elements as parents, and also the original block as a parent
         '''
         ids = block.element_uniqueids
-        to_unlink = []
-        if len(ids) > 1 :    #no links to remove
-            # work out any links that need to be removed    
-            #   - for tracks unink all hcals except the closest hcal
-            #   - for ecals unlink hcals        
+        #create a copy of the edges and unlink some of these edges if needed
+        newedges = copy.deepcopy(block.edges)
+        if len(ids) > 1 :   
             for uid in ids :
                 if Identifier.is_track(uid):
-                    linked = block.linked_edges(uid, "hcal_track") # NB already sorted from small to large distance
-                    if linked != None and len(linked) > 1 :
+                    # for tracks unlink all hcals except the closest hcal
+                    linked_ids = block.linked_ids(uid, "hcal_track") # NB already sorted from small to large distance
+                    if linked_ids != None and len(linked_ids) > 1:
                         first_hcal = True
-                        for elem in linked:
+                        for id2 in linked_ids:
+                            newedge = newedges[Edge.make_key(uid, id2)]
                             if first_hcal:
-                                first_dist=elem.distance
+                                first_dist = newedge.distance
                                 first_hcal = False
                             else:
-                                if elem.distance == first_dist:
+                                if newedge.distance == first_dist:
                                     pass 
-                                to_unlink.append(elem)
-        
-        #if there is something to unlink then use the BlockSplitter              
-        splitblocks = BlockSplitter(block, to_unlink, history_nodes, subtype='s').blocks
+                                newedge.linked = False 
+        #create new block(s)               
+        splitblocks = BlockSplitter(block.uniqueid, ids, newedges, history_nodes, subtype='s').blocks
         return splitblocks
             
     def reconstruct_block(self, block):
@@ -143,7 +139,6 @@ class PFReconstructor(object):
         self.locked = dict()
         for uid in ids:
             self.locked[uid] = False
-        
         if len(ids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
             uid = ids[0]
             parent_ids = [block.uniqueid, uid]
@@ -155,7 +150,7 @@ class PFReconstructor(object):
                 self.insert_particle(parent_ids, self.reconstruct_track(self.papasevent.get_object(uid)))
                 # ask Colin about energy balance - what happened to the associated clusters that one would expect?
         else: #TODO
-            for uid in sorted(ids) : #newsort
+            for uid in sorted(ids) : #reconstruct all hcals first
                 if Identifier.is_hcal(uid):
                     self.reconstruct_hcal(block, uid)
             for uid in sorted(ids) : #newsort
@@ -165,12 +160,12 @@ class PFReconstructor(object):
                 # ELECTRONS TO BE DEALT WITH.
                     parent_ids = [block.uniqueid, uid]
                     self.insert_particle(parent_ids, self.reconstruct_track(self.papasevent.get_object(uid)))
-                    
                     # tracks possibly linked to ecal->locking cluster
                     for idlink in block.linked_ids(uid, "ecal_track"):
                         #ask colin what happened to possible photons here:
                         self.locked[idlink] = True
                         #TODO add in extra photonsbut decide where they should go?
+        self.unused.extend([uid for uid in block.element_uniqueids if not self.locked[uid]])       
        
     def insert_particle(self, parent_ids, newparticle):
         ''' The new particle will be inserted into the history_nodes (if present).
@@ -183,11 +178,9 @@ class PFReconstructor(object):
         if newparticle:
             newid = newparticle.uniqueid
             self.particles[newid] = newparticle            
-            
             #check if history nodes exists
-            if self.papasevent.history == None:
+            if self.papasevent.history is None:
                 return
-            
             #find or make a node for the particle            
             if newid  in self.papasevent.history :
                 particlenode = self.papasevent.history[newid]
@@ -238,14 +231,12 @@ class PFReconstructor(object):
               has hcals
                 -> each hcal is treated using rules above
         '''
-        
         # hcal used to make ecal_in has a couple of possible issues
         tracks = []
         ecals = []
         hcal = self.papasevent.get_object(hcalid)
-        
         assert (len(block.linked_ids(hcalid, "hcal_hcal")) == 0)  
- 
+
         trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
         for trackid in trackids:
             tracks.append(self.papasevent.get_object(trackid))
@@ -296,7 +287,7 @@ class PFReconstructor(object):
                     # Make a photon from the ecal energy
                     # We make only one photon using only the combined ecal energies
                     parent_ids = [block.uniqueid] + [ecal.uniqueid for ecal in ecals]
-                    self.insert_particle(parent_ids, self.reconstruct_cluster(hcal, 'ecal_in',excess))
+                    self.insert_particle(parent_ids, self.reconstruct_cluster(hcal, 'ecal_in', excess))
                     
                 else: # approx means that hcal energy>track energies so we must have a neutral hadron
                     #excess-ecal_energy is approximately hcal energy  - track energies
@@ -315,11 +306,10 @@ class PFReconstructor(object):
               # note that hcal-ecal links have been removed so hcal should only be linked to 
               # other hcals
             parent_ids = [block.uniqueid, hcalid]     
-            self.insert_particle(parent_ids,  self.reconstruct_cluster(hcal, 'hcal_in'))
-            
+            self.insert_particle(parent_ids,  self.reconstruct_cluster(hcal, 'hcal_in'))  
         self.locked[hcalid] = True
           
-    def reconstruct_cluster(self, cluster, layer, energy = None, vertex = None):
+    def reconstruct_cluster(self, cluster, layer, energy=None, vertex=None):
         '''construct a photon if it is an ecal
            construct a neutral hadron if it is an hcal
         '''        
@@ -363,19 +353,17 @@ class PFReconstructor(object):
         p4 = TLorentzVector()
         p4.SetVectM(track.p3, mass)
         particle = Particle(p4, vertex, charge, pdg_id, subtype='r')
-        
         path = StraightLine(p4, vertex)
         if abs(charge) > 0.5:
             path = Helix(self.detector.elements['field'].magnitude, charge, p4, vertex)
         particle.set_path(path)
-        #particle.clusters = clusters
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle, track)))
         return particle
 
     def __str__(self):
         theStr = ['New Rec Particles:']
-        theStr.extend( map(str, self.particles.itervalues()))
+        theStr.extend(map(str, self.particles.itervalues()))
         theStr.append('Unused:')
         if len(self.unused) == 0:
             theStr.append('None')

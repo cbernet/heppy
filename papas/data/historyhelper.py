@@ -44,14 +44,14 @@ class HistoryHelper(object):
         '''
         return self.history.keys()
     
-    def get_linked_ids(self, id, direction="undirected"):
+    def get_linked_ids(self, uid, direction="undirected"):
         '''
-        returns all ids linked to a given id
+        returns all ids linked to a given uid
         arguments:
-            id = unique identifier
+            uid = unique identifier
             direction = parents/children/undirected
         '''
-        BFS = BreadthFirstSearchIterative(self.history[id], direction)
+        BFS = BreadthFirstSearchIterative(self.history[uid], direction)
         return [v.get_value() for v in BFS.result] 
     
     def id_from_pretty(self, pretty):
@@ -59,16 +59,16 @@ class HistoryHelper(object):
             Not super efficient but OK for occasional use
             eg uid = self.id_from_pretty('et103')
         '''
-        for id in self.history.keys():
-            if Identifier.pretty(id) == pretty:
-                return id
+        for uid in self.history.keys():
+            if Identifier.pretty(uid) == pretty:
+                return uid
         return None
     
     def filter_ids(self, ids, type_and_subtype):
         ''' returns the subset of ids which have a type_and_subtype that matchs the type_and_subtype argument
             eg merged_ecal_ids = filter_ids(ids, 'em')
         '''
-        return [id for id in ids if Identifier.type_and_subtype(id) == type_and_subtype]
+        return [uid for uid in ids if Identifier.type_and_subtype(uid) == type_and_subtype]
     
     #def get_collection(self, type_and_subtype):
     #    '''returns an entire collection of the given type_and_subtype
@@ -82,20 +82,20 @@ class HistoryHelper(object):
         maindict = self.papasevent.get_collection(type_and_subtype)
         fids = self.filter_ids(ids, type_and_subtype) 
         if len(fids):
-            return { id: maindict[id] for id in fids }
+            return { uid: maindict[uid] for uid in fids }
         else:
             return dict()
         
-    def get_linked_collection(self, id, type_and_subtype, direction="undirected"):
-        '''Get all ids that are linked to the id and have the required type_and_subtype
+    def get_linked_collection(self, uid, type_and_subtype, direction="undirected"):
+        '''Get all ids that are linked to the uid and have the required type_and_subtype
          
         arguments:
-        id  = unique identifier
+        uid  = unique identifier
         type_and_subtype = type of object (eg 'es')
         direction = "undirected"/"parents"/"children"
     
         '''
-        ids = self.get_linked_ids(id, direction)
+        ids = self.get_linked_ids(uid, direction)
         return self.get_collection(ids, type_and_subtype)   
     
     def summary_string_ids(self, ids, type_and_subtypes = ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr'], 
@@ -152,8 +152,8 @@ class HistoryHelper(object):
         (3) Given a reconstructed particle, what simulated particles did it derive from?          
         eg generated charged hadron -> reconstructed photon + neutral hadron'''
         #question 2
-        for id, gen_particle in self.papasevent.get_collection('pg').iteritems():
-            all_linked_ids = self.get_linked_ids(id) 
+        for uid, gen_particle in self.papasevent.get_collection('pg').iteritems():
+            all_linked_ids = self.get_linked_ids(uid) 
             rec_particles = self.get_collection(all_linked_ids, 'pr')
             gen_particles = self.get_collection(all_linked_ids, 'pg') #linked gen particles
             print self.summary_string_ids(all_linked_ids)
