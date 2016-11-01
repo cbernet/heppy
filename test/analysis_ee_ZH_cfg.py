@@ -12,6 +12,7 @@ import os
 import copy
 import heppy.framework.config as cfg
 import heppy.utils.pdebug
+from heppy.papas.data.identifier import Identifier
 
 import logging
 # next 2 lines necessary to deal with reimports from ipython
@@ -301,6 +302,7 @@ if __name__ == '__main__':
     random.seed(0xdeadbeef)
 
     def process(iev=None):
+        Identifier.reset()
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)

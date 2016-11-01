@@ -23,7 +23,7 @@ class PFBlockBuilder(BlockBuilder):
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self, papasevent, uniqueids, ruler, subtype='r'):
+    def __init__(self, papasevent, uniqueids, ruler, subtype = 'r'):
         '''
             papasevent a PapasEvent (see above)            
             uniqueids list of which ids from papasevent to build blocks out of
@@ -34,7 +34,7 @@ class PFBlockBuilder(BlockBuilder):
                     link_type = 'ecal_ecal', 'ecal_track' etc
                     is_link = true/false
                     distance = float
-            subtype say which subtype to use when creating new blocks eg 'r' reconstructed, 's' split
+            subtype says which identifier subtype to use when creating new blocks eg 'r' reconstructed, 's' split
         '''
         uniqueids = sorted(uniqueids)
         self.papasevent = papasevent
@@ -52,7 +52,7 @@ class PFBlockBuilder(BlockBuilder):
                     edges[edge.key] = edge
 
         #use the underlying BlockBuilder to construct the blocks        
-        super(PFBlockBuilder, self).__init__(uniqueids, edges, self.papasevent.history, subtype=subtype)
+        super(PFBlockBuilder, self).__init__(uniqueids, edges, subtype, self.papasevent.history)
 
     def _make_edge(self, id1, id2, ruler):
         ''' id1, id2 are the unique ids of the two items
@@ -69,6 +69,7 @@ class PFBlockBuilder(BlockBuilder):
         #find the original items and pass to the ruler to get the distance info
         obj1 = self.papasevent.get_object(id1)
         obj2 = self.papasevent.get_object(id2)
+        assert(obj1 and obj2 )
         link_type, is_linked, distance = ruler(obj1, obj2) #some redundancy in link_type as both distance and Edge make link_type
                                                           #not sure which to get rid of
         #for the event we do not want ehal_hcal links

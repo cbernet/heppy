@@ -17,6 +17,7 @@ class BlockBuilder(GraphBuilder):
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
                 an edge records the distance between two ids
+        subtype :used when creating unique identifiers, normally 'r' reconstructed or 's' split
         history : dictionary of nodes that describe which elements are parents of which blocks 
                   it is provided so that the actions of the block builder can be recorded
         nodes : a set of nodes corresponding to the unique ids which is used to construct a graph
@@ -24,15 +25,16 @@ class BlockBuilder(GraphBuilder):
         blocks: the resulting blocks
     
         Usage example:
-            builder = BlockBuilder(ids, edges, history)
+            builder = BlockBuilder(ids, edges, 'r', history)
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self, ids, edges, history = None, subtype = 'r'):
+    def __init__(self, ids, edges, subtype, history = None,):
         '''
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
                 an edge records the distance/link between two ids
+        subtype :used when creating unique identifiers, normally 'r' reconstructed or 's' split
         history : dict of history nodes into which the history of the blockbuilder can be added
         '''
         self.history = history

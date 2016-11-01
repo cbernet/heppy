@@ -7,12 +7,12 @@ from heppy.display.geometry import GDetector
 from heppy.display.trajectories import GHistoryBlock
 from ROOT import gPad
 
-class HistoryPlotter(object):
+class DagPlotter(object):
     '''   
            Object to assist with plotting directed acyclic graph histories.
           
            Usage:
-           histplot = HistoryPlotter(papapasevent, detector)
+           histplot = DagPlotter(papapasevent, detector)
            histplot.plot_dag_event()     #write dag event plot to file   
            histplot.plot_dag_subgroups(num_subgroups=3 ) #write dag subevent plots to file
 

@@ -128,7 +128,7 @@ class PFReconstructor(object):
                                     pass 
                                 newedge.linked = False 
         #create new block(s)               
-        splitblocks = BlockSplitter(block.uniqueid, ids, newedges, history_nodes, subtype='s').blocks
+        splitblocks = BlockSplitter(block.uniqueid, ids, newedges, 's', history_nodes).blocks
         return splitblocks
             
     def reconstruct_block(self, block):

@@ -17,7 +17,7 @@ class PFBlock(object):
              use  get_edge(id1,id2) to find an edge
      
      Usage:
-            block = PFBlock(element_ids,  edges) 
+            block = PFBlock(element_ids,  edges, 'r') 
             for uid in block.element_uniqueids:
                  print papasevent.get_object(uid).__str__() + "\n"
             
@@ -26,12 +26,13 @@ class PFBlock(object):
     temp_block_count = 0 #sequential numbering of blocks, not essential but helpful for debugging
 
     
-    def __init__(self, element_ids, edges, subtype='r'): 
+    def __init__(self, element_ids, edges, subtype): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
             edges: is a dictionary of edges, it must contain at least all needed edges.
                    It is not a problem if it contains
                    additional edges as only the ones needed will be extracted
+            subtype: used when making unique identifier, will normally be 'r' for reconstructed blocks and 's' for split blocks
            
         '''
         #make a uniqueid for this block

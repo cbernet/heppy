@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.graphtools.historyplotter import HistoryPlotter
+from heppy.papas.graphtools.dagplotter import DagPlotter
 
 class PapasDAGPlotter(Analyzer):
     '''Produces a graphical plot of a Directed Acyclic Graph (DAG) for papasevents based on pydot/graphviz
@@ -20,9 +20,10 @@ class PapasDAGPlotter(Analyzer):
             show_file = False
         )
         
-        #produce individual plots of the 4 (a configurable parameter) biggest connected subgroups in the event
-        # a subgroup is a set of linked objects eg everything linked (directly or indirectly) to specific  particle
-        # would be a subgroup
+        produce individual plots of the n (a configurable parameter) biggest connected subgroups in the event
+        all subgroups are plotted if n is not specified
+        subgroup is a set of linked objects eg everything linked (directly or indirectly) to specific  particle
+        eg
         from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
         papas_dag_subgroups= cfg.Analyzer( 
             PapasDAGPlotter,
@@ -39,8 +40,8 @@ class PapasDAGPlotter(Analyzer):
      * show_file: whether to open the dag event output file after producing it (this option not used for subgroups)
      
      * num_subgroups: optional  for "dag_subgroups" says how many subgroups to produce plots for
-                      if not specified all subgroups are produced. If not specified all subgroups will be plotted.
-                      Beware as this may be a very large number of plots!
+                      If not specified all subgroups will be plotted.
+                      Beware as this may be a very large number of plots! (TODO make safer)
  
  
     TODO: consider better ways to select "interestign subgroups"
@@ -56,7 +57,7 @@ class PapasDAGPlotter(Analyzer):
         '''
         self.dirName = '/'.join( [self.looperName, self.name] )
                   
-        self.histplot = HistoryPlotter(event.papasevent, self.dirName)
+        self.histplot = DagPlotter(event.papasevent, self.dirName)
         if self.cfg_ana.plottype == "dag_event":
             self.histplot.plot_dag_event(self.cfg_ana.show_file) 
         elif self.cfg_ana.plottype == "dag_subgroups":
