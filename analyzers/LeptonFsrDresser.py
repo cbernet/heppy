@@ -34,16 +34,16 @@ class LeptonFsrDresser(Analyzer):
         leptons = getattr(event, self.cfg_ana.leptons)
         
         dressed = []
-	for lepton in leptons:
-	    sump4 = TLorentzVector()
-	     
-	    for particle in particles:
-	        if self.cfg_ana.area.is_inside(lepton.eta(), lepton.phi(),
+        for lepton in leptons:
+            sump4 = TLorentzVector()
+             
+            for particle in particles:
+                if self.cfg_ana.area.is_inside(lepton.eta(), lepton.phi(),
                                   particle.eta(), particle.phi() ):
-		    sump4 += particle.p4()
-	
-	    sump4 += lepton.p4()     	           
-	    dressed.append( Particle(lepton.pdgid(), lepton.q(), sump4) )
-	
-	setattr(event, self.cfg_ana.output, dressed)    
-	   
+                    sump4 += particle.p4()
+
+            sump4 += lepton.p4()
+            dressed.append( Particle(lepton.pdgid(), lepton.q(), sump4) )
+        
+        setattr(event, self.cfg_ana.output, dressed)
+

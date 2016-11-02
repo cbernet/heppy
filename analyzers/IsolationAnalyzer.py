@@ -72,7 +72,7 @@ class IsolationAnalyzer(Analyzer):
                 setattr(candidate, 'iso_{pdgid}'.format(pdgid=pdgid), iso)
                 self.logger.info(str(iso))
                 if iso.num:
-                    self.logger.info(pprint.pformat(iso.particles))             
+                    self.logger.info(pprint.pformat(iso.particles))
             candidate.iso = isosum
             self.logger.info(str(isosum))
         
