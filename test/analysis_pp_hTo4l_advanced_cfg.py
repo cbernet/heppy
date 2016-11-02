@@ -37,7 +37,7 @@ source = cfg.Analyzer(
     pfneutrals = 'pfneutrals',
     
     met = 'met',
-)  
+)
 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
