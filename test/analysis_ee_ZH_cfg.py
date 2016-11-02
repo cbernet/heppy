@@ -11,48 +11,57 @@ from analysis_ee_ZH_cfg import *
 import os
 import copy
 import heppy.framework.config as cfg
-import heppy.utils.pdebug
 
 import logging
+
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
+
+# global logging level for the heppy framework.
+# in addition, all the analyzers declared below have their own logger,
+# an each of them can be set to a different logging level.
 logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
 import heppy.statistics.rrandom as random
+# do not forget to comment out the following line if you want to produce and combine
+# several samples of events 
 random.seed(0xdeadbeef)
 
+# loading the FCC event data model library to decode
+# the format of the events in the input file
+# help(Events) for more information 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
-import heppy.utils.pdebug
 
 # setting the event printout
+# help(Event) for more information
 from heppy.framework.event import Event
+# comment the following line to see all the collections stored in the event 
 Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*']
 
 # definition of the collider
+# help(Collider) for more information
 from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 240.
 
-# input definition
+# definition of an input sample (also called a component)
+# help(comp) for more information
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
+        # here we have a single input root file.
+        # the absolute path must be used to be able to run on the batch.
         os.path.abspath('ee_ZH_Zmumu_Hbb.root')
     ]
 )
+
+# selecting the list of components to be processed. Here only one. 
 selectedComponents = [comp]
 
-#  Pdebugger
-from heppy.analyzers.PDebugger import PDebugger
-pdebug = cfg.Analyzer(
-    PDebugger,
-    output_to_stdout = False,
-    debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
-)
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
 from heppy.analyzers.fcc.Reader import Reader
@@ -62,7 +71,10 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
-from heppy.test.papas_cfg import papas_sequence, detector, papas
+# importing the papas simulation and reconstruction sequence,
+# as well as the detector used in papas
+# check papas_cfg.py for more information
+from heppy.test.papas_cfg import papas_sequence, detector
 
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -84,7 +96,7 @@ from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     IsolationAnalyzer,
-    leptons = 'leptons_true',
+    candidates = 'leptons_true',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
@@ -157,19 +169,7 @@ jets = cfg.Analyzer(
     fastjet_args = dict( njets = 2)  
 )
 
-from heppy.analyzers.ImpactParameter import ImpactParameter
-btag = cfg.Analyzer(
-    ImpactParameter,
-    jets = 'jets',
-    # num_IP = ("histo_stat_IP_ratio_bems.root","h_b"),
-    # denom_IP = ("histo_stat_IP_ratio_bems.root","h_u"),
-    # num_IPs = ("histo_stat_IPs_ratio_bems.root","h_b"),
-    # denom_IPs = ("histo_stat_IPs_ratio_bems.root","h_u"),
-    pt_min = 1, # pt threshold for charged hadrons in b tagging 
-    dxy_max = 2e-3, # 2mm
-    dz_max = 17e-2, # 17cm
-    detector = detector
-    )
+#TODO add b tagging, gen jets, gen jet matching
 
 # Build Higgs candidates from pairs of jets.
 higgses = cfg.Analyzer(
@@ -190,7 +190,8 @@ higgses = cfg.Analyzer(
 #         All events                                     100      1.00    1.0000
 #         At least 2 leptons                              87      0.87    0.8700
 #         Both leptons e>30                               79      0.91    0.7900
-# For more information, check the code of the Selection class,
+# For more information, check the code of the Selection class
+# in heppy/analyzers/examples/zh/selection.py
 from heppy.analyzers.examples.zh.selection import Selection
 selection = cfg.Analyzer(
     Selection,
@@ -198,7 +199,8 @@ selection = cfg.Analyzer(
 )
 
 # Analysis-specific ntuple producer
-# please have a look at the ZHTreeProducer class
+# please have a look at the code of the ZHTreeProducer class,
+# in heppy/analyzers/examples/zh/ZHTreeProducer.py
 from heppy.analyzers.examples.zh.ZHTreeProducer import ZHTreeProducer
 tree = cfg.Analyzer(
     ZHTreeProducer,
@@ -212,7 +214,6 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
-    pdebug,
     source,
     papas_sequence, 
     leptons_true,
@@ -223,7 +224,6 @@ sequence = cfg.Sequence(
     missing_energy,
     particles_not_zed,
     jets,
-#    btag,
     higgses,
     selection, 
     tree

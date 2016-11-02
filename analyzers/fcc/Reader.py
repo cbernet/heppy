@@ -22,6 +22,7 @@ class Reader(Analyzer):
     from heppy.analyzers.fcc.Reader import Reader
     source = cfg.Analyzer(
       Reader,
+      mode = 'ee',
       # all the parameters below are optional: 
       gen_particles = 'GenParticle',
       # gen_vertices = '<gen_vertices_name>', 
@@ -29,13 +30,31 @@ class Reader(Analyzer):
       # jets = '<jets_name>',
     )
 
-    * gen_particles: name of the collection of gen particles
-    in the input FCC-EDM file
-    * gen_vertices: name of the collection of gen vertices
-    * gen_jets: name of the collection of gen jets.
-    * jets: name of the collection of reconstructed jets
+    * mode: 
+
+    'ee', 'pp', or 'ep'.
+
+    In 'ee' mode, particle-like objects are sorted by decreasing energy. 
+    in other modes, by decreasing pt.
+
+    * gen_particles: 
+
+    Name of the collection of gen particles in the input 
+    root file. Open the root file with root, and print the events TTree 
+    to see which collections are present in your input file.
+
+    * gen_vertices: 
     
+    Name of the collection of gen vertices
+   
+    * gen_jets: 
     
+    Name of the collection of gen jets.
+    
+    * jets: 
+    
+    Name of the collection of reconstructed jets
+  
     You can find out about the names of the collections by opening
     the root file with root, and by printing the events TTree.
 
@@ -79,11 +98,10 @@ class Reader(Analyzer):
             jets = dict()
             for jet in jetcoll:
                 jets[jet] = jet
-            if hasattr(self.cfg_ana, 'bTags') and \
-               hasattr(self.cfg_ana, 'jetsToBTags'):
-                for tt in store.get(self.cfg_ana.jetsToBTags):
-                    jets[Jet(tt.Jet())].tags['bf'] = tt.Tag().Value()
-
+            if hasattr(self.cfg_ana, 'bTags'):
+	        for jet in store.get(self.cfg_ana.bTags): 
+	            jets[Jet(jet.jet())].tags['bf'] = jet.tag()
+	    
         class Iso(object):
             def __init__(self):
                 self.sumpt=-9999
@@ -97,10 +115,10 @@ class Reader(Analyzer):
             for ele in event.electrons:
                 ele.iso = Iso()
                 electrons[ele]=ele
-        if  hasattr(self.cfg_ana, 'electronsToITags') and hasattr(self.cfg_ana, 'electronITags'):
-            for ele in store.get(self.cfg_ana.electronsToITags):
-                electrons[Particle(ele.Particle())].iso = Iso()
-                electrons[Particle(ele.Particle())].iso.sumpt = electrons[Particle(ele.Particle())].pt()*ele.Tag().Value()
+            if hasattr(self.cfg_ana, 'electronITags'):
+	        for ele in store.get(self.cfg_ana.electronITags): 
+	            electrons[Particle(ele.particle())].iso = Iso()
+	            electrons[Particle(ele.particle())].iso.sumpt = electrons[Particle(ele.particle())].pt()*ele.tag()
 
         muons = dict()
         if hasattr(self.cfg_ana, 'muons'):
@@ -109,14 +127,31 @@ class Reader(Analyzer):
             for mu in event.muons:
                 mu.iso = Iso()
                 muons[mu]=mu
-        if  hasattr(self.cfg_ana, 'muonsToITags') and hasattr(self.cfg_ana, 'muonITags'):
-            for mu in store.get(self.cfg_ana.muonsToITags):
-                #import pdb; pdb.set_trace()
-                muons[Particle(mu.Particle())].iso = Iso()
-                muons[Particle(mu.Particle())].iso.sumpt = muons[Particle(mu.Particle())].pt()*mu.Tag().Value()
-                
-        
-        get_collection(Particle, 'photons')
-        met = get_collection(Met, 'met', False)
+            if hasattr(self.cfg_ana, 'muonITags'):
+	        for mu in store.get(self.cfg_ana.muonITags): 
+	            muons[Particle(mu.particle())].iso = Iso()
+	            muons[Particle(mu.particle())].iso.sumpt = muons[Particle(mu.particle())].pt()*mu.tag()
+	
+	photons = dict()
+        if hasattr(self.cfg_ana, 'photons'):
+            event.photons = map(Particle, store.get(self.cfg_ana.photons))
+            event.photons.sort(reverse=True)   
+            for pho in event.photons:
+                pho.iso = Iso()
+                photons[pho]=pho
+	    if hasattr(self.cfg_ana, 'photonITags'):
+	        for pho in store.get(self.cfg_ana.photonITags): 
+	            photons[Particle(pho.particle())].iso = Iso()
+	            photons[Particle(pho.particle())].iso.sumpt = photons[Particle(pho.particle())].pt()*pho.tag()
+
+
+	pfcharged  = get_collection(Particle, 'pfcharged', False)
+	pfphotons  = get_collection(Particle, 'pfphotons', False)
+	pfneutrals = get_collection(Particle, 'pfneutrals', False)
+	
+	met = get_collection(Met, 'met', False)
         if met:
             event.met = event.met[0]
+	    
+	    
+	    
