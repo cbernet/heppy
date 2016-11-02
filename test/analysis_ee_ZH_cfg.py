@@ -96,7 +96,7 @@ from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     IsolationAnalyzer,
-    leptons = 'leptons_true',
+    candidates = 'leptons_true',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
