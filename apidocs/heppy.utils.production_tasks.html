@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.utils.production_tasks : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="module"><code>heppy.utils.production_tasks</code> <small>module documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.utils.html" data-type="Package" class="code">utils</a></code>
+          
+          
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div class="undocumented">No module docstring</div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id602">
+  
+  <tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.production_tasks.html#mkdir_p" data-type="Function" class="code">mkdir_p</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.Task.html" data-type="Class" class="code">Task</a></td>
+    <td><span>Base class for Task API</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.ParseOptions.html" data-type="Class" class="code">ParseOptions</a></td>
+    <td><span>Common options for the script __main__: used by all production tasks</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CheckDatasetExists.html" data-type="Class" class="code">CheckDatasetExists</a></td>
+    <td><span>Use 'datasets.py' to check that the dataset exists in the production 
+system.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.BaseDataset.html" data-type="Class" class="code">BaseDataset</a></td>
+    <td><span>Query DAS to find dataset name in DBS - see 
+https://cmsweb.cern.ch/das/</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.GZipFiles.html" data-type="Class" class="code">GZipFiles</a></td>
+    <td><span>GZip a list of files</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CleanFiles.html" data-type="Class" class="code">CleanFiles</a></td>
+    <td><span>Remove a list of files</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.FindOnCastor.html" data-type="Class" class="code">FindOnCastor</a></td>
+    <td><span>Checks that the sample specified exists in the CASTOR area of the user 
+specified. The directory must exist.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CheckForMask.html" data-type="Class" class="code">CheckForMask</a></td>
+    <td><span>Tests if a file mask, created by edmIntegrityCheck.py, is present 
+already and reads it if so.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CheckForWrite.html" data-type="Class" class="code">CheckForWrite</a></td>
+    <td><span>Checks whether you have write access to the CASTOR directory 
+specified</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.GenerateMask.html" data-type="Class" class="code">GenerateMask</a></td>
+    <td><span>Uses edmIntegrityCheck.py to generate a file mask for the sample if one 
+is not already present.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CreateJobDirectory.html" data-type="Class" class="code">CreateJobDirectory</a></td>
+    <td><span>Generates a job directory on your local drive</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.SourceCFG.html" data-type="Class" class="code">SourceCFG</a></td>
+    <td><span>Generate a source CFG using 'sourceFileList.py' by listing the CASTOR 
+directory specified. Applies the file wildcard, '--wildcard'</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.production_tasks.html#insertLines" data-type="Function" class="code">insertLines</a></td>
+    <td><span>insert a sequence in another sequence.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.FullCFG.html" data-type="Class" class="code">FullCFG</a></td>
+    <td><span>Generate the full CFG needed to run the job and writes it to the job 
+directory</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CheckConfig.html" data-type="Class" class="code">CheckConfig</a></td>
+    <td><span>Check the basic syntax of a CFG file by running python on it.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.RunTestEvents.html" data-type="Class" class="code">RunTestEvents</a></td>
+    <td><span>Run cmsRun but with a small number of events on the job CFG.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.ExpandConfig.html" data-type="Class" class="code">ExpandConfig</a></td>
+    <td><span>Runs edmConfigDump to produce an expanded cfg file</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.WriteToDatasets.html" data-type="Class" class="code">WriteToDatasets</a></td>
+    <td><span>Publish the sample to 'Datasets.txt' if required</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.RunCMSBatch.html" data-type="Class" class="code">RunCMSBatch</a></td>
+    <td><span>Run the 'cmsBatch.py' command on your CFG, submitting to the CERN batch 
+system</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.MonitorJobs.html" data-type="Class" class="code">MonitorJobs</a></td>
+    <td><span>Monitor LSF jobs created with cmsBatch.py. Blocks until all jobs are 
+finished.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CheckJobStatus.html" data-type="Class" class="code">CheckJobStatus</a></td>
+    <td><span>Checks the job STDOUT to catch common problems like exceptions, CPU time
+exceeded. Sets the job status in the report accordingly.</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.WriteJobReport.html" data-type="Class" class="code">WriteJobReport</a></td>
+    <td><span>Write a summary report on each job</span></td>
+  </tr><tr class="class">
+    
+    <td>Class</td>
+    <td><a href="heppy.utils.production_tasks.CleanJobFiles.html" data-type="Class" class="code">CleanJobFiles</a></td>
+    <td><span>Removes and compresses auto-generated files from the job directory to 
+save space.</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basefunction">
+  
+  <a name="heppy.utils.production_tasks.mkdir_p">
+    
+  </a>
+  <a name="mkdir_p">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    mkdir_p(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.production_tasks.insertLines">
+    
+  </a>
+  <a name="insertLines">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    insertLines(insertedTo, toInsert):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>insert a sequence in another sequence.
+
+the sequence is inserted either at the end, or at the position
+of the HOOK, if it is found.
+The HOOK is considered as being found if
+  str(elem).find(###ProductionTaskHook$$$)
+is true for one of the elements in the insertedTo sequence. </pre>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

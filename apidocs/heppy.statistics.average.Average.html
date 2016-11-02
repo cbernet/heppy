@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.statistics.average.Average : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.statistics.average.Average(<span title="object">object</span>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.statistics.html" data-type="Package" class="code">statistics</a>.<a href="heppy.statistics.average.html" data-type="Module" class="code">average</a></code>
+          
+          <a href="classIndex.html#heppy.statistics.average.Average">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div class="undocumented">No class docstring</div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id522">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#add" data-type="Method" class="code">add</a></td>
+    <td><span>Add a new sample to the average.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#variance" data-type="Method" class="code">variance</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#value" data-type="Method" class="code">value</a></td>
+    <td><span>Mean value</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#uncertainty" data-type="Method" class="code">uncertainty</a></td>
+    <td><span>Uncertainty on the mean value</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#average" data-type="Method" class="code">average</a></td>
+    <td><span>Returns: mean value, uncertainty on mean value.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#__add__" data-type="Method" class="code">__add__</a></td>
+    <td><span>Add two averages, merging the two samples.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#__iadd__" data-type="Method" class="code">__iadd__</a></td>
+    <td><span>Add two averages.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#write" data-type="Method" class="code">write</a></td>
+    <td><span>Dump the average to a pickle file and to a text file in dirname.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.statistics.average.Average.html#__str__" data-type="Method" class="code">__str__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, name):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.add">
+    
+  </a>
+  <a name="add">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add(self, value, weight=1.0):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Add a new sample to the average.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.variance">
+    
+  </a>
+  <a name="variance">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    variance(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.value">
+    
+  </a>
+  <a name="value">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    value(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Mean value</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.uncertainty">
+    
+  </a>
+  <a name="uncertainty">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    uncertainty(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Uncertainty on the mean value</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.average">
+    
+  </a>
+  <a name="average">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    average(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns: mean value, uncertainty on mean value.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.__add__">
+    
+  </a>
+  <a name="__add__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __add__(self, other):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Add two averages, merging the two samples.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.__iadd__">
+    
+  </a>
+  <a name="__iadd__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __iadd__(self, other):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Add two averages.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.write">
+    
+  </a>
+  <a name="write">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    write(self, dirname):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Dump the average to a pickle file and to a text file in dirname.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.statistics.average.Average.__str__">
+    
+  </a>
+  <a name="__str__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __str__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

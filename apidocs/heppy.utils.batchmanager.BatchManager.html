@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.utils.batchmanager.BatchManager : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.utils.batchmanager.BatchManager</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.utils.html" data-type="Package" class="code">utils</a>.<a href="heppy.utils.batchmanager.html" data-type="Module" class="code">batchmanager</a></code>
+          
+          <a href="classIndex.html#heppy.utils.batchmanager.BatchManager">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p>This class manages batch jobs Used in batch scripts Colin Bernet 
+2008</p><table class="fieldTable"></table></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id574">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#DefineOptions" data-type="Method" class="code">DefineOptions</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#ParseOptions" data-type="Method" class="code">ParseOptions</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#PrepareJobs" data-type="Method" class="code">PrepareJobs</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#ManageOutputDir" data-type="Method" class="code">ManageOutputDir</a></td>
+    <td><span>Create output directory, if necessary.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#PrepareJob" data-type="Method" class="code">PrepareJob</a></td>
+    <td><span>Prepare a job for a given value.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#PrepareJobUser" data-type="Method" class="code">PrepareJobUser</a></td>
+    <td><span>Hook allowing user to define how one of his jobs should be prepared.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#SubmitJobs" data-type="Method" class="code">SubmitJobs</a></td>
+    <td><span>Submit all jobs. Possibly wait between each job</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#SubmitJob" data-type="Method" class="code">SubmitJob</a></td>
+    <td><span>Hook for job submission.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#SubmitJobArray" data-type="Method" class="code">SubmitJobArray</a></td>
+    <td><span>Hook for array job submission.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#CheckBatchScript" data-type="Method" class="code">CheckBatchScript</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#mkdir" data-type="Method" class="code">mkdir</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.batchmanager.BatchManager.html#RunningMode" data-type="Method" class="code">RunningMode</a></td>
+    <td><span>Return "LXPUS", "PSI", "NAF", 
+"LOCAL", or None,</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.DefineOptions">
+    
+  </a>
+  <a name="DefineOptions">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    DefineOptions(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.ParseOptions">
+    
+  </a>
+  <a name="ParseOptions">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    ParseOptions(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.PrepareJobs">
+    
+  </a>
+  <a name="PrepareJobs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    PrepareJobs(self, listOfValues, listOfDirNames=None):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.ManageOutputDir">
+    
+  </a>
+  <a name="ManageOutputDir">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    ManageOutputDir(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Create output directory, if necessary.</p>
+<p>if the output dir is not specified, generate a name else test if the 
+directory exists if yes, returns.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.PrepareJob">
+    
+  </a>
+  <a name="PrepareJob">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    PrepareJob(self, value, dirname=None):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Prepare a job for a given value.</p>
+<p>calls PrepareJobUser, which should be overloaded by the user.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.PrepareJobUser">
+    
+  </a>
+  <a name="PrepareJobUser">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    PrepareJobUser(self, value):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Hook allowing user to define how one of his jobs should be prepared.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.SubmitJobs">
+    
+  </a>
+  <a name="SubmitJobs">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    SubmitJobs(self, waitingTimeInSec=0):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Submit all jobs. Possibly wait between each job</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.SubmitJob">
+    
+  </a>
+  <a name="SubmitJob">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    SubmitJob(self, jobDir):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Hook for job submission.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.SubmitJobArray">
+    
+  </a>
+  <a name="SubmitJobArray">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    SubmitJobArray(self, numbOfJobs=1):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Hook for array job submission.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.CheckBatchScript">
+    
+  </a>
+  <a name="CheckBatchScript">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    CheckBatchScript(self, batchScript):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.mkdir">
+    
+  </a>
+  <a name="mkdir">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    mkdir(self, dirname):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.batchmanager.BatchManager.RunningMode">
+    
+  </a>
+  <a name="RunningMode">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    RunningMode(self, batch):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Return "LXPUS", "PSI", "NAF", 
+"LOCAL", or None,</p>
+<p>"LXPLUS" : batch command is bsub, and logged on lxplus 
+"PSI"    : batch command is qsub, and logged to t3uiXX 
+"NAF"    : batch command is qsub, and logged on naf 
+"IC"     : batch command is qsub, and logged on hep.ph.ic.ac.uk 
+"LOCAL"  : batch command is nohup.</p>
+<p>In all other cases, a CmsBatchException is raised</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

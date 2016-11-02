@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.papas.pfalgo.pfblock.PFBlock : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.papas.pfalgo.pfblock.PFBlock(<span title="object">object</span>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.papas.html" data-type="Package" class="code">papas</a>.<a href="heppy.papas.pfalgo.html" data-type="Package" class="code">pfalgo</a>.<a href="heppy.papas.pfalgo.pfblock.html" data-type="Module" class="code">pfblock</a></code>
+          
+          <a href="classIndex.html#heppy.papas.pfalgo.pfblock.PFBlock">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <pre>A Particle Flow Block stores a set of element ids that are connected to each other
+     together with the edge data (distances) for each possible edge combination
+
+     attributes:
+
+     uniqueid : the block's unique id generated from Identifier class
+     element_uniqueids : list of uniqueids of its elements
+     pfevent : contains the tracks and clusters and a get_object method to allow access to the
+               underlying objects given their uniqueid
+     edges : Dictionary of all the edge cominations in the block dict{edgekey : Edge}
+             use  get_edge(id1,id2) to find an edge
+     is_active : bool true/false, set to false if the block is subsequently subdivided
+
+     Usage:
+            block = PFBlock(element_ids,  edges, pfevent)
+            for uid in block.element_uniqueids:
+                 print pfevent.get_object(uid).__str__() + "
+"
+     </pre>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id341">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#count_ecal" data-type="Method" class="code">count_ecal</a></td>
+    <td><span>Counts how many ecal cluster ids are in the block</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#count_tracks" data-type="Method" class="code">count_tracks</a></td>
+    <td><span>Counts how many track ids are in the block</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#count_hcal" data-type="Method" class="code">count_hcal</a></td>
+    <td><span>Counts how many hcal cluster ids are in the block</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#__len__" data-type="Method" class="code">__len__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#linked_edges" data-type="Method" class="code">linked_edges</a></td>
+    <td><span>Returns list of all edges of a given edge type that are connected to a 
+given id. The list is sorted in order of increasing distance</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#linked_ids" data-type="Method" class="code">linked_ids</a></td>
+    <td><span>Returns list of all linked ids of a given edge type that are connected 
+to a given id - sorted in order of increasing distance</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#sort_distance_energy" data-type="Method" class="code">sort_distance_energy</a></td>
+    <td><span>returns a list of the otherids sorted by distance to uniqueid and by 
+decreasing energies</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#elements_string" data-type="Method" class="code">elements_string</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#short_elements_string" data-type="Method" class="code">short_elements_string</a></td>
+    <td><span>Construct a string description of each of the elements in a block.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#short_name" data-type="Method" class="code">short_name</a></td>
+    <td><span>constructs a short summary name for blocks allowing sorting based on 
+contents eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#edge_matrix_string" data-type="Method" class="code">edge_matrix_string</a></td>
+    <td><span>produces a string containing the the lower part of the matrix of 
+distances between elements elements are ordered as ECAL(E), HCAL(H), 
+Track(T) for example:-</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#get_edge" data-type="Method" class="code">get_edge</a></td>
+    <td><span>Find the edge corresponding to e1 e2 Note that make_key deals with 
+whether it is get_edge(e1, e2) or get_edge(e2, e1) (either order gives same
+result)</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#__str__" data-type="Method" class="code">__str__</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.pfblock.PFBlock.html#__repr__" data-type="Method" class="code">__repr__</a></td>
+    <td><span>Short Block description</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, element_ids, edges, pfevent):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
+edges: is a dictionary of edges, it must contain at least all needed edges.
+       It is not a problem if it contains
+       additional edges as only the ones needed will be extracted
+pfevent: allows access to the underlying elements given a uniqueid
+         must provide a get_object function</pre>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.count_ecal">
+    
+  </a>
+  <a name="count_ecal">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    count_ecal(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Counts how many ecal cluster ids are in the block</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.count_tracks">
+    
+  </a>
+  <a name="count_tracks">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    count_tracks(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Counts how many track ids are in the block</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.count_hcal">
+    
+  </a>
+  <a name="count_hcal">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    count_hcal(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Counts how many hcal cluster ids are in the block</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.__len__">
+    
+  </a>
+  <a name="__len__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __len__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.linked_edges">
+    
+  </a>
+  <a name="linked_edges">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    linked_edges(self, uniqueid, edgetype=None):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns list of all edges of a given edge type that are connected to a 
+given id. The list is sorted in order of increasing distance</p>
+<p>Arguments: uniqueid : is the id of item of interest edgetype : is an 
+optional type of edge. If specified only links of the given edgetype will 
+be returned</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.linked_ids">
+    
+  </a>
+  <a name="linked_ids">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    linked_ids(self, uniqueid, edgetype=None):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns list of all linked ids of a given edge type that are connected 
+to a given id - sorted in order of increasing distance</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.sort_distance_energy">
+    
+  </a>
+  <a name="sort_distance_energy">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    sort_distance_energy(self, uniqueid, otherids):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>returns a list of the otherids sorted by distance to uniqueid and by decreasing energies
+
+eg if uniqueid is an hcal
+   and other ids are  track1 energy = 18, dist to hcal = 0.1
+                      track2 energy = 9,  dist to hcal = 0
+                      track3 energy = 4,  dist to hcal = 0
+this will return {track2, track3, track1}</pre>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.elements_string">
+    
+  </a>
+  <a name="elements_string">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    elements_string(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Construct a string description of each of the elements in a block:- The 
+elements are given a short name E/H/T according to ecal/hcal/track and then
+sequential numbering starting from 0, this naming is also used to index the
+matrix of distances. The full unique id is also given. For example:- 
+elements: { E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 
+-2.78 H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86 
+T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63 }</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.short_elements_string">
+    
+  </a>
+  <a name="short_elements_string">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    short_elements_string(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Construct a string description of each of the elements in a block.</p>
+<p>The elements are given a short name E/H/T according to ecal/hcal/track 
+and then sequential numbering starting from 0, this naming is also used to 
+index the matrix of distances. The full unique id is also given. For 
+example:- elements: { E0:1104134446736:SmearedCluster : ecal_in       0.57
+0.33 -2.78 H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
+T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63 }</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.short_name">
+    
+  </a>
+  <a name="short_name">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    short_name(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>constructs a short summary name for blocks allowing sorting based on 
+contents eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.edge_matrix_string">
+    
+  </a>
+  <a name="edge_matrix_string">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    edge_matrix_string(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>produces a string containing the the lower part of the matrix of distances between elements
+elements are ordered as ECAL(E), HCAL(H), Track(T)
+for example:-
+
+distances:
+          E0       H1       T2       T3
+ E0       .
+ H1  0.0267        .
+ T2  0.0000   0.0000        .
+ T3  0.0287   0.0825      ---        .
+ </pre>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.get_edge">
+    
+  </a>
+  <a name="get_edge">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_edge(self, id1, id2):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>Find the edge corresponding to e1 e2
+Note that make_key deals with whether it is get_edge(e1, e2) or
+                                            get_edge(e2, e1) (either order gives same result)</pre>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.__str__">
+    
+  </a>
+  <a name="__str__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __str__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>Block description which includes list of elements and a matrix of distances
+Example:
+block: E1H1T1       id=  39 :uid= 6601693505424: ecals = 1 hcals = 1 tracks = 1
+    elements: {
+    E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
+    H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
+    T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
+    }
+    distances:
+                E0       H1       T2
+       E0       .
+       H1  0.0796        .
+       T2  0.0210   0.0000        .
+    }</pre>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.pfblock.PFBlock.__repr__">
+    
+  </a>
+  <a name="__repr__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __repr__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Short Block description</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

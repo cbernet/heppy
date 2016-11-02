@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.analyzers.PapasPF.PapasPF : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.analyzers.PapasPF.PapasPF(<a href="heppy.framework.analyzer.Analyzer.html" data-type="Class" class="code">Analyzer</a>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.analyzers.html" data-type="Package" class="code">analyzers</a>.<a href="heppy.analyzers.PapasPF.html" data-type="Module" class="code">PapasPF</a></code>
+          
+          <a href="classIndex.html#heppy.analyzers.PapasPF.PapasPF">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <pre>Runs PAPAS, the PArametrized Particle Simulation.
+
+Example configuration: 
+
+from heppy.analyzers.PapasPF import PapasPF
+from heppy.papas.detectors.CMS import CMS
+papas = cfg.Analyzer(
+    PapasPF,
+    instance_label = 'papas',              
+    detector = CMS(),
+    gen_particles = 'gen_particles_stable',
+    sim_particles = 'sim_particles',
+    rec_particles = 'rec_particles',
+    display = False,                   
+    verbose = False
+)
+
+detector:      Detector model to be used. 
+gen_particles: Name of the input gen particle collection
+sim_particles: Name extension for the output sim particle collection. 
+               Note that the instance label is prepended to this name. 
+               Therefore, in this particular case, the name of the output 
+               sim particle collection is "papas_sim_particles".
+rec_particles: Name extension for the output reconstructed particle collection.
+               Same comments as for the sim_particles parameter above. 
+display      : Enable the event display
+verbose      : Enable the detailed printout.</pre>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id146">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.analyzers.PapasPF.PapasPF.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span>Create an analyzer.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.analyzers.PapasPF.PapasPF.html#process" data-type="Method" class="code">process</a></td>
+    <td><span>Automatically called by Looper, for all analyzers. each analyzer in the 
+sequence will be passed the same event instance. each analyzer can access, 
+modify, and store event information, of any type.</span></td>
+  </tr>
+</table>
+        
+          <p class="inheritedFrom">
+            Inherited from <a href="heppy.framework.analyzer.Analyzer.html" data-type="Class" class="code">Analyzer</a>:
+          </p>
+          <table class="children sortable" id="id147">
+  
+  <tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#beginLoop" data-type="Method" class="code">beginLoop</a></td>
+    <td><span>Automatically called by Looper, for all analyzers.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#endLoop" data-type="Method" class="code">endLoop</a></td>
+    <td><span>Automatically called by Looper, for all analyzers.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#write" data-type="Method" class="code">write</a></td>
+    <td><span>Called by Looper.write, for all analyzers. Just overload it if you have 
+histograms to write.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#__str__" data-type="Method" class="code">__str__</a></td>
+    <td><span>A multipurpose printout. Should do the job for most analyzers.</span></td>
+  </tr>
+</table>
+          
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.analyzers.PapasPF.PapasPF.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, *args, **kwargs):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overrides <a href="heppy.framework.analyzer.Analyzer.html#__init__" data-type="Method" class="code">heppy.framework.analyzer.Analyzer.__init__</a></div>
+    
+    <div><p>Create an analyzer.</p>
+<p>Parameters (also stored as attributes for later use): cfg_ana: 
+configuration parameters for this analyzer (e.g. a pt cut) cfg_comp: 
+configuration parameters for the data or MC component (e.g. DYJets) 
+looperName: name of the Looper which runs this analyzer.</p>
+<p>Attributes: dirName : analyzer directory, where you can write anything 
+you want</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.analyzers.PapasPF.PapasPF.process">
+    
+  </a>
+  <a name="process">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    process(self, event):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overrides <a href="heppy.framework.analyzer.Analyzer.html#process" data-type="Method" class="code">heppy.framework.analyzer.Analyzer.process</a></div>
+    
+    <div><p>Automatically called by Looper, for all analyzers. each analyzer in the 
+sequence will be passed the same event instance. each analyzer can access, 
+modify, and store event information, of any type.</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

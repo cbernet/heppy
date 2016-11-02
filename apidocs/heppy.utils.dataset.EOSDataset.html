@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.utils.dataset.EOSDataset : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.utils.dataset.EOSDataset(<a href="heppy.utils.dataset.BaseDataset.html" data-type="Class" class="code">BaseDataset</a>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.utils.html" data-type="Package" class="code">utils</a>.<a href="heppy.utils.dataset.html" data-type="Module" class="code">dataset</a></code>
+          
+          <a href="classIndex.html#heppy.utils.dataset.EOSDataset">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p>A dataset located in any given eos directory</p><table class="fieldTable"></table></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id585">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.EOSDataset.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.EOSDataset.html#buildListOfFiles" data-type="Method" class="code">buildListOfFiles</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr>
+</table>
+        
+          <p class="inheritedFrom">
+            Inherited from <a href="heppy.utils.dataset.BaseDataset.html" data-type="Class" class="code">BaseDataset</a>:
+          </p>
+          <table class="children sortable" id="id586">
+  
+  <tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#extractFileSizes" data-type="Method" class="code">extractFileSizes</a></td>
+    <td><span>Get the file size for each file, from the eos ls -l command.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#buildListOfBadFiles" data-type="Method" class="code">buildListOfBadFiles</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#printInfo" data-type="Method" class="code">printInfo</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#getPrimaryDatasetEntries" data-type="Method" class="code">getPrimaryDatasetEntries</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#printFiles" data-type="Method" class="code">printFiles</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#listOfFiles" data-type="Method" class="code">listOfFiles</a></td>
+    <td><span>Returns all files, even the bad ones.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#listOfGoodFiles" data-type="Method" class="code">listOfGoodFiles</a></td>
+    <td><span>Returns all files flagged as good in the integrity check text output, or
+not present in this file, are considered as good.</span></td>
+  </tr><tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.utils.dataset.BaseDataset.html#listOfGoodFilesWithPrescale" data-type="Method" class="code">listOfGoodFilesWithPrescale</a></td>
+    <td><span>Takes the list of good files and selects a random sample from them 
+according to the prescale factor. E.g. a prescale of 10 will select 1 in 10
+files.</span></td>
+  </tr>
+</table>
+          
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.utils.dataset.EOSDataset.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, name, basedir, pattern):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overrides <a href="heppy.utils.dataset.BaseDataset.html#__init__" data-type="Method" class="code">heppy.utils.dataset.BaseDataset.__init__</a></div>
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.utils.dataset.EOSDataset.buildListOfFiles">
+    
+  </a>
+  <a name="buildListOfFiles">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    buildListOfFiles(self, pattern='.*root'):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overrides <a href="heppy.utils.dataset.BaseDataset.html#buildListOfFiles" data-type="Method" class="code">heppy.utils.dataset.BaseDataset.buildListOfFiles</a></div>
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.framework.looper.Looper : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.framework.looper.Looper(<span title="object">object</span>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.framework.html" data-type="Package" class="code">framework</a>.<a href="heppy.framework.looper.html" data-type="Module" class="code">looper</a></code>
+          
+          <a href="classIndex.html#heppy.framework.looper.Looper">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p>Creates a set of analyzers, and schedules the event processing.</p><table class="fieldTable"></table></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id240">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#loop" data-type="Method" class="code">loop</a></td>
+    <td><span>Loop on a given number of events.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#process" data-type="Method" class="code">process</a></td>
+    <td><span>Run event processing for all analyzers in the sequence.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#write" data-type="Method" class="code">write</a></td>
+    <td><span>Writes all analyzers.</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#_build" data-type="Method" class="code">_build</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#_prepareOutput" data-type="Method" class="code">_prepareOutput</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.looper.Looper.html#_run_analyzers_on_event" data-type="Method" class="code">_run_analyzers_on_event</a></td>
+    <td><span>Run all analysers on the current event, self.event. Returns a tuple 
+(success?, last_analyzer_name).</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.framework.looper.Looper.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, name, config, nEvents=None, firstEvent=0, nPrint=0, timeReport=False, quiet=False, memCheckFromEvent=-1):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Handles the processing of an event sample. An Analyzer is built for each
+Config.Analyzer present in sequence. The Looper can then be used to process
+an event, or a collection of events.</p>
+<p>Parameters: name    : name of the Looper, will be used as the output 
+directory name config  : process configuration information, see Config 
+nEvents : number of events to process. Defaults to all. firstEvent : first 
+event to process. Defaults to the first one. nPrint  : number of events to 
+print at the beginning</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod private">
+  
+  <a name="heppy.framework.looper.Looper._build">
+    
+  </a>
+  <a name="_build">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _build(self, cfg):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod private">
+  
+  <a name="heppy.framework.looper.Looper._prepareOutput">
+    
+  </a>
+  <a name="_prepareOutput">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _prepareOutput(self, name):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.looper.Looper.loop">
+    
+  </a>
+  <a name="loop">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    loop(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Loop on a given number of events.</p>
+<p>At the beginning of the loop, Analyzer.beginLoop is called for each 
+Analyzer. At each event, self.process is called. At the end of the loop, 
+Analyzer.endLoop is called.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.looper.Looper.process">
+    
+  </a>
+  <a name="process">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    process(self, iEv):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Run event processing for all analyzers in the sequence.</p>
+<p>This function can be called directly from the python interpreter, to 
+jump to a given event and process it.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod private">
+  
+  <a name="heppy.framework.looper.Looper._run_analyzers_on_event">
+    
+  </a>
+  <a name="_run_analyzers_on_event">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _run_analyzers_on_event(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Run all analysers on the current event, self.event. Returns a tuple 
+(success?, last_analyzer_name).</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.looper.Looper.write">
+    
+  </a>
+  <a name="write">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    write(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Writes all analyzers.</p>
+<p>See Analyzer.Write for more information.</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

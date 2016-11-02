@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.papas.pfalgo.test_block_reconstruction.Simulator : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.papas.pfalgo.test_block_reconstruction.Simulator(<span title="object">object</span>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.papas.html" data-type="Package" class="code">papas</a>.<a href="heppy.papas.pfalgo.html" data-type="Package" class="code">pfalgo</a>.<a href="heppy.papas.pfalgo.test_block_reconstruction.html" data-type="Module" class="code">test_block_reconstruction</a></code>
+          
+          <a href="classIndex.html#heppy.papas.pfalgo.test_block_reconstruction.Simulator">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p>Simplified simulator for testing The simulator sets up  two charged 
+hadrons and a photon the clusters/tracks/particles contain a short id where
+#    1- 99 is  a track #  101-199 is an ecal cluster #  201-299 is an hcal 
+cluster #  301-399 is  a simulated particle #  401-499 is  a block #  
+601-699 is  a reconstructed particle the short ids are used to construct 
+the distances between elements The elements also have a long unique id 
+which is created via an Identifier class</p><table class="fieldTable"></table></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id358">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#add_ecal_cluster" data-type="Method" class="code">add_ecal_cluster</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#add_hcal_cluster" data-type="Method" class="code">add_hcal_cluster</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#add_track" data-type="Method" class="code">add_track</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#add_particle" data-type="Method" class="code">add_particle</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#UID" data-type="Method" class="code">UID</a></td>
+    <td><span>id is the short id of the element this returns the corresponding long 
+unique id</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#short_id" data-type="Method" class="code">short_id</a></td>
+    <td><span>uniqueid is the long unique id of the element this returns the 
+corresponding short integer id</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.pfalgo.test_block_reconstruction.Simulator.html#add_link" data-type="Method" class="code">add_link</a></td>
+    <td><span>create a parent child link in the history nodes between two elements 
+uniqueid1, uniqueid2 are the elements unique ids</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, event):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.add_ecal_cluster">
+    
+  </a>
+  <a name="add_ecal_cluster">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_ecal_cluster(self, id):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.add_hcal_cluster">
+    
+  </a>
+  <a name="add_hcal_cluster">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_hcal_cluster(self, id):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.add_track">
+    
+  </a>
+  <a name="add_track">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_track(self, id):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.add_particle">
+    
+  </a>
+  <a name="add_particle">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_particle(self, id, pdgid):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.UID">
+    
+  </a>
+  <a name="UID">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    UID(self, id):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>id is the short id of the element this returns the corresponding long 
+unique id</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.short_id">
+    
+  </a>
+  <a name="short_id">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    short_id(self, uniqueid):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>uniqueid is the long unique id of the element this returns the 
+corresponding short integer id</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.pfalgo.test_block_reconstruction.Simulator.add_link">
+    
+  </a>
+  <a name="add_link">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_link(self, uniqueid1, uniqueid2):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>create a parent child link in the history nodes between two elements 
+uniqueid1, uniqueid2 are the elements unique ids</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

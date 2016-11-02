@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.papas.graphtools.DAG.Node : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.papas.graphtools.DAG.Node(<span title="object">object</span>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.papas.html" data-type="Package" class="code">papas</a>.<a href="heppy.papas.graphtools.html" data-type="Package" class="code">graphtools</a>.<a href="heppy.papas.graphtools.DAG.html" data-type="Module" class="code">DAG</a></code>
+          
+          <a href="classIndex.html#heppy.papas.graphtools.DAG.Node">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <pre>Implements a Directed Acyclic Graph: 
+each node has an arbitrary number of children and parents
+There are no loops in the directed DAG
+But there may be loops in the undirected version of the DAG
+
+attributes:
+   value = the item of interest (around which the node is wrapped)
+   children = list of child nodes
+   parents  = list of parent node
+   undirected_links = combined list of parents and children</pre>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id306">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#get_value" data-type="Method" class="code">get_value</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#accept" data-type="Method" class="code">accept</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#add_child" data-type="Method" class="code">add_child</a></td>
+    <td><span>set the children</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#add_parent" data-type="Method" class="code">add_parent</a></td>
+    <td><span>set the parents</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#remove_all_links_to" data-type="Method" class="code">remove_all_links_to</a></td>
+    <td><span>checks for element toremove in the list of children and parents and 
+removes any links from both this and from the toremove node</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#get_linked_nodes" data-type="Method" class="code">get_linked_nodes</a></td>
+    <td><span>return a list of the linked children/parents/undirected links</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#__repr__" data-type="Method" class="code">__repr__</a></td>
+    <td><span>unique string representation</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.papas.graphtools.DAG.Node.html#__str__" data-type="Method" class="code">__str__</a></td>
+    <td><span>unique string representation</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, value):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>constructor. 
+value can be anything, even a complex object. 
+example:
+   newnode=Node(uniqueid)</pre>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.get_value">
+    
+  </a>
+  <a name="get_value">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_value(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.accept">
+    
+  </a>
+  <a name="accept">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    accept(self, visitor):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.add_child">
+    
+  </a>
+  <a name="add_child">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_child(self, child):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>set the children</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.add_parent">
+    
+  </a>
+  <a name="add_parent">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    add_parent(self, parent):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>set the parents</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.remove_all_links_to">
+    
+  </a>
+  <a name="remove_all_links_to">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    remove_all_links_to(self, toremove):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>checks for element toremove in the list of children and parents and 
+removes any links from both this and from the toremove node</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.get_linked_nodes">
+    
+  </a>
+  <a name="get_linked_nodes">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    get_linked_nodes(self, type):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>return a list of the linked children/parents/undirected links</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.__repr__">
+    
+  </a>
+  <a name="__repr__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __repr__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>unique string representation</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.papas.graphtools.DAG.Node.__str__">
+    
+  </a>
+  <a name="__str__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __str__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>unique string representation</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.framework.config.Service : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.framework.config.Service(<a href="heppy.framework.config.CFG.html" data-type="Class" class="code">CFG</a>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.framework.html" data-type="Package" class="code">framework</a>.<a href="heppy.framework.config.html" data-type="Module" class="code">config</a></code>
+          
+          <a href="classIndex.html#heppy.framework.config.Service">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div class="undocumented">No class docstring</div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id216">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.config.Service.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span>All keyword arguments are added as attributes.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.config.Service.html#__setattr__" data-type="Method" class="code">__setattr__</a></td>
+    <td><span>You may decide to copy an existing analyzer and change its 
+instance_label. In that case, one must stay consistent.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.config.Service.html#clone" data-type="Method" class="code">clone</a></td>
+    <td><span>Make a copy of this object, redefining (or adding) some parameters, just
+like in the CMSSW python configuration files.</span></td>
+  </tr><tr class="method private">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.config.Service.html#_build_name" data-type="Method" class="code">_build_name</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr>
+</table>
+        
+          <p class="inheritedFrom">
+            Inherited from <a href="heppy.framework.config.CFG.html" data-type="Class" class="code">CFG</a>:
+          </p>
+          <table class="children sortable" id="id217">
+  
+  <tr class="basemethod">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.config.CFG.html#__str__" data-type="Method" class="code">__str__</a></td>
+    <td><span>A useful printout</span></td>
+  </tr>
+</table>
+          
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.framework.config.Service.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, class_object, instance_label='1', verbose=False, **kwargs):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overrides <a href="heppy.framework.config.CFG.html#__init__" data-type="Method" class="code">heppy.framework.config.CFG.__init__</a></div>
+    
+    <div><p>All keyword arguments are added as attributes.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod private">
+  
+  <a name="heppy.framework.config.Service._build_name">
+    
+  </a>
+  <a name="_build_name">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _build_name(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.config.Service.__setattr__">
+    
+  </a>
+  <a name="__setattr__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __setattr__(self, name, value):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>You may decide to copy an existing analyzer and change its 
+instance_label. In that case, one must stay consistent.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.config.Service.clone">
+    
+  </a>
+  <a name="clone">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    clone(self, **kwargs):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overrides <a href="heppy.framework.config.CFG.html#clone" data-type="Method" class="code">heppy.framework.config.CFG.clone</a></div>
+    
+    <pre>Make a copy of this object, redefining (or adding) some parameters, just
+like in the CMSSW python configuration files. 
+
+For example, you can do
+   module1 = cfg.Analyzer(SomeClass, 
+               param1 = value1, 
+               param2 = value2, 
+               param3 = value3, 
+               ...)
+   module2 = module1.clone(
+              param2 = othervalue,
+              newparam = newvalue)
+and module2 will inherit the configuration of module2 except for
+the value of param2, and for having an extra newparam of value newvalue
+(the latter may be useful if e.g. newparam were optional, and needed
+only when param2 == othervalue)
+
+Note that, just like in CMSSW, this is a shallow copy and not a deep copy,
+i.e. if in the example above value1 were to be an object, them module1 and
+module2 will share the same instance of value1, and not have two copies.</pre>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

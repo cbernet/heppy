@@ -1,0 +1,872 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.utils.eostools : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="module"><code>heppy.utils.eostools</code> <small>module documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.utils.html" data-type="Package" class="code">utils</a></code>
+          
+          
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p>A module to manipulate files on EOS or on the local file system. 
+Intended to have the same interface as castortools.py.</p><table class="fieldTable"></table></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id598">
+  
+  <tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#setCAFPath" data-type="Function" class="code">setCAFPath</a></td>
+    <td><span>Hack to get the CAF scripts on the PYTHONPATH</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#runXRDCommand" data-type="Function" class="code">runXRDCommand</a></td>
+    <td><span>Run an xrd command.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#runEOSCommand" data-type="Function" class="code">runEOSCommand</a></td>
+    <td><span>Run an eos command.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#isLFN" data-type="Function" class="code">isLFN</a></td>
+    <td><span>Tests whether this path is a CMS LFN (name starts with /store...)</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#isEOS" data-type="Function" class="code">isEOS</a></td>
+    <td><span>Tests whether this path is a CMS EOS (name starts with /eos...)</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#eosToLFN" data-type="Function" class="code">eosToLFN</a></td>
+    <td><span>Converts a EOS PFN to an LFN.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#lfnToPFN" data-type="Function" class="code">lfnToPFN</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#lfnToEOS" data-type="Function" class="code">lfnToEOS</a></td>
+    <td><span>Converts LFN to EOS.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#isEOSDir" data-type="Function" class="code">isEOSDir</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#isEOSFile" data-type="Function" class="code">isEOSFile</a></td>
+    <td><span class="undocumented">No summary</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#fileExists" data-type="Function" class="code">fileExists</a></td>
+    <td><span>Returns true if path is a file or directory stored locally, or on 
+EOS.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#eosDirSize" data-type="Function" class="code">eosDirSize</a></td>
+    <td><span>Returns the size of a directory on EOS in GB.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#createEOSDir" data-type="Function" class="code">createEOSDir</a></td>
+    <td><span>Makes a directory in EOS</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#mkdir" data-type="Function" class="code">mkdir</a></td>
+    <td><span>Create a directory, either on EOS or locally</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#isDirectory" data-type="Function" class="code">isDirectory</a></td>
+    <td><span>Returns True if path is a directory on EOS.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#isFile" data-type="Function" class="code">isFile</a></td>
+    <td><span>Returns True if a path is a file.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#chmod" data-type="Function" class="code">chmod</a></td>
+    <td><span>Does chmod on a file or directory</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#listFiles" data-type="Function" class="code">listFiles</a></td>
+    <td><span>Provides a list of the specified directory</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#which" data-type="Function" class="code">which</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#ls" data-type="Function" class="code">ls</a></td>
+    <td><span>Provides a simple list of the specified directory, works on EOS and 
+locally</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#ls_EOS" data-type="Function" class="code">ls_EOS</a></td>
+    <td><span>Provides a simple list of the specified directory, works on EOS only, 
+but is faster than the xrd version</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#rm" data-type="Function" class="code">rm</a></td>
+    <td><span>rm, works on EOS and locally.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#remove" data-type="Function" class="code">remove</a></td>
+    <td><span>Remove a list of files and directories, possibly recursively</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#cat" data-type="Function" class="code">cat</a></td>
+    <td><span>cat, works on EOS and locally</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#xrdcp" data-type="Function" class="code">xrdcp</a></td>
+    <td><span>Does a copy of files using xrd.</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#move" data-type="Function" class="code">move</a></td>
+    <td><span>Move filename1 to filename2 locally to the same server</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#matchingFiles" data-type="Function" class="code">matchingFiles</a></td>
+    <td><span>Return a list of files matching a regexp</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#datasetNotEmpty" data-type="Function" class="code">datasetNotEmpty</a></td>
+    <td><span class="undocumented">Undocumented</span></td>
+  </tr><tr class="function">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#cmsStage" data-type="Function" class="code">cmsStage</a></td>
+    <td><span>Runs cmsStage with LFNs if possible</span></td>
+  </tr><tr class="function private">
+    
+    <td>Function</td>
+    <td><a href="heppy.utils.eostools.html#_xrdcpSingleFile" data-type="Function" class="code">_xrdcpSingleFile</a></td>
+    <td><span>Copies a single file using xrd.</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basefunction">
+  
+  <a name="heppy.utils.eostools.setCAFPath">
+    
+  </a>
+  <a name="setCAFPath">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    setCAFPath():
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Hack to get the CAF scripts on the PYTHONPATH</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.runXRDCommand">
+    
+  </a>
+  <a name="runXRDCommand">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runXRDCommand(path, cmd, *args):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Run an xrd command.</p>
+<p>!!! Will, what is happening in case of problem? ??? At some point, 
+should return a list of lines instead of a string.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.runEOSCommand">
+    
+  </a>
+  <a name="runEOSCommand">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    runEOSCommand(path, cmd, *args):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Run an eos command.</p>
+<p>!!! Will, when the EOS command fails, it passes silently... I think we 
+should really try and raise an exception in case of problems. should be 
+possible as the return code is provided in the tuple returned by 
+runner.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.isLFN">
+    
+  </a>
+  <a name="isLFN">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    isLFN(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Tests whether this path is a CMS LFN (name starts with /store...)</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.isEOS">
+    
+  </a>
+  <a name="isEOS">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    isEOS(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Tests whether this path is a CMS EOS (name starts with /eos...)</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.eosToLFN">
+    
+  </a>
+  <a name="eosToLFN">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    eosToLFN(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Converts a EOS PFN to an LFN.</p>
+<p>Just strip out /eos/cms from path. If this string is not found, return 
+path. ??? Shouldn't we raise an exception instead?</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.lfnToPFN">
+    
+  </a>
+  <a name="lfnToPFN">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    lfnToPFN(path, tfcProt='rfio'):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Converts an LFN to a PFN. For example: 
+/store/cmst3/user/cbern/CMG/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov21
+-&gt; 
+root://eoscms//eos/cms/store/cmst3/user/cbern/CMG/TauPlusX/Run2011A-03Oct2011-v1/AOD/V2/PAT_CMG_V2_4_0/H2TAUTAU_Nov21?svcClass=cmst3&amp;stageHost=castorcms</p>
+<p>This function only checks path, and does not access the storage system. 
+If the path is in /store/cmst3, it assumes that the CMST3 svcClass is to be
+used. Otherwise, is uses the default one.</p>
+<p>??? what is tfcprot?</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.lfnToEOS">
+    
+  </a>
+  <a name="lfnToEOS">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    lfnToEOS(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Converts LFN to EOS.</p>
+<p>If path is not an LFN in the first place, return path. ??? shouldn't we 
+raise an exception?</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.isEOSDir">
+    
+  </a>
+  <a name="isEOSDir">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    isEOSDir(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns True if path is either: /store/... or /eos/cms/store/... or 
+root://eoscms.cern.ch//eos/cms/</p>
+<p>Otherwise, returns False.</p>
+<p>WARNING!! This function does not check for path existence, and returns 
+true also for plain files. !!! Will, is my summary correct?</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.isEOSFile">
+    
+  </a>
+  <a name="isEOSFile">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    isEOSFile(path, tfcProt='rfio'):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <pre>Returns True if path is a file or directory stored on EOS (checks for path existence)
+    ??? This function does not behave well if passed a non EOS path...
+    returns lots of error messages like:
+&gt;&gt;&gt; eostools.isEOSFile('/store/asdfasfd')
+Command (['ls', '/', 's', 't', 'o', 'r', 'e', '/', 'a', 's', 'd', 'f', 'a', 's', 'f', 'd', '/store']) failed with return code: 2
+ls: s: No such file or directory
+ls: t: No such file or directory
+ls: o: No such file or directory
+ls: r: No such file or directory
+ls: e: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: d: No such file or directory
+ls: f: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: f: No such file or directory
+ls: d: No such file or directory
+ls: /store: No such file or directory
+
+ls: s: No such file or directory
+ls: t: No such file or directory
+ls: o: No such file or directory
+ls: r: No such file or directory
+ls: e: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: d: No such file or directory
+ls: f: No such file or directory
+ls: a: No such file or directory
+ls: s: No such file or directory
+ls: f: No such file or directory
+ls: d: No such file or directory
+ls: /store: No such file or directory
+
+False
+    </pre>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.fileExists">
+    
+  </a>
+  <a name="fileExists">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    fileExists(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns true if path is a file or directory stored locally, or on 
+EOS.</p>
+<p>This function checks for the file or directory existence.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.eosDirSize">
+    
+  </a>
+  <a name="eosDirSize">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    eosDirSize(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns the size of a directory on EOS in GB.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.createEOSDir">
+    
+  </a>
+  <a name="createEOSDir">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    createEOSDir(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Makes a directory in EOS</p>
+<p>???Will, I'm quite worried by the fact that if this path already exists,
+and is a file, everything will 'work'. But then we have a file, and not a 
+directory, while we expect a dir...</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.mkdir">
+    
+  </a>
+  <a name="mkdir">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    mkdir(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Create a directory, either on EOS or locally</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.isDirectory">
+    
+  </a>
+  <a name="isDirectory">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    isDirectory(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns True if path is a directory on EOS.</p>
+<p>Tests for file existence. This function returns False for EOS files, and
+crashes with local paths</p>
+<p>???Will, this function also seems to work for paths like: /eos/cms/... 
+??? I think that it should work also for local files, see isFile.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.isFile">
+    
+  </a>
+  <a name="isFile">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    isFile(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Returns True if a path is a file.</p>
+<p>Tests for file existence. Returns False for directories. Works on EOS 
+and local paths.</p>
+<p>???This function works with local files, so not the same as 
+isDirectory... isFile and isDirectory should behave the same.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.chmod">
+    
+  </a>
+  <a name="chmod">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    chmod(path, mode):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Does chmod on a file or directory</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.listFiles">
+    
+  </a>
+  <a name="listFiles">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    listFiles(path, rec=False, full_info=False):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Provides a list of the specified directory</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.which">
+    
+  </a>
+  <a name="which">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    which(cmd):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.ls">
+    
+  </a>
+  <a name="ls">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    ls(path, rec=False):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Provides a simple list of the specified directory, works on EOS and 
+locally</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.ls_EOS">
+    
+  </a>
+  <a name="ls_EOS">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    ls_EOS(path, rec=False):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Provides a simple list of the specified directory, works on EOS only, 
+but is faster than the xrd version</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.rm">
+    
+  </a>
+  <a name="rm">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    rm(path, rec=False):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>rm, works on EOS and locally.</p>
+<p>Colin: should implement a -f mode and a confirmation when deleting dirs 
+recursively.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.remove">
+    
+  </a>
+  <a name="remove">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    remove(files, rec=False):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Remove a list of files and directories, possibly recursively</p>
+<p>Colin: Is that obsolete? why not use rm?</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.cat">
+    
+  </a>
+  <a name="cat">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    cat(path):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>cat, works on EOS and locally</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.xrdcp">
+    
+  </a>
+  <a name="xrdcp">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    xrdcp(src, dest):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Does a copy of files using xrd.</p>
+<p>Colin: implement a generic cp interface as done for rm, ls, etc?</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction private">
+  
+  <a name="heppy.utils.eostools._xrdcpSingleFile">
+    
+  </a>
+  <a name="_xrdcpSingleFile">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    _xrdcpSingleFile(pfn_src, pfn_dest):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Copies a single file using xrd.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.move">
+    
+  </a>
+  <a name="move">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    move(src, dest):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Move filename1 to filename2 locally to the same server</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.matchingFiles">
+    
+  </a>
+  <a name="matchingFiles">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    matchingFiles(path, regexp):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Return a list of files matching a regexp</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.datasetNotEmpty">
+    
+  </a>
+  <a name="datasetNotEmpty">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    datasetNotEmpty(path, regexp):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div class="undocumented">Undocumented</div>
+  </div>
+</div><div class="basefunction">
+  
+  <a name="heppy.utils.eostools.cmsStage">
+    
+  </a>
+  <a name="cmsStage">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    cmsStage(absDestDir, files, force):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>Runs cmsStage with LFNs if possible</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>

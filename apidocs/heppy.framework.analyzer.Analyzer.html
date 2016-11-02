@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+          "DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <title>heppy.framework.analyzer.Analyzer : API documentation</title>
+
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+    <link type="text/css" href="bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="apidocs.css" rel="stylesheet" />
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default">
+      <div class="container">
+        <div class="navbar-header">
+          <a href="index.html" class="navbar-brand">
+            heppy API Documentation
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div id="showPrivate">
+      <button onclick="togglePrivate()" class="btn btn-link">Toggle Private API</button>
+    </div>
+
+    <div class="container">
+
+      <div class="page-header">
+        <h1 class="class"><code>heppy.framework.analyzer.Analyzer(<span title="object">object</span>)</code> <small>class documentation</small></h1>
+
+        <span id="partOf">
+          Part of <code><a href="heppy.html" data-type="Package" class="code">heppy</a>.<a href="heppy.framework.html" data-type="Package" class="code">framework</a>.<a href="heppy.framework.analyzer.html" data-type="Module" class="code">analyzer</a></code>
+          
+          <a href="classIndex.html#heppy.framework.analyzer.Analyzer">(View In Hierarchy)</a>
+        </span>
+      </div>
+
+      <div class="extrasDocstring">
+        <p>Known subclasses: <a href="heppy.analyzers.ChargedHadronsFromB.ChargedHadronsFromB.html" data-type="Class" class="code">heppy.analyzers.ChargedHadronsFromB.ChargedHadronsFromB</a>, <a href="heppy.analyzers.Counter.Counter.html" data-type="Class" class="code">heppy.analyzers.Counter.Counter</a>, <a href="heppy.analyzers.EventFilter.EventFilter.html" data-type="Class" class="code">heppy.analyzers.EventFilter.EventFilter</a>, <a href="heppy.analyzers.EventTextOutput.EventTextOutput.html" data-type="Class" class="code">heppy.analyzers.EventTextOutput.EventTextOutput</a>, <a href="heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer</a>, <a href="heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer</a>, <a href="heppy.analyzers.examples.simple.Printer.Printer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.Printer.Printer</a>, <a href="heppy.analyzers.examples.simple.RandomAnalyzer.RandomAnalyzer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.RandomAnalyzer.RandomAnalyzer</a>, <a href="heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer</a>, <a href="heppy.analyzers.examples.simple.Stopper.Stopper.html" data-type="Class" class="code">heppy.analyzers.examples.simple.Stopper.Stopper</a>, <a href="heppy.analyzers.examples.ttbar.BTagging.BTagging.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.BTagging.BTagging</a>, <a href="heppy.analyzers.examples.ttbar.selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.selection.Selection</a>, <a href="heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer</a>, <a href="heppy.analyzers.examples.zh.selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.zh.selection.Selection</a>, <a href="heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer</a>, <a href="heppy.analyzers.examples.zh_had.JetEnergyComputer.JetEnergyComputer.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.JetEnergyComputer.JetEnergyComputer</a>, <a href="heppy.analyzers.examples.zh_had.Selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.Selection.Selection</a>, <a href="heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer</a>, <a href="heppy.analyzers.examples.zh_had.ZHReconstruction.ZHReconstruction.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.ZHReconstruction.ZHReconstruction</a>, <a href="heppy.analyzers.fcc.JetClusterizer.JetClusterizer.html" data-type="Class" class="code">heppy.analyzers.fcc.JetClusterizer.JetClusterizer</a>, <a href="heppy.analyzers.fcc.Reader.Reader.html" data-type="Class" class="code">heppy.analyzers.fcc.Reader.Reader</a>, <a href="heppy.analyzers.Filter.Filter.html" data-type="Class" class="code">heppy.analyzers.Filter.Filter</a>, <a href="heppy.analyzers.GaussianSmearer.GaussianSmearer.html" data-type="Class" class="code">heppy.analyzers.GaussianSmearer.GaussianSmearer</a>, <a href="heppy.analyzers.GenAnalyzer.GenAnalyzer.html" data-type="Class" class="code">heppy.analyzers.GenAnalyzer.GenAnalyzer</a>, <a href="heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer.html" data-type="Class" class="code">heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer</a>, <a href="heppy.analyzers.Gun.Gun.html" data-type="Class" class="code">heppy.analyzers.Gun.Gun</a>, <a href="heppy.analyzers.Histogrammer.Histogrammer.html" data-type="Class" class="code">heppy.analyzers.Histogrammer.Histogrammer</a>, <a href="heppy.analyzers.ImpactParameter.ImpactParameter.html" data-type="Class" class="code">heppy.analyzers.ImpactParameter.ImpactParameter</a>, <a href="heppy.analyzers.IsolationAnalyzer.IsolationAnalyzer.html" data-type="Class" class="code">heppy.analyzers.IsolationAnalyzer.IsolationAnalyzer</a>, <a href="heppy.analyzers.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.lcio.MCParticlePrinter.MCParticlePrinter.html" data-type="Class" class="code">heppy.analyzers.lcio.MCParticlePrinter.MCParticlePrinter</a>, <a href="heppy.analyzers.LeptonFsrDresser.LeptonFsrDresser.html" data-type="Class" class="code">heppy.analyzers.LeptonFsrDresser.LeptonFsrDresser</a>, <a href="heppy.analyzers.M3Builder.M3Builder.html" data-type="Class" class="code">heppy.analyzers.M3Builder.M3Builder</a>, <a href="heppy.analyzers.Masker.Masker.html" data-type="Class" class="code">heppy.analyzers.Masker.Masker</a>, <a href="heppy.analyzers.Matcher.Matcher.html" data-type="Class" class="code">heppy.analyzers.Matcher.Matcher</a>, <a href="heppy.analyzers.Merger.Merger.html" data-type="Class" class="code">heppy.analyzers.Merger.Merger</a>, <a href="heppy.analyzers.METBuilder.METBuilder.html" data-type="Class" class="code">heppy.analyzers.METBuilder.METBuilder</a>, <a href="heppy.analyzers.MissingEnergyBuilder.MissingEnergyBuilder.html" data-type="Class" class="code">heppy.analyzers.MissingEnergyBuilder.MissingEnergyBuilder</a>, <a href="heppy.analyzers.MTW.MTW.html" data-type="Class" class="code">heppy.analyzers.MTW.MTW</a>, <a href="heppy.analyzers.P4SumBuilder.P4SumBuilder.html" data-type="Class" class="code">heppy.analyzers.P4SumBuilder.P4SumBuilder</a>, <a href="heppy.analyzers.PapasParticlesComparer.PapasParticlesComparer.html" data-type="Class" class="code">heppy.analyzers.PapasParticlesComparer.PapasParticlesComparer</a>, <a href="heppy.analyzers.PapasPF.PapasPF.html" data-type="Class" class="code">heppy.analyzers.PapasPF.PapasPF</a>, <a href="heppy.analyzers.PapasPFBlockBuilder.PapasPFBlockBuilder.html" data-type="Class" class="code">heppy.analyzers.PapasPFBlockBuilder.PapasPFBlockBuilder</a>, <a href="heppy.analyzers.PapasPFReconstructor.PapasPFReconstructor.html" data-type="Class" class="code">heppy.analyzers.PapasPFReconstructor.PapasPFReconstructor</a>, <a href="heppy.analyzers.PapasSim.PapasSim.html" data-type="Class" class="code">heppy.analyzers.PapasSim.PapasSim</a>, <a href="heppy.analyzers.ParametrizedBTagger.ParametrizedBTagger.html" data-type="Class" class="code">heppy.analyzers.ParametrizedBTagger.ParametrizedBTagger</a>, <a href="heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer</a>, <a href="heppy.analyzers.PDebugger.PDebugger.html" data-type="Class" class="code">heppy.analyzers.PDebugger.PDebugger</a>, <a href="heppy.analyzers.RecoilBuilder.RecoilBuilder.html" data-type="Class" class="code">heppy.analyzers.RecoilBuilder.RecoilBuilder</a>, <a href="heppy.analyzers.ResonanceBuilder.ResonanceBuilder.html" data-type="Class" class="code">heppy.analyzers.ResonanceBuilder.ResonanceBuilder</a>, <a href="heppy.analyzers.Subtractor.Subtractor.html" data-type="Class" class="code">heppy.analyzers.Subtractor.Subtractor</a>, <a href="heppy.analyzers.tmp.ResonanceBuilder.html" data-type="Class" class="code">heppy.analyzers.tmp.ResonanceBuilder</a></p>
+      </div>
+
+      <div class="moduleDocstring">
+        <div><p>Base Analyzer class. Used in Looper.</p>
+<p>Your custom analyzers should inherit from this class</p><table class="fieldTable"></table></div>
+      </div>
+
+      <div id="splitTables">
+        <table class="children sortable" id="id207">
+  
+  <tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#__init__" data-type="Method" class="code">__init__</a></td>
+    <td><span>Create an analyzer.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#beginLoop" data-type="Method" class="code">beginLoop</a></td>
+    <td><span>Automatically called by Looper, for all analyzers.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#endLoop" data-type="Method" class="code">endLoop</a></td>
+    <td><span>Automatically called by Looper, for all analyzers.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#process" data-type="Method" class="code">process</a></td>
+    <td><span>Automatically called by Looper, for all analyzers. each analyzer in the 
+sequence will be passed the same event instance. each analyzer can access, 
+modify, and store event information, of any type.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#write" data-type="Method" class="code">write</a></td>
+    <td><span>Called by Looper.write, for all analyzers. Just overload it if you have 
+histograms to write.</span></td>
+  </tr><tr class="method">
+    
+    <td>Method</td>
+    <td><a href="heppy.framework.analyzer.Analyzer.html#__str__" data-type="Method" class="code">__str__</a></td>
+    <td><span>A multipurpose printout. Should do the job for most analyzers.</span></td>
+  </tr>
+</table>
+        
+
+          
+      </div>
+
+      <div id="childList">
+
+        <div class="basemethod">
+  
+  <a name="heppy.framework.analyzer.Analyzer.__init__">
+    
+  </a>
+  <a name="__init__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __init__(self, cfg_ana, cfg_comp, looperName):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overridden in <a href="heppy.analyzers.fcc.JetClusterizer.JetClusterizer.html" data-type="Class" class="code">heppy.analyzers.fcc.JetClusterizer.JetClusterizer</a>, <a href="heppy.analyzers.PapasParticlesComparer.PapasParticlesComparer.html" data-type="Class" class="code">heppy.analyzers.PapasParticlesComparer.PapasParticlesComparer</a>, <a href="heppy.analyzers.PapasPF.PapasPF.html" data-type="Class" class="code">heppy.analyzers.PapasPF.PapasPF</a>, <a href="heppy.analyzers.PapasPFBlockBuilder.PapasPFBlockBuilder.html" data-type="Class" class="code">heppy.analyzers.PapasPFBlockBuilder.PapasPFBlockBuilder</a>, <a href="heppy.analyzers.PapasPFReconstructor.PapasPFReconstructor.html" data-type="Class" class="code">heppy.analyzers.PapasPFReconstructor.PapasPFReconstructor</a>, <a href="heppy.analyzers.PapasSim.PapasSim.html" data-type="Class" class="code">heppy.analyzers.PapasSim.PapasSim</a>, <a href="heppy.analyzers.PDebugger.PDebugger.html" data-type="Class" class="code">heppy.analyzers.PDebugger.PDebugger</a></div>
+    
+    <div><p>Create an analyzer.</p>
+<p>Parameters (also stored as attributes for later use): cfg_ana: 
+configuration parameters for this analyzer (e.g. a pt cut) cfg_comp: 
+configuration parameters for the data or MC component (e.g. DYJets) 
+looperName: name of the Looper which runs this analyzer.</p>
+<p>Attributes: dirName : analyzer directory, where you can write anything 
+you want</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.analyzer.Analyzer.beginLoop">
+    
+  </a>
+  <a name="beginLoop">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    beginLoop(self, setup):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overridden in <a href="heppy.analyzers.EventTextOutput.EventTextOutput.html" data-type="Class" class="code">heppy.analyzers.EventTextOutput.EventTextOutput</a>, <a href="heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer</a>, <a href="heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer</a>, <a href="heppy.analyzers.examples.simple.Printer.Printer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.Printer.Printer</a>, <a href="heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer</a>, <a href="heppy.analyzers.examples.ttbar.selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.selection.Selection</a>, <a href="heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer</a>, <a href="heppy.analyzers.examples.zh.selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.zh.selection.Selection</a>, <a href="heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer</a>, <a href="heppy.analyzers.examples.zh_had.Selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.Selection.Selection</a>, <a href="heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer</a>, <a href="heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer.html" data-type="Class" class="code">heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer</a>, <a href="heppy.analyzers.Histogrammer.Histogrammer.html" data-type="Class" class="code">heppy.analyzers.Histogrammer.Histogrammer</a>, <a href="heppy.analyzers.ImpactParameter.ImpactParameter.html" data-type="Class" class="code">heppy.analyzers.ImpactParameter.ImpactParameter</a>, <a href="heppy.analyzers.IsolationAnalyzer.IsolationAnalyzer.html" data-type="Class" class="code">heppy.analyzers.IsolationAnalyzer.IsolationAnalyzer</a>, <a href="heppy.analyzers.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.Matcher.Matcher.html" data-type="Class" class="code">heppy.analyzers.Matcher.Matcher</a>, <a href="heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer</a></div>
+    
+    <div><p>Automatically called by Looper, for all analyzers.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.analyzer.Analyzer.endLoop">
+    
+  </a>
+  <a name="endLoop">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    endLoop(self, setup):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overridden in <a href="heppy.analyzers.EventTextOutput.EventTextOutput.html" data-type="Class" class="code">heppy.analyzers.EventTextOutput.EventTextOutput</a></div>
+    
+    <div><p>Automatically called by Looper, for all analyzers.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.analyzer.Analyzer.process">
+    
+  </a>
+  <a name="process">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    process(self, event):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overridden in <a href="heppy.analyzers.ChargedHadronsFromB.ChargedHadronsFromB.html" data-type="Class" class="code">heppy.analyzers.ChargedHadronsFromB.ChargedHadronsFromB</a>, <a href="heppy.analyzers.Counter.Counter.html" data-type="Class" class="code">heppy.analyzers.Counter.Counter</a>, <a href="heppy.analyzers.EventFilter.EventFilter.html" data-type="Class" class="code">heppy.analyzers.EventFilter.EventFilter</a>, <a href="heppy.analyzers.EventTextOutput.EventTextOutput.html" data-type="Class" class="code">heppy.analyzers.EventTextOutput.EventTextOutput</a>, <a href="heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer</a>, <a href="heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer</a>, <a href="heppy.analyzers.examples.simple.Printer.Printer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.Printer.Printer</a>, <a href="heppy.analyzers.examples.simple.RandomAnalyzer.RandomAnalyzer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.RandomAnalyzer.RandomAnalyzer</a>, <a href="heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer</a>, <a href="heppy.analyzers.examples.simple.Stopper.Stopper.html" data-type="Class" class="code">heppy.analyzers.examples.simple.Stopper.Stopper</a>, <a href="heppy.analyzers.examples.ttbar.BTagging.BTagging.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.BTagging.BTagging</a>, <a href="heppy.analyzers.examples.ttbar.selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.selection.Selection</a>, <a href="heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer</a>, <a href="heppy.analyzers.examples.zh.selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.zh.selection.Selection</a>, <a href="heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer</a>, <a href="heppy.analyzers.examples.zh_had.JetEnergyComputer.JetEnergyComputer.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.JetEnergyComputer.JetEnergyComputer</a>, <a href="heppy.analyzers.examples.zh_had.Selection.Selection.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.Selection.Selection</a>, <a href="heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer</a>, <a href="heppy.analyzers.examples.zh_had.ZHReconstruction.ZHReconstruction.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.ZHReconstruction.ZHReconstruction</a>, <a href="heppy.analyzers.fcc.JetClusterizer.JetClusterizer.html" data-type="Class" class="code">heppy.analyzers.fcc.JetClusterizer.JetClusterizer</a>, <a href="heppy.analyzers.fcc.Reader.Reader.html" data-type="Class" class="code">heppy.analyzers.fcc.Reader.Reader</a>, <a href="heppy.analyzers.Filter.Filter.html" data-type="Class" class="code">heppy.analyzers.Filter.Filter</a>, <a href="heppy.analyzers.GaussianSmearer.GaussianSmearer.html" data-type="Class" class="code">heppy.analyzers.GaussianSmearer.GaussianSmearer</a>, <a href="heppy.analyzers.GenAnalyzer.GenAnalyzer.html" data-type="Class" class="code">heppy.analyzers.GenAnalyzer.GenAnalyzer</a>, <a href="heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer.html" data-type="Class" class="code">heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer</a>, <a href="heppy.analyzers.Gun.Gun.html" data-type="Class" class="code">heppy.analyzers.Gun.Gun</a>, <a href="heppy.analyzers.Histogrammer.Histogrammer.html" data-type="Class" class="code">heppy.analyzers.Histogrammer.Histogrammer</a>, <a href="heppy.analyzers.ImpactParameter.ImpactParameter.html" data-type="Class" class="code">heppy.analyzers.ImpactParameter.ImpactParameter</a>, <a href="heppy.analyzers.IsolationAnalyzer.IsolationAnalyzer.html" data-type="Class" class="code">heppy.analyzers.IsolationAnalyzer.IsolationAnalyzer</a>, <a href="heppy.analyzers.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.lcio.MCParticlePrinter.MCParticlePrinter.html" data-type="Class" class="code">heppy.analyzers.lcio.MCParticlePrinter.MCParticlePrinter</a>, <a href="heppy.analyzers.LeptonFsrDresser.LeptonFsrDresser.html" data-type="Class" class="code">heppy.analyzers.LeptonFsrDresser.LeptonFsrDresser</a>, <a href="heppy.analyzers.M3Builder.M3Builder.html" data-type="Class" class="code">heppy.analyzers.M3Builder.M3Builder</a>, <a href="heppy.analyzers.Masker.Masker.html" data-type="Class" class="code">heppy.analyzers.Masker.Masker</a>, <a href="heppy.analyzers.Matcher.Matcher.html" data-type="Class" class="code">heppy.analyzers.Matcher.Matcher</a>, <a href="heppy.analyzers.Merger.Merger.html" data-type="Class" class="code">heppy.analyzers.Merger.Merger</a>, <a href="heppy.analyzers.METBuilder.METBuilder.html" data-type="Class" class="code">heppy.analyzers.METBuilder.METBuilder</a>, <a href="heppy.analyzers.MissingEnergyBuilder.MissingEnergyBuilder.html" data-type="Class" class="code">heppy.analyzers.MissingEnergyBuilder.MissingEnergyBuilder</a>, <a href="heppy.analyzers.MTW.MTW.html" data-type="Class" class="code">heppy.analyzers.MTW.MTW</a>, <a href="heppy.analyzers.P4SumBuilder.P4SumBuilder.html" data-type="Class" class="code">heppy.analyzers.P4SumBuilder.P4SumBuilder</a>, <a href="heppy.analyzers.PapasParticlesComparer.PapasParticlesComparer.html" data-type="Class" class="code">heppy.analyzers.PapasParticlesComparer.PapasParticlesComparer</a>, <a href="heppy.analyzers.PapasPF.PapasPF.html" data-type="Class" class="code">heppy.analyzers.PapasPF.PapasPF</a>, <a href="heppy.analyzers.PapasPFBlockBuilder.PapasPFBlockBuilder.html" data-type="Class" class="code">heppy.analyzers.PapasPFBlockBuilder.PapasPFBlockBuilder</a>, <a href="heppy.analyzers.PapasPFReconstructor.PapasPFReconstructor.html" data-type="Class" class="code">heppy.analyzers.PapasPFReconstructor.PapasPFReconstructor</a>, <a href="heppy.analyzers.PapasSim.PapasSim.html" data-type="Class" class="code">heppy.analyzers.PapasSim.PapasSim</a>, <a href="heppy.analyzers.ParametrizedBTagger.ParametrizedBTagger.html" data-type="Class" class="code">heppy.analyzers.ParametrizedBTagger.ParametrizedBTagger</a>, <a href="heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer</a>, <a href="heppy.analyzers.PDebugger.PDebugger.html" data-type="Class" class="code">heppy.analyzers.PDebugger.PDebugger</a>, <a href="heppy.analyzers.RecoilBuilder.RecoilBuilder.html" data-type="Class" class="code">heppy.analyzers.RecoilBuilder.RecoilBuilder</a>, <a href="heppy.analyzers.ResonanceBuilder.ResonanceBuilder.html" data-type="Class" class="code">heppy.analyzers.ResonanceBuilder.ResonanceBuilder</a>, <a href="heppy.analyzers.Subtractor.Subtractor.html" data-type="Class" class="code">heppy.analyzers.Subtractor.Subtractor</a>, <a href="heppy.analyzers.tmp.ResonanceBuilder.html" data-type="Class" class="code">heppy.analyzers.tmp.ResonanceBuilder</a></div>
+    
+    <div><p>Automatically called by Looper, for all analyzers. each analyzer in the 
+sequence will be passed the same event instance. each analyzer can access, 
+modify, and store event information, of any type.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.analyzer.Analyzer.write">
+    
+  </a>
+  <a name="write">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    write(self, setup):
+    
+  </div>
+  <div class="docstring functionBody">
+    <div class="interfaceinfo">overridden in <a href="heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.IsoParticleTreeProducer.IsoParticleTreeProducer</a>, <a href="heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.objects.LeptonTreeProducer.LeptonTreeProducer</a>, <a href="heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer</a>, <a href="heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.ttbar.TTbarTreeProducer.TTbarTreeProducer</a>, <a href="heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer</a>, <a href="heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer.html" data-type="Class" class="code">heppy.analyzers.examples.zh_had.TreeProducer.TreeProducer</a>, <a href="heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer.html" data-type="Class" class="code">heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer</a>, <a href="heppy.analyzers.JetTreeProducer.JetTreeProducer.html" data-type="Class" class="code">heppy.analyzers.JetTreeProducer.JetTreeProducer</a>, <a href="heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer.html" data-type="Class" class="code">heppy.analyzers.ParticleTreeProducer.ParticleTreeProducer</a></div>
+    
+    <div><p>Called by Looper.write, for all analyzers. Just overload it if you have 
+histograms to write.</p><table class="fieldTable"></table></div>
+  </div>
+</div><div class="basemethod">
+  
+  <a name="heppy.framework.analyzer.Analyzer.__str__">
+    
+  </a>
+  <a name="__str__">
+    
+  </a>
+  <div class="functionHeader">
+    
+    def
+    __str__(self):
+    
+  </div>
+  <div class="docstring functionBody">
+    
+    
+    <div><p>A multipurpose printout. Should do the job for most analyzers.</p><table class="fieldTable"></table></div>
+  </div>
+</div>
+
+      </div>
+      <address>
+        <a href="index.html">API Documentation</a> for heppy, generated by <a href="https://github.com/twisted/pydoctor/">pydoctor</a> at 2016-11-02 16:20:55.
+      </address>
+
+    </div>
+
+    <script type="text/javascript" src="pydoctor.js"></script>
+
+  </body>
+</html>
