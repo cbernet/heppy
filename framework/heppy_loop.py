@@ -234,6 +234,6 @@ def create_parser():
                       dest="input",
                       type="str",
                       help="input ROOT file",
-                      default="FCCDelphesOutput.root")
+                      default=None)
 
     return parser
