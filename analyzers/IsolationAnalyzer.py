@@ -19,29 +19,32 @@ class IsolationAnalyzer(Analyzer):
       iso_area = EtaPhiCircle(0.4)
     )
     
-    * leptons : collection of leptons for which the isolation should be computed
+    * leptons : collection of leptons for which the isolation
+    should be computed
 
-    * particles : collection of particles w/r to which the leptons should be isolated. 
-
-    The particles are assumed to have a pdgid equal to 
-    +- 11 (electrons)
-    +- 13 (muons)
-    +- 211 (all other charged particles) 
-    22 (photons)
-    130 (all other neutral particles) 
+    * particles : collection of particles w/r to which the leptons
+    should be isolated. 
 
     If one of the particles considered in the isolation calculation is 
     the lepton (is the same python object), it is discarded. 
 
-    For each pdgid, the isolation result is attached to the lepton.
-    For example, to keep track of isolation w/r to charged hadrons, an 
-    attribute lepton.iso_211 is attached to each lepton. It contains:
-    - lepton.iso_211.sumpt: sum pT of all charged hadrons in a cone around the lepton
-    - lepton.iso_211.sume: sum E for these charged hadrons
-    - lepton.iso_211.num: number of such charged hadrons 
+    The other particles in the isolation cone are sorted by type:
+    - 11: (other) electrons
+    - 13: (other) muons
+    - 211: all other charged particles
+    - 22: photons (particles of pdgid 22)
+    - 130: all other neutral particles
 
-    Additionally, the attribute lepton.iso is attached to the lepton. it contains 
-    sumpt, sume, and num for charged hadrons, photons, and neutral hadrons together. 
+    For each type, the isolation result is attached to the lepton.
+    For example, to keep track of isolation w/r to charged particles, an 
+    attribute lepton.iso_211 is attached to each lepton. It contains:
+    - lepton.iso_211.sumpt: sum pT of all charged particles in a cone around
+                            the lepton
+    - lepton.iso_211.sume: sum E for these charged particles
+    - lepton.iso_211.num: number of such charged particles 
+
+    Additionally, the attribute lepton.iso is attached to the lepton.
+    it contains sumpt, sume, and num for all particles combined.
     
     See IsolationComputer and IsolationInfo for more information.
     '''
