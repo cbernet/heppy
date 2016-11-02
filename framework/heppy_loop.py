@@ -42,6 +42,10 @@ def runLoopAsync(comp, outDir, configName, options):
         raise
 
 def runLoop( comp, outDir, config, options):
+   
+    if options.input is not None:
+        comp.files = [options.input]
+   
     fullName = '/'.join( [outDir, comp.name ] )
     # import pdb; pdb.set_trace()
     config.components = [comp]
@@ -226,5 +230,10 @@ def create_parser():
                       type="int",
                       help="number of parallel tasks to span",
                       default=10)
+    parser.add_option("-I", "--input",
+                      dest="input",
+                      type="str",
+                      help="input ROOT file",
+                      default=None)
 
     return parser

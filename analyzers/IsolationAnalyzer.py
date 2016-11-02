@@ -6,27 +6,27 @@ import pprint
 pdgids = [211, 22, 130, 11, 13]
 
 class IsolationAnalyzer(Analyzer):
-    '''Compute lepton isolation.  
+    '''Compute candidate (e.g. lepton or photon) isolation.  
 
     Example:
 
     from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
     from heppy.particles.isolation import EtaPhiCircle
-    iso_leptons = cfg.Analyzer(
+    iso_candidates = cfg.Analyzer(
     IsolationAnalyzer,
-      leptons = 'leptons',
+      candidates = 'candidates',
       particles = 'particles',
       iso_area = EtaPhiCircle(0.4)
     )
     
-    * leptons : collection of leptons for which the isolation
-    should be computed
 
-    * particles : collection of particles w/r to which the leptons
-    should be isolated. 
+    * candidates : collection of candidates for which the isolation should be computed
+
+    * particles : collection of particles w/r to which the candidates should be isolated. 
+
 
     If one of the particles considered in the isolation calculation is 
-    the lepton (is the same python object), it is discarded. 
+    the candidate (is the same python object), it is discarded. 
 
     The other particles in the isolation cone are sorted by type:
     - 11: (other) electrons
@@ -35,15 +35,15 @@ class IsolationAnalyzer(Analyzer):
     - 22: photons (particles of pdgid 22)
     - 130: all other neutral particles
 
-    For each type, the isolation result is attached to the lepton.
+    For each type, the isolation result is attached to the candidate.
     For example, to keep track of isolation w/r to charged particles, an 
-    attribute lepton.iso_211 is attached to each lepton. It contains:
-    - lepton.iso_211.sumpt: sum pT of all charged particles in a cone around
-                            the lepton
-    - lepton.iso_211.sume: sum E for these charged particles
-    - lepton.iso_211.num: number of such charged particles 
+    attribute candidate.iso_211 is attached to each candidate. It contains:
+    - candidate.iso_211.sumpt: sum pT of all charged particles in a cone around
+                            the candidate
+    - candidate.iso_211.sume: sum E for these charged particles
+    - candidate.iso_211.num: number of such charged particles 
 
-    Additionally, the attribute lepton.iso is attached to the lepton.
+    Additionally, the attribute candidate.iso is attached to the candidate.
     it contains sumpt, sume, and num for all particles combined.
     
     See IsolationComputer and IsolationInfo for more information.
@@ -61,19 +61,19 @@ class IsolationAnalyzer(Analyzer):
             
     def process(self, event):
         particles = getattr(event, self.cfg_ana.particles)
-        leptons = getattr(event, self.cfg_ana.leptons)
-        for lepton in leptons:
-            isosum = IsolationInfo('all', lepton)
-            self.logger.info(str(lepton))
+        candidates = getattr(event, self.cfg_ana.candidates)
+        for candidate in candidates:
+            isosum = IsolationInfo('all', candidate)
+            self.logger.info(str(candidate))
             for pdgid in pdgids:
                 sel_ptcs = [ptc for ptc in particles if abs(self.pdgid(ptc))==pdgid]
-                iso = self.iso_computers[pdgid].compute(lepton, sel_ptcs)
+                iso = self.iso_computers[pdgid].compute(candidate, sel_ptcs)
                 isosum += iso 
-                setattr(lepton, 'iso_{pdgid}'.format(pdgid=pdgid), iso)
+                setattr(candidate, 'iso_{pdgid}'.format(pdgid=pdgid), iso)
                 self.logger.info(str(iso))
                 if iso.num:
                     self.logger.info(pprint.pformat(iso.particles))             
-            lepton.iso = isosum
+            candidate.iso = isosum
             self.logger.info(str(isosum))
         
     def pdgid(self, ptc): 

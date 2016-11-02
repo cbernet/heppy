@@ -10,15 +10,7 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-    #files = ['example.root']
-    files = ['root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_1.root',
-             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_2.root',
-             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_3.root',
-             'root://eospublic.cern.ch//eos/fcc/users/h/helsens/DelphesOutputs/ttbar_13TeV/FCCDelphesOutput_ttbar13TeV_4.root',
-
-        #'/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/FCC/FCCSW/FCCDelphesOutput.root'
-             ]
-    #files = ['FCCDelphes_ClementOutput1.root']
+     files = ["FCCDelphesOutput.root"]
 )
 selectedComponents = [comp]
 
@@ -30,15 +22,12 @@ source = cfg.Analyzer(
 
     jets = 'jets',
     bTags = 'bTags',
-    jetsToBTags = 'jetsToBTags',
 
     electrons = 'electrons',
     electronITags = 'electronITags',
-    electronsToITags = 'electronsToITags',
 
     muons = 'muons',
     muonITags = 'muonITags',
-    muonsToITags = 'muonsToITags',
 
     photons = 'photons',
     met = 'met',
