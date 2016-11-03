@@ -1,4 +1,4 @@
-'''some module doc'''
+'''Fill a tree with jet and jet particle flow information'''
 
 from heppy.framework.analyzer import Analyzer
 from heppy.statistics.tree import Tree
@@ -7,10 +7,38 @@ from heppy.analyzers.ntuple import *
 from ROOT import TFile
 
 class JetTreeProducer(Analyzer):
-    '''Some class doc'''
+    '''Fill a tree with jet and jet component information
+    
+    Example::
+    
+        from heppy.analyzers.JetTreeProducer import JetTreeProducer
+        jet_tree = cfg.Analyzer(
+            JetTreeProducer,
+            tree_name = 'events',
+            tree_title = 'jets',
+            jets = 'gen_jets'
+            )
+
+    Variables in the tree, for the first two jets in the input jet
+    collection.
+     - jet p4
+     - for each component (charged hadrons, neutral hadrons, photons, ...):
+         - number of such particles of this type
+         - sum pT of these particles
+         - sum E of these particles
+         
+    If you want these quantities for the jets matched to your input jets,
+    run a Matcher on these jets before the JetTreeProducer.
+    See heppy.test.jet_tree_sequence_cff for more information
+    
+    @param tree_name: name of the tree in the output root file
+    @param tree_title: title of the tree
+    @jets: input jet collection
+    '''
 
     def beginLoop(self, setup):
-        super(JetTreeProducer, self).beginLoop(setup)
+        '''create the output root file and book the tree.
+        '''
         self.rootfile = TFile('/'.join([self.dirName,
                                         'jet_tree.root']),
                               'recreate')
@@ -26,6 +54,11 @@ class JetTreeProducer(Analyzer):
  
 
     def process(self, event):
+        '''process the event.
+        
+        The event must contain:
+         - self.cfg_ana.jets: the jet collection to be studied. 
+        '''
         self.tree.reset()
         if hasattr(event, 'eventId'): 
             fill(self.tree, 'event', event.eventId)
@@ -54,6 +87,7 @@ class JetTreeProducer(Analyzer):
         
         
     def write(self, setup):
-        self.rootfile.Write()
+        '''write root file.
+        '''
         self.rootfile.Close()
         
