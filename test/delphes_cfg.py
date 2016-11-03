@@ -30,9 +30,9 @@ from EventStore import EventStore as Events
 # currently treating electrons and muons transparently.
 # could use the same modules to have a collection of electrons
 # and a collection of muons 
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_leptons',
     output = 'leptons',
     input_objects = 'gen_particles_stable',
@@ -55,7 +55,7 @@ def relative_isolation(lepton):
     return sumpt
 
 sel_iso_leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons',
@@ -63,7 +63,7 @@ sel_iso_leptons = cfg.Analyzer(
 )
 
 gen_jets_30 = cfg.Analyzer(
-    Filter,
+    Selector,
     'gen_jets_30',
     output = 'gen_jets_30',
     input_objects = 'gen_jets',
@@ -79,7 +79,7 @@ match_jet_leptons = cfg.Analyzer(
 )
 
 sel_jets_nolepton = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_jets_nolepton',
     output = 'sel_jets_nolepton',
     input_objects = 'gen_jets_30',

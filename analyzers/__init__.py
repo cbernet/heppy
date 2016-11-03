@@ -8,4 +8,4 @@ Specific analyzers are organized in child packages:
  - L{heppy.analyzers.cms}: CMS analyzers
  - L{heppy.analyzers.fcc}: FCC analyzers
  - L{heppy.analyzers.lcio}: ILC / CLIC analyzers
-'''
+

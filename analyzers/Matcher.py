@@ -65,7 +65,7 @@ class Matcher(Analyzer):
     
     would create for each papas_jet: papas_jet.gen_jets_match
     that is a match object with 2 attributes: particle, distance
-    in the more complicated case, just need to use a Filter to select the particles,
+    in the more complicated case, just need to use a Selector to select the particles,
     and have several Matcher instances 
 
     note: one cannot attach the distance to the matched particle as 

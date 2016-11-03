@@ -76,14 +76,14 @@ source = cfg.Analyzer(
 # check papas_cfg.py for more information
 from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
 
-# Use a Filter to select leptons from the output of papas simulation.
+# Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
+# we could use two different instances for the Selector module
 # to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 leptons_true = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_leptons',
     output = 'leptons_true',
     input_objects = 'rec_particles',
@@ -101,7 +101,7 @@ iso_leptons = cfg.Analyzer(
     iso_area = EtaPhiCircle(0.4)
 )
 
-# Select isolated leptons with a Filter
+# Select isolated leptons with a Selector
 # one can pass a function like this one to the filter:
 def relative_isolation(lepton):
     sumpt = lepton.iso_211.sumpt + lepton.iso_22.sumpt + lepton.iso_130.sumpt
@@ -109,7 +109,7 @@ def relative_isolation(lepton):
     return sumpt
 # ... or use a lambda statement as done below. 
 sel_iso_leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons_true',
