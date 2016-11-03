@@ -126,15 +126,15 @@ def bestMatch(ptc, matchCollection):
 
 
 def matchObjectCollection(ptcs, matchCollection,
-                          deltaRMax=DEFAULT_DRMAX):
+                          deltaRMax=DEFAULT_DRMAX, filter = lambda x,y : True):
     pairs = {}
     if len(ptcs)==0:
         return pairs
     if len(matchCollection)==0:
-        return dict( zip(ptcs, [None]*len(ptcs)) )
+        return dict( list(zip(ptcs, [None]*len(ptcs))) )
     dR2Max = deltaRMax ** 2
     for ptc in ptcs:
-        bm, dr2 = bestMatch( ptc, matchCollection )
+        bm, dr2 = bestMatch( ptc, [mob for mob in matchCollection if filter(object,mob)] )
         if dr2 < dR2Max:
             pairs[ptc] = bm
         else:
@@ -155,7 +155,7 @@ def matchObjectCollection2(ptcs, matchCollection,
     if len(ptcs)==0:
         return pairs
     if len(matchCollection)==0:
-        return dict( zip(ptcs, [None]*len(ptcs)) )
+        return dict( list(zip(ptcs, [None]*len(ptcs))) )
     # build all possible combinations
     allPairs = [(deltaR2(ptc, match), (ptc, match))
                 for ptc in ptcs for match in matchCollection]

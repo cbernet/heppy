@@ -3,7 +3,8 @@ import collections
 
 class Filter(Analyzer):
     '''Filter objects from the input_objects collection 
-    and store them in the output collection 
+    and store them in the output collection. The objects are not copied
+    in the process. 
 
     Example:
     
@@ -22,10 +23,10 @@ class Filter(Analyzer):
       )
 
     * input_objects : the input collection.
-        if a dictionary, the filtering function is applied to the dictionary values,
+        If a dictionary, the filtering function is applied to the dictionary values,
         and not to the keys.
 
-    * output : the output collection 
+    * output : the output collection
 
     * filter_func : a function object.
     IMPORTANT NOTE: lambda statements should not be used, as they
