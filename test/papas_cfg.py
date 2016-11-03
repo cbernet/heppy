@@ -1,12 +1,12 @@
 import heppy.framework.config as cfg
 from heppy.configuration import Collider
 
-# Use a Filter to select stable gen particles for simulation
+# Use a Selector to select stable gen particles for simulation
 # from the output of "source" 
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 gen_particles_stable = cfg.Analyzer(
-    Filter,
+    Selector,
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',
@@ -56,14 +56,14 @@ pfreconstruct = cfg.Analyzer(
 
 
 
-# Use a Filter to select leptons from the output of papas simulation.
+# Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
+# we could use two different instances for the Selector module
 # to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 sim_electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sim_electrons',
     output = 'sim_electrons',
     input_objects = 'papas_sim_particles',
@@ -71,7 +71,7 @@ sim_electrons = cfg.Analyzer(
 )
 
 sim_muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sim_muons',
     output = 'sim_muons',
     input_objects = 'papas_sim_particles',
