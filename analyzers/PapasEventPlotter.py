@@ -11,11 +11,11 @@ class PapasEventPlotter(Analyzer):
         papas_event_plot = cfg.Analyzer(
             PapasEventPlotter,
             projections = ['xy', 'yz'],
-            particles = 'ps',
-            clusters = ['es', 'hs'],
+            particles_type_and_subtype = 'ps',
+            clusters_type_and_subtypes = ['es', 'hs'],
             compare = True,
-            compare_particles = 'pr',
-            compare_clusters = ['em', 'hm'],    
+            compare_particles_type_and_subtype = 'pr',
+            compare_clusters_type_and_subtypes = ['em', 'hm'],    
             detector = detector,
             plottype = "event",
             to_file = True,
@@ -50,11 +50,9 @@ class PapasEventPlotter(Analyzer):
             if hasattr(self.cfg_ana, "num_subgroups"):
                 num_subgroups = self.cfg_ana.num_subgroups              
             self.eventplot.plot(self.cfg_ana.plottype, 
-                                    self.cfg_ana.compare, 
-                                    self.cfg_ana.particles,
-                                    self.cfg_ana.clusters,
-                                    self.cfg_ana.compare_particles,
-                                    self.cfg_ana.compare_clusters,
+                                    self.cfg_ana.screennames, 
+                                    self.cfg_ana.particles_type_and_subtypes,
+                                    self.cfg_ana.clusters_type_and_subtypes,
                                     num_subgroups, 
                                     to_file=self.cfg_ana.to_file)
             

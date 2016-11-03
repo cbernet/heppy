@@ -103,11 +103,9 @@ from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
 papas_event_plot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
-    particles = 'ps',
-    clusters = ['es', 'hs'],
-    compare = True,
-    compare_particles = 'pr',
-    compare_clusters = ['em', 'hm'],    
+    screennames = ["simulated", "reconstructed"],
+    particles_type_and_subtypes = ['ps', 'pr'],
+    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']], 
     detector = detector,
     plottype = "event",
     to_file = True,
@@ -118,16 +116,14 @@ from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
 papas_event_subplot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
-    particles = 'ps',
-    clusters = ['es', 'hs'],
-    compare = True,
-    compare_particles = 'pr',
-    compare_clusters = ['em', 'hm'],   
+    screennames = ["simulated", "reconstructed"],
+    particles_type_and_subtypes = ['ps', 'pr'],
+    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
     detector = detector,
     plottype = "subgroups",
     num_subgroups = 4,
     to_file = True,
-    display = False  
+    display = True  
 )
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
@@ -288,7 +284,7 @@ sequence = cfg.Sequence(
     #papas_print_history, 
     #papas_print_history_event, 
     papas_event_plot, 
-    #papas_event_subplot,
+    papas_event_subplot,
     #papas_dag_plot, 
     #papas_dag_subgroups, 
     leptons_true,

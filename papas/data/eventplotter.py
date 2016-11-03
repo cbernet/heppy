@@ -32,10 +32,8 @@ class EventPlotter(object):
         self.initialized = False 
         self.directory = directory
             
-    def plot(self, plottype, compare, particle_type_and_subtype, 
-                   cluster_type_and_subtypes, 
-                   compare_particle_type_and_subtype = None, 
-                   compare_cluster_type_and_subtypes = None,
+    def plot(self, plottype, screennames, particles_type_and_subtypes, 
+                   clusters_type_and_subtypes, 
                    num_subgroups = None,
                    to_file = False
                    ):
@@ -43,22 +41,29 @@ class EventPlotter(object):
         
         @param plottype: 'event' - plots all elements in an event
                          'subgroups' - plots are one per subgroup
-        @param compare: True/False says whether to plot a single event display or a comparison (two plots side by side)
-        @param particle_type_and_subtype: main particles to plot eg 'ps' for simulated particles
-        @param cluster_type_and_subtypes: list of main clusters to plot, eg ['es', 'hs']
-        @param compare_particle_type_and_subtype: compare particles to plot eg 'pr' for reconstructed particles
-        @param compare_cluster_type_and_subtypes: list of compare clusters to plot, eg ['em', 'hm']
+        @param screennames: List of names for subscreens (also used to decide whether to plot a single event display 
+                         or a comparison (two plots side by side)) eg ["simulation", "reconstruction"]
+        @param particles_type_and_subtypes: list of particle type_and_subtypes to plot. Length of list must match the length of screennames
+                                      eg ['ps', 'pr'] for simulated particles ('ps') on left, reconstructed particles ('pr') on right
+        @param clusters_type_and_subtypes: list of lists of  clusters to plot, length of list must be same as the length of screennames
+                         eg [['es', 'hs'], ['em', 'hm']] would plot smeared ecals ('es') and smeared hcals ('hs') on left
+                             and merged ecals ('em') and merged hcals ('hm') on right
         @param num_subgroups: if specified and if plottype = "subgroups" the biggest n subgroups will be plotted
         @param to_file: if set prodices png files of the plots
         '''
             
         #initialise the display (one or two subscreens)
-        self.__init_display(compare)
+        self.__init_display(screennames)
         
         filename = None
+        if len(particles_type_and_subtypes) != len(screennames) or \
+           len(clusters_type_and_subtypes) != len(screennames)  or \
+            len(screennames) == 0 or len(screennames) > 2:
+                Raise(ValueError, "Input arguments are not consistent for event plot")
+        
         if to_file:
             basename = "event_" + str(self.papasevent.iEv)
-            if compare:
+            if len(screennames) == 2:
                 basename = "compare_"  + basename          
         
         if plottype == "event":
@@ -66,10 +71,9 @@ class EventPlotter(object):
             ids = self.helper.event_ids() 
             if to_file:
                 filename = basename + ".png"
-            self.plot_ids(ids, particle_type_and_subtype, 
-                               cluster_type_and_subtypes, 
-                               compare_particle_type_and_subtype, 
-                               compare_cluster_type_and_subtypes,
+            self.plot_ids(ids, screennames, particles_type_and_subtypes, 
+                               clusters_type_and_subtypes, 
+                               
                                filename 
                                )                
         elif plottype == "subgroups":
@@ -80,18 +84,14 @@ class EventPlotter(object):
             for i in range(num_subgroups):
                 if to_file:
                     filename = basename + '_subgroup_' + str(i) + '.png'
-                self.plot_ids(subgraphs[i], particle_type_and_subtype, 
-                               cluster_type_and_subtypes, 
-                               compare_particle_type_and_subtype, 
-                               compare_cluster_type_and_subtypes,
+                self.plot_ids(subgraphs[i], screennames, particles_type_and_subtypes, 
+                               clusters_type_and_subtypes, 
                                filename 
                                )                           
             
    
-    def plot_ids(self, ids, particle_type_and_subtype, 
-                 cluster_type_and_subtypes, 
-                 compare_particle_type_and_subtype = None, 
-                 compare_cluster_type_and_subtypes = None,
+    def plot_ids(self, ids, screennames, particles_type_and_subtypes, 
+                   clusters_type_and_subtypes, 
                  filename  = None
                  ):
         '''Displays an event plots depending on options, sends to a file (png) if specified
@@ -104,21 +104,21 @@ class EventPlotter(object):
         
         '''
         #collect up the particles and clusters to be plotted
-        particles = self.helper.get_collection(ids, particle_type_and_subtype)
+        particles = self.helper.get_collection(ids, particles_type_and_subtypes[0])
         clusters = dict()
-        for tp in cluster_type_and_subtypes:
+        for tp in clusters_type_and_subtypes[0]:
             clusters.update( self.helper.get_collection(ids, tp))
         
         #if comparison particles and clusters are provided thn
         #we will have a screen with two panes and will plot
         #first set of particles (simulation) in colour on left with compare_particles (reconstruction) also in grey
         #and the inverse on the right hand side.
-        if compare_particle_type_and_subtype or compare_cluster_type_and_subtypes():
+        if len(screennames)==2:
             compare = True
-            compare_particles = self.papasevent.get_collection(compare_particle_type_and_subtype)
+            compare_particles = self.helper.get_collection(ids, particles_type_and_subtypes[1])
             compare_clusters = dict()
-            for tp in compare_cluster_type_and_subtypes:
-                compare_clusters.update( self.helper.get_collection(ids, tp)) 
+            for tp in clusters_type_and_subtypes[1]:
+                compare_clusters.update(self.helper.get_collection(ids, tp)) 
                 
         self.display.clear()     
         #plot main set of particles/clusters on left
@@ -133,16 +133,14 @@ class EventPlotter(object):
         if filename:
             gPad.SaveAs('/'.join([self.directory, filename]))  
             
-    def __init_display(self, compare = False):
+    def __init_display(self, screennames):
         '''Sets up either a single or double paned Display
+        
+        @param screennames: list of names of subscreens eg ["simulation", "reconstruction"]
         '''
         #names could be passed through as a parameter
         if not self.initialized:  
-            if compare:
-                self.display = Display(self.projections,
-                                       subscreens=["simulated", "reconstructed"])
-            else:
-                self.display = Display(self.projections, subscreens=["simulated"])                
+            self.display = Display(self.projections, subscreens=screennames)
             self.gdetector = GDetector(self.detector)
             self.display.register(self.gdetector, layer=0, clearable=False)  
             self.initialized = True 
