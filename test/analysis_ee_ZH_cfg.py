@@ -284,7 +284,7 @@ sequence = cfg.Sequence(
     #papas_print_history, 
     #papas_print_history_event, 
     papas_event_plot, 
-    papas_event_subplot,
+    #papas_event_subplot,
     #papas_dag_plot, 
     #papas_dag_subgroups, 
     leptons_true,
