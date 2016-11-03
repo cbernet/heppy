@@ -302,6 +302,7 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
     import heppy.statistics.rrandom as random
+    from heppy.papas.data.identifier import Identifier
     random.seed(0xdeadbeef)
 
     def process(iev=None):
