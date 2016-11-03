@@ -14,8 +14,6 @@ class EventPlotter(object):
            Usage:
            eventplot = EventPlotter(papapasevent, detector)
            eventplot.plot_event_compare() #plot normal papas event diagram
-           
-
         '''        
     def __init__(self, papasevent, detector, projections, directory):
         '''

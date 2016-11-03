@@ -32,7 +32,7 @@ class PapasEventPlotter(Analyzer):
          The event must contain a papasevent.
         '''
         
-        if self.cfg_ana.display:
+        if  hasattr(self.cfg_ana, 'display') and self.cfg_ana.display:
             self.eventplot = EventPlotter(event.papasevent, self.cfg_ana.detector, self.cfg_ana.projections, self.dirName)
             if self.cfg_ana.plottype == "event":
                 self.eventplot.plot_event_compare(self.cfg_ana.to_file)

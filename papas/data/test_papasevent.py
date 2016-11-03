@@ -4,7 +4,7 @@ import copy
 from identifier import Identifier
 from papasevent import PapasEvent 
 
-class TestIdentifier(unittest.TestCase):
+class TestPapasEvent(unittest.TestCase):
    
     def test_papasevent(self):
         papasevent = PapasEvent(0)
@@ -25,9 +25,10 @@ class TestIdentifier(unittest.TestCase):
         papasevent.add_collection(ecals)
         papasevent.add_collection(tracks)
         
-        #check that adding the same colection twidce fails        
+        #check that adding the same collection twice fails        
         self.assertRaises(ValueError, papasevent.add_collection, ecals)
-        #check that adding a mixed collectionfails
+        
+        #check that adding a mixed collection fails
         mixed = ecals.copy()
         mixed.update(tracks)
         self.assertRaises(ValueError, papasevent.add_collection, mixed)
@@ -35,6 +36,7 @@ class TestIdentifier(unittest.TestCase):
         #get we can get back collections OK
         self.assertTrue( papasevent.get_collection('zz') is None)
         self.assertTrue( len(papasevent.get_collection('et'))  == 3 )
+        
         #check get_object
         self.assertTrue( Identifier.pretty(papasevent.get_object(lastid))  == 'et5' )
         self.assertTrue( papasevent.get_object(499)  is None )       
