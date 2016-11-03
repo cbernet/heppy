@@ -4,7 +4,6 @@ from heppy.papas.data.historyhelper import HistoryHelper
 from subprocess import call
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
-from heppy.display.trajectories import GHistoryBlock
 from ROOT import gPad
 
 class DagPlotter(object):

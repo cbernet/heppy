@@ -176,17 +176,15 @@ class GBlob(object):
 class GHistoryBlock(list):
     '''GHistoryBlock is a class that allows particle trjectories and clusters to bo plotted on a ROOT event diagram
     '''    
-    def __init__(self, particles, ecals, hcals, detector, is_grey=False):
+    def __init__(self, particles, clusters, detector, is_grey=False):
         '''particles = dict of particles
            ecals = dict of ecal clusters
            hcals = dict of hcal clusters
            detector = detector object used for cyclinders
            is_grey = whether to show in grey as a comparison'''
         
-        gecals = GBlob(ecals, grey=is_grey)
-        ghcals = GBlob(hcals, grey=is_grey)
-        self.append(gecals)
-        self.append(ghcals)
+        clusters = GBlob(clusters, grey=is_grey)
+        self.append(clusters)
         for ptc in particles.values():
             is_neutral = abs(ptc.q()) < 0.5
             TrajClass = GStraightTrajectory if is_neutral else GHelixTrajectory     

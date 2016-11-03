@@ -67,7 +67,6 @@ comp = cfg.Component(
     ]
 )
 
-
 # selecting the list of components to be processed. Here only one. 
 selectedComponents = [comp]
 
@@ -104,6 +103,11 @@ from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
 papas_event_plot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
+    particles = 'ps',
+    clusters = ['es', 'hs'],
+    compare = True,
+    compare_particles = 'pr',
+    compare_clusters = ['em', 'hm'],    
     detector = detector,
     plottype = "event",
     to_file = True,
@@ -114,6 +118,11 @@ from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
 papas_event_subplot = cfg.Analyzer(
     PapasEventPlotter,
     projections = ['xy', 'yz'],
+    particles = 'ps',
+    clusters = ['es', 'hs'],
+    compare = True,
+    compare_particles = 'pr',
+    compare_clusters = ['em', 'hm'],   
     detector = detector,
     plottype = "subgroups",
     num_subgroups = 4,

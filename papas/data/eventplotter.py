@@ -10,19 +10,10 @@ from heppy.display.trajectories import GHistoryBlock
 from ROOT import gPad
 
 class EventPlotter(object):
-<<<<<<< HEAD
-    '''   
-           Object to assist with plotting event diagrams
-          
-           Usage:
-           eventplot = EventPlotter(papapasevent, detector)
-           eventplot.plot_event_compare() #plot normal papas event diagram
-        '''        
-=======
+
     '''Papas event display.
     '''
     
->>>>>>> official/papasevent
     def __init__(self, papasevent, detector, projections, directory):
         '''Constructor.
         
@@ -40,116 +31,120 @@ class EventPlotter(object):
         self.projections = projections
         self.initialized = False 
         self.directory = directory
-
-    def __init_display(self):
-        #double paned Display
-        #make this a choice via parameters somehow
-        if not self.initialized:      
-            self.display = Display(self.projections,
-                                   subscreens=["simulated", "reconstructed"])
+            
+    def plot(self, plottype, compare, particle_type_and_subtype, 
+                   cluster_type_and_subtypes, 
+                   compare_particle_type_and_subtype = None, 
+                   compare_cluster_type_and_subtypes = None,
+                   num_subgroups = None,
+                   to_file = False
+                   ):
+        ''' Produces one or more event plots depending on options
+        
+        @param plottype: 'event' - plots all elements in an event
+                         'subgroups' - plots are one per subgroup
+        @param compare: True/False says whether to plot a single event display or a comparison (two plots side by side)
+        @param particle_type_and_subtype: main particles to plot eg 'ps' for simulated particles
+        @param cluster_type_and_subtypes: list of main clusters to plot, eg ['es', 'hs']
+        @param compare_particle_type_and_subtype: compare particles to plot eg 'pr' for reconstructed particles
+        @param compare_cluster_type_and_subtypes: list of compare clusters to plot, eg ['em', 'hm']
+        @param num_subgroups: if specified and if plottype = "subgroups" the biggest n subgroups will be plotted
+        @param to_file: if set prodices png files of the plots
+        '''
+            
+        #initialise the display (one or two subscreens)
+        self.__init_display(compare)
+        
+        filename = None
+        if to_file:
+            basename = "event_" + str(self.papasevent.iEv)
+            if compare:
+                basename = "compare_"  + basename          
+        
+        if plottype == "event":
+            #full event on one plot
+            ids = self.helper.event_ids() 
+            if to_file:
+                filename = basename + ".png"
+            self.plot_ids(ids, particle_type_and_subtype, 
+                               cluster_type_and_subtypes, 
+                               compare_particle_type_and_subtype, 
+                               compare_cluster_type_and_subtypes,
+                               filename 
+                               )                
+        elif plottype == "subgroups":
+            #separate plot per subgroup
+            subgraphs=self.helper.get_history_subgroups()        
+            if num_subgroups is None: 
+                num_subgroups = len(subgraphs) #do all subgroups
+            for i in range(num_subgroups):
+                if to_file:
+                    filename = basename + '_subgroup_' + str(i) + '.png'
+                self.plot_ids(subgraphs[i], particle_type_and_subtype, 
+                               cluster_type_and_subtypes, 
+                               compare_particle_type_and_subtype, 
+                               compare_cluster_type_and_subtypes,
+                               filename 
+                               )                           
+            
+   
+    def plot_ids(self, ids, particle_type_and_subtype, 
+                 cluster_type_and_subtypes, 
+                 compare_particle_type_and_subtype = None, 
+                 compare_cluster_type_and_subtypes = None,
+                 filename  = None
+                 ):
+        '''Displays an event plots depending on options, sends to a file (png) if specified
+        @param ids: list of ids to be used on the plot
+        @param particle_type_and_subtype: main particles to plot eg 'ps' for simulated particles
+        @param cluster_type_and_subtypes: list of main clusters to plot, eg ['es', 'hs']
+        @param compare_particle_type_and_subtype: compare particles to plot eg 'pr' for reconstructed particles
+        @param compare_cluster_type_and_subtypes: list of compare clusters to plot, eg ['em', 'hm']
+        @param to_file: if set prodices png files of the plots
+        
+        '''
+        #collect up the particles and clusters to be plotted
+        particles = self.helper.get_collection(ids, particle_type_and_subtype)
+        clusters = dict()
+        for tp in cluster_type_and_subtypes:
+            clusters.update( self.helper.get_collection(ids, tp))
+        
+        #if comparison particles and clusters are provided thn
+        #we will have a screen with two panes and will plot
+        #first set of particles (simulation) in colour on left with compare_particles (reconstruction) also in grey
+        #and the inverse on the right hand side.
+        if compare_particle_type_and_subtype or compare_cluster_type_and_subtypes():
+            compare = True
+            compare_particles = self.papasevent.get_collection(compare_particle_type_and_subtype)
+            compare_clusters = dict()
+            for tp in compare_cluster_type_and_subtypes:
+                compare_clusters.update( self.helper.get_collection(ids, tp)) 
+                
+        self.display.clear()     
+        #plot main set of particles/clusters on left
+        self.display.register( GHistoryBlock(particles, clusters, self.detector,  is_grey = False), layer=2, sides =  [0])     
+        if compare: #add in comparisons in needed
+            #NB layer is used to make sure grey is plotted underneath, color on top
+            self.display.register( GHistoryBlock(particles, clusters, self.detector,  is_grey = True), layer=1, sides =  [1])
+            self.display.register( GHistoryBlock(compare_particles, compare_clusters, self.detector,  is_grey = True), layer=1, sides =  [0])
+            self.display.register( GHistoryBlock(compare_particles, compare_clusters, self.detector,  is_grey = False), layer=2, sides =  [1])
+        
+        self.display.draw()   
+        if filename:
+            gPad.SaveAs('/'.join([self.directory, filename]))  
+            
+    def __init_display(self, compare = False):
+        '''Sets up either a single or double paned Display
+        '''
+        #names could be passed through as a parameter
+        if not self.initialized:  
+            if compare:
+                self.display = Display(self.projections,
+                                       subscreens=["simulated", "reconstructed"])
+            else:
+                self.display = Display(self.projections, subscreens=["simulated"])                
             self.gdetector = GDetector(self.detector)
             self.display.register(self.gdetector, layer=0, clearable=False)  
             self.initialized = True 
-##        
-##    def pretty(self, node):
-##        ''' pretty form of the unique identifier'''
-##        return Identifier.pretty(node.get_value())
     
-##    def type_and_subtype(self, node):
-##        ''' For example 'pg', 'ht' etc'''
-##        return Identifier.type_and_subtype(node.get_value()) 
-                           
-##
-##    def object(self, node):
-##        '''returns object corresponding to a node'''
-##        z = node.get_value()
-##        return self.papasevent.get_object(z) 
-
-    def plot_event(self):
-        '''Event plot containing Simulated particles and smeared clusters 
-        '''
-        #whole event 
-        particles = self.papasevent.get_collection('ps')
-        ecals = self.papasevent.get_collection('es')
-        hcals = self.papasevent.get_collection('hs')             
-        self.display.clear()  
-        self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey = False), layer=1, sides = [0])            
-        self.display.draw()       
-        #gPad.SaveAs('graphs/event_' + str(event.iEv) + '_sim.png')  
-
-    def plot_event_compare(self, to_file = False):
-        '''Double event plot for full event
-            containing Simulated particles and smeared clusters on left
-            and reconstructed particles and merged clusters on right side
-            '''    
-        self.__init_display()      
-        self._plot_ids_compare(self.helper.event_ids())             
-        self.display.draw() 
-        if to_file:
-            filename = "event_" + str(self.papasevent.iEv) + '_sim_rec.png'
-            gPad.SaveAs('/'.join([self.directory, filename]))   
-
-    def plot_event_subgroups_compare(self, to_file = False, num_subgroups = None):
-        '''produces event sub plots of event subgroups (one per subgroup)
-           If num_subgroups is specified then the num_subgroups n largest subgroups are plotted
-           otherwise all subgroups are plotted
-        '''
-        subgraphs=self.helper.get_history_subgroups()  
-        self.__init_display()     
-        if num_subgroups is None:
-            num_subgroups = len(subgraphs)
-        for i in range(num_subgroups): 
-            self.plot_event_ids_compare(subgraphs[i], to_file)      
-        
-    def plot_event_ids_compare(self, ids, to_file = True):
-        '''Double event plot for a subgroup of an event
-                containing Simulated particles and smeared clusters on left
-                and reconstructed particles and merged clusters on right side
-                    '''          
-        self.display.clear()       
-        self._plot_ids_compare(ids)
-        self.display.draw() 
-        if to_file:
-            filename = "event_" + str(self.papasevent.iEv) + '_item_' + Identifier.pretty(ids[0]) + '_sim_rec.png'
-            gPad.SaveAs('/'.join([self.directory, filename]))               
-        pass   
-        
-    def _plot_ids_compare(self, ids, offset = 0):
-        #handles plotting the sim and rec particles on a double event plot
-        sim_particles = self.helper.get_collection(ids, 'ps')
-        rec_particles = self.helper.get_collection(ids,'pr')
-        sim_ecals = self.helper.get_collection(ids,'es')
-        sim_hcals = self.helper.get_collection(ids,'hs') 
-        rec_ecals = self.helper.get_collection(ids,'em')
-        rec_hcals = self.helper.get_collection(ids,'hm')             
-        self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 0 + offset*2, is_grey = False, layer = 2)
-        self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 0 + offset*2, is_grey = True, layer = 1)
-        self._add_particles(rec_particles, rec_ecals, rec_hcals, position= 1 + offset*2, is_grey = False, layer = 2)  
-        self._add_particles(sim_particles, sim_ecals, sim_hcals, position= 1 + offset*2, is_grey = True, layer = 1)
-    
-        
-    def _add_particles(self, particles, ecals, hcals, position, is_grey=False , layer = 1):
-        self.display.register( GHistoryBlock(particles, ecals, hcals, self.detector,  is_grey), layer=layer, sides = [position]) 
-         
-    def plot_subevents_panel_compare(self):
-        ''' An experiment to plot largest 8 subgroups in an event all at once'''
-        
-        self.display.clear() 
-        subgraphs=self.helper.get_history_subgroups()  
-        from itertools import product
-        subgraphs.sort(key = lambda s: -len(s))
-        ids = []
-        for i in range(0, 8):
-            ids.append( Identifier.pretty(subgraphs[i][0]))
-        lists = [ ids ,["simulated", "reconstructed"]]
-        result = ['_'.join(map(str,x)) for x in product(*lists)]   
-        self.display = Display(self.projections, subscreens=result)
-        self.display.register(self.gdetector, layer=0, clearable=False)             
-        
-        for i in range(0, 8):     
-            s = subgraphs[i]
-            self._plot_ids_compare(s, offset = i)      
-        self.display.draw()         
-        #gPad.SaveAs('graphs/event_' + str(self.event.iEv) + '_item_' + Identifier.pretty(s[0]) + '_sim_rec_compare.png') 
-                             
 
