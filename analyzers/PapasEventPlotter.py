@@ -11,11 +11,9 @@ class PapasEventPlotter(Analyzer):
         papas_event_plot = cfg.Analyzer(
             PapasEventPlotter,
             projections = ['xy', 'yz'],
-            particles_type_and_subtype = 'ps',
-            clusters_type_and_subtypes = ['es', 'hs'],
-            compare = True,
-            compare_particles_type_and_subtype = 'pr',
-            compare_clusters_type_and_subtypes = ['em', 'hm'],    
+            screennames = ["simulated", "reconstructed"],
+            particles_type_and_subtypes = ['ps', 'pr'],
+            clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']], 
             detector = detector,
             plottype = "event",
             to_file = True,
@@ -25,10 +23,18 @@ class PapasEventPlotter(Analyzer):
 
     @param projections: a list of required projections, eg.
        ['xy', 'yz', 'xz' ,'ECAL_thetaphi', 'HCAL_thetaphi']
+    @param screennames: List of names for subscreens (also used to decide whether to plot a single event display 
+                    or a comparison (two plots side by side)) eg ["simulation", "reconstruction"]
+    @param particles_type_and_subtypes: list of particle type_and_subtypes to plot. Length of list must match the length of screennames
+                                 eg ['ps', 'pr'] for simulated particles ('ps') on left, reconstructed particles ('pr') on right
+    @param clusters_type_and_subtypes: list of lists of  clusters to plot, length of list must be same as the length of screennames
+                    eg [['es', 'hs'], ['em', 'hm']] would plot smeared ecals ('es') and smeared hcals ('hs') on left
+                        and merged ecals ('em') and merged hcals ('hm') on right
     @param detector: detector model used for the simulation
     @param plottype: "event" or "subgroups"
     @param to_file: save display to png file
     @param num_subgroups: if set, display the num_subgroups largest
+    @param display: if false nothing will be produced
        subgroups. Otherwise display everything.
     '''
 
