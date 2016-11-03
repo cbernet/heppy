@@ -1,3 +1,5 @@
+'''Papas event display'''
+
 from heppy.papas.data.identifier import Identifier
 import pydot
 from heppy.papas.data.historyhelper import HistoryHelper
@@ -8,19 +10,16 @@ from heppy.display.trajectories import GHistoryBlock
 from ROOT import gPad
 
 class EventPlotter(object):
-    '''   
-           Object to assist with plotting event diagrams
-          
-           Usage:
-           eventplot = EventPlotter(papapasevent, detector)
-           eventplot.plot_event_compare() #plot normal papas event diagram
-           
-
-        '''        
+    '''Papas event display.
+    '''
+    
     def __init__(self, papasevent, detector, projections, directory):
-        '''
-        * papasevent is a PapasEvent
-        * detector
+        '''Constructor.
+        
+        @param papasevent: event structure containing all the information from papas
+        @param detector: detector model used for the simulation
+        @param projections: a list of required projections, eg.
+        @param directory: output directory for images
         '''
         self.history = papasevent.history
         self.papasevent = papasevent  
@@ -32,28 +31,29 @@ class EventPlotter(object):
         self.initialized = False 
         self.directory = directory
 
-    def init_display(self):
+    def __init_display(self):
         #double paned Display
         #make this a choice via parameters somehow
         if not self.initialized:      
-            self.display = Display(self.projections, subscreens=["simulated", "reconstructed"])
+            self.display = Display(self.projections,
+                                   subscreens=["simulated", "reconstructed"])
             self.gdetector = GDetector(self.detector)
             self.display.register(self.gdetector, layer=0, clearable=False)  
             self.initialized = True 
-        
-    def pretty(self, node):
-        ''' pretty form of the unique identifier'''
-        return Identifier.pretty(node.get_value())
+##        
+##    def pretty(self, node):
+##        ''' pretty form of the unique identifier'''
+##        return Identifier.pretty(node.get_value())
     
-    def type_and_subtype(self, node):
-        ''' For example 'pg', 'ht' etc'''
-        return Identifier.type_and_subtype(node.get_value()) 
+##    def type_and_subtype(self, node):
+##        ''' For example 'pg', 'ht' etc'''
+##        return Identifier.type_and_subtype(node.get_value()) 
                            
-
-    def object(self, node):
-        '''returns object corresponding to a node'''
-        z = node.get_value()
-        return self.papasevent.get_object(z) 
+##
+##    def object(self, node):
+##        '''returns object corresponding to a node'''
+##        z = node.get_value()
+##        return self.papasevent.get_object(z) 
 
     def plot_event(self):
         '''Event plot containing Simulated particles and smeared clusters 
@@ -72,7 +72,7 @@ class EventPlotter(object):
             containing Simulated particles and smeared clusters on left
             and reconstructed particles and merged clusters on right side
             '''    
-        self.init_display()      
+        self.__init_display()      
         self._plot_ids_compare(self.helper.event_ids())             
         self.display.draw() 
         if to_file:
@@ -85,7 +85,7 @@ class EventPlotter(object):
            otherwise all subgroups are plotted
         '''
         subgraphs=self.helper.get_history_subgroups()  
-        self.init_display()     
+        self.__init_display()     
         if num_subgroups is None:
             num_subgroups = len(subgraphs)
         for i in range(num_subgroups): 
