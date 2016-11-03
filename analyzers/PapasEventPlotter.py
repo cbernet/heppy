@@ -10,16 +10,16 @@ class PapasEventPlotter(Analyzer):
         from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
         papas_plotter = cfg.Analyzer(
             PapasEventPlotter,
-            projections = ['xy', 'yz'],
             detector = CMS,
+            projections = ['xy', 'yz'],
             plottype = "event",
             to_file = False,
             num_subgroups = 2
         )
 
+    @param detector: detector model used for the simulation
     @param projections: a list of required projections, eg.
        ['xy', 'yz', 'xz' ,'ECAL_thetaphi', 'HCAL_thetaphi']
-    @param detector: detector model used for the simulation
     @param plottype: "event" or "subgroups"
     @param to_file: save display to png file? 
     @param num_subgroups: if set, display the num_subgroups largest

@@ -1,3 +1,5 @@
+'''Computes the total 4 momentum of a selection of particles.'''
+
 from heppy.framework.analyzer import Analyzer
 from heppy.particles.tlv.particle import Particle
 from heppy.particles.tlv.jet import Jet
