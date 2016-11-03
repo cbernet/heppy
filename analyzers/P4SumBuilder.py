@@ -8,23 +8,32 @@ from ROOT import TLorentzVector
 mass = {23: 91, 25: 125}
 
 class P4SumBuilder(Analyzer):
-    '''Computes the 4 momentum recoiling agains a selection of particles.
+    '''Computes the total 4 momentum of a selection of particles.
     
-    Example: 
-    from heppy.analyzers.P4SumBuilder import P4SumBuilder
-    recoil = cfg.Analyzer(
-      P4SumBuilder,
-      output = 'sum_ptc',
-      particles = 'rec_particles'
-    ) 
+    Example::
+    
+        from heppy.analyzers.P4SumBuilder import P4SumBuilder
+        recoil = cfg.Analyzer(
+          P4SumBuilder,
+          particles = 'rec_particles'
+          output = 'sum_ptc',
+        ) 
 
-    * output : contains a single particle with a p4 equal to the
-               sum p4 of all input particles.
+    @param particles: collection of input particles.
+
+    @param output: contains a single particle with a p4 equal to the
+               sum p4 of all input particles. The single particle is of
+               type L{particles.jet.Jet} to keep track of the
+               L{jet constituents<particles.jet.JetConstituents>}.
     
-    * particles : collection of input particles.
     '''
     
     def process(self, event):
+        '''Process event.
+        
+        The event must contain:
+         - self.cfg_ana.particles: the input collection of particles.
+        '''
         p4 = TLorentzVector()
         charge = 0
         pdgid = 0
