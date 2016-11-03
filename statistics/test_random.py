@@ -2,12 +2,9 @@ import unittest
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 
-import heppy.statistics.rrandom as random
+import rrandom as random
 
 class TestRandom(unittest.TestCase):
-
-# setting the random seed for reproducible results
-
 
     def test_seed(self):
 

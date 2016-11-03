@@ -10,10 +10,16 @@ class Value(object):
         self.err = err
 
     def relerr(self):
+        '''relative uncertainty. 
+
+        returns None if value == 0 for __str__ to work.'''
         try:
             return abs(self.err / self.val)
         except ZeroDivisionError:
             return None
+
+    def __eq__(self, other):
+        return self.val == other.val and self.err == other.err
 
     def __iadd__(self, other):
         self.val += other.val

@@ -51,7 +51,7 @@ source = cfg.Analyzer(
 )
 
 # the papas simulation and reconstruction sequence
-from heppy.test.papas_cfg import papas_sequence, detector, papas
+from heppy.test.papas_cfg import papas_sequence, detector
 
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -266,6 +266,7 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
+    from heppy.test.papas_cfg import papas
 
     def process(iev=None):
         if iev is None:

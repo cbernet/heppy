@@ -43,7 +43,7 @@ class Tree(object):
                 selfmap[varName]=numpy.zeros(length,numpy.float64)
                 self.tree.Branch(varName,selfmap[varName],varName+postfix+'/D')
             else:
-                raise RuntimeError, 'Unknown storage type %s for branch %s' % (storageType, varName)
+                raise RuntimeError('Unknown storage type %s for branch %s' % (storageType, varName))
         elif the_type is int: 
             dtypes = {
                 "i" : numpy.uint32,
@@ -56,11 +56,11 @@ class Tree(object):
                 "L" : numpy.int64,
             }
             if storageType not in dtypes: 
-                raise RuntimeError, 'Unknown storage type %s for branch %s' % (storageType, varName)
+                raise RuntimeError('Unknown storage type %s for branch %s' % (storageType, varName))
             selfmap[varName]=numpy.zeros(length,dtypes[storageType])
-            self.tree.Branch(varName,selfmap[varName],varName+postfix+'/I')
+            self.tree.Branch(varName,selfmap[varName],varName+postfix+'/'+storageType)
         else:
-            raise RuntimeError, 'Unknown type %s for branch %s' % (the_type, varName)
+            raise RuntimeError('Unknown type %s for branch %s' % (the_type, varName))
         if title:
             self.tree.GetBranch(varName).SetTitle(title)
 
@@ -76,10 +76,10 @@ class Tree(object):
             else:
                 self.tree.Branch(varName+".", the_type, self.vars[varName])
             if filler is None:
-                raise RuntimeError, "Error: when brancing with an object, filler should be set to a function that takes as argument an object instance and a value, and set the instance to the value (as otherwise python assignment of objects changes the address as well)"
+                raise RuntimeError("Error: when brancing with an object, filler should be set to a function that takes as argument an object instance and a value, and set the instance to the value (as otherwise python assignment of objects changes the address as well)")
             self.fillers[varName] = filler
         else:
-            raise RuntimeError, 'Unknown type %s for branch %s: it is not int, float or a string' % (the_type, varName)
+            raise RuntimeError('Unknown type %s for branch %s: it is not int, float or a string' % (the_type, varName))
         self.defaults[varName] = default
 
     def vector(self, varName, lenvar, maxlen=None, the_type=float, default=-99, title=None, storageType="default", filler=None ):
@@ -88,7 +88,8 @@ class Tree(object):
             if __builtins__['type'](lenvar) == int:  # need the __builtins__ since 'type' is a variable here :-/
                 self.branch_(self.vecvars, varName, the_type, lenvar, postfix="[%d]" % lenvar, title=title, storageType=storageType)
             else:
-                if maxlen == None: RuntimeError, 'You must specify a maxlen if making a dynamic array'
+                if maxlen == None: 
+                    raise RuntimeError('You must specify a maxlen if making a dynamic array')
                 self.branch_(self.vecvars, varName, the_type, maxlen, postfix="[%s]" % lenvar, title=title, storageType=storageType)
         elif __builtins__['type'](the_type) == str:
             self.vecvars[varName] = ROOT.TClonesArray(the_type,(lenvar if __builtins__['type'](lenvar) == int else maxlen))
@@ -97,7 +98,7 @@ class Tree(object):
             else:
                 self.tree.Branch(varName+".", self.vecvars[varName])
             if filler is None:
-                raise RuntimeError, "Error: when brancing with an object, filler should be set to a function that takes as argument an object instance and a value, and set the instance to the value (as otherwise python assignment of objects changes the address as well)"
+                raise RuntimeError("Error: when brancing with an object, filler should be set to a function that takes as argument an object instance and a value, and set the instance to the value (as otherwise python assignment of objects changes the address as well)")
             self.fillers[varName] = filler
         self.vecdefaults[varName] = default
 
@@ -131,20 +132,3 @@ class Tree(object):
             fillit = self.fillers[varName]
             for (i,v) in enumerate(values):
                 fillit(a[i],v)
-
-if __name__=='__main__':
-    
-    from ROOT import TFile
-
-    f = TFile('TreeNumpy.root','RECREATE')
-    t = Tree('Colin', 'Another test tree')
-    t.var('a')
-    t.var('b')
-
-    t.fill('a', 3)
-    t.fill('a', 4)
-    t.fill('b', 5)
-    t.tree.Fill()
-
-    f.Write()
-    f.Close()

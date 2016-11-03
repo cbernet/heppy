@@ -5,7 +5,7 @@ class Met(BaseMET):
     
     def __init__(self, fccmet):
         self.fccmet = fccmet
-        self._sum_et = fccmet.ScalarSum()
+        self._sum_et = fccmet.scalarSum()
         self._tlv = TLorentzVector()
-        self._tlv.SetPtEtaPhiM(fccmet.Magnitude(), 0.,fccmet.Phi(),0. )
+        self._tlv.SetPtEtaPhiM(fccmet.magnitude(), 0.,fccmet.phi(),0. )
         self._charge = 0. 
