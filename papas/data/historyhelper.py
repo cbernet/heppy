@@ -1,9 +1,11 @@
+'''Papas history helper'''
 from heppy.papas.graphtools.DAG import BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
 
 class HistoryHelper(object):
     '''   
-       Object to assist with printing and reconstructing histories.
+       Tool to assist with printing, plotting and reconstructing histories.
+       
        It allows extraction of information from the papasevent
        
        #Usage:
@@ -32,7 +34,7 @@ class HistoryHelper(object):
     '''    
     def __init__(self, papasevent):
         ''' arguments
-           papasevent is a PapasEvent which contains collections and history. 
+           @param papaseven: is a PapasEvent which contains collections and history. 
         '''
         self.history = papasevent.history
         self.papasevent = papasevent
@@ -47,9 +49,8 @@ class HistoryHelper(object):
     def get_linked_ids(self, uid, direction="undirected"):
         '''
         returns all ids linked to a given uid
-        arguments:
-            uid = unique identifier
-            direction = parents/children/undirected
+        @param uid: unique identifier
+        @param direction: parents/children/undirected
         '''
         BFS = BreadthFirstSearchIterative(self.history[uid], direction)
         return [v.get_value() for v in BFS.result] 
@@ -58,6 +59,7 @@ class HistoryHelper(object):
         ''' Searches to find the true id given a pretty id string
             Not super efficient but OK for occasional use
             eg uid = self.id_from_pretty('et103')
+            @param: pretty is the easily readable name from the Identifier class which is shown in prints and plots eg 'et103'
         '''
         for uid in self.history.keys():
             if Identifier.pretty(uid) == pretty:
@@ -65,19 +67,18 @@ class HistoryHelper(object):
         return None
     
     def filter_ids(self, ids, type_and_subtype):
-        ''' returns the subset of ids which have a type_and_subtype that matchs the type_and_subtype argument
+        ''' returns a filtered subset of ids which have a type_and_subtype that matchs the type_and_subtype argument
             eg merged_ecal_ids = filter_ids(ids, 'em')
+            @param ids: a list of ids
+            @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
         '''
         return [uid for uid in ids if Identifier.type_and_subtype(uid) == type_and_subtype]
     
-    #def get_collection(self, type_and_subtype):
-    #    '''returns an entire collection of the given type_and_subtype
-    #    '''
-    #    return self.papasevent.get_collection(type_and_subtype)
-        
     def get_collection(self, ids, type_and_subtype):
         '''return a collection of objects of type_and_subtype using only those ids which have the selected type_and_subtype
            ids wich have a different type_and_subtype will be ignored.
+           @param ids: a list of ids
+           @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
         '''          
         maindict = self.papasevent.get_collection(type_and_subtype)
         fids = self.filter_ids(ids, type_and_subtype) 
@@ -88,11 +89,10 @@ class HistoryHelper(object):
         
     def get_linked_collection(self, uid, type_and_subtype, direction="undirected"):
         '''Get all ids that are linked to the uid and have the required type_and_subtype
-         
         arguments:
-        uid  = unique identifier
-        type_and_subtype = type of object (eg 'es')
-        direction = "undirected"/"parents"/"children"
+        @param uid  = unique identifier
+        @param type_and_subtype = type of object (eg 'es')
+        @param direction = says what type of linkage to use "undirected"/"parents"/"children"
     
         '''
         ids = self.get_linked_ids(uid, direction)
@@ -102,7 +102,12 @@ class HistoryHelper(object):
                            labels = ["gen_particles","true_tracks","smeared_tracks", "true_ecals", "smeared_ecals","merged_ecals","true_hcals", 
                                      "smeared_hcals","merged_hcals","rec_particles"]):
         ''' String to describe the components corresponding to the selected ids
+        @param ids: list of uniqueids in history
+        @type_and_subtypes: list of type_and_subtypes
+        @labels: list of string labels (matching the type_and_subtypes)
         '''
+        if len(type_and_subtypes) != len(labels):
+           raise(ValueError, "Inconsistent arguments to summary_string_ids")
         makestring=""
         for i in range(len(type_and_subtypes)):
             objdict = self.get_collection(ids, type_and_subtypes[i])
@@ -114,13 +119,15 @@ class HistoryHelper(object):
                        labels = ["gen_particles","true_tracks","smeared_tracks", "true_ecals", "smeared_ecals","merged_ecals","true_hcals", 
                                      "smeared_hcals","merged_hcals","rec_particles"]):
         ''' String to describe the papas event
+        @type_and_subtypes: list of type_and_subtypes
+        @labels: list of string labels (matching the type_and_subtypes)
         '''
         ids = self.event_ids()
         return self.summary_string_ids(ids, types, labels)
     
     def summary_string_subgroups(self, num_subgroups = None):
-        ''' Divide the event into connected subgroups
-            Produce a summary string for the biggest "num_subgroups" subgroups
+        ''' Divide the event into connected subgroups and produce a summary string for the biggest n subgroups
+            @param: if specified the n largest subgroups will be printed, otherwise all subgroups
         '''
         subgraphs=self.get_history_subgroups()  
         result= "Subgroups: \n"

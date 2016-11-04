@@ -41,8 +41,6 @@ class TreeTestCase( unittest.TestCase ):
         self.nodes[9].add_child(self.nodes[4])
         self.nodes[3].add_child(self.nodes[6])
     
-               
-        
     def test_BFS_visitor_pattern_iterative_undirected(self):
         BFS = BreadthFirstSearchIterative(self.nodes[0],"undirected")
         # the result is equal to [0, 1, 2, 3, 4, 5, 6, 9, 7, 8]

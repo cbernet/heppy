@@ -50,6 +50,14 @@ Collider.SQRTS = 240.
 
 # definition of an input sample (also called a component)
 # help(comp) for more information
+#comp = cfg.Component(
+    #'ee_ZH_Zmumu_Hbb',
+    #files = [
+        ## here we have a single input root file.
+        ## the absolute path must be used to be able to run on the batch.
+        #os.path.abspath('ee_ZH_Zmumu_Hbb.root')
+    #]
+#)
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
