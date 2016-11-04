@@ -18,7 +18,7 @@ class PapasEventPlotter(Analyzer):
             particles_type_and_subtypes = ['ps', 'pr'],
             clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']], 
             plottype = "event",
-            to_file = True,
+            save = True,
             display = True
         )
 
@@ -33,7 +33,7 @@ class PapasEventPlotter(Analyzer):
                     eg [['es', 'hs'], ['em', 'hm']] would plot smeared ecals ('es') and smeared hcals ('hs') on left
                         and merged ecals ('em') and merged hcals ('hm') on right
     @param plottype: "event" or "subgroups"
-    @param to_file: save display to png file
+    @param save: save display to png file
     @param num_subgroups: if set, display the num_subgroups largest n subgroups. Otherwise display everything.
     @param display: if false nothing will be produced
       
@@ -63,5 +63,5 @@ class PapasEventPlotter(Analyzer):
                            self.cfg_ana.particles_type_and_subtypes,
                            self.cfg_ana.clusters_type_and_subtypes,
                            num_subgroups, 
-                           to_file=self.cfg_ana.to_file)
+                           save=self.cfg_ana.save)
         self.cfg_ana.display = False #only do display for first event in a loop

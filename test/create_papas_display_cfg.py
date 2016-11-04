@@ -101,7 +101,7 @@ papas_event_plot = cfg.Analyzer(
     clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']], 
     detector = detector,
     plottype = "event",
-    to_file = True,
+    save = True,
     display = True
 )
 
@@ -115,7 +115,7 @@ papas_event_subplot = cfg.Analyzer(
     detector = detector,
     plottype = "subgroups",
     num_subgroups = 4,
-    to_file = True,
+    save = True,
     display = True  
 )
 

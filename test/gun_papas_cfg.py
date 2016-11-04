@@ -65,7 +65,7 @@ papas_plot = cfg.Analyzer(
     projections = ['xy', 'yz'],
     plottype = "event",
     detector = detector,
-    to_file = True
+    save = True
 )
 
 from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
@@ -75,7 +75,7 @@ papas_subplot = cfg.Analyzer(
     plottype = "subgroups",
     num_subgroups = 2,
     detector = detector,
-    to_file = False
+    save = False
 )
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
