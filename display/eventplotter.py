@@ -7,6 +7,12 @@ class EventPlotter(object):
     '''Papas event display.
     '''
     def __init__(self, papasevent, detector, display, dirname):
+        '''Constructor
+        @param papasevent:  contains papas data collections and history
+        @param detector: the detector to show on the display
+        @param display: display object to which to add the plot info
+        @param dirname: directory for output plot
+        '''
         self.papasevent = papasevent
         self.hhelper = HistoryHelper(papasevent)  
         self.display = display
