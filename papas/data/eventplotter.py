@@ -9,27 +9,8 @@ class EventPlotter(object):
 
     '''Papas event display.
     '''
-    
-    def __init__(self, papasevent, detector, projections, screennames, directory):
-        '''Constructor.
-        
-        @param papasevent: event structure containing all the information from papas
-        @param detector: detector model used for the simulation
-        @param projections: a list of required projections, eg.
-        @param directory: output directory for images
-        '''
-        self.history = papasevent.history
-        self.papasevent = papasevent  
-        self.helper = HistoryHelper(papasevent)
-        self.detector = detector  
-        if projections is None:
-            projections = ['xy', 'yz']
-        self.projections = projections
-        self.initialized = False 
-        self.directory = directory
-        self.screennames = screennames
-            
-    def plot(self, plottype, particles_type_and_subtypes, 
+      
+    def plot(self, papasevent, plottype, nscreens, particles_type_and_subtypes, 
                    clusters_type_and_subtypes, 
                    num_subgroups=None,
                    to_file=False):
@@ -47,26 +28,25 @@ class EventPlotter(object):
         @param num_subgroups: if specified and if plottype = "subgroups" the biggest n subgroups will be plotted
         @param to_file: if set produces png files of the plots
         '''
-            
-        #initialise the display (one or two subscreens)
-        self.__init_display(self.screennames)
+    
         
-        filename = None
-        if len(particles_type_and_subtypes) != len(self.screennames) or \
-           len(clusters_type_and_subtypes) != len(self.screennames)  or \
-           len(self.screennames) == 0 or len(self.screennames) > 2:
-            raise(ValueError, "Input arguments are not consistent for event plot")
-        
+        if len(self.cfg_ana.particles_type_and_subtypes) != self.nscreens or \
+           len(self.cfg_ana.clusters_type_and_subtypes) != self.nscreens  or \
+           len(self.cfg_ana.self.screennames) == 0 or self.nscreens > 2:
+            raise(ValueError, "Input arguments are not consistent for event plot")         
+
+        hhelper = HistoryHelper(papasevent)    
+        filename = None        
         if to_file: #sort out the base of the filename
             basename = "event_" + str(self.papasevent.iEv)
-            if len(self.screennames) == 2:
+            if nscreens == 2:
                 basename = "compare_"  + basename          
         
         if plottype == "event":  #full event on one plot
             ids = self.helper.event_ids() 
             if to_file:
                 filename = basename + ".png"
-            self.plot_ids(ids, self.screennames, particles_type_and_subtypes, 
+            self.plot_ids(ids, particles_type_and_subtypes, 
                                clusters_type_and_subtypes, 
                                filename 
                                )                
@@ -77,13 +57,13 @@ class EventPlotter(object):
             for i in range(num_subgroups):
                 if to_file:
                     filename = basename + '_subgroup_' + str(i) + '.png'
-                self.plot_ids(subgraphs[i], screennames, particles_type_and_subtypes, 
+                self.plot_ids(subgraphs[i], nscreens, particles_type_and_subtypes, 
                                clusters_type_and_subtypes, 
                                filename 
                                )                           
             
    
-    def plot_ids(self, ids, screennames, particles_type_and_subtypes, 
+    def plot_ids(self, ids, nscreens, particles_type_and_subtypes, 
                  clusters_type_and_subtypes, 
                  filename= None
                  ):
@@ -109,7 +89,7 @@ class EventPlotter(object):
         #we will have a screen with two panes and will plot
         #first set of particles (simulation) in colour on left with compare_particles (reconstruction) also in grey
         #and the inverse on the right hand side.
-        if len(screennames) == 2:
+        if nscreens == 2:
             compare = True
             compare_particles = self.helper.get_collection(ids, particles_type_and_subtypes[1])
             compare_clusters = dict()
@@ -129,15 +109,6 @@ class EventPlotter(object):
         if filename:
             gPad.SaveAs('/'.join([self.directory, filename]))  
             
-    def __init_display(self, screennames):
-        '''Sets up either a single or double paned Display
-        @param screennames: list of names of subscreens eg ["simulation", "reconstruction"]
-        '''
-        #names could be passed through as a parameter
-        if not self.initialized:  
-            self.display = Display(self.projections, subscreens=screennames)
-            self.gdetector = GDetector(self.detector)
-            self.display.register(self.gdetector, layer=0, clearable=False)  
-            self.initialized = True 
+
 
 

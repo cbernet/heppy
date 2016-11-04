@@ -39,6 +39,22 @@ class PapasEventPlotter(Analyzer):
 
     def __init__(self, *args, **kwargs):
         super(PapasEventPlotter, self).__init__(*args, **kwargs)  
+        
+    
+    def __init_display(self):
+        '''Sets up either a single or double paned Display
+        @param screennames: list of names of subscreens eg ["simulation", "reconstruction"]
+        '''
+        #names could be passed through as a parameter
+        if not self.initialized:  
+            self.display = Display(self.cfg_ana.detector,
+                           self.cfg_ana.projections,
+                           self.cfg_ana.screennames, 
+                           self.dirname)
+            self.nscreens = len(self.cfg_ana.screennames)
+            self.gdetector = GDetector(self.cfg_ana.detector)
+            self.display.register(self.cfg_ana.detector, layer=0, clearable=False)  
+            self.initialized = True     
 
     def process(self, event):
         '''process event.
@@ -46,17 +62,21 @@ class PapasEventPlotter(Analyzer):
          The event must contain:
           - papasevent: event structure containing all the information from papas
         '''
-        if  hasattr(self.cfg_ana, 'display') and self.cfg_ana.display:
-            self.eventplot = EventPlotter(event.papasevent,
-                                          self.cfg_ana.detector,
-                                          self.cfg_ana.projections,
-                                          self.cfg_ana.screennames, 
-                                          self.dirName)
+        if hasattr(self.cfg_ana, 'display') and self.cfg_ana.display:
+            if not self.initialized:
+                __init_display()
+            #self.eventplot = EventPlotter(event.papasevent,
+                                          #self.cfg_ana.detector,
+                                          #self.cfg_ana.projections,
+                                          #self.cfg_ana.screennames, 
+                                          #self.dirName)
             num_subgroups = None
             if hasattr(self.cfg_ana, "num_subgroups"):
-                num_subgroups = self.cfg_ana.num_subgroups              
-            self.eventplot.plot(self.cfg_ana.plottype, 
-                                    
+                num_subgroups = self.cfg_ana.num_subgroups 
+            
+            
+            self.display.plotevent(event.papasevent, self.nscreens
+                                   self.cfg_ana.plottype, 
                                     self.cfg_ana.particles_type_and_subtypes,
                                     self.cfg_ana.clusters_type_and_subtypes,
                                     num_subgroups, 
