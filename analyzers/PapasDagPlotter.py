@@ -56,14 +56,13 @@ class PapasDAGPlotter(Analyzer):
          The event must contain a papasevent.
         '''
         self.dirName = '/'.join( [self.looperName, self.name] )
+        
+        num_subgroups = None
+        if hasattr(self.cfg_ana, "num_subgroups"):
+            num_subgroups = self.cfg_ana.num_subgroups    
                   
         self.histplot = DagPlotter(event.papasevent, self.dirName)
-        if self.cfg_ana.plottype == "dag_event":
-            self.histplot.plot_dag_event(self.cfg_ana.show_file) 
-        elif self.cfg_ana.plottype == "dag_subgroups":
-            num_subgroups = None
-            if hasattr(self.cfg_ana, "num_subgroups"):
-                num_subgroups = self.cfg_ana.num_subgroups            
-            self.histplot.plot_dag_subgroups(num_subgroups)
+        self.histplot.plot_dag(self.cfg_ana.plottype, num_subgroups, self.cfg_ana.show_file) 
+
 
 

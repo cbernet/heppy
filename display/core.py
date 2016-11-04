@@ -75,11 +75,12 @@ class Display(object):
         for view in self.views.values():
             view.draw()
 
-    def save(self, outdir, filetype='png'):
+    def save(self, outdir, filename = '', filetype='png'):
         '''write the plot to a png file (one file per projection)'''
-        os.mkdir(outdir)
+        if not os.path.exists(outdir):        
+            os.mkdir(outdir) 
         for view in self.views.values():
-            view.save(outdir, filetype)
+            view.save(outdir, filename, filetype)
 
 class ViewPane(object): #a graphics window
     nviews = 0
@@ -176,9 +177,9 @@ class ViewPane(object): #a graphics window
             p.unzoom()
         self.draw()   
 
-    def save(self, outdir, filetype):
+    def save(self, outdir, filename, filetype):
         fname = '{outdir}/{name}.{filetype}'.format(outdir=outdir,
-                                                    name=self.canvas.GetName(),
+                                                    name=self.canvas.GetName() + filename,
                                                     filetype=filetype)
         self.canvas.SaveAs(fname)
 

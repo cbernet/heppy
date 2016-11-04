@@ -1,5 +1,7 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.data.eventplotter import EventPlotter
+from heppy.display.eventplotter import EventPlotter
+from heppy.display.core import Display
+from heppy.display.geometry import GDetector
 
 class PapasEventPlotter(Analyzer):
     '''Produces Standard Papas Event plots for a papasevent including simulation and reconstruction
@@ -32,54 +34,34 @@ class PapasEventPlotter(Analyzer):
                         and merged ecals ('em') and merged hcals ('hm') on right
     @param plottype: "event" or "subgroups"
     @param to_file: save display to png file
-    @param num_subgroups: if set, display the num_subgroups largest
+    @param num_subgroups: if set, display the num_subgroups largest n subgroups. Otherwise display everything.
     @param display: if false nothing will be produced
-       subgroups. Otherwise display everything.
+      
     '''
 
     def __init__(self, *args, **kwargs):
         super(PapasEventPlotter, self).__init__(*args, **kwargs)  
-        
     
     def __init_display(self):
         '''Sets up either a single or double paned Display
-        @param screennames: list of names of subscreens eg ["simulation", "reconstruction"]
         '''
-        #names could be passed through as a parameter
-        if not self.initialized:  
-            self.display = Display(self.cfg_ana.detector,
-                           self.cfg_ana.projections,
-                           self.cfg_ana.screennames, 
-                           self.dirname)
-            self.nscreens = len(self.cfg_ana.screennames)
-            self.gdetector = GDetector(self.cfg_ana.detector)
-            self.display.register(self.cfg_ana.detector, layer=0, clearable=False)  
-            self.initialized = True     
+        self.display = Display(self.cfg_ana.projections, self.cfg_ana.screennames)
+        self.display.register(GDetector(self.cfg_ana.detector), layer=0, clearable=False)     
 
     def process(self, event):
         '''process event.
         
-         The event must contain:
-          - papasevent: event structure containing all the information from papas
+         @param event: The event must contain a papasevnt: event structure containing all the information from papas
         '''
         if hasattr(self.cfg_ana, 'display') and self.cfg_ana.display:
-            if not self.initialized:
-                __init_display()
-            #self.eventplot = EventPlotter(event.papasevent,
-                                          #self.cfg_ana.detector,
-                                          #self.cfg_ana.projections,
-                                          #self.cfg_ana.screennames, 
-                                          #self.dirName)
+            self.__init_display()
+            eventplot = EventPlotter(event.papasevent, self.cfg_ana.detector, self.display, self.dirName)
             num_subgroups = None
             if hasattr(self.cfg_ana, "num_subgroups"):
                 num_subgroups = self.cfg_ana.num_subgroups 
-            
-            
-            self.display.plotevent(event.papasevent, self.nscreens
-                                   self.cfg_ana.plottype, 
-                                    self.cfg_ana.particles_type_and_subtypes,
-                                    self.cfg_ana.clusters_type_and_subtypes,
-                                    num_subgroups, 
-                                    to_file=self.cfg_ana.to_file)
-            
+            eventplot.plot(self.cfg_ana.plottype, 
+                           self.cfg_ana.particles_type_and_subtypes,
+                           self.cfg_ana.clusters_type_and_subtypes,
+                           num_subgroups, 
+                           to_file=self.cfg_ana.to_file)
         self.cfg_ana.display = False #only do display for first event in a loop
