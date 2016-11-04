@@ -10,7 +10,7 @@ class EventPlotter(object):
     '''Papas event display.
     '''
     
-    def __init__(self, papasevent, detector, projections, directory):
+    def __init__(self, papasevent, detector, projections, screennames, directory):
         '''Constructor.
         
         @param papasevent: event structure containing all the information from papas
@@ -27,8 +27,9 @@ class EventPlotter(object):
         self.projections = projections
         self.initialized = False 
         self.directory = directory
+        self.screennames = screennames
             
-    def plot(self, plottype, screennames, particles_type_and_subtypes, 
+    def plot(self, plottype, particles_type_and_subtypes, 
                    clusters_type_and_subtypes, 
                    num_subgroups=None,
                    to_file=False):
@@ -48,24 +49,24 @@ class EventPlotter(object):
         '''
             
         #initialise the display (one or two subscreens)
-        self.__init_display(screennames)
+        self.__init_display(self.screennames)
         
         filename = None
-        if len(particles_type_and_subtypes) != len(screennames) or \
-           len(clusters_type_and_subtypes) != len(screennames)  or \
-           len(screennames) == 0 or len(screennames) > 2:
+        if len(particles_type_and_subtypes) != len(self.screennames) or \
+           len(clusters_type_and_subtypes) != len(self.screennames)  or \
+           len(self.screennames) == 0 or len(self.screennames) > 2:
             raise(ValueError, "Input arguments are not consistent for event plot")
         
         if to_file: #sort out the base of the filename
             basename = "event_" + str(self.papasevent.iEv)
-            if len(screennames) == 2:
+            if len(self.screennames) == 2:
                 basename = "compare_"  + basename          
         
         if plottype == "event":  #full event on one plot
             ids = self.helper.event_ids() 
             if to_file:
                 filename = basename + ".png"
-            self.plot_ids(ids, screennames, particles_type_and_subtypes, 
+            self.plot_ids(ids, self.screennames, particles_type_and_subtypes, 
                                clusters_type_and_subtypes, 
                                filename 
                                )                
@@ -130,7 +131,6 @@ class EventPlotter(object):
             
     def __init_display(self, screennames):
         '''Sets up either a single or double paned Display
-        
         @param screennames: list of names of subscreens eg ["simulation", "reconstruction"]
         '''
         #names could be passed through as a parameter

@@ -51,12 +51,13 @@ class PapasEventPlotter(Analyzer):
             self.eventplot = EventPlotter(event.papasevent,
                                           self.cfg_ana.detector,
                                           self.cfg_ana.projections,
+                                          self.cfg_ana.screennames, 
                                           self.dirName)
             num_subgroups = None
             if hasattr(self.cfg_ana, "num_subgroups"):
                 num_subgroups = self.cfg_ana.num_subgroups              
             self.eventplot.plot(self.cfg_ana.plottype, 
-                                    self.cfg_ana.screennames, 
+                                    
                                     self.cfg_ana.particles_type_and_subtypes,
                                     self.cfg_ana.clusters_type_and_subtypes,
                                     num_subgroups, 
