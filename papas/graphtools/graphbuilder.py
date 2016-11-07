@@ -49,7 +49,6 @@ class GraphBuilder(object):
 
     def __str__(self):
         descrip = "{ "
-        
         for subgraph in  self.subgraphs:
             descrip =  descrip +  " ("
             for elemid in  subgraph:
