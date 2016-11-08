@@ -27,13 +27,25 @@ papas = cfg.Analyzer(
     detector = detector,
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    merged_ecals = 'ecal_clusters',
-    merged_hcals = 'hcal_clusters',
+    merged_ecals = 'merged_ecal_clusters',
+    merged_hcals = 'merged_hcal_clusters',
     tracks = 'tracks', 
     output_history = 'history_nodes', 
-    display_filter_func = lambda ptc: ptc.e()>1.,
-    display = False,
     verbose = True
+)
+
+from heppy.analyzers.PapasDisplay import PapasDisplay
+papasdisplay = cfg.Analyzer(
+    PapasDisplay,
+    instance_label = 'papas',
+    detector = detector,
+    #particles = 'papas_sim_particles',
+    #clusters = ['ecal_clusters', 'hcal_clusters'],
+    clusters = ['merged_ecal_clusters', 'merged_hcal_clusters'],
+    particles = 'rec_particles',
+    #display_filter_func = lambda ptc: ptc.e()>1.,
+    #todo save option
+    display = True
 )
 
 
@@ -42,8 +54,8 @@ from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
     tracks = 'tracks', 
-    ecals = 'ecal_clusters', 
-    hcals = 'hcal_clusters', 
+    ecals = 'merged_ecal_clusters', 
+    hcals = 'merged_hcal_clusters', 
     history = 'history_nodes',  
     output_blocks = 'reconstruction_blocks'
 )
@@ -140,4 +152,5 @@ papas_sequence = [
 #    select_leptons,
 #    smear_leptons,
     merge_particles, 
+    papasdisplay
 ]

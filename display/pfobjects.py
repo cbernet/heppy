@@ -90,19 +90,13 @@ class GTrajectory(object):
             tppoint = point
             if i == 0:
                 tppoint = description.p4().Vect()
-            self.graph_thetaphi.SetPoint(i, math.pi/2. - tppoint.Theta(), tppoint.Phi() )
-        clusters = self.desc.clusters_smeared \
-                   if self.__class__.draw_smeared_clusters \
-                   else self.desc.clusters
-        self.blobs = map(Blob, clusters.values())            
+            self.graph_thetaphi.SetPoint(i, math.pi/2. - tppoint.Theta(), tppoint.Phi() )           
 
     def set_color(self, color):
         for graph in self.graphs:
             graph.SetMarkerColor(color)
         
     def draw(self, projection, opt=''):
-        for blob in self.blobs: 
-            blob.draw(projection, opt)
         if projection == 'xy':
             self.graph_xy.Draw(opt+"psame")
         elif projection == 'yz':
@@ -185,3 +179,5 @@ class GTrajectories(list):
     def draw(self, projection):
         for traj in self:
             traj.draw(projection)
+
+
