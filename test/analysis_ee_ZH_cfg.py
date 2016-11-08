@@ -74,7 +74,7 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papas_sequence, detector
+from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
 
 # Use a Filter to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -268,7 +268,7 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papas.display = True
+        papasdisplay.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
