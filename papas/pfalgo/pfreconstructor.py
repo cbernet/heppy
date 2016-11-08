@@ -3,6 +3,7 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
+from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.pfobjects import Particle
 from heppy.utils.pdebug import pdebugger
