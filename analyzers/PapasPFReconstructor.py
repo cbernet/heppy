@@ -28,7 +28,7 @@ class PapasPFReconstructor(Analyzer):
     def __init__(self, *args, **kwargs):
         super(PapasPFReconstructor, self).__init__(*args, **kwargs)  
         self.detector = self.cfg_ana.detector
-        self.reconstructed = PFReconstructor(self.detector, self.logger)
+        self.reconstructor = PFReconstructor(self.detector, self.logger)
         self.blocksname =  self.cfg_ana.input_blocks
         self.historyname = self.cfg_ana.history   
         self.output_particlesdictname = '_'.join([self.instance_label,
@@ -42,18 +42,18 @@ class PapasPFReconstructor(Analyzer):
            arguments:
                     event must contain blocks made using BlockBuilder'''
         
-        self.reconstructed.reconstruct(event,  self.blocksname, self.historyname)
+        self.reconstructor.reconstruct(event,  self.blocksname, self.historyname)
         
         #setattr(event, self.historyname, self.reconstructed.history_nodes)
-        setattr(event, self.output_particlesdictname, self.reconstructed.particles)
+        setattr(event, self.output_particlesdictname, self.reconstructor.particles)
         
         #hist = History(event.history_nodes,PFEvent(event))
         #for block in event.blocks:
         #    hist.summary_of_links(block)
         
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
-        reconstructed_particle_list = sorted( self.reconstructed.particles.values(),
-                                                   key = lambda ptc: ptc.e(),
-                                                   reverse=True)
+        reconstructed_particle_list = sorted( self.reconstructor.particles.values(),
+                                              key = lambda ptc: ptc.e(),
+                                              reverse=True)
         
         setattr(event, self.output_particleslistname, reconstructed_particle_list)

@@ -31,7 +31,7 @@ source = cfg.Analyzer(
 
     photons = 'photons',
     met = 'met',
-)  
+)
 
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
@@ -134,7 +134,7 @@ from heppy.analyzers.M3Builder import M3Builder
 m3 = cfg.Analyzer(
     M3Builder,
     instance_label = 'm3',
-    jets = 'sel_jets_noelectronnomuon_30', 
+    jets = 'sel_jets_noelectronnomuon_30',
     filter_func = lambda x : x.pt()>30.
 )
 

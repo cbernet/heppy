@@ -45,7 +45,7 @@ def runLoop( comp, outDir, config, options):
    
     if options.input is not None:
         comp.files = [options.input]
-   
+
     fullName = '/'.join( [outDir, comp.name ] )
     # import pdb; pdb.set_trace()
     config.components = [comp]
@@ -96,7 +96,6 @@ def createOutputDir(dirname, components, force):
                 else:
                     raise ValueError( ' '.join(['answer can not have this value!',
                                                 answer]) )
-            
 
 _heppyGlobalOptions = {}
 
