@@ -1,13 +1,12 @@
-
 '''Analyzer to plot a Papas Event'''
 from heppy.framework.analyzer import Analyzer
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
-from heppy.display.pfobjects import GTrajectories
+from heppy.display.pfobjects import GTrajectories, Blob
 
 
 class PapasDisplay(Analyzer):
-    '''Plots a PAPAS event
+    '''Plots a PAPAS event display
 
     Example configuration:
 
@@ -17,10 +16,9 @@ class PapasDisplay(Analyzer):
         instance_label = 'papas',
         detector = detector,
         particles = 'papas_sim_particles',
-        #particles = 'papas_PFreconstruction_particles_list',
-        display_filter_func = lambda ptc: ptc.e()>1.,
+        clusters = ['ecal_clusters', 'hcal_clusters']
         display = True
-)
+        )
     '''
 
     def __init__(self, *args, **kwargs):
@@ -41,3 +39,6 @@ class PapasDisplay(Analyzer):
         if self.is_display:
             self.display.clear()
             self.display.register(GTrajectories(particles), layer=1)
+            for clustername in self.cfg_ana.clusters:
+                blobs = map(Blob, getattr(event, clustername).values())   
+                self.display.register(blobs, layer=1, clearable=False)

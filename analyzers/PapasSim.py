@@ -1,9 +1,6 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.simulator import Simulator
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
-from heppy.display.core import Display
-from heppy.display.geometry import GDetector
-from heppy.display.pfobjects import GTrajectories
 from heppy.papas.pfalgo.distance  import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
 from heppy.papas.data.pfevent import PFEvent
@@ -82,21 +79,10 @@ class PapasSim(Analyzer):
         self.mergedecalsname = self.cfg_ana.merged_ecals
         self.mergedhcalsname = self.cfg_ana.merged_hcals
         self.historyname = self.cfg_ana.output_history
-        self.is_display = self.cfg_ana.display
-        if self.is_display:
-            self.init_display()
-
-    def init_display(self):
-        self.display = Display(['xy', 'yz'])
-        self.gdetector = GDetector(self.detector)
-        self.display.register(self.gdetector, layer=0, clearable=False)
-        self.is_display = True
 
     def process(self, event):
         
         event.simulator = self
-        if self.is_display:
-            self.display.clear()
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         try:
@@ -105,9 +91,6 @@ class PapasSim(Analyzer):
             self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
         pfsim_particles = self.simulator.ptcs
-        if self.is_display  :
-            self.display.register(GTrajectories(pfsim_particles),
-                                  layer=1)
         #these are the particles before simulation
         simparticles = sorted(pfsim_particles,
                               key=lambda ptc: ptc.e(), reverse=True)
