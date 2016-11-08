@@ -123,7 +123,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         detname = 'ecal'
         ecal = self.detector.elements[detname]
         propagator(ptc.q()).propagate_one(ptc,
-                                         ecal.volume.inner)
+                                          ecal.volume.inner)
 
         cluster = self.make_cluster(ptc, detname)
         smeared = self.smear_cluster(cluster, ecal)
