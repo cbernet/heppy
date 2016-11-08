@@ -291,7 +291,7 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
-            if self.q():
+            if self.q(): # todo check this is OK for multiple scattering?
                 self.track = Track(self.p3(), self.q(), self.path)
     
     def short_info(self):
