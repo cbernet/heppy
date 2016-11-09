@@ -29,16 +29,17 @@ class PapasDisplay(Analyzer):
             self.init_display()
 
     def init_display(self):
-        self.display = Display(['xy', 'yz'])
+        self.display = Display(self.cfg_ana.projections, self.cfg_ana.screennames)
         self.gdetector = GDetector(self.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
 
     def process(self, event):
-        particles = getattr(event, self.cfg_ana.particles)
+        particles = event.papasevent.get_collection(self.cfg_ana.particles_type_and_subtype)
         if self.is_display:
             self.display.clear()
             self.display.register(GTrajectories(particles), layer=1)
-            for clustername in self.cfg_ana.clusters:
-                blobs = map(Blob, getattr(event, clustername).values())   
+            for type_and_subtype in self.cfg_ana.clusters_type_and_subtypes:
+                blobs = map(Blob, event.papasevent.get_collection(type_and_subtype).values())   
                 self.display.register(blobs, layer=1, clearable=False)
+        self.display.draw()

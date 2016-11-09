@@ -35,15 +35,14 @@ papasdisplay = cfg.Analyzer(
     PapasDisplay,
     instance_label = 'papas',
     detector = detector,
-    #particles = 'papas_sim_particles',
-    #clusters = ['ecal_clusters', 'hcal_clusters'],
-    clusters = ['merged_ecal_clusters', 'merged_hcal_clusters'],
-    particles = 'rec_particles',
+    projections = ['xy', 'yz'],
+    screennames = ["reconstructed"],#["simulated"],
+    particles_type_and_subtype = 'pr',
+    clusters_type_and_subtypes = ['em', 'hm'], 
     #display_filter_func = lambda ptc: ptc.e()>1.,
     #todo save option
     display = True
 )
-
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
@@ -53,7 +52,6 @@ pfblocks = cfg.Analyzer(
     ecal_type_and_subtype = 'em', 
     hcal_type_and_subtype = 'hm'
 )
-
 
 #reconstruct particles from blocks
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
@@ -67,8 +65,6 @@ pfreconstruct = cfg.Analyzer(
     detector = detector,
     output_particles_list = 'particles_list'
 )
-
-
 
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -122,7 +118,6 @@ muons = cfg.Analyzer(
     accept=accept_muon, 
     mu_sigma=(1, 0.02)
     )
-
 
 #merge smeared leptons with the reconstructed particles
 from heppy.analyzers.Merger import Merger

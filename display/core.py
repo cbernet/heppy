@@ -36,7 +36,7 @@ class Display(object):
             if view in ['yz', 'xz']:
                 self.views[view] = ViewPane(view, view, 100, -4, 4, 100, -4, 4, subscreens=subscreens)
             if view in ['xy']:
-                self.views[view] = ViewPane(view, view, 100, -2.8, 2.8, 100, -2.8, 2.8, subscreens=subscreens)
+                self.views[view] = ViewPane(view, view, 100, -4, 4, 100, -4, 4, subscreens=subscreens)
             elif 'thetaphi' in view:
                 self.views[view] = ViewPane(view, view,
                                             100, -math.pi/2, math.pi/2,

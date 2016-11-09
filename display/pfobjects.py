@@ -2,7 +2,8 @@ from ROOT import TPolyLine, TGraph, TArc, TEllipse, kGray
 import numpy as np
 import operator
 import math
-from heppy.papas.path import Helix, StraightLine, Info
+from heppy.papas.path import Helix, StraightLine
+from heppy.papas.propagator import  Info
 
 class Blob(object):
     ''' Blob is used to plot clusters on an event diagram
@@ -186,7 +187,7 @@ class GHelixTrajectory(GTrajectory):
 class GTrajectories(list):
     
     def __init__(self, particles):
-        for ptc in particles:
+        for ptc in particles.values():
             is_neutral = abs(ptc.q())<0.5
             TrajClass = GStraightTrajectory if is_neutral else GHelixTrajectory
             gtraj = TrajClass(ptc)

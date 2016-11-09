@@ -257,11 +257,12 @@ if __name__ == '__main__':
     random.seed(0xdeadbeef)
 
     def process(iev=None):
-        Identifier.reset()
+        Identifier.reset() #todo move elsewhere
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
-        display = False #only display first event in a loop
+        if display:
+            display.draw()
 
     def next():
         loop.process(loop.iEvent+1)
