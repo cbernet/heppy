@@ -81,7 +81,6 @@ class Blob(object):
         
 
 class GTrajectory(object):
-    #NB there are newer alternative versions of this class in trajectories.py
     draw_smeared_clusters = True
     
     def __init__(self, description, linestyle=1, linecolor=1):
@@ -137,7 +136,6 @@ class GStraightTrajectory(GTrajectory):
    
 
 class GHelixTrajectory(GTrajectory):   
-    #NB there are newer alternative versions of this class in trajectories.py
     def __init__(self, description):
         super(GHelixTrajectory, self).__init__(description)
         helix = description.path

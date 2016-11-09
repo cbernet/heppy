@@ -42,4 +42,6 @@ class PapasDisplay(Analyzer):
             for type_and_subtype in self.cfg_ana.clusters_type_and_subtypes:
                 blobs = map(Blob, event.papasevent.get_collection(type_and_subtype).values())   
                 self.display.register(blobs, layer=1, clearable=False)
-        self.display.draw()
+            self.display.draw()
+            pass
+

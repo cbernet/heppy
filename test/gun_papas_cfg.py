@@ -59,24 +59,24 @@ papas_print_history_event = cfg.Analyzer(
     format = "event"
 )
 
-from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
-papas_plot = cfg.Analyzer(
-    PapasEventPlotter,
-    projections = ['xy', 'yz'],
-    plottype = "event",
-    detector = detector,
-    save = True
-)
+#from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
+#papas_plot = cfg.Analyzer(
+    #PapasEventPlotter,
+    #projections = ['xy', 'yz'],
+    #plottype = "event",
+    #detector = detector,
+    #save = True
+#)
 
-from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
-papas_subplot = cfg.Analyzer(
-    PapasEventPlotter,
-    projections = ['xy', 'yz'],
-    plottype = "subgroups",
-    num_subgroups = 2,
-    detector = detector,
-    save = False
-)
+#from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
+#papas_subplot = cfg.Analyzer(
+    #PapasEventPlotter,
+    #projections = ['xy', 'yz'],
+    #plottype = "subgroups",
+    #num_subgroups = 2,
+    #detector = detector,
+    #save = False
+#)
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
 papas_dag_plot= cfg.Analyzer(
@@ -126,7 +126,7 @@ sequence = cfg.Sequence(
     #papas_history,
     papas_print_history, 
     #papas_print_history_event, 
-    papas_plot, 
+    #papas_plot, 
     #papas_subplot,
     #papas_dag_plot, 
     #papas_dag_subgroups,     
