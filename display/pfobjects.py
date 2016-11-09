@@ -107,19 +107,13 @@ class GTrajectory(object):
             tppoint = point
             if i == 0:
                 tppoint = description.p4().Vect()
-            self.graph_thetaphi.SetPoint(i, math.pi/2. - tppoint.Theta(), tppoint.Phi() )
-        clusters = self.desc.clusters_smeared \
-                   if self.__class__.draw_smeared_clusters \
-                   else self.desc.clusters
-        self.blobs = map(Blob, clusters.values())            
+            self.graph_thetaphi.SetPoint(i, math.pi/2. - tppoint.Theta(), tppoint.Phi() )           
 
     def set_color(self, color):
         for graph in self.graphs:
             graph.SetMarkerColor(color)
         
     def draw(self, projection, opt=''):
-        for blob in self.blobs: 
-            blob.draw(projection, opt)
         if projection == 'xy':
             self.graph_xy.Draw(opt+"psame")
         elif projection == 'yz':
@@ -187,4 +181,19 @@ class GHelixTrajectory(GTrajectory):
             self.graphline_thetaphi.Draw("lsame")            
         else:
             raise ValueError('implement drawing for projection ' + projection )
-        super(GHelixTrajectory, self).draw(projection)
+        super(GHelixTrajectory, self).draw(projection)  
+
+class GTrajectories(list):
+    
+    def __init__(self, particles):
+        for ptc in particles:
+            is_neutral = abs(ptc.q())<0.5
+            TrajClass = GStraightTrajectory if is_neutral else GHelixTrajectory
+            gtraj = TrajClass(ptc)
+            self.append(gtraj)
+            # display.register(gtraj,1)
+
+    def draw(self, projection):
+        for traj in self:
+            traj.draw(projection)
+

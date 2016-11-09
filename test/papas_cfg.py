@@ -30,6 +30,20 @@ papas = cfg.Analyzer(
     verbose = True
 )
 
+from heppy.analyzers.PapasDisplay import PapasDisplay
+papasdisplay = cfg.Analyzer(
+    PapasDisplay,
+    instance_label = 'papas',
+    detector = detector,
+    #particles = 'papas_sim_particles',
+    #clusters = ['ecal_clusters', 'hcal_clusters'],
+    clusters = ['merged_ecal_clusters', 'merged_hcal_clusters'],
+    particles = 'rec_particles',
+    #display_filter_func = lambda ptc: ptc.e()>1.,
+    #todo save option
+    display = True
+)
+
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
@@ -133,4 +147,5 @@ papas_sequence = [
 #    select_leptons,
 #    smear_leptons,
     merge_particles, 
+    papasdisplay
 ]

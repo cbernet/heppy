@@ -2,13 +2,10 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
-from heppy.display.core import Display
-from heppy.display.geometry import GDetector
 from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
-
 
 import heppy.statistics.rrandom as random
 
@@ -54,7 +51,7 @@ class PapasSim(Analyzer):
         super(PapasSim, self).__init__(*args, **kwargs)
         self.simulator = Simulator(self.cfg_ana.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-
+        
     def init_display(self):
         self.display = Display(['xy', 'yz'])
         self.gdetector = GDetector(self.cfg_ana.detector)
@@ -64,8 +61,9 @@ class PapasSim(Analyzer):
     def process(self, event):
         
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
+        event.simulator = self
         papasevent = PapasEvent(event.iEv)
-        setattr(event, "papasevent", papasevent)
+        setattr(event, "papasevent", papasevent)        
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         try:
@@ -74,8 +72,10 @@ class PapasSim(Analyzer):
             self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
         pfsim_particles = self.simulator.ptcs
+
+        #these are the particles before simulation
         simparticles = sorted(pfsim_particles,
-                               key=lambda ptc: ptc.e(), reverse=True)     
+                              key=lambda ptc: ptc.e(), reverse=True)     
         setattr(event, self.simname, simparticles)
     
         #create dicts of clusters, particles etc (todo?:move a lot of this into simulator)

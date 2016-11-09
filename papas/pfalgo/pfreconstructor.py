@@ -6,6 +6,7 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.pfblocksplitter import BlockSplitter
 from heppy.papas.pdt import particle_data
 from heppy.papas.path import StraightLine, Helix
+from heppy.papas.propagator import propagator
 from heppy.utils.pdebug import pdebugger
 from heppy.papas.pfobjects import Particle
 from ROOT import TVector3, TLorentzVector
@@ -316,10 +317,14 @@ class PFReconstructor(object):
         if vertex is None:
             vertex = TVector3()
         pdg_id = None
-        if layer == 'ecal_in':
+        propagate_to = None
+        if layer=='ecal_in':
             pdg_id = 22 #photon
-        elif layer == 'hcal_in':
+            propagate_to = [ self.detector.elements['ecal'].volume.inner ]
+        elif layer=='hcal_in':
             pdg_id = 130 #K0
+            propagate_to = [ self.detector.elements['ecal'].volume.inner,
+                             self.detector.elements['hcal'].volume.inner ]
         else:
             raise ValueError('layer must be equal to ecal_in or hcal_in')
         assert(pdg_id)
@@ -335,11 +340,17 @@ class PFReconstructor(object):
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
         particle = Particle(p4, vertex, charge, pdg_id, subtype='r')
-        path = StraightLine(p4, vertex)
-        #path.points[layer] = cluster.position #alice: this may be a bit strange because we can make a photon with a path where the point is actually that of the hcal?
-                                            # nb this only is problem if the cluster and the assigned layer are different
-        particle.set_path(path)
-        #particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
+        # path = StraightLine(p4, vertex)
+        # path.points[layer] = cluster.position 
+        # alice: this may be a bit strange because we can make a photon 
+        # with a path where the point is actually that of the hcal?
+        # nb this only is problem if the cluster and the assigned layer 
+        # are different
+        # particle.set_path(path)
+        propagator(charge).propagate([particle],
+                                     propagate_to)
+        #merge Nov 10th 2016 not sure about following line (was commented out in papasevent branch)
+        particle.clusters[layer] = cluster  # not sure about this either when hcal is used to make an ecal cluster?
         self.locked[cluster.uniqueid] = True #just OK but not nice if hcal used to make ecal.
         pdebugger.info(str('Made {} from {}'.format(particle, cluster)))
         return particle

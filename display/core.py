@@ -2,6 +2,7 @@
 import operator
 import math
 import os
+from ROOT import TCanvas, TH2F, TH1
 
 class Display(object):
     '''
