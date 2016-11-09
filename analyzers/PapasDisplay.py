@@ -41,7 +41,7 @@ class PapasDisplay(Analyzer):
             self.display.register(GTrajectories(particles), layer=1)
             for type_and_subtype in self.cfg_ana.clusters_type_and_subtypes:
                 blobs = map(Blob, event.papasevent.get_collection(type_and_subtype).values())   
-                self.display.register(blobs, layer=1, clearable=False)
+                self.display.register(blobs, layer=1)
             self.display.draw()
             pass
 
