@@ -40,7 +40,8 @@ from EventStore import EventStore as Events
 # help(Event) for more information
 from heppy.framework.event import Event
 # comment the following line to see all the collections stored in the event 
-Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*']
+# if collection is listed then print loop.event.papasevent will include the collections
+Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*', 'collections']
 
 # definition of the collider
 # help(Collider) for more information
@@ -277,7 +278,6 @@ if __name__ == '__main__':
     
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
-    display = False
     if len(sys.argv)==2:
         papasdisplay.display = True
         try:
@@ -295,8 +295,8 @@ if __name__ == '__main__':
                    timeReport=True)
     
     for ana in loop.analyzers: 
-        if hasattr(ana, 'display') and ana.display == True:
-            display = True # will display first event in a loop
+        if hasattr(ana, 'display'):
+            display = getattr(ana, 'display', None)
     
     if iev is not None:
         process(iev)
