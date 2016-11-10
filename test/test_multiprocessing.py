@@ -9,6 +9,7 @@ from simple_example_cfg import config, stopper
 from heppy.utils.testtree import create_tree, remove_tree
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
+import heppy.framework.context as context
 from ROOT import TFile
 
 import logging
@@ -39,7 +40,7 @@ class TestMultiProcessing(unittest.TestCase):
         options, args = parser.parse_args()
         options.iEvent = None
         options.nprint = 0
-        cfg = '/'.join( [ os.environ['HEPPY'], 
+        cfg = '/'.join( [ context.heppy_path, 
                           'test/simple_multi_example_cfg.py' ] )
         main(options, [self.outdir, cfg], parser)
         wcard = '/'.join([self.outdir, 
