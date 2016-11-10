@@ -51,15 +51,8 @@ class PapasSim(Analyzer):
         super(PapasSim, self).__init__(*args, **kwargs)
         self.simulator = Simulator(self.cfg_ana.detector, self.mainLogger)
         self.simname = '_'.join([self.instance_label,  self.cfg_ana.sim_particles])
-        
-    def init_display(self):
-        self.display = Display(['xy', 'yz'])
-        self.gdetector = GDetector(self.cfg_ana.detector)
-        self.display.register(self.gdetector, layer=0, clearable=False)
-        self.is_display = True
 
     def process(self, event):
-        
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
         event.simulator = self
         papasevent = PapasEvent(event.iEv)

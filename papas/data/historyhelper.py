@@ -103,11 +103,14 @@ class HistoryHelper(object):
                                      "smeared_hcals","merged_hcals","rec_particles"]):
         ''' String to describe the components corresponding to the selected ids
         @param ids: list of uniqueids in history
-        @type_and_subtypes: list of type_and_subtypes
-        @labels: list of string labels (matching the type_and_subtypes)
+        @param type_and_subtypes: list of type_and_subtypes
+                            defaults to ['pg', 'tt', 'ts', 'et', 'es', 'em', 'ht', 'hs', 'hm', 'pr']
+        @param labels: list of string labels (matching the type_and_subtypes)
+                 defaults to ["gen_particles","true_tracks","smeared_tracks", "true_ecals", "smeared_ecals","merged_ecals","true_hcals", 
+                                     "smeared_hcals","merged_hcals","rec_particles"]
         '''
         if len(type_and_subtypes) != len(labels):
-           raise(ValueError, "Inconsistent arguments to summary_string_ids")
+            raise(ValueError, "Inconsistent arguments to summary_string_ids")
         makestring=""
         for i in range(len(type_and_subtypes)):
             objdict = self.get_collection(ids, type_and_subtypes[i])

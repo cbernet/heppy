@@ -7,18 +7,18 @@ class PapasHistoryPrinter(Analyzer):
         
         Examples: 
         from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
+        papas_print_history_event = cfg.Analyzer(
+            PapasHistoryPrinter,
+            format = "event"
+        )
+        
+        from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
         papas_print_history = cfg.Analyzer(
             PapasHistoryPrinter,
             format = "subgroups",
             num_subgroups = 3 # biggest 3 subgroups will be printed
         )
         
-        from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
-        papas_print_history_event = cfg.Analyzer(
-            PapasHistoryPrinter,
-            format = "event"
-        )
-    
         * format = "event" or "subgroups"
            "event" orders all elements in papasevent by id (which is in turn sorted 
                 by object type, object subtype, object energy)
