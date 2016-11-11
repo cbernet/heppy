@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-     files = ["/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/newEDM2/FCCSW/FCCDelphesOutput.root"]
+     files = ["/afs/cern.ch/user/h/helsens/public/FCC/Files/FCCDelphesOutput.root"]
 )
 selectedComponents = [comp]
 
@@ -43,11 +43,10 @@ gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
 
 
-from heppy.analyzers.MyGenAnalyzer import GenAnalyzer
-genana = cfg.Analyzer(
-    GenAnalyzer
-    
-)
+#from heppy.analyzers.MyGenAnalyzer import GenAnalyzer
+#genana = cfg.Analyzer(
+#    GenAnalyzer
+#    )
 
 
 
