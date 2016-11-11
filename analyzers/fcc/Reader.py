@@ -90,8 +90,8 @@ class Reader(Analyzer):
                 setattr(event, coll_label, pycoll)
             return pycoll
 
-        get_collection(Particle, 'gen_particles')
-        get_collection(Vertex, 'gen_vertices', False)
+        #get_collection(Particle, 'gen_particles')
+        #get_collection(Vertex, 'gen_vertices', False)
         get_collection(Jet, 'gen_jets')
         jetcoll = get_collection(Jet, 'jets')
         if jetcoll:
@@ -99,9 +99,18 @@ class Reader(Analyzer):
             for jet in jetcoll:
                 jets[jet] = jet
             if hasattr(self.cfg_ana, 'bTags'):
-                for jet in store.get(self.cfg_ana.bTags):
-                    jets[Jet(jet.jet())].tags['bf'] = jet.tag()
-            
+                for bjet in store.get(self.cfg_ana.bTags):
+                    jets[Jet(bjet.jet())].tags['bf'] = bjet.tag()
+        
+            if hasattr(self.cfg_ana, 'cTags'):
+                for cjet in store.get(self.cfg_ana.cTags):
+                    jets[Jet(cjet.jet())].tags['cf'] = cjet.tag()
+
+            if hasattr(self.cfg_ana, 'tauTags'):
+                for taujet in store.get(self.cfg_ana.tauTags):
+                    jets[Jet(taujet.jet())].tags['tauf'] = taujet.tag()
+
+
         class Iso(object):
             def __init__(self):
                 self.sumpt=-9999

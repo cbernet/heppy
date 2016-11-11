@@ -10,18 +10,23 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-     files = ["FCCDelphesOutput.root"]
+     files = ["/afs/cern.ch/user/h/helsens/FCCsoft/FCCSOFT/newEDM2/FCCSW/FCCDelphesOutput.root"]
 )
 selectedComponents = [comp]
 
 from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
-    #gen_particles = 'genParticles',
+
+    gen_particles = 'genParticles',
+    gen_vertices = 'genVertices',
+
     gen_jets = 'genJets',
 
     jets = 'jets',
     bTags = 'bTags',
+    cTags = 'cTags',
+    tauTags = 'tauTags',
 
     electrons = 'electrons',
     electronITags = 'electronITags',
@@ -36,6 +41,13 @@ source = cfg.Analyzer(
 from ROOT import gSystem
 gSystem.Load("libdatamodelDict")
 from EventStore import EventStore as Events
+
+
+from heppy.analyzers.MyGenAnalyzer import GenAnalyzer
+genana = cfg.Analyzer(
+    GenAnalyzer
+    
+)
 
 
 
@@ -184,6 +196,8 @@ sequence = cfg.Sequence( [
     selection,
     m3, 
     mtw,
+    #genana,
+
     gen_tree
     ] )
 
