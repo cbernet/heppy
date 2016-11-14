@@ -1,5 +1,8 @@
+'''Jet clusterizer based on fastjet.'''
+
 from heppy.framework.analyzer import Analyzer
 from heppy.framework.event import Event
+
 from heppy.particles.tlv.jet import Jet
 from heppy.particles.jet import JetConstituents
 
@@ -18,34 +21,33 @@ elif os.environ.get('CMSSW_BASE'):
 import math
     
 class JetClusterizer(Analyzer):
-    '''Jet clusterizer. 
+    '''Jet clusterizer based on fastjet (kt-ee algorithm)
     
-    Makes use of the JetClusterizer class compiled in the analysis-cpp package
-    (this external package is the only dependence to the FCC software).
+    This analyzer, specific to the FCC,
+    makes use of the JetClusterizer class compiled in the fcc-physics package.
 
-    Example configuration: 
+    Example configuration::
 
-    from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
-    jets = cfg.Analyzer(
-      JetClusterizer,
-      output = 'jets',
-      particles = 'particles_not_zed',
-      fastjet_args = dict( njets = 2)  
-    )
+        from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
+        jets = cfg.Analyzer(
+          JetClusterizer,
+          output = 'jets',
+          particles = 'particles_not_zed',
+          fastjet_args = dict(njets = 2)  
+        )
     
-    * output: name of the output collection of Jets. 
-    Each jet is attached a JetConstituents object as jet.constituents.
-    See the Jet and JetConstituents classes. 
+    @param output: name of the output collection of L{jets<heppy.particles.jet.Jet>}. 
+      Each jet is attached a L{JetConstituents<heppy.particles.jet.JetConstituents>} object
+      as C{jet.constituents}.
 
-    * particles: name of the input collection of particle-like objects. 
-    These objects should have a p4(). 
+    @param particles: name of the input collection of particle-like objects. 
+      These objects should have a p4(). 
     
-    you should provide either one or the other of the following arguments:
-    - ptmin : pt threshold for exclusive jet reconstruction 
-    - njets : number of jets for inclusive jet reconstruction 
-
-    A more flexible interface can easily be provided if needed, 
-    contact Colin.
+    @param fastjet_args: fastjet arguments. 
+      you should provide either one or the other of the following arguments:
+       - ptmin : pt threshold in GeV for exclusive jet reconstruction 
+       - njets : number of jets for inclusive jet reconstruction 
+       
     '''
 
     def __init__(self, *args, **kwargs):
@@ -84,6 +86,14 @@ class JetClusterizer(Analyzer):
                 
                 
     def process(self, event):
+        '''Process event.
+        
+        The event must contain:
+         - self.cfg_ana.particles: the list of particles to be clustered
+         
+        This method creates:
+         - event.<self.cfg_ana.output>: the list of L{jets<heppy.particles.jet.Jet>}. 
+        '''
         particles = getattr(event, self.cfg_ana.particles)
         # removing neutrinos
         particles = [ptc for ptc in particles if abs(ptc.pdgid()) not in [12,14,16]]
