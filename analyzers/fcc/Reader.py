@@ -3,6 +3,7 @@ from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 from heppy.particles.fcc.met import Met
+from heppy.particles.weight import Weight
 import heppy.configuration
 
 import math
@@ -90,9 +91,21 @@ class Reader(Analyzer):
                 setattr(event, coll_label, pycoll)
             return pycoll
 
-        get_collection(Particle, 'gen_particles')
+
+        # store only 1st event weight for now
+        event.weight = - 999.
+        if hasattr(self.cfg_ana, 'weights'):
+             coll_name = getattr( self.cfg_ana, 'weights' )
+             weightcoll = store.get( coll_name )
+             if weightcoll:
+                 event.weight = weightcoll[0].weight()
+
+
+        gen_particles = get_collection(Particle, 'gen_particles', False)
         get_collection(Vertex, 'gen_vertices', False)
         get_collection(Jet, 'gen_jets')
+
+
         jetcoll = get_collection(Jet, 'jets')
         if jetcoll:
             jets = dict()
@@ -101,12 +114,14 @@ class Reader(Analyzer):
             if hasattr(self.cfg_ana, 'bTags'):
                 for jet in store.get(self.cfg_ana.bTags):
                     jets[Jet(jet.jet())].tags['bf'] = jet.tag()
-            
+
+
         class Iso(object):
             def __init__(self):
                 self.sumpt=-9999
                 self.sume=-9999
                 self.num=-9999
+
 
         electrons = dict()
         if hasattr(self.cfg_ana, 'electrons'):
@@ -119,6 +134,11 @@ class Reader(Analyzer):
                 for ele in store.get(self.cfg_ana.electronITags):
                     electrons[Particle(ele.particle())].iso = Iso()
                     electrons[Particle(ele.particle())].iso.sumpt = electrons[Particle(ele.particle())].pt()*ele.tag()
+            if hasattr(self.cfg_ana, 'electronsToMC'):
+                for ele in store.get(self.cfg_ana.electronsToMC):
+                    if ele.sim() and ele.rec():
+                        electrons[Particle(ele.rec())].gen = Particle(ele.sim())
+
 
         muons = dict()
         if hasattr(self.cfg_ana, 'muons'):
@@ -131,6 +151,11 @@ class Reader(Analyzer):
                 for mu in store.get(self.cfg_ana.muonITags):
                     muons[Particle(mu.particle())].iso = Iso()
                     muons[Particle(mu.particle())].iso.sumpt = muons[Particle(mu.particle())].pt()*mu.tag()
+            if hasattr(self.cfg_ana, 'muonsToMC'):
+                for mu in store.get(self.cfg_ana.muonsToMC):
+                    if mu.sim() and mu.rec():
+                        muons[Particle(mu.rec())].gen = Particle(mu.sim())
+
 
         photons = dict()
         if hasattr(self.cfg_ana, 'photons'):
@@ -143,7 +168,10 @@ class Reader(Analyzer):
                 for pho in store.get(self.cfg_ana.photonITags):
                     photons[Particle(pho.particle())].iso = Iso()
                     photons[Particle(pho.particle())].iso.sumpt = photons[Particle(pho.particle())].pt()*pho.tag()
-
+            if hasattr(self.cfg_ana, 'photonsToMC'):
+                for pho in store.get(self.cfg_ana.photonsToMC):
+                    if pho.sim() and pho.rec():
+                        photons[Particle(pho.rec())].gen = Particle(pho.sim())
 
         pfcharged  = get_collection(Particle, 'pfcharged', False)
         pfphotons  = get_collection(Particle, 'pfphotons', False)

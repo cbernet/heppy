@@ -12,20 +12,23 @@ class HTo4lGenTreeProducer(Analyzer):
                                         'tree.root']),
                               'recreate')
         self.tree = Tree( 'events', '')
+        bookVariable(self.tree, 'weight')
         bookParticle(self.tree, 'lep1vsPt')
         bookParticle(self.tree, 'lep2vsPt')
         bookParticle(self.tree, 'lep3vsPt')
         bookParticle(self.tree, 'lep4vsPt')
-	
+
         bookParticle(self.tree, 'lep1vsEta')
         bookParticle(self.tree, 'lep2vsEta')
         bookParticle(self.tree, 'lep3vsEta')
         bookParticle(self.tree, 'lep4vsEta')
-	
-	
+
+
     def process(self, event):
         self.tree.reset()
         gen_leptons = getattr(event, self.cfg_ana.leptons)
+
+        fillVariable(self.tree, 'weight' , event.weight)
         
         if len(gen_leptons) >= 4:
 

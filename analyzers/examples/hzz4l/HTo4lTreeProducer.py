@@ -12,6 +12,8 @@ class HTo4lTreeProducer(Analyzer):
                                         'tree.root']),
                               'recreate')
         self.tree = Tree( 'events', '')
+        
+        bookVariable(self.tree, 'weight')
         bookParticle(self.tree, 'zed1')
         bookParticle(self.tree, 'zed2')
         bookLepton(self.tree, 'zed1_lep1')
@@ -26,11 +28,13 @@ class HTo4lTreeProducer(Analyzer):
         zeds.sort(key=lambda x: abs(x.m()-91.))
         higgses = getattr(event, self.cfg_ana.higgses)
 
+        fillVariable(self.tree, 'weight' , event.weight)
+
         if len(zeds) > 1:
 
             fillParticle(self.tree, 'zed1', zeds[0])
             fillParticle(self.tree, 'zed2', zeds[1])
-            
+
             fillLepton(self.tree, 'zed1_lep1', zeds[0].legs[0])
             fillLepton(self.tree, 'zed1_lep2', zeds[0].legs[1])
             fillLepton(self.tree, 'zed2_lep1', zeds[1].legs[0])
