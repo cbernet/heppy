@@ -1,11 +1,4 @@
-'''Example configuration file for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
-
-While studying this file, open it in ipython as well as in your editor to 
-get more information: 
-
-ipython
-from analysis_ee_ZH_cfg import * 
-
+'''Example configuration file to produce various papas plots for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
 '''
 
 import os
@@ -40,8 +33,7 @@ from EventStore import EventStore as Events
 # help(Event) for more information
 from heppy.framework.event import Event
 # comment the following line to see all the collections stored in the event 
-# if collection is listed then print loop.event.papasevent will include the collections
-Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*', 'collections']
+Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*']
 
 # definition of the collider
 # help(Collider) for more information
@@ -83,7 +75,52 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
+from heppy.test.papas_cfg import papas_sequence, detector
+
+
+from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
+papas_print_history = cfg.Analyzer(
+    PapasHistoryPrinter,
+    format = "subgroups",
+    num_subgroups = 3 # biggest 3 subgroups will be printed
+)
+
+
+from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
+papas_print_history_event = cfg.Analyzer(
+    PapasHistoryPrinter,
+    format = "event"
+)
+
+#from heppy.analyzers.PapasDisplay import PapasDisplay
+#papas_event_plot = cfg.Analyzer(
+    #PapasDisplay,
+    #projections = ['xy', 'yz'],
+    #screennames = ["simulated", "reconstructed"],
+    #particles_type_and_subtypes = ['ps', 'pr'],
+    #clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']], 
+    #detector = detector,
+    #plottype = "event",
+    ##save = True, todo
+    #display = True
+#)
+
+
+
+from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
+papas_dag_plot= cfg.Analyzer(
+    PapasDAGPlotter,
+    plottype = "event",
+    show_file = False
+)
+
+from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
+papas_dag_subgroups= cfg.Analyzer(
+    PapasDAGPlotter,
+    plottype = "subgroups",
+    show_file = False,
+    num_subgroups = 4
+)
 
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -225,6 +262,12 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source,
     papas_sequence,
+    #papas_print_history, 
+    #papas_print_history_event, 
+    #papas_event_plot, 
+    #papas_event_subplot,
+    papas_dag_plot, 
+    #papas_dag_subgroups, 
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
@@ -258,12 +301,11 @@ if __name__ == '__main__':
     random.seed(0xdeadbeef)
 
     def process(iev=None):
-        Identifier.reset() #todo move elsewhere
+        Identifier.reset()
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
-        if display:
-            display.draw()
+        display = False #only display first event in a loop
 
     def next():
         loop.process(loop.iEvent+1)
@@ -278,8 +320,9 @@ if __name__ == '__main__':
     
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
+    display = False
     if len(sys.argv)==2:
-        papasdisplay.display = True
+        display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -295,8 +338,8 @@ if __name__ == '__main__':
                    timeReport=True)
     
     for ana in loop.analyzers: 
-        if hasattr(ana, 'display'):
-            display = getattr(ana, 'display', None)
+        if hasattr(ana, 'display') and ana.display == True:
+            display = True # will display first event in a loop
     
     if iev is not None:
         process(iev)

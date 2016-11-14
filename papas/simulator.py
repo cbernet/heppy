@@ -4,8 +4,9 @@ import shelve
 from heppy.papas.propagator import propagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
-from heppy.papas.pfalgo.pfinput import  PFInput
-
+from heppy.papas.data.papasevent import  PapasEvent
+from heppy.utils.pdebug import pdebugger
+from heppy.papas.data.identifier import Identifier
 import heppy.papas.multiple_scattering as mscat
 from heppy.papas.papas_exceptions import SimulationError
 from heppy.utils.pdebug import pdebugger
@@ -89,6 +90,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
         response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
+
         smeared_cluster = SmearedCluster(cluster,
                                          energy,
                                          cluster.position,
@@ -290,7 +292,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-        self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)
 
 if __name__ == '__main__':
 

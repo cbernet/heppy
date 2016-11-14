@@ -2,8 +2,6 @@ import itertools
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.data.identifier import Identifier
 
-#todo remove pfevent from this class once we have written a helper class to print the block and its elements
-
 class PFBlock(object):
 
     ''' A Particle Flow Block stores a set of element ids that are connected to each other
@@ -13,38 +11,36 @@ class PFBlock(object):
 
      uniqueid : the block's unique id generated from Identifier class
      element_uniqueids : list of uniqueids of its elements
-     pfevent : contains the tracks and clusters and a get_object method to allow access to the
+     papasevent : contains the tracks and clusters and a get_object method to allow access to the
                underlying objects given their uniqueid
      edges : Dictionary of all the edge cominations in the block dict{edgekey : Edge}
              use  get_edge(id1,id2) to find an edge
-     is_active : bool true/false, set to false if the block is subsequently subdivided
-
+     
      Usage:
-            block = PFBlock(element_ids,  edges, pfevent)
+            block = PFBlock(element_ids,  edges, 'r') 
             for uid in block.element_uniqueids:
-                 print pfevent.get_object(uid).__str__() + "\n"
+                 print papasevent.get_object(uid).__str__() + "\n"
+            
      '''
 
     temp_block_count = 0 #sequential numbering of blocks, not essential but helpful for debugging
 
-    def __init__(self, element_ids, edges, pfevent):
-        '''
+    
+    def __init__(self, element_ids, edges, subtype): 
+        ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
             edges: is a dictionary of edges, it must contain at least all needed edges.
                    It is not a problem if it contains
                    additional edges as only the ones needed will be extracted
-            pfevent: allows access to the underlying elements given a uniqueid
-                     must provide a get_object function
+            subtype: used when making unique identifier, will normally be 'r' for reconstructed blocks and 's' for split blocks
+           
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK)
-        self.is_active = True # if a block is subsequently split it will be deactivated
-
-        #allow access to the underlying objects
-        self.pfevent = pfevent
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype) 
+        self.element_uniqueids = sorted(element_ids, key=lambda  x: Identifier.type_letter(x)) 
 
         #comment out energy sorting  for now as not available C++
-        sortby = lambda x: Identifier.type_short_code(x)
+        sortby = lambda x: Identifier.type_letter(x)
         self.element_uniqueids = sorted(element_ids, key=sortby)
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
@@ -55,7 +51,6 @@ class PFBlock(object):
         for id1, id2 in itertools.combinations(self.element_uniqueids, 2):
             key = Edge.make_key(id1, id2)
             self.edges[key] = edges[key]
-
 
     def count_ecal(self):
         ''' Counts how many ecal cluster ids are in the block '''
@@ -77,9 +72,6 @@ class PFBlock(object):
         for elem in self.element_uniqueids:
             count += Identifier.is_hcal(elem)
         return count
-
-    def __len__(self) :
-        return len(self.element_uniqueids)
 
     def linked_edges(self, uniqueid, edgetype=None) :
         '''
@@ -103,8 +95,9 @@ class PFBlock(object):
         return linked_edges
 
     def linked_ids(self, uniqueid, edgetype=None) :
-        ''' Returns list of all linked ids of a given edge type that are connected to a given id -
-            sorted in order of increasing distance'''
+        '''Returns the list of ids linked to uniqueid, sorted by increasing distance. the type of link can be specified through the parameter edgetype.
+            eg block.linked_ids(trackid, "ecal_track") returns all the ids that are linked and of type "ecal_track"
+            '''
         linked_ids = []
         linked_edges = []
         linked_edges = self.linked_edges(uniqueid, edgetype)
@@ -115,45 +108,7 @@ class PFBlock(object):
                 else:
                     linked_ids.append(edge.id1)
         return sorted(linked_ids)
-
-    def sort_distance_energy(self, uniqueid, otherids):
-        ''' returns a list of the otherids sorted by distance to uniqueid and by decreasing energies
-
-            eg if uniqueid is an hcal
-               and other ids are  track1 energy = 18, dist to hcal = 0.1
-                                  track2 energy = 9,  dist to hcal = 0
-                                  track3 energy = 4,  dist to hcal = 0
-            this will return {track2, track3, track1}
-            '''
-        #this is ""needed"" for particle reconstruction
-        #this is a bit yucky and may only be a  temporary work around
-        # maybe should live outside of this class
-        return sorted(otherids, key=lambda x: (self.get_edge(x, uniqueid).distance is None,
-                                               self.get_edge(x, uniqueid).distance,
-                                               -self.pfevent.get_object(x).energy))
-
-    def elements_string(self):
-        ''' Construct a string description of each of the elements in a block:-
-        The elements are given a short name E/H/T according to ecal/hcal/track
-        and then sequential numbering starting from 0, this naming is also used to index the
-        matrix of distances. The full unique id is also given.
-        For example:-
-        elements: {
-        E0:1104134446736:SmearedCluster : ecal_in       0.57  0.33 -2.78
-        H1:2203643940048:SmearedCluster : hcal_in       6.78  0.35 -2.86
-        T2:3303155568016:SmearedTrack   :    5.23    4.92  0.34 -2.63
-        }
-        '''
-        count = 0
-        elemdetails = "\n      elements: {\n"
-        for uid in self.element_uniqueids:
-            elemdetails += "      {shortname}{count}:{strdescrip}\n".format(
-                shortname=Identifier.type_short_code(uid),
-                count=count,
-                strdescrip=self.pfevent.get_object(uid).__str__())
-            count = count + 1
-        return elemdetails + "      }\n"
-
+    
     def short_elements_string(self):
         ''' Construct a string description of each of the elements in a block.
 
@@ -171,15 +126,15 @@ class PFBlock(object):
         count = 0
         elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
-            elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({id})\n".format(
-                shortname=Identifier.type_short_code(uid),
+            elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({uid})\n".format(
+                shortname=Identifier.type_letter(uid),
                 count=count,
                 strdescrip=Identifier.pretty(uid),
-                id=uid)
+                uid=uid)
             count = count + 1
         return elemdetails
 
-    def short_name(self):
+    def short_info(self):
         ''' constructs a short summary name for blocks allowing sorting based on contents
             eg 'E1H1T2' for a block with 1 ecal, 1 hcal, 2 tracks
         '''
@@ -192,6 +147,8 @@ class PFBlock(object):
             shortname = shortname + "T" + str(self.count_tracks())
         return shortname
 
+    
+    
     def edge_matrix_string(self):
         ''' produces a string containing the the lower part of the matrix of distances between elements
         elements are ordered as ECAL(E), HCAL(H), Track(T)
@@ -212,7 +169,7 @@ class PFBlock(object):
             matrixstr = "    distances:\n        "
             for e1 in self.element_uniqueids :
                 # will produce short id of form E2 H3, T4 etc in tidy format
-                elemstr = Identifier.type_short_code(e1) + str(count)
+                elemstr = Identifier.type_letter(e1) + str(count)
                 matrixstr += "{:>8}".format(elemstr)
                 count += 1
             matrixstr += "\n"
@@ -223,7 +180,7 @@ class PFBlock(object):
                 countcol = 0
                 rowstr = ""
                 #make short name for the row element eg E3, H5 etc
-                rowname = Identifier.type_short_code(e1) +str(countrow)
+                rowname = Identifier.type_letter(e1) +str(countrow)
                 for e2 in self.element_uniqueids:  # these will be the columns
                     countcol += 1
                     if e1 == e2:
@@ -270,16 +227,13 @@ class PFBlock(object):
     def __repr__(self):
         ''' Short Block description
         '''
-        if self.is_active:
-            description = "block:"
-        else:
-            description = "deactivated block:"
+        description = "block:"
         description += str('{shortname:8} :{prettyid:6}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
-            shortname=self.short_name(),
+            shortname=self.short_info(),
             prettyid=Identifier.pretty(self.uniqueid),
             count_ecal=self.count_ecal(),
             count_hcal=self.count_hcal(),
             count_tracks=self.count_tracks())
-                           )
+                          )
         return description
 

@@ -2,14 +2,18 @@
 
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.pdt import particle_data
-from heppy.particles.tlv.particle import Particle 
+from heppy.particles.tlv.particle import Particle as TlvParticle
+#TODO remove dependency to papas
+from heppy.papas.pfobjects import Particle as PapasParticle #so that Gun can be used in papas (needs uniqueid)
+from ROOT import TVector3
 
 import math
 import heppy.statistics.rrandom as random
 
 from ROOT import TLorentzVector
 
-def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
+def particle(pdgid, thetamin, thetamax, ptmin, ptmax,
+             flat_pt=False, papas = False):
     '''Create and return a particle in a given phase space
     
     @param pdgid: the pdg ID code
@@ -31,7 +35,8 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
     sintheta = math.sin(math.pi/2. - theta)
     tantheta = sintheta / costheta
     cosphi = math.cos(phi)
-    sinphi = math.sin(phi)        
+    sinphi = math.sin(phi) 
+    vertex = TVector3(0,0,0)
     if flat_pt:
         pt = energy
         momentum = pt / sintheta
@@ -43,7 +48,10 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax, flat_pt=False):
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    return Particle(pdgid, charge, tlv) 
+    if papas:
+        return PapasParticle(tlv, vertex, charge, pdgid, subtype ='g') #pfobjects has a uniqueid
+    else:
+        return TlvParticle(pdgid, charge, tlv) #pfobjects has a uniqueid    
     
 
 class Gun(Analyzer):
@@ -92,5 +100,6 @@ class Gun(Analyzer):
                                         self.cfg_ana.thetamax,
                                         self.cfg_ana.ptmin, 
                                         self.cfg_ana.ptmax,
-                                        flat_pt=self.cfg_ana.flat_pt)]
+                                        flat_pt=self.cfg_ana.flat_pt,
+                                        papas = papas)]
         event.gen_particles_stable = event.gen_particles
