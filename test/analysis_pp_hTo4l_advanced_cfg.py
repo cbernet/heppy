@@ -22,20 +22,21 @@ source = cfg.Analyzer(
 
     jets = 'jets',
     bTags = 'bTags',
-    
+
     electrons = 'electrons',
     electronITags = 'electronITags',
-    
+
     muons = 'muons',
+    muonsToMC = 'muonsToMC',
     muonITags = 'muonITags',
-    
+
     photons = 'photons',
     photonITags = 'photonITags',
-    
+
     pfphotons = 'pfphotons',
     pfcharged = 'pfcharged',
     pfneutrals = 'pfneutrals',
-    
+
     met = 'met',
 )
 
@@ -202,35 +203,20 @@ from heppy.analyzers.Merger import Merger
 dressed_leptons = cfg.Analyzer(
       Merger,
       instance_label = 'dressed_leptons', 
-      inputs = ['dressed_electrons','dressed_muons']
+      inputs = ['dressed_electrons','dressed_muons'],
+      output = 'dressed_leptons'
 )
 
-# create Z boson candidates with muons
-from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
-zeds_muons = cfg.Analyzer(
-      ResonanceBuilder,
-      output = 'zeds_muons',
-      leg_collection = 'dressed_muons',
-      pdgid = 23
-)
-
-# create Z boson candidates with electrons
-zeds_electrons = cfg.Analyzer(
-      ResonanceBuilder,
-      output = 'zeds_electrons',
-      leg_collection = 'dressed_electrons',
-      pdgid = 23
-)
-
-# merge Z candidates into a single collection
+# create Z boson candidates with leptons
+from heppy.analyzers.LeptonicZedBuilder import LeptonicZedBuilder
 zeds = cfg.Analyzer(
-      Merger,
-      instance_label = 'zeds',
-      inputs = ['zeds_electrons','zeds_muons'],
-      output = 'zeds'
+      LeptonicZedBuilder,
+      output = 'zeds',
+      leptons = 'dressed_leptons',
 )
 
 # create H boson candidates
+from heppy.analyzers.ResonanceBuilder import ResonanceBuilder
 higgses = cfg.Analyzer(
       ResonanceBuilder,
       output = 'higgses',
@@ -238,7 +224,8 @@ higgses = cfg.Analyzer(
       pdgid = 25
 )
 
-# apply event selection
+
+# apply event selection. Defined in "analyzers/examples/hzz4l/selection.py"
 from heppy.analyzers.examples.hzz4l.selection import Selection
 selection = cfg.Analyzer(
     Selection,
@@ -274,8 +261,7 @@ sequence = cfg.Sequence( [
     iso_electrons,
     sel_iso_electrons,
     dressed_electrons,
-    zeds_electrons,
-    zeds_muons,
+    dressed_leptons,
     zeds,
     selection,
     higgses,
