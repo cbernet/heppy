@@ -101,10 +101,14 @@ class Reader(Analyzer):
                  event.weight = weightcoll[0].weight()
 
 
-        gen_particles = get_collection(Particle, 'gen_particles', False)
-        get_collection(Vertex, 'gen_vertices', False)
-        get_collection(Jet, 'gen_jets')
+        if hasattr(self.cfg_ana, 'gen_particles'):
+            get_collection(Particle, 'gen_particles')
 
+        if hasattr(self.cfg_ana, 'gen_vertices'):
+            get_collection(Vertex, 'gen_vertices', False)
+
+        if hasattr(self.cfg_ana, 'gen_jets'):
+            get_collection(Jet, 'gen_jets')
 
         jetcoll = get_collection(Jet, 'jets')
         if jetcoll:
@@ -112,8 +116,16 @@ class Reader(Analyzer):
             for jet in jetcoll:
                 jets[jet] = jet
             if hasattr(self.cfg_ana, 'bTags'):
-                for jet in store.get(self.cfg_ana.bTags):
-                    jets[Jet(jet.jet())].tags['bf'] = jet.tag()
+                for bjet in store.get(self.cfg_ana.bTags):
+                    jets[Jet(bjet.jet())].tags['bf'] = bjet.tag()
+        
+            if hasattr(self.cfg_ana, 'cTags'):
+                for cjet in store.get(self.cfg_ana.cTags):
+                    jets[Jet(cjet.jet())].tags['cf'] = cjet.tag()
+
+            if hasattr(self.cfg_ana, 'tauTags'):
+                for taujet in store.get(self.cfg_ana.tauTags):
+                    jets[Jet(taujet.jet())].tags['tauf'] = taujet.tag()
 
 
         class Iso(object):
