@@ -54,21 +54,34 @@ class Event(object):
         selected_attrs = copy.copy(self.__dict__) #initial selection of what we can print
         selected_attrs.pop('setup') #get rid of some bits
         selected_attrs.pop('input')
+        
+        # Colin: the following are unused: 
         matched_attrs = dict() #this applies pattern matching to obtain a subset of selected_attrs
         print_attrs=dict() #ready for printing
         
+        # Colin: defining stripped_attrs
+        stripped_attrs = dict()
+        
         #first of all check for matches with print patterns
         for name, value in selected_attrs.iteritems():
-            if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]) \
-              or any([fnmatch.fnmatch(subname, pattern) for pattern in self.__class__.print_patterns]):
-                matched_attrs[subname + name] = value
-        #now fill out lists and dicts and  look for any nested Events (such as a PapasEvent)
-        for name, value in matched_attrs.iteritems():
-            if isinstance(value, Event): # deal with an Event within the Event 
-                print_attrs.update(value._get_print_attrs(name + ": ")) #recursive call
-            else: #print this item (at most n elements of it)
-                print_attrs.update(self._print_elements(name, value))
-        return print_attrs
+            if any([fnmatch.fnmatch(name, pattern) for pattern in self.__class__.print_patterns]):
+                stripped_attrs[name] = value
+        for name, value in stripped_attrs.iteritems():
+            if hasattr(value, '__len__') and \
+               hasattr(value.__len__, '__call__') and \
+               len(value)>self.__class__.print_nstrip+1:
+                # taking the first 10 elements and converting to a python list 
+                # note that value could be a wrapped C++ vector
+                if isinstance(value, collections.Mapping):
+                    entries = [entry for entry in value.iteritems()]
+                    entries = entries[:self.__class__.print_nstrip]
+                    entries
+                    stripped_attrs[name] = dict(entries)
+                else:
+                    stripped_attrs[name] = [ val for val in value[:self.__class__.print_nstrip] ]
+                    stripped_attrs[name].append('...')
+                    stripped_attrs[name].append(value[-1])
+        return stripped_attrs
 
     def _print_elements(self, name, value):
         '''returns a dict ready for printing (limited to print_nstrip elements)

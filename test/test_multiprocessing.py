@@ -9,6 +9,7 @@ from simple_example_cfg import config, stopper
 from heppy.utils.testtree import create_tree, remove_tree
 from heppy.framework.looper import Looper
 from heppy.framework.exceptions import UserStop
+import heppy.framework.context as context
 from ROOT import TFile
 
 import logging
@@ -36,21 +37,21 @@ class TestMultiProcessing(unittest.TestCase):
     def test_dummy(self):
         self.assertTrue(True)
 
-##    def test_multiprocessing(self): 
-##        from heppy.framework.heppy_loop import create_parser, main
-##        parser = create_parser()
-##        options, args = parser.parse_args()
-##        options.iEvent = None
-##        options.nprint = 0
-##        cfg = '/'.join( [ os.environ['HEPPY'], 
-##                          'test/simple_multi_example_cfg.py' ] )
-##        main(options, [self.outdir, cfg], parser)
-##        wcard = '/'.join([self.outdir, 
-##                          'test_component_Chunk*',
-##                          'heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer_tree/simple_tree.root'
-##                          ])
-##        output_root_files = glob.glob(wcard)
-##        self.assertEqual(len(output_root_files),2)
+    def test_multiprocessing(self): 
+        from heppy.framework.heppy_loop import create_parser, main
+        parser = create_parser()
+        options, args = parser.parse_args()
+        options.iEvent = None
+        options.nprint = 0
+        cfg = '/'.join( [ context.heppy_path, 
+                          'test/simple_multi_example_cfg.py' ] )
+        main(options, [self.outdir, cfg], parser)
+        wcard = '/'.join([self.outdir, 
+                          'test_component_Chunk*',
+                          'heppy.analyzers.examples.simple.SimpleTreeProducer.SimpleTreeProducer_tree/simple_tree.root'
+                          ])
+        output_root_files = glob.glob(wcard)
+        self.assertEqual(len(output_root_files),2)
                 
 ##    def test_heppy_batch(self):
 ##        cmd = ['heppy_batch.py',
