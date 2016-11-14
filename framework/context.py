@@ -21,7 +21,7 @@ def get_name(env=None):
     if len(defined)>1: 
         raise ValueError('several contexts defined: ' + str(defined) )
     elif len(defined)==0:
-        return None
+        raise ValueError('context is undefined!')
     else: 
         return defined.pop()
 
@@ -32,7 +32,6 @@ def heppy_path():
                          'src/PhysicsTools/HeppyCore/python']) 
     elif context == 'fcc': 
         return os.environ['HEPPY']
-    
 
 
 name = get_name()
