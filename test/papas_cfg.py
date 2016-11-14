@@ -1,12 +1,12 @@
 import heppy.framework.config as cfg
 from heppy.configuration import Collider
 
-# Use a Filter to select stable gen particles for simulation
+# Use a Selector to select stable gen particles for simulation
 # from the output of "source" 
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 gen_particles_stable = cfg.Analyzer(
-    Filter,
+    Selector,
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',
@@ -27,50 +27,53 @@ papas = cfg.Analyzer(
     detector = detector,
     gen_particles = 'gen_particles_stable',
     sim_particles = 'sim_particles',
-    merged_ecals = 'ecal_clusters',
-    merged_hcals = 'hcal_clusters',
-    tracks = 'tracks', 
-    output_history = 'history_nodes', 
-    display_filter_func = lambda ptc: ptc.e()>1.,
-    display = False,
     verbose = True
 )
 
+from heppy.analyzers.PapasDisplay import PapasDisplay
+papasdisplay = cfg.Analyzer(
+    PapasDisplay,
+    instance_label = 'papas',
+    detector = detector,
+    projections = ['xy', 'yz'],
+    screennames = ["simulated"],#["reconstructed"],#
+    particles_type_and_subtype = 'ps',
+    clusters_type_and_subtypes = ['es', 'hs'], 
+    #display_filter_func = lambda ptc: ptc.e()>1.,
+    #todo save option
+    display = False
+)
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction
 from heppy.analyzers.PapasPFBlockBuilder import PapasPFBlockBuilder
 pfblocks = cfg.Analyzer(
     PapasPFBlockBuilder,
-    tracks = 'tracks', 
-    ecals = 'ecal_clusters', 
-    hcals = 'hcal_clusters', 
-    history = 'history_nodes',  
-    output_blocks = 'reconstruction_blocks'
+    track_type_and_subtype = 'ts', 
+    ecal_type_and_subtype = 'em', 
+    hcal_type_and_subtype = 'hm'
 )
-
 
 #reconstruct particles from blocks
 from heppy.analyzers.PapasPFReconstructor import PapasPFReconstructor
 pfreconstruct = cfg.Analyzer(
     PapasPFReconstructor,
+    track_type_and_subtype = 'ts', 
+    ecal_type_and_subtype = 'em', 
+    hcal_type_and_subtype = 'hm',
+    block_type_and_subtype = 'br',
     instance_label = 'papas_PFreconstruction', 
     detector = detector,
-    input_blocks = 'reconstruction_blocks',
-    history = 'history_nodes',     
-    output_particles_dict = 'particles_dict', 
     output_particles_list = 'particles_list'
 )
 
-
-
-# Use a Filter to select leptons from the output of papas simulation.
+# Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
+# we could use two different instances for the Selector module
 # to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 sim_electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sim_electrons',
     output = 'sim_electrons',
     input_objects = 'papas_sim_particles',
@@ -78,7 +81,7 @@ sim_electrons = cfg.Analyzer(
 )
 
 sim_muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sim_muons',
     output = 'sim_muons',
     input_objects = 'papas_sim_particles',
@@ -116,7 +119,6 @@ muons = cfg.Analyzer(
     mu_sigma=(1, 0.02)
     )
 
-
 #merge smeared leptons with the reconstructed particles
 from heppy.analyzers.Merger import Merger
 from heppy.particles.p4 import P4
@@ -140,4 +142,5 @@ papas_sequence = [
 #    select_leptons,
 #    smear_leptons,
     merge_particles, 
+    papasdisplay
 ]

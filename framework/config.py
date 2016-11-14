@@ -139,7 +139,8 @@ class Analyzer( CFG ):
         )
 
         The first argument is your analyzer class. 
-        It should inherit from heppy.framework.analyzer.Analyser 
+        It should inherit from heppy.framework.analyzer.Analyser (standalone)
+        or from PhysicsTools.HeppyCore.framework.analyzer (in CMS)
 
         The second argument is optional.
         If you have several analyzers of the same class, 
@@ -279,10 +280,24 @@ You provided an object of type {}
 class Component( CFG ):
     '''Base component class.
 
+    A component is an input sample of events.
+    
     See the child classes:
     DataComponent, MCComponent, EmbedComponent
     for more information.'''
     def __init__(self, name, files, tree_name=None, triggers=None, **kwargs):
+        '''Create a component.
+
+        Parameters:
+        
+        * name:   a component name of your choice e.g. higgs_zz_4l_mH125
+        * files:  list of file names
+       
+        Optional:
+        
+        * tree_name:  name of your tree in your root files (is that used?)
+        * triggers:   list of trigger names to be used for this component
+        '''
         if isinstance(triggers, basestring):
             triggers = [triggers]
         if type(files) == str:
@@ -296,10 +311,20 @@ class Component( CFG ):
         self.isData = False
         self.isMC = False
         self.isEmbed = False
-        
+        #TODO check how triggers is used
+        #TODO make splitFactor an explicit optional parameter? 
 
 
 class DataComponent( Component ):
+    '''A component for real data.
+    
+    In addition to the attributes present in the base Component class,
+    DataComponent contains:
+    
+    * intLumi : integrated luminosity (unit is up to you)
+    * json : json file for the selection of good data, based on the run,
+             the luminosity block, and the event number.
+    '''
 
     def __init__(self, name, files, intLumi=None, triggers=[], json=None):
         super(DataComponent, self).__init__(name, files, triggers=triggers)
@@ -317,6 +342,19 @@ class DataComponent( Component ):
 
 
 class MCComponent( Component ):
+    '''A component for Monte Carlo
+    
+    In addition to the attributes present in the base Component class,
+    MCComponent contains:
+    
+    * xSection : the cross-section for the corresponding process
+    * nGenEvents : the number of generated events
+    * effCorrFactor : an efficiency correction factor
+    * addWeigth : an additional weight
+    * intLumi : target integrated luminosity
+    
+    '''
+    
     def __init__(self, name, files, triggers=[], xSection=1,
                  nGenEvents=None,
                  effCorrFactor=None, **kwargs ):
@@ -331,6 +369,9 @@ class MCComponent( Component ):
         self.addWeight = 1.
 
     def getWeight( self, intLumi = None):
+        '''Returns the normalization weight for a given integrated luminosity
+        
+        '''
         # if intLumi is None:
         #    intLumi = Weight.FBINV
         #COLIN THIS WEIGHT STUFF IS REALLY BAD!!

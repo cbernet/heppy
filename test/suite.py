@@ -1,9 +1,13 @@
-import unittest
-import sys
-import os
 
-if __name__ == '__main__':    
-    os.chdir(os.environ['HEPPY'])
+if __name__ == '__main__':   
+    import unittest
+    import sys
+    import os
+
+    import heppy.framework.context as context
+
+    os.chdir(context.heppy_path)
+
     suites = []
     
     pcks = [
@@ -13,7 +17,6 @@ if __name__ == '__main__':
         'test',  # if particles is before test, test fails! 
         'papas', 
         'particles',
-        'scripts', 
         'statistics',
         'utils'
         ]

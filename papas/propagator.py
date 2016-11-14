@@ -106,3 +106,9 @@ class HelixPropagator(Propagator):
 straight_line = StraightLinePropagator()
 
 helix = HelixPropagator() 
+
+def propagator(charge):
+    if abs(charge) > 0.5:
+        return helix
+    else:
+        return straight_line

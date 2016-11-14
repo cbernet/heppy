@@ -51,19 +51,19 @@ source = cfg.Analyzer(
 )
 
 # the papas simulation and reconstruction sequence
-from heppy.test.papas_cfg import papas_sequence, detector, papas
+from heppy.test.papas_cfg import papas_sequence, detector
 
-# Use a Filter to select leptons from the output of papas simulation.
+# Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
+# we could use two different instances for the Selector module
 # to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 def is_lepton(ptc):
     return ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13]
 
 leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_leptons',
     output = 'leptons',
     input_objects = 'rec_particles',
@@ -83,7 +83,7 @@ iso_leptons = cfg.Analyzer(
     iso_area = EtaPhiCircle(0.4)
 )
 
-# Select isolated leptons with a Filter
+# Select isolated leptons with a Selector
 def is_isolated(lep):
     '''returns true if the particles around the lepton
     in the EtaPhiCircle defined above carry less than 30%
@@ -91,7 +91,7 @@ def is_isolated(lep):
     return lep.iso.sume/lep.e()<0.3  # fairly loose
 
 sel_iso_leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons',
@@ -150,7 +150,7 @@ def is_bquark(ptc):
     return abs(ptc.pdgid()) == 5 and ptc.status() == 23
     
 bquarks = cfg.Analyzer(
-    Filter,
+    Selector,
     'bquarks',
     output = 'bquarks',
     input_objects = 'gen_particles',
@@ -266,6 +266,7 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
+    from heppy.test.papas_cfg import papas
 
     def process(iev=None):
         if iev is None:

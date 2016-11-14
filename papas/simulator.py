@@ -1,11 +1,12 @@
 import sys
 import copy
 import shelve
-from heppy.papas.propagator import StraightLinePropagator, HelixPropagator
+from heppy.papas.propagator import propagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack
 from heppy.papas.pfobjects import Particle as PFSimParticle
-from heppy.papas.pfalgo.pfinput import  PFInput
-
+from heppy.papas.data.papasevent import  PapasEvent
+from heppy.utils.pdebug import pdebugger
+from heppy.papas.data.identifier import Identifier
 import heppy.papas.multiple_scattering as mscat
 from heppy.papas.papas_exceptions import SimulationError
 from heppy.utils.pdebug import pdebugger
@@ -36,8 +37,6 @@ class Simulator(object):
             logging.basicConfig(level='ERROR')
             logger = logging.getLogger('Simulator')
         self.logger = logger
-        self.prop_helix = HelixPropagator()
-        self.prop_straight = StraightLinePropagator()
 
     def write_ptcs(self, dbname):
         db = shelve.open(dbname)
@@ -50,22 +49,18 @@ class Simulator(object):
         Cluster.max_energy = 0.
         SmearedCluster.max_energy = 0.
 
-    def propagator(self, ptc):
-        is_neutral = abs(ptc.q()) < 0.5
-        return self.prop_straight if is_neutral else self.prop_helix
-
     def propagate(self, ptc):
         '''propagate the particle to all detector cylinders'''
-        self.propagator(ptc).propagate([ptc], self.detector.cylinders(),
-                                       self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate([ptc], self.detector.cylinders(),
+                                      self.detector.elements['field'].magnitude)
 
     def make_cluster(self, ptc, detname, fraction=1., size=None):
         '''adds a cluster in a given detector, with a given fraction of
         the particle energy.'''
         detector = self.detector.elements[detname]
-        self.propagator(ptc).propagate_one(ptc,
-                                           detector.volume.inner,
-                                           self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          detector.volume.inner,
+                                          self.detector.elements['field'].magnitude)
         if size is None:
             size = detector.cluster_size(ptc)
         cylname = detector.volume.inner.name
@@ -95,6 +90,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
         response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
+
         smeared_cluster = SmearedCluster(cluster,
                                          energy,
                                          cluster.position,
@@ -128,8 +124,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         pdebugger.info("Simulating Photon")
         detname = 'ecal'
         ecal = self.detector.elements[detname]
-        self.prop_straight.propagate_one(ptc,
-                                         ecal.volume.inner)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          ecal.volume.inner)
 
         cluster = self.make_cluster(ptc, detname)
         smeared = self.smear_cluster(cluster, ecal)
@@ -140,9 +136,9 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
     def simulate_electron(self, ptc):
         pdebugger.info("Simulating Electron")
         ecal = self.detector.elements['ecal']
-        self.prop_helix.propagate_one(ptc,
-                                      ecal.volume.inner,
-                                      self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          ecal.volume.inner,
+                                          self.detector.elements['field'].magnitude)
         cluster = self.make_cluster(ptc, 'ecal')
         smeared_cluster = self.smear_cluster(cluster, ecal)
         if smeared_cluster:
@@ -168,13 +164,13 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         beampipe = self.detector.elements['beampipe']
         frac_ecal = 0.
 
-        self.propagator(ptc).propagate_one(ptc,
-                                           beampipe.volume.inner,
-                                           self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          beampipe.volume.inner,
+                                          self.detector.elements['field'].magnitude)
 
-        self.propagator(ptc).propagate_one(ptc,
-                                           beampipe.volume.outer,
-                                           self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          beampipe.volume.outer,
+                                          self.detector.elements['field'].magnitude)
 
         mscat.multiple_scattering(ptc, beampipe, self.detector.elements['field'].magnitude)
 
@@ -182,13 +178,13 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         #indeed, multiple scattering is applied within the beam pipe,
         #so the extrapolation points to the beam pipe entrance and exit
         #change after multiple scattering.
-        self.propagator(ptc).propagate_one(ptc,
+        propagator(ptc.q()).propagate_one(ptc,
                                            beampipe.volume.inner,
                                            self.detector.elements['field'].magnitude)
-        self.propagator(ptc).propagate_one(ptc,
+        propagator(ptc.q()).propagate_one(ptc,
                                            beampipe.volume.outer,
                                            self.detector.elements['field'].magnitude)
-        self.propagator(ptc).propagate_one(ptc,
+        propagator(ptc.q()).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
 
@@ -245,9 +241,9 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
     def smear_electron(self, ptc):
         pdebugger.info("Smearing Electron")
         ecal = self.detector.elements['ecal']
-        self.prop_helix.propagate_one(ptc,
-                                      ecal.volume.inner,
-                                      self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          ecal.volume.inner,
+                                          self.detector.elements['field'].magnitude)
         if ptc.q() != 0:
             pdebugger.info(" ".join(("Made", ptc.track.__str__())))
         smeared = copy.deepcopy(ptc)
@@ -261,9 +257,9 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
     def propagate_electron(self, ptc):
         pdebugger.info("Propogate Electron")
         ecal = self.detector.elements['ecal']
-        self.prop_helix.propagate_one(ptc,
-                                      ecal.volume.inner,
-                                      self.detector.elements['field'].magnitude)
+        propagator(ptc.q()).propagate_one(ptc,
+                                          ecal.volume.inner,
+                                          self.detector.elements['field'].magnitude)
         return
 
     def simulate(self, ptcs):
@@ -296,7 +292,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-        self.pfinput = PFInput(self.ptcs) #collect up tracks, clusters etc ready for merging/reconstruction_muon(otc)
 
 if __name__ == '__main__':
 
