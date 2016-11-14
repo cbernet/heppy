@@ -85,27 +85,23 @@ papas_print_history = cfg.Analyzer(
     num_subgroups = 3 # biggest 3 subgroups will be printed
 )
 
-
 from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
 papas_print_history_event = cfg.Analyzer(
     PapasHistoryPrinter,
     format = "event"
 )
 
-#from heppy.analyzers.PapasDisplay import PapasDisplay
-#papas_event_plot = cfg.Analyzer(
-    #PapasDisplay,
-    #projections = ['xy', 'yz'],
-    #screennames = ["simulated", "reconstructed"],
-    #particles_type_and_subtypes = ['ps', 'pr'],
-    #clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']], 
-    #detector = detector,
-    #plottype = "event",
-    ##save = True, todo
-    #display = True
-#)
-
-
+from heppy.analyzers.PapasDisplay import PapasDisplay 
+papasdisplaycompare = cfg.Analyzer(
+    PapasDisplay,
+    projections = ['xy', 'yz'],
+    screennames = ["simulated", "reconstructed"],
+    particles_type_and_subtypes = ['ps', 'pr'],
+    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
+    detector = detector,
+    #save = True,
+    display = True
+)
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
 papas_dag_plot= cfg.Analyzer(
@@ -262,11 +258,12 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source,
     papas_sequence,
+    papasdisplaycompare,
     #papas_print_history, 
     #papas_print_history_event, 
     #papas_event_plot, 
     #papas_event_subplot,
-    papas_dag_plot, 
+    #papas_dag_plot, 
     #papas_dag_subgroups, 
     leptons_true,
     iso_leptons,
@@ -305,7 +302,10 @@ if __name__ == '__main__':
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
-        display = False #only display first event in a loop
+        if display:
+            display.draw()   
+            display.save(loop.outDir,  "event_" + str(iev) + "_")
+        
 
     def next():
         loop.process(loop.iEvent+1)
@@ -338,8 +338,9 @@ if __name__ == '__main__':
                    timeReport=True)
     
     for ana in loop.analyzers: 
-        if hasattr(ana, 'display') and ana.display == True:
-            display = True # will display first event in a loop
+        for ana in loop.analyzers: 
+            if hasattr(ana, 'display'):
+                display = getattr(ana, 'display', None)
     
     if iev is not None:
         process(iev)

@@ -37,11 +37,12 @@ papasdisplay = cfg.Analyzer(
     detector = detector,
     projections = ['xy', 'yz'],
     screennames = ["simulated"],#["reconstructed"],#
-    particles_type_and_subtype = 'ps',
-    clusters_type_and_subtypes = ['es', 'hs'], 
+    particles_type_and_subtypes = ['ps'],
+    clusters_type_and_subtypes = [['es', 'hs']], 
+    display = True
     #display_filter_func = lambda ptc: ptc.e()>1.,
     #todo save option
-    display = False
+    
 )
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction

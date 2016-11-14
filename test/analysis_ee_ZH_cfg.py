@@ -80,6 +80,13 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+    PDebugger,
+    output_to_stdout = False, #optional
+    debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+    )
+
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
@@ -224,6 +231,7 @@ tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
+    pdebug,
     papas_sequence,
     leptons_true,
     iso_leptons,

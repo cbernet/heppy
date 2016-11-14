@@ -127,17 +127,17 @@ class GTrajectory(object):
             
 class GStraightTrajectory(GTrajectory):
     #NB there are newer alternative versions of this class in trajectories.py
-    def __init__(self, description):
+    def __init__(self, description, linecolor=1):
         super(GStraightTrajectory, self).__init__(description,
-                                                  linestyle=2, linecolor=1)
+                                                  linestyle=2, linecolor=linecolor)
 
     def draw(self, projection):
         super(GStraightTrajectory, self).draw(projection, 'l')
    
 
 class GHelixTrajectory(GTrajectory):   
-    def __init__(self, description):
-        super(GHelixTrajectory, self).__init__(description)
+    def __init__(self, description, linecolor=1):
+        super(GHelixTrajectory, self).__init__(description, linecolor=linecolor)
         helix = description.path
         self.helix_xy = TArc(helix.center_xy.X(),
                              helix.center_xy.Y(),
@@ -160,9 +160,12 @@ class GHelixTrajectory(GTrajectory):
                 tppoint = description.p4().Vect()
             self.graphline_thetaphi.SetPoint(i, math.pi/2.-tppoint.Theta(), tppoint.Phi())
         if abs(self.desc.pdgid()) in [11,13]:
+            leptonlinecolor = 5
+            if linecolor ==17:#is_grey
+                leptonlinecolor = 17
             def set_graph_style(graph):
                 graph.SetLineWidth(3)
-                graph.SetLineColor(5)
+                graph.SetLineColor(leptonlinecolor)
             set_graph_style(self.graphline_xy)
             set_graph_style(self.graphline_xz)
             set_graph_style(self.graphline_yz)
@@ -184,11 +187,14 @@ class GHelixTrajectory(GTrajectory):
 
 class GTrajectories(list):
     
-    def __init__(self, particles):
-        for ptc in particles.values():
+    def __init__(self, particles, is_grey=False):
+        for ptc in particles:
             is_neutral = abs(ptc.q())<0.5
             TrajClass = GStraightTrajectory if is_neutral else GHelixTrajectory
-            gtraj = TrajClass(ptc)
+            linecolor = 1            
+            if is_grey:
+                linecolor = 17
+            gtraj = TrajClass(ptc, linecolor)
             self.append(gtraj)
             # display.register(gtraj,1)
 
