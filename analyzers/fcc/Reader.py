@@ -86,7 +86,6 @@ class Reader(Analyzer):
                         )
                 pycoll = map(class_object, coll)
                 if sort:
-                    #    pycoll.sort(key = self.sort_key, reverse=True)
                     pycoll.sort(reverse=True)
                 setattr(event, coll_label, pycoll)
             return pycoll
@@ -98,11 +97,11 @@ class Reader(Analyzer):
              coll_name = getattr( self.cfg_ana, 'weights' )
              weightcoll = store.get( coll_name )
              if weightcoll:
-                 event.weight = weightcoll[0].weight()
+                 event.weight = weightcoll[0].value()
 
 
         if hasattr(self.cfg_ana, 'gen_particles'):
-            get_collection(Particle, 'gen_particles')
+            gen_particles = get_collection(Particle, 'gen_particles')
 
         if hasattr(self.cfg_ana, 'gen_vertices'):
             get_collection(Vertex, 'gen_vertices', False)
@@ -180,14 +179,26 @@ class Reader(Analyzer):
                 for pho in store.get(self.cfg_ana.photonITags):
                     photons[Particle(pho.particle())].iso = Iso()
                     photons[Particle(pho.particle())].iso.sumpt = photons[Particle(pho.particle())].pt()*pho.tag()
+
+            # a single reco photon can have relation to multiple sim particle (ele, pho)
+            # reco photon will thus have a list of gen particles attached		
             if hasattr(self.cfg_ana, 'photonsToMC'):
+                from collections import defaultdict
+                relations = defaultdict(list)
                 for pho in store.get(self.cfg_ana.photonsToMC):
                     if pho.sim() and pho.rec():
-                        photons[Particle(pho.rec())].gen = Particle(pho.sim())
+                        relations[Particle(pho.rec())].append(Particle(pho.sim()))
+                for rec, sim in relations.items():
+                    photons[rec].gen = sim
 
-        pfcharged  = get_collection(Particle, 'pfcharged', False)
-        pfphotons  = get_collection(Particle, 'pfphotons', False)
-        pfneutrals = get_collection(Particle, 'pfneutrals', False)
+
+        if hasattr(self.cfg_ana, 'pfcharged'):
+            pfcharged  = get_collection(Particle, 'pfcharged', False)
+        if hasattr(self.cfg_ana, 'pfphotons'):
+            pfphotons  = get_collection(Particle, 'pfphotons', False)
+        if hasattr(self.cfg_ana, 'pfneutrals'):
+            pfneutrals = get_collection(Particle, 'pfneutrals', False)
+
 
         met = get_collection(Met, 'met', False)
         if met:

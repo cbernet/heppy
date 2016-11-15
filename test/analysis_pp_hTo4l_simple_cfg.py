@@ -21,12 +21,10 @@ source = cfg.Analyzer(
     weights = 'mcEventWeights',
 
     gen_particles = 'skimmedGenParticles',
-    #gen_particles = 'genParticles',
 
     electrons = 'electrons',
-    
     electronsToMC = 'electronsToMC',
-    
+
     muons = 'muons',
     muonsToMC = 'muonsToMC',
     
