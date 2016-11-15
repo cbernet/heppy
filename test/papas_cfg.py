@@ -41,8 +41,6 @@ papasdisplay = cfg.Analyzer(
     clusters_type_and_subtypes = [['es', 'hs']], 
     display = True
     #display_filter_func = lambda ptc: ptc.e()>1.,
-    #todo save option
-    
 )
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction

@@ -1,10 +1,9 @@
-'''Analyzer to plot a Papas Event'''
+'''Analyzer to construct Papas Event Display plots'''
 from functools import partial
 from heppy.framework.analyzer import Analyzer
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories, Blob
-'''Analyzer to construct Papas Event Display plots'''
 #todo save
 
 class PapasDisplay(Analyzer):
@@ -52,29 +51,27 @@ class PapasDisplay(Analyzer):
     @param detector: the detector to be plotted
     @param save: boolean, if True will save graph to png file.
     @param display: boolean, if True will plot graph to screen.
-    
  '''
 
     def __init__(self, *args, **kwargs):
         super(PapasDisplay, self).__init__(*args, **kwargs)
         self.is_display = self.cfg_ana.display
-        self.compare= False
+        self.compare = False
         nscreens = len(self.cfg_ana.screennames)
-        if (nscreens==2):
-            self.compare= True         
+        if nscreens == 2:
+            self.compare = True     
         if (len(self.cfg_ana.particles_type_and_subtypes) != nscreens or
-            len(self.cfg_ana.clusters_type_and_subtypes) != nscreens):
+                len(self.cfg_ana.clusters_type_and_subtypes) != nscreens):
             raise Exception("Inconsistent display options: screennames, particles_type_and_subtypes and clusters_type_and_subtypes argument lists must have same length")
         if self.is_display:
             self.init_display()
-            
+
     def init_display(self):
         '''Set up the display'''
         self.display = Display(self.cfg_ana.projections, self.cfg_ana.screennames)
         self.gdetector = GDetector(self.cfg_ana.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
         self.is_display = True
-        
 
     def process(self, event):
         '''Selects the required particles and clusters and registers them on the display
@@ -89,7 +86,7 @@ class PapasDisplay(Analyzer):
                 clusters = event.papasevent.get_collection(type_and_subtype).values()
                 self.register_clusters(clusters, i)
  
-    def register_particles(self, particles, side = 0):
+    def register_particles(self, particles, side=0):
         '''
         Adds list of particles into the display
         @param particles:  list of particles to append to display
@@ -111,4 +108,3 @@ class PapasDisplay(Analyzer):
             mapfunc = partial(Blob, grey=True)
             blobs = map(mapfunc, clusters)
             self.display.register(blobs, layer=1, clearable=False, sides=[otherside])
-

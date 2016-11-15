@@ -366,6 +366,7 @@ class PFReconstructor(object):
         particle = Particle(p4, vertex, charge, pdg_id, subtype='r')
         #todoalice to review this with Colin. This takes the path from the track but I think it should create 
         # its own.
+        particle.set_path(track.path)
         #path = StraightLine(p4, vertex)
         #if abs(charge) > 0.5:
         #    path = Helix(self.detector.elements['field'].magnitude, charge, p4, vertex)
