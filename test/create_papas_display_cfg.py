@@ -261,8 +261,6 @@ sequence = cfg.Sequence(
     papasdisplaycompare,
     #papas_print_history, 
     #papas_print_history_event, 
-    #papas_event_plot, 
-    #papas_event_subplot,
     #papas_dag_plot, 
     #papas_dag_subgroups, 
     leptons_true,
@@ -304,7 +302,7 @@ if __name__ == '__main__':
         loop.process(iev)
         if display:
             display.draw()   
-            display.save(loop.outDir,  "event_" + str(iev) + "_")
+            #display.save(loop.outDir,  "event_" + str(iev) + "_")
         
 
     def next():

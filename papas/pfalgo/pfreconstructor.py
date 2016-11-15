@@ -364,7 +364,7 @@ class PFReconstructor(object):
         p4 = TLorentzVector()
         p4.SetVectM(track.p3, mass)
         particle = Particle(p4, vertex, charge, pdg_id, subtype='r')
-        # todo alice to review this with Colin. This takes the path from the track but I think it should create 
+        #todoalice to review this with Colin. This takes the path from the track but I think it should create 
         # its own.
         #path = StraightLine(p4, vertex)
         #if abs(charge) > 0.5:

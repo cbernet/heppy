@@ -4,40 +4,56 @@ from heppy.framework.analyzer import Analyzer
 from heppy.display.core import Display
 from heppy.display.geometry import GDetector
 from heppy.display.pfobjects import GTrajectories, Blob
-#todo document arguments
-#save
+'''Analyzer to construct Papas Event Display plots'''
+#todo save
 
 class PapasDisplay(Analyzer):
     '''Plots a PAPAS event display
     
     Can be used to produce a single event plot or a comparative event plot.
 
-    Example configuration:
-    #(single event plot)
-    from heppy.analyzers.PapasDisplay import PapasDisplay 
-    papasdisplay = cfg.Analyzer(
-       PapaDisplay,
-       projections = ['xy', 'yz'],
-       screennames = ["simulated"],
-       particles_type_and_subtypes = ['ps'],
-       clusters_type_and_subtypes = [['es', 'hs']],
-       detector = detector,
-       save = True,
-       display = True
-    )
-    #(comparative event plot)
-    from heppy.analyzers.PapasDisplay import PapasDisplay 
-    papasdisplay = cfg.Analyzer(
-       PapaDisplay,
-       projections = ['xy', 'yz'],
-       screennames = ["simulated", "reconstructed"],
-       particles_type_and_subtypes = ['ps', 'pr'],
-       clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
-       detector = detector,
-       save = True,
-       display = True
-    )
-    '''
+    Example configuration::
+        #(single event plot)
+        from heppy.analyzers.PapasDisplay import PapasDisplay 
+        papasdisplay = cfg.Analyzer(
+           PapaDisplay,
+           projections = ['xy', 'yz'],
+           screennames = ["simulated"],
+           particles_type_and_subtypes = ['ps'],
+           clusters_type_and_subtypes = [['es', 'hs']],
+           detector = detector,
+           save = True,
+           display = True
+        )
+        #(comparative event plot)
+        from heppy.analyzers.PapasDisplay import PapasDisplay 
+        papasdisplay = cfg.Analyzer(
+           PapaDisplay,
+           projections = ['xy', 'yz'],
+           screennames = ["simulated", "reconstructed"],
+           particles_type_and_subtypes = ['ps', 'pr'],
+           clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
+           detector = detector,
+           save = True,
+           display = True
+        )
+    
+    @param projections: list of projections eg ['xy', 'yz', 'xz' ,'ECAL_thetaphi', 'HCAL_thetaphi']
+                 these will be separate windows
+    @param subscreens: list of names of panels within each window eg subscreens=["simulated", "reconstructed"]
+          each of the projection windows will contain all of the subscreens
+          the subscreens can be used to show different aspects of an event, eg simulated particles and reconstructed particles
+    @param particles_type_and_subtypes: list of type_and_subtypes of particles (eg ['ps', 'pr']). 
+           List must be same length as subscreens. Each element of list says which particles to plot on the corresponding subscreen.
+    @param clusters_type_and_subtypes: list of type_and_subtypes of clusters (eg [['es', 'hs'],['em', 'hm']]). 
+           The list must be same length as subscreens, and each element should itself be a list. 
+           Each element of the list says which clusters to plot on the corresponding subscreen.
+           More than one cluster type may be plotted on a single screen.
+    @param detector: the detector to be plotted
+    @param save: boolean, if True will save graph to png file.
+    @param display: boolean, if True will plot graph to screen.
+    
+ '''
 
     def __init__(self, *args, **kwargs):
         super(PapasDisplay, self).__init__(*args, **kwargs)
@@ -83,16 +99,16 @@ class PapasDisplay(Analyzer):
         if self.compare:
             otherside = (side + 1)%2 #opposite side
             self.display.register(GTrajectories(particles, is_grey=True), layer=1, sides=[otherside])
-    
+ 
     def register_clusters(self, clusters, side=0):
         '''Adds list of clusters into the display
         @param clusters:  list of clusters to append to display
         @param side:  0 = left, 1 = right'''        
         blobs = map(Blob, clusters)   
-        self.display.register(blobs, layer=2, clearable=False, sides=[side])  
+        self.display.register(blobs, layer=2, clearable=False, sides=[side])
         if self.compare:
             otherside = (side + 1)%2
             mapfunc = partial(Blob, grey=True)
-            blobs = map(mapfunc, clusters)   
+            blobs = map(mapfunc, clusters)
             self.display.register(blobs, layer=1, clearable=False, sides=[otherside])
 
