@@ -409,15 +409,15 @@ def main(options, args, batchManager):
    
 
 if __name__ == '__main__':
-    from PhysicsTools.HeppyCore.framework.heppy_loop import _heppyGlobalOptions
-    for opt in options.extraOptions:
-        if "=" in opt:
-            (key,val) = opt.split("=",1)
-            _heppyGlobalOptions[key] = val
-        else:
-            _heppyGlobalOptions[opt] = True
-    batchManager.heppyOptions_=_heppyGlobalOptions
 
    batchManager = create_batch_manager() 
    options, args = batchManager.ParseOptions()
+   from heppy.framework.heppy_loop import _heppyGlobalOptions
+   for opt in options.extraOptions:
+      if "=" in opt:
+         (key,val) = opt.split("=",1)
+         _heppyGlobalOptions[key] = val
+      else:
+         _heppyGlobalOptions[opt] = True
+   batchManager.heppyOptions_=_heppyGlobalOptions
    main(options, args, batchManager)
