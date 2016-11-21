@@ -59,24 +59,18 @@ papas_print_history_event = cfg.Analyzer(
     format = "event"
 )
 
-#from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
-#papas_plot = cfg.Analyzer(
-    #PapasEventPlotter,
-    #projections = ['xy', 'yz'],
-    #plottype = "event",
-    #detector = detector,
-    #save = True
-#)
+from heppy.analyzers.PapasDisplay import PapasDisplay 
+papasdisplaycompare = cfg.Analyzer(
+    PapasDisplay,
+    projections = ['xy', 'yz'],
+    screennames = ["simulated", "reconstructed"],
+    particles_type_and_subtypes = ['ps', 'pr'],
+    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
+    detector = detector,
+    #save = True,
+    display = True
+)
 
-#from heppy.analyzers.PapasEventPlotter import PapasEventPlotter
-#papas_subplot = cfg.Analyzer(
-    #PapasEventPlotter,
-    #projections = ['xy', 'yz'],
-    #plottype = "subgroups",
-    #num_subgroups = 2,
-    #detector = detector,
-    #save = False
-#)
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
 papas_dag_plot= cfg.Analyzer(
@@ -125,10 +119,10 @@ sequence = cfg.Sequence(
     papas_sequence,
     #papas_history,
     papas_print_history, 
+    papasdisplaycompare,
     #papas_print_history_event, 
-    #papas_plot, 
-    #papas_subplot,
-    #papas_dag_plot, 
+    
+    papas_dag_plot, 
     #papas_dag_subgroups,     
     jet_tree_sequence('gen_particles_stable','rec_particles',
                   njets=None, ptmin=0.5),
@@ -175,6 +169,7 @@ if __name__ == '__main__':
     
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
+    papasdisplaycompare.display = True
     if len(sys.argv)==2:
         papas.display = True
         try:
