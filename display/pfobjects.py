@@ -150,6 +150,11 @@ class GHelixTrajectory(GTrajectory):
         self.graphline_yz = TGraph(npoints)
         self.graphline_xz = TGraph(npoints)
         self.graphline_thetaphi = TGraph(npoints)
+        def set_graph_style(graph):
+            graph.SetLineWidth(1)
+            graph.SetLineColor(linecolor)                
+        
+        
         for i, time in enumerate(np.linspace(0, max_time, npoints)):
             point = helix.point_at_time(time)
             self.graphline_xy.SetPoint(i, point.X(), point.Y())
@@ -166,10 +171,10 @@ class GHelixTrajectory(GTrajectory):
             def set_graph_style(graph):
                 graph.SetLineWidth(3)
                 graph.SetLineColor(leptonlinecolor)
-            set_graph_style(self.graphline_xy)
-            set_graph_style(self.graphline_xz)
-            set_graph_style(self.graphline_yz)
-            set_graph_style(self.graphline_thetaphi)
+        set_graph_style(self.graphline_xy)
+        set_graph_style(self.graphline_xz)
+        set_graph_style(self.graphline_yz)
+        set_graph_style(self.graphline_thetaphi)
 
     def draw(self, projection):
         if projection == 'xy':

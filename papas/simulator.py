@@ -194,10 +194,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             smeared_track = self.smear_track(ptc.track,
                                              self.detector.elements['tracker'])
             if smeared_track:
-                pass
-                #ptc.track_smeared = smeared_track
-            else:
-                pass
+                ptc.track_smeared = smeared_track
 
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)
