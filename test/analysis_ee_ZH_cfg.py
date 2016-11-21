@@ -5,7 +5,6 @@ get more information:
 
 ipython
 from analysis_ee_ZH_cfg import * 
-
 '''
 
 import os
@@ -17,6 +16,7 @@ import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
+
 
 # global logging level for the heppy framework.
 # in addition, all the analyzers declared below have their own logger,
@@ -50,15 +50,6 @@ Collider.BEAMS = 'ee'
 Collider.SQRTS = 240.
 
 # definition of an input sample (also called a component)
-# help(comp) for more information
-#comp = cfg.Component(
-    #'ee_ZH_Zmumu_Hbb',
-    #files = [
-        ## here we have a single input root file.
-        ## the absolute path must be used to be able to run on the batch.
-        #os.path.abspath('ee_ZH_Zmumu_Hbb.root')
-    #]
-#)
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
@@ -83,7 +74,7 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
+from heppy.test.papas_cfg import papas, papasdisplay, papasdisplaycompare, papas_sequence, detector
 
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -278,7 +269,6 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papasdisplay.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:

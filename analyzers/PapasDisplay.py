@@ -53,6 +53,7 @@ class PapasDisplay(Analyzer):
     @param display: boolean, if True will plot graph to screen.
  '''
 
+
     def __init__(self, *args, **kwargs):
         super(PapasDisplay, self).__init__(*args, **kwargs)
         self.is_display = self.cfg_ana.display

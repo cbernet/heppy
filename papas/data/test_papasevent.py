@@ -1,36 +1,12 @@
 import unittest
 import itertools
 import copy
-from identifier import Identifier
+
+from heppy.papas.data.identifier import Identifier
 from papasevent import PapasEvent 
 
 class TestPapasEvent(unittest.TestCase):
-    
-    def test_broken(self):
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
-            print Identifier.pretty(uid)
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5) 
-            print Identifier.pretty(uid)
-            
-#calls identifer.reset but it does not reset  
-            print "reset identifier via papasevent"
-            papasevent = PapasEvent(0)
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
-            print Identifier.pretty(uid)
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5) 
-            print Identifier.pretty(uid)
-            
-#this does reset
-            print "reset identifier direct"
-            Identifier.reset()
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
-            print Identifier.pretty(uid)
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5) 
-            print Identifier.pretty(uid)
-            pass
-   
     def test_papasevent(self):
-        #removed identifer.reset and this breaks the test (see above for simplified case)
         papasevent = PapasEvent(0)
         ecals = dict()
         tracks = dict()

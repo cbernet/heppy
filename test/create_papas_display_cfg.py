@@ -75,7 +75,7 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas_sequence, detector
+from heppy.test.papas_cfg import papas_sequence, detector, papasdisplay, papasdisplaycompare
 
 
 from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
@@ -91,17 +91,6 @@ papas_print_history_event = cfg.Analyzer(
     format = "event"
 )
 
-from heppy.analyzers.PapasDisplay import PapasDisplay 
-papasdisplaycompare = cfg.Analyzer(
-    PapasDisplay,
-    projections = ['xy', 'yz'],
-    screennames = ["simulated", "reconstructed"],
-    particles_type_and_subtypes = ['ps', 'pr'],
-    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
-    detector = detector,
-    #save = True,
-    display = True
-)
 
 from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
 papas_dag_plot= cfg.Analyzer(
@@ -258,7 +247,7 @@ tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source,
     papas_sequence,
-    papasdisplaycompare,
+    #papasdisplaycompare,
     #papas_print_history, 
     #papas_print_history_event, 
     #papas_dag_plot, 
@@ -341,7 +330,6 @@ if __name__ == '__main__':
     
     if iev is not None:
         process(iev)
-        papasdisplaycompare.draw()
         pass
     else:
         loop.loop()

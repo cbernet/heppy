@@ -94,6 +94,7 @@ class GTrajectory(object):
         def set_graph_style(graph):
             graph.SetMarkerStyle(2)
             graph.SetMarkerSize(0.7)
+            graph.SetMarkerColor(linecolor)
             graph.SetLineStyle(linestyle)
             graph.SetLineColor(linecolor)
         set_graph_style(self.graph_xy)
@@ -145,7 +146,7 @@ class GHelixTrajectory(GTrajectory):
         self.helix_xy.SetFillStyle(0)
         #TODO this is patchy,need to access the last point, whatever its name
         max_time = helix.time_at_z(description.points.values()[-1].Z())
-        npoints = 100
+        npoints = 500
         self.graphline_xy = TGraph(npoints)
         self.graphline_yz = TGraph(npoints)
         self.graphline_xz = TGraph(npoints)

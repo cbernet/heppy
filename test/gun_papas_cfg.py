@@ -1,74 +1,60 @@
-'''Example configuration file for an ee->ZH->mumubb analysis in heppy, with the FCC-ee
+'''Example configuration file a particle gun in heppy, with the FCC-ee
 
 While studying this file, open it in ipython as well as in your editor to 
 get more information: 
 
 ipython
-from analysis_ee_ZH_cfg import * 
+from gun_papas_cfg import * 
 '''
 
 import os
 import copy
 import heppy.framework.config as cfg
 
-from heppy.framework.event import Event
-Event.print_patterns=['*']
-
 import logging
+
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
+
+
+# global logging level for the heppy framework.
+# in addition, all the analyzers declared below have their own logger,
+# an each of them can be set to a different logging level.
 logging.basicConfig(level=logging.WARNING)
 
 # setting the random seed for reproducible results
 import heppy.statistics.rrandom as random
+# do not forget to comment out the following line if you want to produce and combine
+# several samples of events 
 random.seed(0xdeadbeef)
 
-from heppy.analyzers.Gun import Gun
-source = cfg.Analyzer(
-    Gun,
-    pdgid = 211,
-    thetamin = -1.5,
-    thetamax = 1.5,
-    ptmin = 0,
-    ptmax = 100,
-    flat_pt = False,
-    papas = True
-)
+# loading the FCC event data model library to decode
+# the format of the events in the input file
+# help(Events) for more information 
+from ROOT import gSystem
+gSystem.Load("libdatamodelDict")
+from EventStore import EventStore as Events
 
+# setting the event printout
+# help(Event) for more information
+from heppy.framework.event import Event
+# comment the following line to see all the collections stored in the event 
+# if collection is listed then print loop.event.papasevent will include the collections
+Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*', 'collections']
+
+# definition of the collider
+# help(Collider) for more information
+from heppy.configuration import Collider
+Collider.BEAMS = 'ee'
+Collider.SQRTS = 240.
+
+pdgid = [211, 130]
+
+# dummy input component (we use a particle gun)
 comp = cfg.Component(
-    'gun_{}'.format(source.pdgid),
+    'gun_{}'.format(pdgid),
     files = [None]
-)
-selectedComponents = [comp]
-
-from heppy.test.papas_cfg import papas_sequence, detector, papas
-
-
-from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
-papas_print_history = cfg.Analyzer(
-    PapasHistoryPrinter,
-    format = "subgroups",
-    num_subgroups = 3 # biggest 3 subgroups will be printed
-)
-
-
-from heppy.analyzers.PapasHistoryPrinter import PapasHistoryPrinter
-papas_print_history_event = cfg.Analyzer(
-    PapasHistoryPrinter,
-    format = "event"
-)
-
-from heppy.analyzers.PapasDisplay import PapasDisplay 
-papasdisplaycompare = cfg.Analyzer(
-    PapasDisplay,
-    projections = ['xy', 'yz'],
-    screennames = ["simulated", "reconstructed"],
-    particles_type_and_subtypes = ['ps', 'pr'],
-    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
-    detector = detector,
-    #save = True,
-    display = True
 )
 
 
@@ -79,14 +65,29 @@ papas_dag_plot= cfg.Analyzer(
     show_file = False
 )
 
-from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
-papas_dag_subgroups= cfg.Analyzer(
-    PapasDAGPlotter,
-    plottype = "dag_subgroups",
-    show_file = False,
-    num_subgroups = 4
+# selecting the list of components to be processed. Here only one. 
+selectedComponents = [comp]
+
+# particle gun analyzer
+import math
+from heppy.analyzers.Gun import Gun
+source = cfg.Analyzer(
+    Gun,
+    pdgid = pdgid,
+    thetamin = -0.1,
+    thetamax = 0.1,
+    phimin = math.pi/2.,
+    phimax = math.pi/2.,
+    ptmin = 5,
+    ptmax = 10,
+    flat_pt = False,
+    papas = True
 )
 
+# importing the papas simulation and reconstruction sequence,
+# as well as the detector used in papas
+# check papas_cfg.py for more information
+from heppy.test.papas_cfg import papas, papas_sequence, detector
 
 from jet_tree_cff import jet_tree_sequence
 
@@ -117,20 +118,14 @@ zed_tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source, 
     papas_sequence,
-    #papas_history,
-    papas_print_history, 
-    papasdisplaycompare,
-    #papas_print_history_event, 
-    papas_dag_plot,
-    #papas_dag_subgroups,     
-    jet_tree_sequence('gen_particles_stable','rec_particles',
-                  njets=None, ptmin=0.5),
-    sum_particles,
-    sum_gen,
-    zed_tree
-    )
+#    jet_tree_sequence('gen_particles_stable','rec_particles',
+#    njets=None, ptmin=0.5),
+#    sum_particles,
+#    sum_gen,
+#    zed_tree
+)
 
-# Specifics to read FCC events 
+# Specifics for particle gun events
 from ROOT import gSystem
 from heppy.framework.eventsgen import Events
 
@@ -144,11 +139,12 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-
     import heppy.statistics.rrandom as random
+    from heppy.papas.data.identifier import Identifier
     random.seed(0xdeadbeef)
 
     def process(iev=None):
+        Identifier.reset() #todo move elsewhere
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
@@ -169,7 +165,6 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papas.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -179,23 +174,18 @@ if __name__ == '__main__':
         print usage
         sys.exit(1)
             
-        
     loop = Looper( 'looper', config,
-                   nEvents=1000,
+                   nEvents=10,
                    nPrint=1,
                    timeReport=True)
     
-    simulation = None
     for ana in loop.analyzers: 
         if hasattr(ana, 'display'):
-            simulation = ana
-    display = getattr(simulation, 'display', None)
-    simulator = getattr(simulation, 'simulator', None)
-    if simulator: 
-        detector = simulator.detector
+            display = getattr(ana, 'display', None)
+    
     if iev is not None:
         process(iev)
-        pass       
+        pass
     else:
         loop.loop()
         loop.write()

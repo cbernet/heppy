@@ -35,12 +35,24 @@ papasdisplay = cfg.Analyzer(
     PapasDisplay,
     instance_label = 'papas',
     detector = detector,
-    projections = ['xy', 'yz'],
+    projections = ['xy'],
     screennames = ["simulated"],#["reconstructed"],#
     particles_type_and_subtypes = ['ps'],
     clusters_type_and_subtypes = [['es', 'hs']], 
     display = True
     #display_filter_func = lambda ptc: ptc.e()>1.,
+)
+
+from heppy.analyzers.PapasDisplay import PapasDisplay 
+papasdisplaycompare = cfg.Analyzer(
+    PapasDisplay,
+    projections = ['xy', 'yz'],
+    screennames = ["simulated", "reconstructed"],
+    particles_type_and_subtypes = ['ps', 'pr'],
+    clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
+    detector = detector,
+    #save = True,
+    display = True
 )
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction
@@ -141,5 +153,6 @@ papas_sequence = [
 #    select_leptons,
 #    smear_leptons,
     merge_particles, 
-    papasdisplay
+   # papasdisplay,
+    papasdisplaycompare
 ]
