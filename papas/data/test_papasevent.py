@@ -31,7 +31,7 @@ class TestPapasEvent(unittest.TestCase):
    
     def test_papasevent(self):
         
-        Identifier.reset()
+        Identifier.reset() #this line should not be needed
         papasevent = PapasEvent(0)
         
         ecals = dict()
