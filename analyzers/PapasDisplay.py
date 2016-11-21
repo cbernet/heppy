@@ -94,7 +94,7 @@ class PapasDisplay(Analyzer):
         @param particles:  list of particles to append to display
         @param side:  0 = left, 1 = right
         '''
-        self.display.register(GTrajectories(particles), layer=2, sides=[side])
+        #self.display.register(GTrajectories(particles), layer=2, sides=[side])
         if self.compare:
             otherside = (side + 1)%2 #opposite side
             self.display.register(GTrajectories(particles, is_grey=True), layer=1, sides=[otherside])
@@ -104,7 +104,7 @@ class PapasDisplay(Analyzer):
         @param clusters:  list of clusters to append to display
         @param side:  0 = left, 1 = right'''        
         blobs = map(Blob, clusters)   
-        self.display.register(blobs, layer=2, clearable=True, sides=[side])
+        #self.display.register(blobs, layer=2, clearable=True, sides=[side])
         if self.compare:
             otherside = (side + 1)%2
             mapfunc = partial(Blob, grey=True)

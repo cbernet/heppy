@@ -31,7 +31,7 @@ source = cfg.Analyzer(
     thetamin = -1.5,
     thetamax = 1.5,
     ptmin = 0,
-    ptmax = 100,
+    ptmax = 10,
     flat_pt = False,
     papas = True
 )
