@@ -42,6 +42,7 @@ class PapasEvent(Event):
     
     def __init__(self, iEv):
         super(PapasEvent, self).__init__(iEv)
+        Identifier.reset()
         self.collections = dict()
         self.history = dict()
         Identifier.reset()        
