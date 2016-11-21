@@ -87,7 +87,7 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papas_sequence, detector
+from heppy.test.papas_cfg import papas, papas_sequence, detector, papasdisplay, papasdisplaycompare
 
 from jet_tree_cff import jet_tree_sequence
 
@@ -144,7 +144,6 @@ if __name__ == '__main__':
     random.seed(0xdeadbeef)
 
     def process(iev=None):
-        Identifier.reset() #todo move elsewhere
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
@@ -165,6 +164,8 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
+        papasdisplay.display = True
+        papasdisplaycompare.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:

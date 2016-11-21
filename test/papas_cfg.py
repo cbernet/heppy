@@ -39,7 +39,7 @@ papasdisplay = cfg.Analyzer(
     screennames = ["simulated"],#["reconstructed"],#
     particles_type_and_subtypes = ['ps'],
     clusters_type_and_subtypes = [['es', 'hs']], 
-    display = True
+    display = False
     #display_filter_func = lambda ptc: ptc.e()>1.,
 )
 
@@ -52,7 +52,7 @@ papasdisplaycompare = cfg.Analyzer(
     clusters_type_and_subtypes = [['es', 'hs'],['em', 'hm']],
     detector = detector,
     #save = True,
-    display = True
+    display = False
 )
 
 # group the clusters, tracks from simulation into connected blocks ready for reconstruction
@@ -153,6 +153,6 @@ papas_sequence = [
 #    select_leptons,
 #    smear_leptons,
     merge_particles, 
-   # papasdisplay,
-    papasdisplaycompare
+    papasdisplay,
+    #papasdisplaycompare
 ]

@@ -258,7 +258,7 @@ if __name__ == '__main__':
     def next():
         loop.process(loop.iEvent+1)
         if display:
-            display.draw()            
+            display.draw()
 
     iev = None
     usage = '''usage: python analysis_ee_ZH_cfg.py [ievent]
@@ -269,6 +269,8 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
+        papasdisplay.display = True
+        papasdisplaycompare.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -283,7 +285,7 @@ if __name__ == '__main__':
                    nPrint=1,
                    timeReport=True)
     
-    for ana in loop.analyzers: 
+    for ana in loop.analyzers:
         if hasattr(ana, 'display'):
             display = getattr(ana, 'display', None)
     

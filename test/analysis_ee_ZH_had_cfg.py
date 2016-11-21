@@ -266,7 +266,7 @@ config = cfg.Config(
 if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
-    from heppy.test.papas_cfg import papas
+    from heppy.test.papas_cfg import papasdisplay, papasdisplaycompare
 
     def process(iev=None):
         if iev is None:
@@ -289,7 +289,8 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_had_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papas.display = True
+        papasdisplay.display = True
+        papasdisplaycompare.display= True
         try:
             iev = int(sys.argv[1])
         except ValueError:

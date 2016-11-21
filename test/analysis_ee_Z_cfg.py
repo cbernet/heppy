@@ -79,7 +79,7 @@ zed_tree = cfg.Analyzer(
 )
 
 
-from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas
+from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
 from heppy.test.jet_tree_cff import jet_tree_sequence
 
 
@@ -137,7 +137,8 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papas.display = True
+        papasdisplay.display = True
+        papasdisplaycompare.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
