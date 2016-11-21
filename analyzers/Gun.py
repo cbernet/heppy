@@ -88,6 +88,14 @@ class Gun(Analyzer):
        between ptmin and ptmax (then considered as Emin and Emax).
 
     '''
+
+    def beginLoop(self, setup):
+        self.papas = False
+        if hasattr(self.cfg_ana, 'papas'):
+            self.papas = self.cfg_ana.papas
+        if not hasattr(self.cfg_ana.pdgid, '__iter__'):
+            self.cfg_ana.pdgid = [self.cfg_ana.pdgid]
+            
     
     def process(self, event):
         '''process event.
@@ -97,17 +105,18 @@ class Gun(Analyzer):
           - event.gen_particles: collection of gen particles
           - event.gen_particles_stable: collection of stable gen particles.
         '''
-        papas = False
-        if hasattr(self.cfg_ana, 'papas'):
-            papas = self.cfg_ana.papas
-        event.gen_particles = [particle(self.cfg_ana.pdgid, 
-                                        self.cfg_ana.thetamin, 
-                                        self.cfg_ana.thetamax,
-                                        self.cfg_ana.ptmin, 
-                                        self.cfg_ana.ptmax,
-                                        flat_pt=self.cfg_ana.flat_pt,
-                                        papas = papas, 
-                                        phimin=self.cfg_ana.phimin, 
-                                        phimax=self.cfg_ana.phimax 
-                                        )]
+        if not (self.cfg_ana.pdgid, '__iter__'):
+            self.cfg_ana.pdgid = [self.cfg_ana.pdgid]
+        event.gen_particles = []
+        for pdgid in self.cfg_ana.pdgid:
+            event.gen_particles.append(particle(pdgid, 
+                                                self.cfg_ana.thetamin, 
+                                                self.cfg_ana.thetamax,
+                                                self.cfg_ana.ptmin, 
+                                                self.cfg_ana.ptmax,
+                                                flat_pt=self.cfg_ana.flat_pt,
+                                                papas = self.papas, 
+                                                phimin=self.cfg_ana.phimin, 
+                                                phimax=self.cfg_ana.phimax 
+                                                ))
         event.gen_particles_stable = event.gen_particles

@@ -49,7 +49,7 @@ from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 240.
 
-pdgid = 211
+pdgid = [211, 130]
 
 # dummy input component (we use a particle gun)
 comp = cfg.Component(
