@@ -67,7 +67,8 @@ class Identifier(long):
             assert(abs(Identifier.get_value(uid) - value) < abs(value) * 10 ** -6)
         assert (Identifier.get_type(uid) == type)
         assert (Identifier.get_subtype(uid) == subtype)
-
+        if x >= 2**(21 -1):
+            raise ValueError('identifer unique counter id has exceeded maximum value allowed')
         return uid
 
     @staticmethod      
@@ -171,11 +172,15 @@ class Identifier(long):
         @param bitvalue: bitvalue'''
         s = struct.pack('>l', bitvalue)
         return struct.unpack('>f', s)[0]	
-
+    
+    
     @classmethod
     def reset(cls):
         ''' Resets the internal Identifier counter to 1
         '''
+        #cls._id=count(1)
+        #print "Identifier reset"
+        #print "Identifier value of count is", cls._id.next()
         cls._id=count(1)
         pdebugger.info("reset ID")
         return
