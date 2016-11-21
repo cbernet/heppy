@@ -13,7 +13,7 @@ class TestPapasEvent(unittest.TestCase):
             print Identifier.pretty(uid)
             
 #calls identifer.reset but it does not reset  
-            print "rest identifier via papasevent"
+            print "reset identifier via papasevent"
             papasevent = PapasEvent(0)
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             print Identifier.pretty(uid)
@@ -21,7 +21,7 @@ class TestPapasEvent(unittest.TestCase):
             print Identifier.pretty(uid)
             
 #this does reset
-            print "rest identifier direct"
+            print "reset identifier direct"
             Identifier.reset()
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             print Identifier.pretty(uid)

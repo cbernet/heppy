@@ -31,7 +31,7 @@ source = cfg.Analyzer(
     thetamin = -1.5,
     thetamax = 1.5,
     ptmin = 0,
-    ptmax = 10,
+    ptmax = 100,
     flat_pt = False,
     papas = True
 )
@@ -121,8 +121,7 @@ sequence = cfg.Sequence(
     papas_print_history, 
     papasdisplaycompare,
     #papas_print_history_event, 
-    
-    papas_dag_plot, 
+    papas_dag_plot,
     #papas_dag_subgroups,     
     jet_tree_sequence('gen_particles_stable','rec_particles',
                   njets=None, ptmin=0.5),
@@ -169,7 +168,6 @@ if __name__ == '__main__':
     
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
-    papasdisplaycompare.display = True
     if len(sys.argv)==2:
         papas.display = True
         try:
@@ -197,24 +195,7 @@ if __name__ == '__main__':
         detector = simulator.detector
     if iev is not None:
         process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)
-        process(iev)        
+        pass       
     else:
         loop.loop()
         loop.write()

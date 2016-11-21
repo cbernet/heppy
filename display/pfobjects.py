@@ -152,9 +152,7 @@ class GHelixTrajectory(GTrajectory):
         self.graphline_thetaphi = TGraph(npoints)
         def set_graph_style(graph):
             graph.SetLineWidth(1)
-            graph.SetLineColor(linecolor)                
-        
-        
+            graph.SetLineColor(linecolor)
         for i, time in enumerate(np.linspace(0, max_time, npoints)):
             point = helix.point_at_time(time)
             self.graphline_xy.SetPoint(i, point.X(), point.Y())
