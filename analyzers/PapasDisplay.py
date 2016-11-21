@@ -104,9 +104,9 @@ class PapasDisplay(Analyzer):
         @param clusters:  list of clusters to append to display
         @param side:  0 = left, 1 = right'''        
         blobs = map(Blob, clusters)   
-        self.display.register(blobs, layer=2, clearable=False, sides=[side])
+        self.display.register(blobs, layer=2, clearable=True, sides=[side])
         if self.compare:
             otherside = (side + 1)%2
             mapfunc = partial(Blob, grey=True)
             blobs = map(mapfunc, clusters)
-            self.display.register(blobs, layer=1, clearable=False, sides=[otherside])
+            self.display.register(blobs, layer=1, clearable=True, sides=[otherside])
