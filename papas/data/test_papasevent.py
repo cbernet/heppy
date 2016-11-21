@@ -12,7 +12,8 @@ class TestPapasEvent(unittest.TestCase):
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5) 
             print Identifier.pretty(uid)
             
-#calls identifer.reset but it does not reset            
+#calls identifer.reset but it does not reset  
+            print "rest identifier via papasevent"
             papasevent = PapasEvent(0)
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             print Identifier.pretty(uid)
@@ -20,25 +21,22 @@ class TestPapasEvent(unittest.TestCase):
             print Identifier.pretty(uid)
             
 #this does reset
+            print "rest identifier direct"
             Identifier.reset()
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             print Identifier.pretty(uid)
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5) 
             print Identifier.pretty(uid)
             pass
-                    
-            
    
     def test_papasevent(self):
-        
-        Identifier.reset() #this line should not be needed
+        #removed identifer.reset and this breaks the test (see above for simplified case)
         papasevent = PapasEvent(0)
-        
         ecals = dict()
         tracks = dict()
         mixed = dict()
 
-        for i in range(0, 2):         
+        for i in range(0, 2):
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             ecals[uid] = uid
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 's', 4.5)

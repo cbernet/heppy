@@ -172,27 +172,18 @@ class Identifier(long):
         @param bitvalue: bitvalue'''
         s = struct.pack('>l', bitvalue)
         return struct.unpack('>f', s)[0]	
-
-    #@staticmethod
-    #def reset():
-        #''' Resets the internal Identifier counter to 1
-        #'''
-        #_id=count(1)
-        #print _id.next()
-        #pdebugger.info("reset ID")
-        #return
+    
     
     @classmethod
     def reset(cls):
         ''' Resets the internal Identifier counter to 1
         '''
-        cls._id=count(1)
-        _id=count(1)
-        print "Identifier reset"
-        print "Identifier value of count is", cls._id.next()
+        #cls._id=count(1)
+        #print "Identifier reset"
+        #print "Identifier value of count is", cls._id.next()
         cls._id=count(1)
         pdebugger.info("reset ID")
-        return    
+        return
 
 
 if __name__ == '__main__':
