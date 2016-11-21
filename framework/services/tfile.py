@@ -1,28 +1,31 @@
+'''TFile service, to create root file common to all analyzers.
+'''
+
 from heppy.framework.services.service import Service
 from ROOT import TFile
 
 class TFileService(Service):
     """TFile service.
-    The file attribute is a TFile that can be used in several analyzers.
-    The file is closed when the service stops.
+    
+    Create a root file that can be used by all analyzers.
+    Even though this possibility exists, it is often better to declare
+    and fill specific output root files in each analyzer.  
+    
+    Example::
 
-    Example configuration:
-
-    output_rootfile = cfg.Service(
-      TFileService,
-      'myhists',
-      fname='histograms.root',
-      option='recreate'
-    )
+        output_rootfile = cfg.Service(
+          TFileService,
+          'myhists',
+          fname='histograms.root',
+          option='recreate'
+        )
+        
+    @param fname: Name of the output root file.
+    @param option: Passed to the TFile constructor.
+    
     """
     def __init__(self, cfg, comp, outdir):
         """
-        cfg must contain:
-        - fname: file name 
-        - option: TFile options, e.g. recreate
-        
-        outdir is the output directory for the TFile
-
         comp is a dummy parameter here.  
         It is needed because the looper creates services and analyzers 
         in the same way, providing the configuration (cfg), 
@@ -36,6 +39,7 @@ class TFileService(Service):
         self.file = TFile(fname, cfg.option)
         
     def stop(self):
+        '''Write and close the file.'''
         self.file.Write() 
         self.file.Close()
 

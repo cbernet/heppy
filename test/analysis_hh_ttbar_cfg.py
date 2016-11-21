@@ -50,36 +50,36 @@ from EventStore import EventStore as Events
 
 
 
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_muons',
     output = 'muons',
     input_objects = 'muons',
     filter_func = lambda ptc: ptc.pt()>30
 )
 
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 iso_muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_muons',
     output = 'sel_iso_muons',
     input_objects = 'muons',
     filter_func = lambda ptc: ptc.iso.sumpt/ptc.pt()<0.2
 )
 
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_electrons',
     output = 'electrons',
     input_objects = 'electrons',
     filter_func = lambda ptc: ptc.pt()>30
 )
 
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 iso_electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_electrons',
     output = 'sel_iso_electrons',
     input_objects = 'electrons',
@@ -88,7 +88,7 @@ iso_electrons = cfg.Analyzer(
 
 
 jets_30 = cfg.Analyzer(
-    Filter,
+    Selector,
     'jets_30',
     output = 'jets_30',
     input_objects = 'jets',
@@ -105,7 +105,7 @@ match_jet_electrons = cfg.Analyzer(
 )
 
 sel_jets_electron = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_jets_noelecetron_30',
     output = 'sel_jets_noelectron_30',
     input_objects = 'jets_30',
@@ -123,7 +123,7 @@ match_muon_jets = cfg.Analyzer(
 )
 
 sel_jets_muon = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_jets_nomuon_30',
     output = 'sel_jets_noelectronnomuon_30',
     input_objects = 'sel_jets_noelectron_30',

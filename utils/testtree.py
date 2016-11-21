@@ -1,3 +1,5 @@
+'''Test tree management'''
+
 from ROOT import TFile
 from heppy.statistics.tree import Tree
 import os
@@ -5,6 +7,7 @@ import os
 FNAME="test_tree.root"
 
 def create_tree(filename=FNAME, nentries=None):
+    '''Create the test tree in file FNAME.'''
     if not nentries: 
         if os.path.isfile(filename):
             #default number of entries, file exists
@@ -23,6 +26,7 @@ def create_tree(filename=FNAME, nentries=None):
     return outfile.GetName()
 
 def remove_tree(filename=FNAME):
+    '''Remove the test tree.'''
     os.remove(filename)
     
 if __name__ == '__main__':

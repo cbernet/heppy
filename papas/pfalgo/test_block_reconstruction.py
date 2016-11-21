@@ -3,7 +3,6 @@ from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative,DAGFloo
 from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
-#from heppy.papas.pfalgo.pfblockbuilder import BlockSplitter
 from heppy.papas.pfalgo.pfblock import PFBlock as realPFBlock
 
 
@@ -11,69 +10,70 @@ class Cluster(object):
     ''' Simple Cluster class for test case
         Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a layer (ecal/hcal)
     '''
-    def __init__(self, id, layer):
-        ''' id is unique integer from 101-199 for ecal cluster
+    def __init__(self, uid, layer):
+        ''' uid is unique integer from 101-199 for ecal cluster
               unique integer from 201-299 for hcal cluster
               layer is ecal/hcal
         '''
         if (layer == 'ecal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER)
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't')
         elif (layer == 'hcal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER)
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER,  't')
         else:
             assert false
         self.layer = layer
-        self.id = id
+        self.uid = uid
         self.energy=0
 
     def __repr__(self):
-        return "cluster:" +  str(self.id) + " :" + str(self.uniqueid)
+        return "cluster:" +  str(self.uid) + " :" + str(self.uniqueid)
         
 class Track(object):
     ''' Simple Track class for test case
-        Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a layer (tracker)
+        Contains a long uniqueid (created via Identifier class), a short uid (used for distance) and a layer (tracker)
     '''
-    def __init__(self, id):
-        ''' id is unique integer from 1-99
+    def __init__(self, uid):
+        ''' uid is unique integer from 1-99
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK)
-        self.id = id
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 't')
+        self.uid = uid
         self.layer = 'tracker'
         self.energy=0
         
     def __repr__(self):
-        return "track:"+  str(self.id) + " :"+  str(self.uniqueid)
+        return "track:"+  str(self.uid) + " :"+  str(self.uniqueid)
         
 class Particle(object):
     ''' Simple Particle class for test case
-        Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a ppdgid
+        Contains a long uniqueid (created via Identifier class), a short uid (used for distance) and a ppdgid
     '''
-    def __init__(self, id, pdgid):
-        ''' id is unique integer from 301-399
-            pdgid is particle id eg 22 for photon
+    def __init__(self, uid, pdgid):
+        ''' uid is unique integer from 301-399
+            pdgid is particle uid eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
-        #print "particle: ",self.uniqueid," ",id
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,'g')
+        #print "particle: ",self.uniqueid," ",uid
         self.pdgid = pdgid
-        self.id = id
+        self.uid = uid
         #self.type = PFType.PARTICLE
     
     def __repr__(self):
-        return "particle:"+  str(self.id) + " :"+  str(self.uniqueid)        
+        return "particle:"+  str(self.uid) + " :"+  str(self.uniqueid)  
+
 class ReconstructedParticle(Particle):
     ''' Simple Particle class for test case
-        Contains a long uniqueid (created via Identifier class), a short id (used for distance) and a ppdgid
+        Contains a long uniqueid (created via Identifier class), a short uid (used for distance) and a ppdgid
     '''
-    def __init__(self, id,pdgid):
-        ''' id is unique integer from 601-699
-            pdgid is particle id eg 22 for photon
+    def __init__(self, uid,pdgid):
+        ''' uid is unique integer from 601-699
+            pdgid is particle uid eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.RECPARTICLE)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, 'r')
         self.pdgid = pdgid
-        self.id = id
+        self.uid = uid
         
     def __repr__(self):
-        return "reconstructed particle:"+  str(self.id) + " :"+  str(self.uniqueid)    
+        return "reconstructed particle:"+  str(self.uid) + " :"+  str(self.uniqueid)    
 
 
             
@@ -89,7 +89,7 @@ class Event(object):
         self.ecal_clusters = dict() 
         self.hcal_clusters = dict()
         self.tracks = dict()         #tracks 
-        self.history_nodes = dict()  #Nodes used in simulation/reconstruction (contain uniqueid)
+        self.history = dict()  #Nodes used in simulation/reconstruction (contain uniqueid)
         self.nodes = dict()          #Contains links/ distances between nodes
         self.blocks = dict()         #Blocks to be made for use in reconstuction
         self.ruler = distance
@@ -99,6 +99,7 @@ class Event(object):
         ''' given a uniqueid return the underlying obejct
         '''
         type = Identifier.get_type(uniqueid)
+        subtype = Identifier.get_subtype(uniqueid)
         if type == Identifier.PFOBJECTTYPE.TRACK:
             return self.tracks[uniqueid]       
         elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
@@ -106,18 +107,17 @@ class Event(object):
         elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
             return self.hcal_clusters[uniqueid]            
         elif type == Identifier.PFOBJECTTYPE.PARTICLE:
-            return self.sim_particles[uniqueid]   
-        elif type == Identifier.PFOBJECTTYPE.RECPARTICLE:
-            return self.reconstructed_particles[uniqueid]               
-        elif type == Identifier.PFOBJECTTYPE.BLOCK:
-            return self.blocks[uniqueid]               
+            if subtype == 'g':
+                return self.sim_particles[uniqueid]       
+            elif subtype == 'r':
+                return self.reconstructed_particles[uniqueid]  
         else:
             assert(False)   
 
 class Simulator(object):
     ''' Simplified simulator for testing
         The simulator sets up  two charged hadrons and a photon
-        the clusters/tracks/particles contain a short id where
+        the clusters/tracks/particles contain a short uid where
         #    1- 99 is  a track
         #  101-199 is an ecal cluster
         #  201-299 is an hcal cluster
@@ -125,7 +125,7 @@ class Simulator(object):
         #  401-499 is  a block
         #  601-699 is  a reconstructed particle 
         the short ids are used to construct the distances between elements
-        The elements also have a long unique id which is created via
+        The elements also have a long unique uid which is created via
         an Identifier class
     '''
     def __init__(self,event):
@@ -149,57 +149,57 @@ class Simulator(object):
         self.add_link(self.UID(302),self.UID(202))
         self.add_link(self.UID(303),self.UID(103))
               
-    def add_ecal_cluster(self, id):
-        clust = Cluster(id,'ecal_in')# make a cluster
+    def add_ecal_cluster(self, uid):
+        clust = Cluster(uid,'ecal_in')# make a cluster
         uniqueid = clust.uniqueid 
         self.event.ecal_clusters[uniqueid] = clust     # add into the collection of clusters
-        self.event.history_nodes[uniqueid] = Node(uniqueid)  #add into the collection of History Nodes
+        self.event.history[uniqueid] = Node(uniqueid)  #add into the collection of History Nodes
                  
-    def add_hcal_cluster(self, id):
-        clust = Cluster(id,'hcal_in')
+    def add_hcal_cluster(self, uid):
+        clust = Cluster(uid,'hcal_in')
         uniqueid = clust.uniqueid 
         self.event.hcal_clusters[uniqueid] = clust
-        self.event.history_nodes[uniqueid] = Node(uniqueid)
+        self.event.history[uniqueid] = Node(uniqueid)
         
-    def add_track(self, id):
-        track = Track(id)
+    def add_track(self, uid):
+        track = Track(uid)
         uniqueid = track.uniqueid 
         self.event.tracks[uniqueid] =  track
-        self.event.history_nodes[uniqueid] =  Node(uniqueid) 
+        self.event.history[uniqueid] =  Node(uniqueid) 
         
-    def add_particle(self, id, pdgid):
-        particle = Particle(id,pdgid)
+    def add_particle(self, uid, pdgid):
+        particle = Particle(uid,pdgid)
         uniqueid = particle.uniqueid
         self.event.sim_particles[uniqueid] =  particle
-        self.event.history_nodes[uniqueid] =  Node(uniqueid) 
+        self.event.history[uniqueid] =  Node(uniqueid) 
     
-    def UID(self, id): #Takes the test case short id and find the unique id
-        ''' id is the short id of the element
+    def UID(self, uid): #Takes the test case short uid and find the unique uid
+        ''' uid is the short uid of the element
             this returns the corresponding long unique id
         '''
-        for h in self.event.history_nodes :
+        for h in self.event.history :
             obj = self.event.get_object(h)
-            if hasattr(obj, "id"):
-                if obj.id  == id :
+            if hasattr(obj, "uid"):
+                if obj.uid  == uid :
                     return obj.uniqueid 
         return 0
      
-    def short_id(self, uniqueid): #Takes the unique id and finds corresponding short id
+    def short_id(self, uniqueid): #Takes the unique uid and finds corresponding short id
         ''' uniqueid is the long unique id of the element
             this returns the corresponding short integer id
         '''
-        for h in self.event.history_nodes :
+        for h in self.event.history :
             obj = self.event.get_object(h)
-            if hasattr(obj, "id"):
+            if hasattr(obj, "uid"):
                 if obj.uniqueid  == uniqueid :
-                    return obj.id 
+                    return obj.uid 
         return 0               
 
     def add_link(self, uniqueid1, uniqueid2):
         ''' create a parent child link in the history nodes between two elements
             uniqueid1, uniqueid2 are the elements unique ids
         '''
-        self.event.history_nodes[uniqueid1].add_child(self.event.history_nodes[uniqueid2])
+        self.event.history[uniqueid1].add_child(self.event.history[uniqueid2])
         
 
     
@@ -255,26 +255,26 @@ class Reconstructor(object):
     def make_hadron(self, parents):
         return self.add_particle(self.new_id(), 211,parents)
 
-    def add_particle(self, id, pdgid, parents):
+    def add_particle(self, uid, pdgid, parents):
         ''' creates a new particle and then updates the 
             event to include the new node and its parental links
             pdgid = is the particle type id eg 22 for photon
             parents = list of the unique ids (from Identifier class) for the elements from 
                        which the particle has been reconstructed
         '''
-        particle = ReconstructedParticle(id,pdgid)
+        particle = ReconstructedParticle(uid,pdgid)
         self.event.reconstructed_particles[particle.uniqueid] =  particle
         #Now create the history node and links
         particle_node = Node(particle.uniqueid)
-        self.event.history_nodes[particle.uniqueid] =  particle_node
+        self.event.history[particle.uniqueid] =  particle_node
         for parent in parents :
-            self.event.history_nodes[parent].add_child(particle_node)
+            self.event.history[parent].add_child(particle_node)
         
     def new_id(self):
-        #new short id for the next reconstucted particle
-        id = self.particlecounter
+        #new short uid for the next reconstucted particle
+        uid = self.particlecounter
         self.particlecounter += 1
-        return id
+        return uid
 
 
 #class PFType(Enum):
@@ -304,7 +304,7 @@ class DistanceItem(object):
           True/False depending on the validity of the link
           float      the link distance
         '''
-        distance = abs(ele1.id%100 -ele2.id%100)
+        distance = abs(ele1.uid%100 -ele2.uid%100)
         return  None, distance == 0, distance        
 
 #will be the ruler in the event class
@@ -315,15 +315,15 @@ class TestBlockReconstruction(unittest.TestCase):
     
         
     def test_1(self):
-        
+        Identifier.reset()
         event  =  Event(distance)
         sim  =  Simulator(event)
         event=sim.event
         
-        pfblocker = PFBlockBuilder( event, distance, event.history_nodes)
+        pfblocker = PFBlockBuilder(event, event.history.keys(), distance)
         
         event.blocks = pfblocker.blocks
-        #event.history_nodes = pfblocker.history_nodes
+        #event.history = pfblocker.history
         
         
         ##test block splitting
@@ -336,7 +336,7 @@ class TestBlockReconstruction(unittest.TestCase):
                 #unlink.append(b.edges[Edge.make_key(ids[0], ids[2])])
                 #unlink.append(b.edges[Edge.make_key(ids[0], ids[1])])
                 #print unlink
-                #splitter=BlockSplitter(b,unlink,event.history_nodes)
+                #splitter=BlockSplitter(b,unlink,event.history)
                 #print splitter.blocks
         
         #blocksplitter=BlockSplitter()
@@ -354,22 +354,22 @@ class TestBlockReconstruction(unittest.TestCase):
         
         #(1) what is connected to the the HCAL CLUSTER
         ids = []
-        BFS  =  BreadthFirstSearchIterative(event.history_nodes[nodeuid],"undirected")
+        BFS  =  BreadthFirstSearchIterative(event.history[nodeuid],"undirected")
         for n in BFS.result :
             ids.append(n.get_value())
          
         #1b WHAT BLOCK Does it belong to   
         x = None
-        for id in ids:
-            if Identifier.is_block(id) and event.blocks[id].short_name()== "E1H1T1":
-                x =  event.blocks[id]     
+        for uid in ids:
+            if Identifier.is_block(uid) and event.blocks[uid].short_info()== "E1H1T1":
+                x =  event.blocks[uid]     
                 
         #1c #check that the block contains the expected list of suspects    
         pids = [] 
         for n in x.element_uniqueids:
             pids.append(n)              
         ids  = sorted(pids)
-        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202)])
+        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202), sim.UID(302)])
         self.assertEqual(ids,expected_ids )
     
         #(2) use edge nodes to see what is connected
@@ -377,13 +377,13 @@ class TestBlockReconstruction(unittest.TestCase):
         BFS  =  BreadthFirstSearchIterative(pfblocker.nodes[nodeuid],"undirected")
         for n in BFS.result :
             ids.append(n.get_value())
-        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202)])   
+        expected_ids = sorted([sim.UID(2), sim.UID(102),sim.UID(202),sim.UID(302)])   
         self.assertEqual(sorted(ids), expected_ids)
 
         #(3) Give me all simulation particles attached to each reconstructed particle
         for rp in event.reconstructed_particles :
             ids=[]
-            BFS  =  BreadthFirstSearchIterative(event.history_nodes[rp],"parents")    
+            BFS  =  BreadthFirstSearchIterative(event.history[rp],"parents")    
             for n in BFS.result :
                 z=n.get_value()
         

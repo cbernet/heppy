@@ -10,11 +10,11 @@ class TestROC(unittest.TestCase):
             cms_roc.set_working_point(b_eff)
             found = []
             for i in range(100000):
-                found.append(cms_roc.is_b_tagged(True))
+                found.append(cms_roc.is_tagged(True))
             self.assertAlmostEqual(np.average(found), b_eff, 2)
             fake = []
             for i in range(100000):
-                fake.append(cms_roc.is_b_tagged(False))
+                fake.append(cms_roc.is_tagged(False))
             self.assertAlmostEqual(np.average(fake), fake_eff, 2)
             
                 

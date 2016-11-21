@@ -1,3 +1,5 @@
+'''Compute particle-based isolation'''
+
 from heppy.framework.analyzer import Analyzer
 from heppy.particles.isolation import IsolationComputer, IsolationInfo
 
@@ -6,47 +8,48 @@ import pprint
 pdgids = [211, 22, 130, 11, 13]
 
 class IsolationAnalyzer(Analyzer):
-    '''Compute candidate (e.g. lepton or photon) isolation.  
+    '''Compute candidate (e.g. lepton or photon) isolation.
 
-    Example:
+    Example::
 
-    from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
-    from heppy.particles.isolation import EtaPhiCircle
-    iso_candidates = cfg.Analyzer(
-    IsolationAnalyzer,
-      candidates = 'candidates',
-      particles = 'particles',
-      iso_area = EtaPhiCircle(0.4)
-    )
-    
-
-    * candidates : collection of candidates for which the isolation should be computed
-
-    * particles : collection of particles w/r to which the candidates should be isolated. 
-
+        from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
+        from heppy.particles.isolation import EtaPhiCircle
+        iso_candidates = cfg.Analyzer(
+        IsolationAnalyzer,
+          candidates = 'candidates',
+          particles = 'particles',
+          iso_area = EtaPhiCircle(0.4)
+        )
 
     If one of the particles considered in the isolation calculation is 
     the candidate (is the same python object), it is discarded. 
 
     The other particles in the isolation cone are sorted by type:
-    - 11: (other) electrons
-    - 13: (other) muons
-    - 211: all other charged particles
-    - 22: photons (particles of pdgid 22)
-    - 130: all other neutral particles
+     - 11: (other) electrons
+     - 13: (other) muons
+     - 211: all other charged particles
+     - 22: photons (particles of pdgid 22)
+     - 130: all other neutral particles
 
     For each type, the isolation result is attached to the candidate.
     For example, to keep track of isolation w/r to charged particles, an 
     attribute candidate.iso_211 is attached to each candidate. It contains:
-    - candidate.iso_211.sumpt: sum pT of all charged particles in a cone around
+     - candidate.iso_211.sumpt: sum pT of all charged particles in a cone around
                             the candidate
-    - candidate.iso_211.sume: sum E for these charged particles
-    - candidate.iso_211.num: number of such charged particles 
+     - candidate.iso_211.sume: sum E for these charged particles
+     - candidate.iso_211.num: number of such charged particles 
 
     Additionally, the attribute candidate.iso is attached to the candidate.
     it contains sumpt, sume, and num for all particles combined.
     
     See IsolationComputer and IsolationInfo for more information.
+    
+    @param candidates: collection of candidates for which the isolation should be computed
+    
+    @param particles: collection of particles w/r to which the candidates should be isolated. 
+    
+    @param iso_area: area where to look for isolation particles around the candidate
+
     '''
     
     def beginLoop(self, setup):
@@ -60,6 +63,13 @@ class IsolationAnalyzer(Analyzer):
             )
             
     def process(self, event):
+        '''process event.
+        
+        The event must contain:
+         - self.cfg_ana.particles: particles to be used for isolation
+         - self.cfg_ana.candidates: particles for which the isolation
+           should be computed 
+        '''
         particles = getattr(event, self.cfg_ana.particles)
         candidates = getattr(event, self.cfg_ana.candidates)
         for candidate in candidates:
@@ -77,11 +87,11 @@ class IsolationAnalyzer(Analyzer):
             self.logger.info(str(isosum))
         
     def pdgid(self, ptc): 
-        '''returns summary pdg id.
-        - e or mu -> +- 11 or +- 13
-        - charged -> +- 211
-        - photon -> 22
-        - other -> neutral hadron
+        '''returns summary pdg id:
+          - e or mu -> +- 11 or +- 13
+          - charged -> +- 211
+          - photon -> 22
+          - other -> neutral hadron
         '''
         if ptc.pdgid() in [11,13]:
             return ptc.pdgid() 

@@ -1,3 +1,5 @@
+'''Fills a TTree for particle-flow studies (experts only)'''
+
 from heppy.framework.analyzer import Analyzer
 from heppy.statistics.tree import Tree
 from heppy.analyzers.ntuple import *
@@ -5,7 +7,8 @@ from heppy.analyzers.ntuple import *
 from ROOT import TFile
 
 class ParticleTreeProducer(Analyzer):
-
+    '''Fills a TTree for particle-flow studies (experts only)'''
+    
     def beginLoop(self, setup):
         super(ParticleTreeProducer, self).beginLoop(setup)
         self.rootfile = TFile('/'.join([self.dirName,
