@@ -7,16 +7,23 @@ from papasevent import PapasEvent
 class TestPapasEvent(unittest.TestCase):
    
     def test_papasevent(self):
+        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
+        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
+        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
+        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
+        #Identifier.reset()
         papasevent = PapasEvent(0)
         
         ecals = dict()
         tracks = dict()
         mixed = dict()
-        Identifier.reset()
-        for i in range(0, 2):
+
+        for i in range(0, 2):         
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
+            print Identifier.pretty(uid)
             ecals[uid] = uid
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 's', 4.5)
+            print Identifier.pretty(uid)
             tracks[uid] = uid            
         
         lastid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 3)
@@ -38,6 +45,8 @@ class TestPapasEvent(unittest.TestCase):
         self.assertTrue( len(papasevent.get_collection('et'))  == 3 )
         
         #check get_object
+        print Identifier.pretty(papasevent.get_object(lastid))
+        print Identifier.pretty(lastid)
         self.assertTrue( Identifier.pretty(papasevent.get_object(lastid))  == 'et5' )
         self.assertTrue( papasevent.get_object(499)  is None )       
 
