@@ -190,6 +190,7 @@ class Identifier(long):
         _id=count(1)
         print "Identifier reset"
         print "Identifier value of count is", cls._id.next()
+        cls._id=count(1)
         pdebugger.info("reset ID")
         return    
 
