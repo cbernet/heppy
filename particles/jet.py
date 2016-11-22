@@ -2,6 +2,11 @@ import math
 from p4 import P4
 
 def group_pdgid(ptc):
+    '''If ptc is a hadron, the pdgid is set to either 211 if it's charged,
+    and 130 if it's neutral. Otherwise, the pdgid is the one returned by ptc.pdgid().
+    
+    @return: the pdgid
+    '''
     pdgid = abs(ptc.pdgid())
     if pdgid>100:
         if ptc.q():
@@ -12,8 +17,14 @@ def group_pdgid(ptc):
         return pdgid
 
 class JetComponent(list):
-
+    '''L{Jet} constituent particle information.
+    
+    In addition to the values returned by the various methods of this class,
+    this class is a list storing each particle added using the L{append} method
+    '''
+    
     def __init__(self, pdgid):
+        '''Create a component for particles of type pdgid.'''
         super(JetComponent, self).__init__()
         self._e = 0
         self._pt = 0
@@ -21,18 +32,23 @@ class JetComponent(list):
         self._pdgid = pdgid
 
     def pdgid(self):
+        '''@return: the pdgid'''
         return self._pdgid
         
     def e(self):
+        '''@return: the total energy of all particles with this pdgid'''
         return self._e
 
     def pt(self):
+        '''@return: the total pt of all particles with this pdgid'''
         return self._pt
 
     def num(self):
+        '''@return: the number of particles with this pdgid'''
         return self._num
     
     def append(self, ptc):
+        '''Append a new particle, incrementing all quantities'''
         pdgid = group_pdgid(ptc)
         if self._pdgid is None:
             self._pdgid = pdgid
@@ -59,6 +75,17 @@ class JetComponent(list):
         
  
 class JetConstituents(dict):
+    '''Dictionary of constituents.
+    
+    The dictionary is indexed by the following integer keys:
+     - 211: charged hadrons
+     - 22: photons
+     - 130: neutral hadrons
+     - 11: eletrons
+     - 13: muons
+     
+    Each key corresponds to a L{JetComponent}
+    '''
 
     def __init__(self):
         super(JetConstituents, self).__init__()
@@ -75,6 +102,7 @@ class JetConstituents(dict):
             import pdb; pdb.set_trace()
     
     def append(self, ptc):
+        '''Appends a particle to the list of constituents.'''
         pdgid = group_pdgid(ptc)
         try:
             self[pdgid].append(ptc)
@@ -82,6 +110,7 @@ class JetConstituents(dict):
             import pdb; pdb.set_trace()
 
     def sort(self):
+        '''Sort constituent particles by decreasing energy.'''
         for ptcs in self.values():
             ptcs.sort(key = lambda ptc: ptc.e(), reverse=True)
 
@@ -90,8 +119,17 @@ class JetConstituents(dict):
 
 
 class JetTags(dict):
+    '''Dictionary of tags attached to a jet.
+    
+    The key is the name of the tag, and the value the one of the tag, e.g.:
+     - key = 'btag'
+     - value = '0.65'  (in case a b tagging algorithm returning a float was used)
+     
+    Any kind of type can be used for key and value.
+    '''
 
     def summary(self):
+        '''@return summary of all tags.'''
         tagstrs = []
         for name, val in sorted(self.iteritems()):
             valstr = '..'
@@ -110,6 +148,12 @@ class JetTags(dict):
             
     
 class Jet(P4):
+    '''Generic jet class.
+    
+    Attributes:
+     - constituents: see L{JetConstituents}
+     - tags: see L{JetTags}
+    '''
 
     def __init__(self, *args, **kwargs):
         super(Jet, self).__init__(*args, **kwargs)
@@ -117,9 +161,17 @@ class Jet(P4):
         self.tags = JetTags()
 
     def pdgid(self):
+        '''needed to behave as a particle.
+    
+        @return 0
+        '''
         return 0
 
     def q(self):
+        '''Needed to behave as a particle.
+        
+        @return 0
+        '''
         return 0
     
     def __str__(self):

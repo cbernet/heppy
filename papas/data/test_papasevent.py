@@ -1,18 +1,18 @@
 import unittest
 import itertools
 import copy
-from identifier import Identifier
+
+from heppy.papas.data.identifier import Identifier
 from papasevent import PapasEvent 
 
 class TestPapasEvent(unittest.TestCase):
-   
+
     def test_papasevent(self):
         papasevent = PapasEvent(0)
-        
         ecals = dict()
         tracks = dict()
         mixed = dict()
-        Identifier.reset()
+
         for i in range(0, 2):
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             ecals[uid] = uid

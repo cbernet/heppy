@@ -10,8 +10,6 @@ import pprint
 import time
 import socket
 
-import eostools as castortools
-
 class BatchManager:
     """
     This class manages batch jobs
@@ -24,7 +22,9 @@ class BatchManager:
     # parse batch manager options
     def __init__(self):
         self.DefineOptions()
-
+        
+    def Parser(self):
+        return self.parser_
 
     def DefineOptions(self):
         # define options and arguments ====================================
@@ -80,6 +80,7 @@ class BatchManager:
                     print self.remoteOutputDir_, "not valid"
                     sys.exit(1)
             else: # assume EOS
+                import eostools as castortools                
                 if not castortools.isLFN( self.remoteOutputDir_ ):
                     print 'When providing an output directory, you must give its LFN, starting by /store. You gave:'
                     print self.remoteOutputDir_
