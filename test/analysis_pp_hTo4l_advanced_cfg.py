@@ -49,9 +49,9 @@ from EventStore import EventStore as Events
 #############################
 
 # select stable electrons and muons
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 gen_leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'gen_leptons',
     output = 'gen_leptons',
     input_objects = 'gen_particles',
@@ -70,9 +70,9 @@ gen_tree = cfg.Analyzer(
 #############################
 
 # select fsr photon candidates
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 sel_photons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_photons',
     output = 'sel_photons',
     input_objects = 'photons',
@@ -101,7 +101,7 @@ iso_photons = cfg.Analyzer(
 
 # select isolated photons
 sel_iso_photons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_photons',
     output = 'sel_iso_photons',
     input_objects = 'sel_photons',
@@ -128,7 +128,7 @@ iso_candidates_nofsr = cfg.Analyzer(
 
 # select muons with pT > 5 GeV
 sel_muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_muons',
     output = 'sel_muons',
     input_objects = 'muons',
@@ -145,7 +145,7 @@ iso_muons = cfg.Analyzer(
 
 # select isolated muons
 sel_iso_muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_muons',
     output = 'sel_iso_muons',
     input_objects = 'sel_muons',
@@ -164,7 +164,7 @@ dressed_muons = cfg.Analyzer(
 
 # select electrons with pT > 7 GeV
 sel_electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_electrons',
     output = 'sel_electrons',
     input_objects = 'electrons',
@@ -181,7 +181,7 @@ iso_electrons = cfg.Analyzer(
 
 # select isolated electrons
 sel_iso_electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_electrons',
     output = 'sel_iso_electrons',
     input_objects = 'sel_electrons',

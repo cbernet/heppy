@@ -1,3 +1,6 @@
+'''Filter events based on object counting. (deprecated, see EventFilter)'''
+
+
 from heppy.framework.analyzer import Analyzer
 
 class Counter(Analyzer):
@@ -19,5 +22,11 @@ class Counter(Analyzer):
     '''
 
     def process(self, event):
+        '''event should contain:
+        
+        * self.cfg_ana.input_objects:
+             the list of input_objects to be counted, 
+             with the name specified in self.cfg_ana
+        '''
         input_collection = getattr(event, self.cfg_ana.input_objects)
         return len(input_collection) >= self.cfg_ana.min_number

@@ -5,7 +5,6 @@ get more information:
 
 ipython
 from analysis_ee_ZH_cfg import * 
-
 '''
 
 import os
@@ -17,6 +16,7 @@ import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
+
 
 # global logging level for the heppy framework.
 # in addition, all the analyzers declared below have their own logger,
@@ -40,7 +40,8 @@ from EventStore import EventStore as Events
 # help(Event) for more information
 from heppy.framework.event import Event
 # comment the following line to see all the collections stored in the event 
-Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*']
+# if collection is listed then print loop.event.papasevent will include the collections
+Event.print_patterns=['zeds*', 'higgs*', 'rec_particles', 'gen_particles_stable', 'recoil*', 'collections']
 
 # definition of the collider
 # help(Collider) for more information
@@ -49,7 +50,6 @@ Collider.BEAMS = 'ee'
 Collider.SQRTS = 240.
 
 # definition of an input sample (also called a component)
-# help(comp) for more information
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
@@ -74,16 +74,16 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papas_sequence, detector
+from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
 
-# Use a Filter to select leptons from the output of papas simulation.
+# Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
+# we could use two different instances for the Selector module
 # to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 leptons_true = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_leptons',
     output = 'leptons_true',
     input_objects = 'rec_particles',
@@ -101,7 +101,7 @@ iso_leptons = cfg.Analyzer(
     iso_area = EtaPhiCircle(0.4)
 )
 
-# Select isolated leptons with a Filter
+# Select isolated leptons with a Selector
 # one can pass a function like this one to the filter:
 def relative_isolation(lepton):
     sumpt = lepton.iso_211.sumpt + lepton.iso_22.sumpt + lepton.iso_130.sumpt
@@ -109,7 +109,7 @@ def relative_isolation(lepton):
     return sumpt
 # ... or use a lambda statement as done below. 
 sel_iso_leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_iso_leptons',
     output = 'sel_iso_leptons',
     input_objects = 'leptons_true',
@@ -215,7 +215,7 @@ tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
-    papas_sequence, 
+    papas_sequence,
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
@@ -245,9 +245,11 @@ if __name__ == '__main__':
     import sys
     from heppy.framework.looper import Looper
     import heppy.statistics.rrandom as random
+    from heppy.papas.data.identifier import Identifier
     random.seed(0xdeadbeef)
 
     def process(iev=None):
+        Identifier.reset() #todo move elsewhere
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)
@@ -268,7 +270,7 @@ if __name__ == '__main__':
     heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
     '''
     if len(sys.argv)==2:
-        papas.display = True
+        papasdisplay.display = True
         try:
             iev = int(sys.argv[1])
         except ValueError:
@@ -278,20 +280,15 @@ if __name__ == '__main__':
         print usage
         sys.exit(1)
             
-        
     loop = Looper( 'looper', config,
                    nEvents=10,
                    nPrint=1,
                    timeReport=True)
     
-    simulation = None
     for ana in loop.analyzers: 
         if hasattr(ana, 'display'):
-            simulation = ana
-    display = getattr(simulation, 'display', None)
-    simulator = getattr(simulation, 'simulator', None)
-    if simulator: 
-        detector = simulator.detector
+            display = getattr(ana, 'display', None)
+    
     if iev is not None:
         process(iev)
         pass

@@ -20,7 +20,7 @@ A [simple heppy example](../test/simple_example_cfg.py) based on ROOT is provide
 Please do the following:
 
 ```bash
-    cd test/ 
+    cd test/
     # create a root file containing an example root tree:
     python create_tree.py
 	 # process this tree:
@@ -38,17 +38,17 @@ The two arguments are:
 
 Heppy configuration files like [simple_example_cfg.py](../test/simple_example_cfg.py) are just python modules that can be imported and used in python.
 
-Start python (here we use the superior ipython script): 
+Start python (here we use the superior ipython script):
 
-    ipython 
-    
+    ipython
+
 import the [simple_example_cfg.py](../test/simple_example_cfg.py) module:
 
 ```python
 from heppy.test.simple_example_cfg import *
 ```
 
-you can now use the various python objects in cfg_file, e.g. to get help: 
+you can now use the various python objects in cfg_file, e.g. to get help:
 
 ```python
 help(Events)
@@ -59,26 +59,26 @@ Help on class Chain in module heppy.framework.chain:
 
 class Chain(__builtin__.object)
  |  Wrapper to TChain, with a python iterable interface.
- |  
+ |
  |  from chain import Chain
  |  the_chain = Chain('../test/test_*.root', 'test_tree')
  |  event3 = the_chain[2]
  |  print event3.var1
- |  
+ |
  |  for event in the_chain:
  |      print event.var1
- |  
+ |
  |  Methods defined here:
- |  
+ |
  |  __getattr__(self, attr)
  |      All functions of the wrapped TChain are made available
- |  
+ |
  |  __getitem__(self, index)
  |      Returns the event at position index.
- |  
+ |
  |  __init__(self, input_filenames, tree_name=None)
  |      Create a chain.
- |      
+ |
  |      Parameters:
  |        input     = either a list of files or a wildcard (e.g. 'subdir/*.root').
  |                    In the latter case all files matching the pattern will be used
@@ -86,22 +86,22 @@ class Chain(__builtin__.object)
  |        tree_name = key of the tree in each file.
  |                    if None and if each file contains only one TTree,
  |                    this TTree is used.
- |  
+ |
  |  __iter__(self)
- |  
+ |
  |  __len__(self)
- |  
+ |
  |  ----------------------------------------------------------------------
  |  Data descriptors defined here:
- |  
+ |
  |  __dict__
  |      dictionary for instance variables (if defined)
- |  
+ |
  |  __weakref__
  |      list of weak references to the object (if defined)
 ```
 
-It is possible to access the attributes and the methods of the various objects, and for example to print them: 
+It is possible to access the attributes and the methods of the various objects, and for example to print them:
 
 ```python
 print inputSample
@@ -117,9 +117,9 @@ Component: test_component
         triggers       :   None
 ```
 
-It is even possible to use all functionalities of python to prepare your heppy configuration file. For example to use all ROOT files in the current directory as input, one could add the following lines to the configuration file. You may run them now: 
+It is even possible to use all functionalities of python to prepare your heppy configuration file. For example to use all ROOT files in the current directory as input, one could add the following lines to the configuration file. You may run them now:
 
-```python 
+```python
 import glob
 files = glob.glob('*.root')
 inputSample.files = files
@@ -132,7 +132,7 @@ The goal of the heppy configuration file is to:
 
 * specify the input samples of events
 * configure the analyzers responsible for event processing
-* schedule the event processing sequence 
+* schedule the event processing sequence
 * gather all of this information in a configuration object for hepp
 
 These steps are described for [simple_example_cfg.py](../test/simple_example_cfg.py), which is reproduced below.
@@ -150,7 +150,7 @@ logging.basicConfig(level=logging.INFO)
 
 ```python
 
-# input component 
+# input component
 # several input components can be declared,
 # and added to the list of selected components
 
@@ -167,27 +167,27 @@ selectedComponents  = [inputSample]
 from heppy.framework.chain import Chain as Events
 ```
 
-In this example, we read a single root file using the ROOT TChain class. 
+In this example, we read a single root file using the ROOT TChain class.
 
-One could read a list of files, and even have several input samples (or components), each with its own list of files. Heppy offers the possibility to [process all files of all components in parallel](parallel.md), with a single command. 
+One could read a list of files, and even have several input samples (or components), each with its own list of files. Heppy offers the possibility to [process all files of all components in parallel](Heppy_-_Parallel_Processing.md), with a single command.
 
 The Events class here stands for a Chain, which wraps a TChain. It is responsible for reading the events written in the component files. Specific Events classes are provided to read [CMS](../framework/eventsfwlite.py), [FCC](https://github.com/HEP-FCC/podio/blob/master/python/EventStore.py), and [LCIO](../framework/eventslcio.py) events.
 Other Events classes could be provided e.g for ATLAS events or plain text files such as Les Houches or HepMC events.
 
 ### Configuration of the analyzers
 
-This section of the configuration file specifies the configuration of four very simple analyzers: 
+This section of the configuration file specifies the configuration of four very simple analyzers:
 
 * [RandomAnalyzer](../analyzers/examples/simple/RandomAnalyzer.py) : draw a value from a random distribution for a variable and put it into the event.
-* [Printer](../analyzers/examples/simple/Printer.py) : access this variable and print it. 
+* [Printer](../analyzers/examples/simple/Printer.py) : access this variable and print it.
 * [Stopper](../analyzers/examples/simple/Stopper.py) : stop processing at event 10.
-* [SimpleTreeProducer](../analyzers/examples/simple/SimpleTreeProducer.py): define an output ntuple (TTree) to store the random variable. 
+* [SimpleTreeProducer](../analyzers/examples/simple/SimpleTreeProducer.py): define an output ntuple (TTree) to store the random variable.
 
-Please study the sequence below, and the code of each analyzer. 
+Please study the sequence below, and the code of each analyzer.
 
 ```python
 
-# add a random variable to the event 
+# add a random variable to the event
 from heppy.analyzers.examples.simple.RandomAnalyzer import RandomAnalyzer
 random = cfg.Analyzer(
     RandomAnalyzer
@@ -237,7 +237,7 @@ Please include `printer` and `stopper` to the sequence, and run again.
 
 ### Definition of global services
 
-_Services_ are created at the beginning of the event processing and can be used in all analyzers. They are usually not needed but are worth mentioning. For example, the service defined below configures a global output root file that can be used by all analyzers. Please note however that each analyzer can also have its own output ROOT file. 
+_Services_ are created at the beginning of the event processing and can be used in all analyzers. They are usually not needed but are worth mentioning. For example, the service defined below configures a global output root file that can be used by all analyzers. Please note however that each analyzer can also have its own output ROOT file.
 
 ```python
 from heppy.framework.services.tfile import TFileService
@@ -253,16 +253,16 @@ services = [output_rootfile]
 
 ### finalization of the configuration object
 
-A global configuration file named `config` must be present. It contains all the information needed by heppy to process your events. 
+A global configuration file named `config` must be present. It contains all the information needed by heppy to process your events.
 
 ```python
-# finalization of the configuration object. 
+# finalization of the configuration object.
 config = cfg.Config( components = selectedComponents,
                      sequence = sequence,
-                     services = services, 
+                     services = services,
                      events_class = Events )
 
-# print config 
+# print config
 ```
 
 

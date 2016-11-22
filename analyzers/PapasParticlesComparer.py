@@ -1,7 +1,5 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.comparer import ParticlesComparer
-from heppy.papas.data.history import History
-from heppy.papas.data.pfevent import  PFEvent
 
 class PapasParticlesComparer(Analyzer):
     ''' Unsophisticated testing Module that checks that two lists of sorted particles match

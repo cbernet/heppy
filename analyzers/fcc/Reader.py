@@ -90,8 +90,13 @@ class Reader(Analyzer):
                 setattr(event, coll_label, pycoll)
             return pycoll
 
-        #get_collection(Particle, 'gen_particles')
-        #get_collection(Vertex, 'gen_vertices', False)
+
+        if hasattr(self.cfg_ana, 'gen_particles'):
+            get_collection(Particle, 'gen_particles')
+
+        if hasattr(self.cfg_ana, 'gen_vertices'):
+            get_collection(Vertex, 'gen_vertices', False)
+
         get_collection(Jet, 'gen_jets')
         jetcoll = get_collection(Jet, 'jets')
         if jetcoll:

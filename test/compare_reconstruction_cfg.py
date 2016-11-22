@@ -24,12 +24,12 @@ source = cfg.Analyzer(
     gen_particles = 'GenParticle',
 )
 
-# Use a Filter to select stable gen particles for simulation
+# Use a Selector to select stable gen particles for simulation
 # from the output of "source" 
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 gen_particles_stable = cfg.Analyzer(
-    Filter,
+    Selector,
     output = 'gen_particles_stable',
     # output = 'particles',
     input_objects = 'gen_particles',

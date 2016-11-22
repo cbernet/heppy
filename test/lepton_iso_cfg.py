@@ -53,14 +53,14 @@ source = cfg.Analyzer(
 
 from heppy.test.papas_cfg import gen_particles_stable
 
-# Use a Filter to select leptons from the output of papas simulation.
+# Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Filter module
+# we could use two different instances for the Selector module
 # to get separate collections of electrons and muons
-# help(Filter) for more information
-from heppy.analyzers.Filter import Filter
+# help(Selector) for more information
+from heppy.analyzers.Selector import Selector
 leptons_true = cfg.Analyzer(
-    Filter,
+    Selector,
     'sel_leptons',
     output = 'leptons_true',
     input_objects = 'gen_particles_stable',
