@@ -2,7 +2,6 @@ from heppy.particles.particle import Particle as BaseParticle
 from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
-from heppy.papas.data.identifier import Identifier
 from heppy.utils.pdebug import pdebugger
 import copy
 
@@ -10,8 +9,6 @@ class Particle(BaseParticle, POD):
     
     def __init__(self, fccobj):
         super(Particle, self).__init__(fccobj)
-        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, 'g')
-        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE)
         self._charge = fccobj.core().charge
         self._pid = fccobj.core().pdgId
         self._status = fccobj.core().status
@@ -44,14 +41,5 @@ class Particle(BaseParticle, POD):
         return tmp.format(
             pdgid =pid,
             e = self.e()        
-        )    
-    
-    def __str__(self):
-        mainstr =  super(Particle, self).__str__()
-        idstr = '{pretty:6}:{uid}'.format(
-            pretty = Identifier.pretty(self.uniqueid),
-            uid = self.uniqueid)
-        fields = mainstr.split(':')
-        fields.insert(1, idstr)
-        return ':'.join(fields)     
+        )
 

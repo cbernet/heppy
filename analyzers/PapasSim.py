@@ -82,7 +82,6 @@ class PapasSim(Analyzer):
     def build_collections_and_history(self, papasevent, sim_particles):  
         #todo this should be integrated into the simulator in the future
         simulated_particles = dict()
-        gen_stable_particles = dict()
         tracks = dict()
         smeared_tracks=dict()
         smeared_hcals = dict()
@@ -97,11 +96,6 @@ class PapasSim(Analyzer):
             uid = ptc.uniqueid
             simulated_particles[uid] = ptc
             history[uid] = Node(uid)
-            gen_id = ptc.gen_ptc.uniqueid
-            gen_stable_particles[gen_id] = ptc.gen_ptc
-            history[gen_id] = Node(gen_id)
-            history[gen_id].add_child(history[uid])
-    
             if ptc.track:
                 track_id = ptc.track.uniqueid
                 true_tracks[track_id] = ptc.track
@@ -134,7 +128,6 @@ class PapasSim(Analyzer):
                                 history[clust.uniqueid].add_child(history[smclust.uniqueid])
                             
         papasevent.add_collection(simulated_particles)
-        papasevent.add_collection(gen_stable_particles)
         papasevent.add_collection(true_tracks)
         papasevent.add_collection(smeared_tracks)
         papasevent.add_collection(smeared_hcals)

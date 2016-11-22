@@ -268,8 +268,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
 
         #newsort
         # import pdb; pdb.set_trace()
-        for gen_ptc in sorted(ptcs, key=lambda ptc: ptc.uniqueid):
-            pdebugger.info(str('{}'.format(gen_ptc)))
         for gen_ptc in ptcs:
             ptc = pfsimparticle(gen_ptc)
             if ptc.pdgid() == 22:
