@@ -3,7 +3,6 @@ from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
 from heppy.particles.fcc.met import Met
-from heppy.particles.weight import Weight
 import heppy.configuration
 
 import math
@@ -94,10 +93,10 @@ class Reader(Analyzer):
         # store only 1st event weight for now
         event.weight = - 999.
         if hasattr(self.cfg_ana, 'weights'):
-             coll_name = getattr( self.cfg_ana, 'weights' )
-             weightcoll = store.get( coll_name )
-             if weightcoll:
-                 event.weight = weightcoll[0].value()
+            coll_name = getattr( self.cfg_ana, 'weights' )
+            weightcoll = store.get( coll_name )
+            if weightcoll:
+                event.weight = weightcoll[0].value()
 
 
         if hasattr(self.cfg_ana, 'gen_particles'):
