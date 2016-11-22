@@ -101,7 +101,7 @@ class Reader(Analyzer):
 
 
         if hasattr(self.cfg_ana, 'gen_particles'):
-            gen_particles = get_collection(Particle, 'gen_particles')
+            get_collection(Particle, 'gen_particles')
 
         if hasattr(self.cfg_ana, 'gen_vertices'):
             get_collection(Vertex, 'gen_vertices', False)
