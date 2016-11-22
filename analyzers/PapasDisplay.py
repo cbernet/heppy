@@ -8,17 +8,19 @@ from heppy.display.pfobjects import GTrajectories, Blob
 class PapasDisplay(Analyzer):
     '''Plots a PAPAS event display
 
-    Example configuration:
+    Example configuration::
 
-    from heppy.analyzers.PapasDisplay import PapasDisplay
-    papasdisplay = cfg.Analyzer(
-        PapasDisplay,
-        instance_label = 'papas',
-        detector = detector,
-        particles = 'papas_sim_particles',
-        clusters = ['ecal_clusters', 'hcal_clusters']
-        display = True
-        )
+        from heppy.analyzers.PapasDisplay import PapasDisplay
+        papasdisplay = cfg.Analyzer(
+            PapasDisplay,
+            instance_label = 'papas',
+            detector = detector,
+            particles = 'papas_sim_particles',
+            clusters = ['ecal_clusters', 'hcal_clusters']
+            display = True
+            )
+            
+    @param detector: the detector to be used. 
     '''
 
     def __init__(self, *args, **kwargs):
@@ -40,7 +42,9 @@ class PapasDisplay(Analyzer):
             self.display.clear()
             self.display.register(GTrajectories(particles), layer=1)
             for type_and_subtype in self.cfg_ana.clusters_type_and_subtypes:
-                blobs = map(Blob, event.papasevent.get_collection(type_and_subtype).values())   
-                self.display.register(blobs, layer=1)
+                coll = event.papasevent.get_collection(type_and_subtype)
+                if coll:
+                    blobs = map(Blob, coll.values())   
+                    self.display.register(blobs, layer=1)
             pass
 

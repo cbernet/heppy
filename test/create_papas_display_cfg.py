@@ -301,7 +301,6 @@ if __name__ == '__main__':
     random.seed(0xdeadbeef)
 
     def process(iev=None):
-        Identifier.reset()
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)

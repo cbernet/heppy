@@ -5,7 +5,6 @@ get more information:
 
 ipython
 from analysis_ee_ZH_cfg import * 
-
 '''
 
 import os
@@ -17,6 +16,7 @@ import logging
 # next 2 lines necessary to deal with reimports from ipython
 logging.shutdown()
 reload(logging)
+
 
 # global logging level for the heppy framework.
 # in addition, all the analyzers declared below have their own logger,
@@ -50,15 +50,6 @@ Collider.BEAMS = 'ee'
 Collider.SQRTS = 240.
 
 # definition of an input sample (also called a component)
-# help(comp) for more information
-#comp = cfg.Component(
-    #'ee_ZH_Zmumu_Hbb',
-    #files = [
-        ## here we have a single input root file.
-        ## the absolute path must be used to be able to run on the batch.
-        #os.path.abspath('ee_ZH_Zmumu_Hbb.root')
-    #]
-#)
 comp = cfg.Component(
     'ee_ZH_Zmumu_Hbb',
     files = [
@@ -258,7 +249,6 @@ if __name__ == '__main__':
     random.seed(0xdeadbeef)
 
     def process(iev=None):
-        Identifier.reset() #todo move elsewhere
         if iev is None:
             iev = loop.iEvent
         loop.process(iev)

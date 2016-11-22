@@ -35,10 +35,10 @@ papasdisplay = cfg.Analyzer(
     PapasDisplay,
     instance_label = 'papas',
     detector = detector,
-    projections = ['xy', 'yz'],
+    projections = ['xy'],
     screennames = ["simulated"],#["reconstructed"],#
     particles_type_and_subtype = 'ps',
-    clusters_type_and_subtypes = ['es', 'hs'], 
+    clusters_type_and_subtypes = ['es','hs'],
     #display_filter_func = lambda ptc: ptc.e()>1.,
     #todo save option
     display = False

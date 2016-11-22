@@ -17,7 +17,6 @@ class TestHistoryHelper(unittest.TestCase):
         tracks = dict()
         mixed = dict()
         
-        Identifier.reset()
         for i in range(0, 2):
             uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
             ecals[uid] = uid
