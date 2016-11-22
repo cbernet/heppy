@@ -39,9 +39,9 @@ from EventStore import EventStore as Events
 #############################
 
 # select stable electrons and muons
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 gen_leptons = cfg.Analyzer(
-    Filter,
+    Selector,
     'gen_leptons',
     output = 'gen_leptons',
     input_objects = 'gen_particles',
@@ -61,9 +61,9 @@ gen_tree = cfg.Analyzer(
 
 
 # select isolated muons with pT > 5 GeV and relIso < 0.4
-from heppy.analyzers.Filter import Filter
+from heppy.analyzers.Selector import Selector
 selected_muons = cfg.Analyzer(
-    Filter,
+    Selector,
     'selected_muons',
     output = 'selected_muons',
     input_objects = 'muons',
@@ -72,7 +72,7 @@ selected_muons = cfg.Analyzer(
 
 # select electrons with pT > 7 GeV and relIso < 0.4
 selected_electrons = cfg.Analyzer(
-    Filter,
+    Selector,
     'selected_electrons',
     output = 'selected_electrons',
     input_objects = 'electrons',
