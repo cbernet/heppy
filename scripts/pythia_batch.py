@@ -1,14 +1,16 @@
-import os 
+import os
+import shutil
 from heppy.utils.batchmanager import BatchManager
 
 
-def batchScriptLocal( index ):
+def batchScriptLocal(index, cardfname):
     '''prepare a local version of the batch script, to run using nohup'''
 
     script = """#!/bin/bash
-echo 'running' {}
+echo 'running job' {index}
 echo
-""".format(index) 
+fcc-pythia8-generate {cardfname}
+""".format(index=index, cardfname=cardfname) 
     return script
 
 
@@ -23,11 +25,14 @@ class MyBatchManager( BatchManager ):
         scriptFile = open(scriptFileName,'w')
         mode = self.RunningMode(self.options_.batch)
         if mode == 'LXPLUS':
-            scriptFile.write( batchScriptLXPLUS( jobDir) )
+            scriptFile.write( batchScriptLXPLUS(jobDir,
+                                                self.cardfname) )
         elif mode == 'LOCAL':
-            scriptFile.write( batchScriptLocal( value ) )
+            scriptFile.write( batchScriptLocal(value,
+                                               self.cardfname) )
         scriptFile.close()
         os.system('chmod +x %s' % scriptFileName)
+        shutil.copy(self.cardfname, jobDir)
 
 
 def main(options, args, batchManager):
@@ -35,6 +40,7 @@ def main(options, args, batchManager):
         batchManager.Parser().error('incorrect number of arguments')
     cardfname, njobs = args
     njobs = int(njobs)
+    batchManager.cardfname = cardfname
     print cardfname, njobs
     
     listOfValues = range(njobs)
