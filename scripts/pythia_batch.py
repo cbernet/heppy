@@ -15,6 +15,45 @@ fcc-pythia8-generate {cardfname}
     return script
 
 
+def batchScriptCERN_FCC(index, cardfname):
+   '''prepare the LSF version of the batch script, to run on LSF'''
+
+   dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
+cp *.root $LS_SUBCWD
+if [ $? -ne 0 ]; then
+   echo 'ERROR: problem copying job directory back'
+else
+   echo 'job directory copy succeeded'
+fi"""
+   cpCmd=dirCopy
+
+   script = """#!/bin/bash
+#BSUB -q 8nm
+# ulimit -v 3000000 # NO
+unset LD_LIBRARY_PATH
+echo 'copying job dir to worker'
+source /afs/cern.ch/exp/fcc/sw/0.8pre/setup.sh
+cd $HEPPY
+source ./init.sh
+echo 'environment:'
+echo
+env | sort
+echo
+which python
+cd -
+cp -rf $LS_SUBCWD .
+ls
+cd `find . -type d | grep /`
+echo 'running'
+fcc-pythia8-generate {cardfname}   
+echo
+{copy}
+""".format(cardfname=cardfname, copy=cpCmd)
+
+   return script
+
+
+
 class MyBatchManager( BatchManager ):
     '''Batch manager for fcc-pythia8-generate''' 
 
@@ -26,8 +65,8 @@ class MyBatchManager( BatchManager ):
         scriptFile = open(scriptFileName,'w')
         mode = self.RunningMode(self.options_.batch)
         if mode == 'LXPLUS':
-            scriptFile.write( batchScriptLXPLUS(jobDir,
-                                                self.cardfname) )
+            scriptFile.write( batchScriptCERN_FCC(jobDir,
+                                                  self.cardfname) )
         elif mode == 'LOCAL':
             scriptFile.write( batchScriptLocal(value,
                                                self.cardfname) )
