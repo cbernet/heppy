@@ -92,11 +92,18 @@ class Looper(object):
 
         self.cfg_comp = config.components[0]
         self.classes = {}
-        self.analyzers = map( self._build, config.sequence )
+        # keep track of analyzers in a list for sequential event processing
+        self._analyzers = []
+        # and in a dict for easy user access
+        self._analyzer_dict = dict()
+        for anacfg in self.config.sequence:
+            anaobj = self._build(anacfg)
+            self._analyzers.append(anaobj)
+            self._analyzer_dict[anacfg.name] = anaobj        
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
-        self.timeReport = [ {'time':0.0,'events':0} for a in self.analyzers ] if timeReport else False
+        self.timeReport = [ {'time':0.0,'events':0} for a in self._analyzers ] if timeReport else False
         self.memReportFirstEvent = memCheckFromEvent
         self.memLast=0
         self.stopFlag = stopFlag
@@ -113,17 +120,17 @@ class Looper(object):
             errmsg = 'please provide at least an input file in the files attribute of this component\n' + str(self.cfg_comp)
             raise ValueError( errmsg )
         if hasattr(config,"preprocessor") and config.preprocessor is not None :
-              self.cfg_comp = config.preprocessor.run(self.cfg_comp,
-                                                      self.outDir,
-                                                      firstEvent,
-                                                      nEvents)
+            self.cfg_comp = config.preprocessor.run(self.cfg_comp,
+                                                    self.outDir,
+                                                    firstEvent,
+                                                    nEvents)
         if hasattr(self.cfg_comp,"options"):
-              print self.cfg_comp.files,self.cfg_comp.options
-              self.events = config.events_class(self.cfg_comp.files,
-                                                tree_name,
-                                                options=self.cfg_comp.options)
+            print self.cfg_comp.files,self.cfg_comp.options
+            self.events = config.events_class(self.cfg_comp.files,
+                                              tree_name,
+                                              options=self.cfg_comp.options)
         else :
-              self.events = config.events_class(self.cfg_comp.files, tree_name)
+            self.events = config.events_class(self.cfg_comp.files, tree_name)
         if hasattr(self.cfg_comp, 'fineSplit'):
             fineSplitIndex, fineSplitFactor = self.cfg_comp.fineSplit
             if fineSplitFactor > 1:
@@ -165,7 +172,12 @@ Make sure that the configuration object is of class cfg.Analyzer.
             raise ValueError(err)
         obj = theClass( cfg, self.cfg_comp, self.outDir )
         return obj
-        
+      
+    #----------------------------------------------------------------------
+    def analyzer(self, name):
+        """@return: analyzer with this name."""
+        return self._analyzer_dict[name]
+    
     def _prepareOutput(self, name):
         index = 0
         tmpname = name
@@ -209,7 +221,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
                 'to process {nEvents} events.'.format(firstEvent=firstEvent,
                                                         nEvents=nEvents))
         self.logger.info( str( self.cfg_comp ) )
-        for analyzer in self.analyzers:
+        for analyzer in self._analyzers:
             analyzer.beginLoop(self.setup)
 
         if hasattr(self.events, '__getitem__'):
@@ -267,7 +279,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         warning('')
         warning( self.cfg_comp )
         warning('')        
-        for analyzer in self.analyzers:
+        for analyzer in self._analyzers:
             analyzer.endLoop(self.setup)
         if self.timeReport:
             allev = max([x['events'] for x in self.timeReport])
@@ -276,7 +288,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
             warning("%9s   %9s    %9s   %9s %6s   %s" % ("---------","--------","---------", "---------", " -----", "-------------"))
             sumtime = sum(rep['time'] for rep in self.timeReport)
             passev  = self.timeReport[-1]['events']
-            for ana,rep in zip(self.analyzers,self.timeReport):
+            for ana,rep in zip(self._analyzers,self.timeReport):
                 timePerProcEv = rep['time']/(rep['events']-1) if rep['events'] > 1 else 0
                 timePerAllEv  = rep['time']/(allev-1)         if allev > 1         else 0
                 fracAllEv     = rep['time']/sumtime
@@ -316,7 +328,7 @@ possibly skipping a number of events at the beginning.
         '''Run all analysers on the current event, self.event. 
         Returns a tuple (success?, last_analyzer_name).
         '''
-        for i,analyzer in enumerate(self.analyzers):
+        for i,analyzer in enumerate(self._analyzers):
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop(self.setup)
             start = timeit.default_timer()
@@ -344,7 +356,7 @@ possibly skipping a number of events at the beginning.
 
         See Analyzer.Write for more information.
         """
-        for analyzer in self.analyzers:
+        for analyzer in self._analyzers:
             analyzer.write(self.setup)
         self.setup.close() 
 
