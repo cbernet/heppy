@@ -216,7 +216,7 @@ class ViewPane(object): #a graphics window
             @param filetype: eg png file output. ***what else is supported***
             '''        
         fname = '{outdir}/{name}.{filetype}'.format(outdir=outdir,
-                                                    name=self.canvas.GetName() + filename,
+                                                    name= filename + self.canvas.GetName(),
                                                     filetype=filetype)
         self.canvas.SaveAs(fname)
 

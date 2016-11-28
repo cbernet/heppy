@@ -24,14 +24,6 @@ class Identifier(long):
     subtype
     value (small to large)
     uniqueid
-
-    Custom sorting can be obtained using methods that access each of the subcomponents of Id
-
-    Usage:
-           self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 1.23456) 
-           if Identifier.is_track(self.uniqueid):
-            ....
-
         '''    
 
     _id = count(1)
@@ -56,7 +48,6 @@ class Identifier(long):
         x = cls._id.next()
         #shift all the parts and join together	
         typeshift = type << 61
-        Identifier.get_type(39)
         valueshift = Identifier._float_to_bits(value) << 21
         subtypeshift = ord(subtype.lower()) << 53
         uid = subtypeshift | valueshift | typeshift | x
