@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-ln -sf $HEPPY/scripts/heppy_loop.py tmp_heppy.py
 
 # test the presence of the interactive flag
 interactive=false
@@ -11,10 +10,12 @@ do
     fi
 done
 
-if [ "$interactive" = true ]; then 
-    ipython -i -- tmp_heppy.py "$@"
+if [ "$interactive" = true ]; then
+    args=`echo $@ | sed -e 's#-i##g'`
+    ln -sf $HEPPY/scripts/heppy_interactive.py tmp_heppy.py
+    ipython -i tmp_heppy.py -- $args
 else
+    ln -sf $HEPPY/scripts/heppy_loop.py tmp_heppy.py
     ipython -- tmp_heppy.py "$@"
 fi 
-
 rm tmp_heppy.py
