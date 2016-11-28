@@ -79,7 +79,9 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
+from heppy.test.papas_cfg import papas, papas_sequence, detector
+
+from heppy.test.papas_cfg import papasdisplay as display 
 
 from jet_tree_cff import jet_tree_sequence
 
@@ -110,6 +112,7 @@ zed_tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source, 
     papas_sequence,
+    display
 #    jet_tree_sequence('gen_particles_stable','rec_particles',
 #    njets=None, ptmin=0.5),
 #    sum_particles,
@@ -127,58 +130,3 @@ config = cfg.Config(
     services = [],
     events_class = Events
 )
-
-if __name__ == '__main__':
-    import sys
-    from heppy.framework.looper import Looper
-    import heppy.statistics.rrandom as random
-    from heppy.papas.data.identifier import Identifier
-    random.seed(0xdeadbeef)
-
-    def process(iev=None):
-        Identifier.reset() #todo move elsewhere
-        if iev is None:
-            iev = loop.iEvent
-        loop.process(iev)
-        if display:
-            display.draw()
-
-    def next():
-        loop.process(loop.iEvent+1)
-        if display:
-            display.draw()            
-
-    iev = None
-    usage = '''usage: python analysis_ee_ZH_cfg.py [ievent]
-    
-    Provide ievent as an integer, or loop on the first events.
-    You can also use this configuration file in this way: 
-    
-    heppy_loop.py OutDir/ analysis_ee_ZH_cfg.py -f -N 100 
-    '''
-    if len(sys.argv)==2:
-        papasdisplay.display = True
-        try:
-            iev = int(sys.argv[1])
-        except ValueError:
-            print usage
-            sys.exit(1)
-    elif len(sys.argv)>2: 
-        print usage
-        sys.exit(1)
-            
-    loop = Looper( 'looper', config,
-                   nEvents=10,
-                   nPrint=1,
-                   timeReport=True)
-    
-    for ana in loop.analyzers: 
-        if hasattr(ana, 'display'):
-            display = getattr(ana, 'display', None)
-    
-    if iev is not None:
-        process(iev)
-        pass
-    else:
-        loop.loop()
-        loop.write()

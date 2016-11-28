@@ -52,6 +52,7 @@ source = cfg.Analyzer(
 
 # the papas simulation and reconstruction sequence
 from heppy.test.papas_cfg import papas_sequence, detector
+from heppy.test.papas_cfg import papasdisplay as display
 
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -78,7 +79,7 @@ from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     IsolationAnalyzer,
-    leptons = 'leptons',
+    candidates = 'leptons',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
@@ -248,7 +249,8 @@ sequence = cfg.Sequence(
     missing_energy, 
     selection, 
     zhreco, 
-    tree
+    tree,
+    display
 )
 
 # Specifics to read FCC events 
@@ -263,58 +265,3 @@ config = cfg.Config(
     events_class = Events
 )
 
-if __name__ == '__main__':
-    import sys
-    from heppy.framework.looper import Looper
-    from heppy.test.papas_cfg import papas
-
-    def process(iev=None):
-        if iev is None:
-            iev = loop.iEvent
-        loop.process(iev)
-        if display:
-            display.draw()
-
-    def next():
-        loop.process(loop.iEvent+1)
-        if display:
-            display.draw()            
-
-    iev = None
-    usage = '''usage: python analysis_ee_ZH_had_cfg.py [ievent]
-    
-    Provide ievent as an integer, or loop on the first events.
-    You can also use this configuration file in this way: 
-    
-    heppy_loop.py OutDir/ analysis_ee_ZH_had_cfg.py -f -N 100 
-    '''
-    if len(sys.argv)==2:
-        papas.display = True
-        try:
-            iev = int(sys.argv[1])
-        except ValueError:
-            print usage
-            sys.exit(1)
-    elif len(sys.argv)>2: 
-        print usage
-        sys.exit(1)
-            
-        
-    loop = Looper( 'looper', config,
-                   nEvents=10,
-                   nPrint=10,
-                   timeReport=True)
-    
-    simulation = None
-    for ana in loop.analyzers: 
-        if hasattr(ana, 'display'):
-            simulation = ana
-    display = getattr(simulation, 'display', None)
-    simulator = getattr(simulation, 'simulator', None)
-    if simulator: 
-        detector = simulator.detector
-    if iev is not None:
-        process(iev)
-    else:
-        loop.loop()
-        loop.write()
