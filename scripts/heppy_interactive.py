@@ -53,29 +53,31 @@ if __name__ == "__main__":
     if len(args) != 1:
         parser.error('incorrect number of arguments')
         
+    cfgfilename = args[0]    
+    config = load_config(cfgfilename)
+    
     nevents = sys.maxint
-    if options.nevents and options.event:
+    if options.nevents is not None and options.event is not None:
         raise ValueError('provide either the -i or the -n option, but not both')
     elif options.nevents is None and options.event is None:
         options.event = 0
-    elif options.nevents:
+    elif options.nevents is not None:
         nevents = options.nevents
     
-    cfgfilename = args[0]    
+    if options.event is not None:
+        ievent = options.event
+        display_config.do_display = True           
+    else:
+        display_config.do_display = False       
+        
 
-    config = load_config(cfgfilename)
-    
-    
     loop = Looper( 'looper', config,
                    nEvents=nevents,
                    nPrint=sys.maxint,
                    timeReport=False)
 
-    if options.event:
-        ievent = options.event
-        display_config.do_display = True        
+    if options.event is not None: 
         process(ievent)
     else:
-        display_config.do_display = False       
         loop.loop()
         loop.write()

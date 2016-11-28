@@ -52,6 +52,7 @@ source = cfg.Analyzer(
 
 # the papas simulation and reconstruction sequence
 from heppy.test.papas_cfg import papas_sequence, detector
+from heppy.test.papas_cfg import papasdisplay as display
 
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -78,7 +79,7 @@ from heppy.analyzers.IsolationAnalyzer import IsolationAnalyzer
 from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     IsolationAnalyzer,
-    leptons = 'leptons',
+    candidates = 'leptons',
     particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
@@ -248,7 +249,8 @@ sequence = cfg.Sequence(
     missing_energy, 
     selection, 
     zhreco, 
-    tree
+    tree,
+    display
 )
 
 # Specifics to read FCC events 

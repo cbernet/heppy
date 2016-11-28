@@ -79,7 +79,9 @@ source = cfg.Analyzer(
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papasdisplay, papas_sequence, detector
+from heppy.test.papas_cfg import papas, papas_sequence, detector
+
+from heppy.test.papas_cfg import papasdisplay as display 
 
 from jet_tree_cff import jet_tree_sequence
 
@@ -110,6 +112,7 @@ zed_tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source, 
     papas_sequence,
+    display
 #    jet_tree_sequence('gen_particles_stable','rec_particles',
 #    njets=None, ptmin=0.5),
 #    sum_particles,
