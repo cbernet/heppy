@@ -57,6 +57,14 @@ comp = cfg.Component(
     files = [None]
 )
 
+
+from heppy.analyzers.PapasDagPlotter import PapasDAGPlotter
+papas_dag_plot= cfg.Analyzer(
+    PapasDAGPlotter,
+    plottype = "dag_event",
+    show_file = False
+)
+
 # selecting the list of components to be processed. Here only one. 
 selectedComponents = [comp]
 
@@ -118,7 +126,7 @@ sequence = cfg.Sequence(
 #    sum_particles,
 #    sum_gen,
 #    zed_tree
-    )
+)
 
 # Specifics for particle gun events
 from ROOT import gSystem

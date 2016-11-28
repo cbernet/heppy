@@ -44,7 +44,7 @@ class PapasEvent(Event):
         super(PapasEvent, self).__init__(iEv)
         Identifier.reset()
         self.collections = dict()
-        self.history = dict()
+        self.history = dict()    
         
     def add_collection(self, collection):
         '''Add a new collection into the PapasEvent. The collection should contain only one object type

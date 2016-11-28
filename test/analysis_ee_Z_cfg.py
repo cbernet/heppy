@@ -79,7 +79,7 @@ zed_tree = cfg.Analyzer(
 )
 
 
-from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas
+from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
 from heppy.test.jet_tree_cff import jet_tree_sequence
 
 

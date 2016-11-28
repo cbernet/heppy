@@ -6,7 +6,6 @@ from heppy.papas.data.identifier import Identifier
 from papasevent import PapasEvent 
 
 class TestPapasEvent(unittest.TestCase):
-
     def test_papasevent(self):
         papasevent = PapasEvent(0)
         ecals = dict()

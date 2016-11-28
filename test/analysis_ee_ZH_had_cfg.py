@@ -264,4 +264,3 @@ config = cfg.Config(
     services = [],
     events_class = Events
 )
-
