@@ -35,7 +35,7 @@ papasdisplay = cfg.Analyzer(
     PapasDisplay,
     instance_label = 'papas',
     detector = detector,
-    projections = ['xy'],
+    projections = ['xy', 'yz'],
     screennames = ["simulated"],#["reconstructed"],#
     particles_type_and_subtype = 'ps',
     clusters_type_and_subtypes = ['es','hs'],
