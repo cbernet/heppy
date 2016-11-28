@@ -72,7 +72,7 @@ class PapasDisplay(Analyzer):
         self.display = Display(self.cfg_ana.projections, self.cfg_ana.screennames)
         self.gdetector = GDetector(self.cfg_ana.detector)
         self.display.register(self.gdetector, layer=0, clearable=False)
-        self.is_display =True
+        self.is_display = True
 
     def process(self, event):
         '''Selects the required particles and clusters and registers them on the display

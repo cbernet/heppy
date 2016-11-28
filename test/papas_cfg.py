@@ -43,7 +43,6 @@ papasdisplay = cfg.Analyzer(
     #display_filter_func = lambda ptc: ptc.e()>1.,
 )
 
-from heppy.analyzers.PapasDisplay import PapasDisplay 
 papasdisplaycompare = cfg.Analyzer(
     PapasDisplay,
     projections = ['xy', 'yz'],
