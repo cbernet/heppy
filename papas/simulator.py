@@ -225,10 +225,18 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
     def simulate_muon(self, ptc):
         pdebugger.info("Simulating Muon")
         self.propagate(ptc)
-        smeared_track = self.smear_track(ptc.track,
-                                         self.detector.elements['tracker'])
-        if smeared_track:
+        ptres = self.detector.muon_pt_resolution(ptc)
+        scale_factor = random.gauss(1, ptres)
+        track = ptc.track
+        smeared_track = SmearedTrack(track,
+                                     track.p3 * scale_factor,
+                                     track.charge,
+                                     track.path)
+        pdebugger.info(" ".join(("Made", smeared_track.__str__())))
+        if self.detector.muon_acceptance(smeared_track) or accept:
             ptc.track_smeared = smeared_track
+        else:
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
 
     def smear_muon(self, ptc):
         pdebugger.info("Smearing Muon")

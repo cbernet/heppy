@@ -151,6 +151,18 @@ class BeamPipe(DetectorElement):
 
         
 class CMS(Detector):
+        
+    def electron_acceptance(self, track):
+        return track.p3.E() > 5 and abs(track.p3.Eta()) < 2.5
+
+    def electron_energy_resolution(self, ptc):
+        return 0.1 / math.sqrt(ptc.e())
+            
+    def muon_acceptance(self, track):
+        return track.pt > 5 and abs(track.p3.Eta()) < 2.5
+            
+    def muon_pt_resolution(self, ptc):
+        return 0.02 
     
     def __init__(self):
         super(CMS, self).__init__()
