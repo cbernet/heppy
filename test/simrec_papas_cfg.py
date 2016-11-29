@@ -55,7 +55,7 @@ comp = cfg.Component(
     files = [
         # here we have a single input root file.
         # the absolute path must be used to be able to run on the batch.
-        os.environ['HEPPY'] + '/test/ee_Z_mumu.root'
+        os.environ['HEPPY'] + '/test/ee_Z_ee.root'
     ]
 )
 

@@ -132,23 +132,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
-
-    def simulate_electron(self, ptc):
-        pdebugger.info("Simulating Electron")
-        ecal = self.detector.elements['ecal']
-        propagator(ptc.q()).propagate_one(ptc,
-                                          ecal.volume.inner,
-                                          self.detector.elements['field'].magnitude)
-        cluster = self.make_cluster(ptc, 'ecal')
-        smeared_cluster = self.smear_cluster(cluster, ecal)
-        if smeared_cluster:
-            ptc.clusters_smeared[smeared_cluster.layer] = smeared_cluster
-        smeared_track = self.smear_track(ptc.track,
-                                         self.detector.elements['tracker'])
-        if smeared_track:
-            ptc.track_smeared = smeared_track
-
-
     def simulate_neutrino(self, ptc):
         self.propagate(ptc)
 
@@ -222,6 +205,31 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
+    def simulate_electron(self, ptc):
+        pdebugger.info("Simulating Electron")
+        ecal = self.detector.elements['ecal']
+        propagator(ptc.q()).propagate_one(
+            ptc,
+            ecal.volume.inner,
+            self.detector.elements['field'].magnitude
+        )
+        cluster = self.make_cluster(ptc, 'ecal')
+        smeared_cluster = self.smear_cluster(cluster, ecal)
+        if smeared_cluster:
+            ptc.clusters_smeared[smeared_cluster.layer] = smeared_cluster
+        eres = self.detector.electron_energy_resolution(ptc)
+        scale_factor = random.gauss(1, eres)
+        track = ptc.track
+        smeared_track = SmearedTrack(track,
+                                     track.p3 * scale_factor,
+                                     track.charge,
+                                     track.path)
+        pdebugger.info(" ".join(("Made", smeared_track.__str__())))
+        if self.detector.electron_acceptance(smeared_track):
+            ptc.track_smeared = smeared_track
+        else:
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
+    
     def simulate_muon(self, ptc):
         pdebugger.info("Simulating Muon")
         self.propagate(ptc)
@@ -233,7 +241,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                      track.charge,
                                      track.path)
         pdebugger.info(" ".join(("Made", smeared_track.__str__())))
-        if self.detector.muon_acceptance(smeared_track) or accept:
+        if self.detector.muon_acceptance(smeared_track):
             ptc.track_smeared = smeared_track
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_track)))

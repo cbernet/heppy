@@ -153,7 +153,7 @@ class BeamPipe(DetectorElement):
 class CMS(Detector):
         
     def electron_acceptance(self, track):
-        return track.p3.E() > 5 and abs(track.p3.Eta()) < 2.5
+        return track.p3.Mag() > 5 and abs(track.p3.Eta()) < 2.5
 
     def electron_energy_resolution(self, ptc):
         return 0.1 / math.sqrt(ptc.e())
