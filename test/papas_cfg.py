@@ -71,9 +71,9 @@ pfreconstruct = cfg.Analyzer(
     ecal_type_and_subtype = 'em', 
     hcal_type_and_subtype = 'hm',
     block_type_and_subtype = 'br',
-    instance_label = 'papas_PFreconstruction', 
+    # instance_label = 'papas_PFreconstruction', 
     detector = detector,
-    output_particles_list = 'particles_list'
+    output = 'rec_particles'
 )
 
 # Use a Selector to select leptons from the output of papas simulation.
@@ -145,9 +145,9 @@ papas_sequence = [
     papas,
     pfblocks,
     pfreconstruct,
-    sim_electrons,
-    sim_muons, 
-    electrons,
-    muons, 
-    merge_particles, 
+##    sim_electrons,
+##    sim_muons, 
+##    electrons,
+##    muons, 
+##    merge_particles, 
 ]

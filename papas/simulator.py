@@ -273,15 +273,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11: #check with colin
-                self.propagate_electron(ptc)
-                #smeared_ptc = self.smear_electron(ptc)
-                #smeared.append(smeared_ptc)
-                # self.simulate_electron(ptc)
+                # self.propagate_electron(ptc)
+                self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:   #check with colin
-                self.propagate_muon(ptc)
-                #smeared_ptc = self.smear_muon(ptc)
-                #smeared.append(smeared_ptc)
-                # self.simulate_muon(ptc)
+                # self.propagate_muon(ptc)
+                self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12, 14, 16]:
                 self.simulate_neutrino(ptc)
             elif abs(ptc.pdgid()) > 100: #TODO make sure this is ok
