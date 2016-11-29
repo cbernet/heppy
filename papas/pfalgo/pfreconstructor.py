@@ -182,12 +182,9 @@ class PFReconstructor(object):
             #check if history nodes exists
             if self.papasevent.history is None:
                 return
-            #find or make a node for the particle            
-            if newid  in self.papasevent.history :
-                particlenode = self.papasevent.history[newid]
-            else :
-                particlenode = Node(newid)
-                self.papasevent.history[newid] = particlenode
+            assert(newid not in self.papasevent.history)
+            particlenode = Node(newid)  
+            self.papasevent.history[newid] = particlenode
             #add in parental history
             for pid in parent_ids:
                 self.papasevent.history[pid].add_child(particlenode)
