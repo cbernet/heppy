@@ -136,31 +136,36 @@ class PFReconstructor(object):
         ''' see class description for summary of reconstruction approach
         '''
         particles = dict()
-        ids = block.element_uniqueids
-        self.locked = dict()
-        for uid in ids:
-            self.locked[uid] = False
-        if len(ids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
-            uid = ids[0]
+        uids = block.element_uniqueids
+        self.locked = dict( (uid, False) for uid in uids )
+        if len(uids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
+            uid = uids[0]
             parent_ids = [block.uniqueid, uid]
             if Identifier.is_ecal(uid):
-                self.insert_particle(parent_ids, self.reconstruct_cluster(self.papasevent.get_object(uid), "ecal_in"))
+                self.insert_particle(parent_ids,
+                                     self.reconstruct_cluster(self.papasevent.get_object(uid),
+                                                              "ecal_in"))
             elif Identifier.is_hcal(uid):
-                self.insert_particle(parent_ids, self.reconstruct_cluster(self.papasevent.get_object(uid), "hcal_in"))
+                self.insert_particle(parent_ids,
+                                     self.reconstruct_cluster(self.papasevent.get_object(uid),
+                                                              "hcal_in"))
             elif Identifier.is_track(uid):
-                self.insert_particle(parent_ids, self.reconstruct_track(self.papasevent.get_object(uid)))
-                # ask Colin about energy balance - what happened to the associated clusters that one would expect?
+                self.insert_particle(parent_ids,
+                                     self.reconstruct_track(self.papasevent.get_object(uid)))
+                # ask Colin about energy balance - 
+                # what happened to the associated clusters that one would expect?
         else: #TODO
-            for uid in sorted(ids) : #reconstruct all hcals first
+            for uid in sorted(uids) : #reconstruct all hcals first
                 if Identifier.is_hcal(uid):
                     self.reconstruct_hcal(block, uid)
-            for uid in sorted(ids) : #newsort
+            for uid in sorted(uids) : #newsort
                 if Identifier.is_track(uid) and not self.locked[uid]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
                 # ELECTRONS TO BE DEALT WITH.
                     parent_ids = [block.uniqueid, uid]
-                    self.insert_particle(parent_ids, self.reconstruct_track(self.papasevent.get_object(uid)))
+                    self.insert_particle(parent_ids,
+                                         self.reconstruct_track(self.papasevent.get_object(uid)))
                     # tracks possibly linked to ecal->locking cluster
                     for idlink in block.linked_ids(uid, "ecal_track"):
                         #ask colin what happened to possible photons here:
