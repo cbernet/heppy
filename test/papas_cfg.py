@@ -1,5 +1,7 @@
 import heppy.framework.config as cfg
 from heppy.configuration import Collider
+import logging
+
 
 # Use a Selector to select stable gen particles for simulation
 # from the output of "source" 
@@ -71,73 +73,10 @@ pfreconstruct = cfg.Analyzer(
     ecal_type_and_subtype = 'em', 
     hcal_type_and_subtype = 'hm',
     block_type_and_subtype = 'br',
-    instance_label = 'papas_PFreconstruction', 
+    # instance_label = 'papas_PFreconstruction', 
     detector = detector,
-    output_particles_list = 'particles_list'
-)
-
-# Use a Selector to select leptons from the output of papas simulation.
-# Currently, we're treating electrons and muons transparently.
-# we could use two different instances for the Selector module
-# to get separate collections of electrons and muons
-# help(Selector) for more information
-from heppy.analyzers.Selector import Selector
-sim_electrons = cfg.Analyzer(
-    Selector,
-    'sim_electrons',
-    output = 'sim_electrons',
-    input_objects = 'papas_sim_particles',
-    filter_func = lambda ptc: abs(ptc.pdgid()) in [11]
-)
-
-sim_muons = cfg.Analyzer(
-    Selector,
-    'sim_muons',
-    output = 'sim_muons',
-    input_objects = 'papas_sim_particles',
-    filter_func = lambda ptc: abs(ptc.pdgid()) in [13]
-)
-
-
-# Applying a simple resolution and efficiency model to electrons and muons.
-# Indeed, papas simply copies generated electrons and muons
-# from its input gen particle collection to its output reconstructed
-# particle collection.
-# Setting up the electron and muon models is left to the user,
-# and the LeptonSmearer is just an example
-# help(LeptonSmearer) for more information
-from heppy.analyzers.GaussianSmearer import GaussianSmearer     
-def accept_electron(ele):
-    return abs(ele.eta()) < 2.5 and ele.e() > 5.
-electrons = cfg.Analyzer(
-    GaussianSmearer,
-    'electrons',
-    output = 'electrons',
-    input_objects = 'sim_electrons',
-    accept=accept_electron, 
-    mu_sigma=(1, 0.1)
-    )
-
-def accept_muon(mu):
-    return abs(mu.eta()) < 2.5 and mu.pt() > 5.
-muons = cfg.Analyzer(
-    GaussianSmearer,
-    'muons',
-    output = 'muons',
-    input_objects = 'sim_muons',
-    accept=accept_muon, 
-    mu_sigma=(1, 0.02)
-    )
-
-#merge smeared leptons with the reconstructed particles
-from heppy.analyzers.Merger import Merger
-from heppy.particles.p4 import P4
-merge_particles = cfg.Analyzer(
-    Merger,
-    instance_label = 'merge_particles',
-    inputs=['papas_PFreconstruction_particles_list', 'electrons', 'muons'], 
     output = 'rec_particles',
-    sort_key = P4.sort_key
+    log_level=logging.WARNING
 )
 
 papas_sequence = [
@@ -145,9 +84,4 @@ papas_sequence = [
     papas,
     pfblocks,
     pfreconstruct,
-    sim_electrons,
-    sim_muons, 
-    electrons,
-    muons, 
-    merge_particles, 
 ]

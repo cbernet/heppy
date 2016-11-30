@@ -132,23 +132,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
-
-    def simulate_electron(self, ptc):
-        pdebugger.info("Simulating Electron")
-        ecal = self.detector.elements['ecal']
-        propagator(ptc.q()).propagate_one(ptc,
-                                          ecal.volume.inner,
-                                          self.detector.elements['field'].magnitude)
-        cluster = self.make_cluster(ptc, 'ecal')
-        smeared_cluster = self.smear_cluster(cluster, ecal)
-        if smeared_cluster:
-            ptc.clusters_smeared[smeared_cluster.layer] = smeared_cluster
-        smeared_track = self.smear_track(ptc.track,
-                                         self.detector.elements['tracker'])
-        if smeared_track:
-            ptc.track_smeared = smeared_track
-
-
     def simulate_neutrino(self, ptc):
         self.propagate(ptc)
 
@@ -222,13 +205,60 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
+    def simulate_electron(self, ptc):
+        '''Simulate an electron corresponding to gen particle ptc.
+        
+        Uses the methods detector.electron_energy_resolution
+        and detector.electron_acceptance to smear the electron track.
+        Later on, the particle flow algorithm will use the tracks
+        coming from an electron to reconstruct electrons.
+        
+        This method does not simulate an electron energy deposit in the ECAL.
+        '''
+        pdebugger.info("Simulating Electron")
+        ecal = self.detector.elements['ecal']
+        propagator(ptc.q()).propagate_one(
+            ptc,
+            ecal.volume.inner,
+            self.detector.elements['field'].magnitude
+        )
+        eres = self.detector.electron_energy_resolution(ptc)
+        scale_factor = random.gauss(1, eres)
+        track = ptc.track
+        smeared_track = SmearedTrack(track,
+                                     track.p3 * scale_factor,
+                                     track.charge,
+                                     track.path)
+        pdebugger.info(" ".join(("Made", smeared_track.__str__())))
+        if self.detector.electron_acceptance(smeared_track):
+            ptc.track_smeared = smeared_track
+        else:
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
+    
     def simulate_muon(self, ptc):
+        '''Simulate a muon corresponding to gen particle ptc
+        
+        Uses the methods detector.muon_energy_resolution
+        and detector.muon_acceptance to smear the muon track.
+        Later on, the particle flow algorithm will use the tracks
+        coming from a muon to reconstruct muons.
+        
+        This method does not simulate energy deposits in the calorimeters
+        '''
         pdebugger.info("Simulating Muon")
         self.propagate(ptc)
-        smeared_track = self.smear_track(ptc.track,
-                                         self.detector.elements['tracker'])
-        if smeared_track:
+        ptres = self.detector.muon_pt_resolution(ptc)
+        scale_factor = random.gauss(1, ptres)
+        track = ptc.track
+        smeared_track = SmearedTrack(track,
+                                     track.p3 * scale_factor,
+                                     track.charge,
+                                     track.path)
+        pdebugger.info(" ".join(("Made", smeared_track.__str__())))
+        if self.detector.muon_acceptance(smeared_track):
             ptc.track_smeared = smeared_track
+        else:
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
 
     def smear_muon(self, ptc):
         pdebugger.info("Smearing Muon")
@@ -273,15 +303,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11: #check with colin
-                self.propagate_electron(ptc)
-                #smeared_ptc = self.smear_electron(ptc)
-                #smeared.append(smeared_ptc)
-                # self.simulate_electron(ptc)
+                # self.propagate_electron(ptc)
+                self.simulate_electron(ptc)
             elif abs(ptc.pdgid()) == 13:   #check with colin
-                self.propagate_muon(ptc)
-                #smeared_ptc = self.smear_muon(ptc)
-                #smeared.append(smeared_ptc)
-                # self.simulate_muon(ptc)
+                # self.propagate_muon(ptc)
+                self.simulate_muon(ptc)
             elif abs(ptc.pdgid()) in [12, 14, 16]:
                 self.simulate_neutrino(ptc)
             elif abs(ptc.pdgid()) > 100: #TODO make sure this is ok

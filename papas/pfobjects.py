@@ -258,7 +258,7 @@ class Track(PFObject):
 class SmearedTrack(Track):
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
-        self.path = mother.path
+        self.path = mother.path  # pass this to init below?
         self.subtype = 's'
         super(SmearedTrack, self).__init__(*args, **kwargs)
 

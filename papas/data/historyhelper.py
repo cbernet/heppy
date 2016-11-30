@@ -3,8 +3,7 @@ from heppy.papas.graphtools.DAG import BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
 
 class HistoryHelper(object):
-    '''   
-       Tool to assist with printing, plotting and reconstructing histories.
+    '''Tool to assist with printing, plotting and reconstructing histories.
        
        It allows extraction of information from the papasevent
        
@@ -20,7 +19,7 @@ class HistoryHelper(object):
        uid =hist.id_from_pretty("pg66")
        
        #or select a reconstructed particle 
-       #uid = rec_particles.keys()[0].uniqueid
+       uid = rec_particles.keys()[0].uniqueid
        
        #and see what simulated particles are linked to it
        sim_particles = self.get_linked_collection(uid,'ps')
@@ -54,6 +53,15 @@ class HistoryHelper(object):
         '''
         BFS = BreadthFirstSearchIterative(self.history[uid], direction)
         return [v.get_value() for v in BFS.result] 
+
+    def filter_ids(self, ids, type_and_subtype):
+        ''' returns a filtered subset of ids which have a type_and_subtype that matchs the type_and_subtype argument
+            eg merged_ecal_ids = filter_ids(ids, 'em')
+            @param ids: a list of ids
+            @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
+        '''
+        return [uid for uid in ids
+                if Identifier.type_and_subtype(uid) == type_and_subtype]
     
     def id_from_pretty(self, pretty):
         ''' Searches to find the true id given a pretty id string
@@ -65,20 +73,14 @@ class HistoryHelper(object):
             if Identifier.pretty(uid) == pretty:
                 return uid
         return None
-    
-    def filter_ids(self, ids, type_and_subtype):
-        ''' returns a filtered subset of ids which have a type_and_subtype that matchs the type_and_subtype argument
-            eg merged_ecal_ids = filter_ids(ids, 'em')
-            @param ids: a list of ids
-            @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
-        '''
-        return [uid for uid in ids if Identifier.type_and_subtype(uid) == type_and_subtype]
-    
+        
     def get_collection(self, ids, type_and_subtype):
-        '''return a collection of objects of type_and_subtype using only those ids which have the selected type_and_subtype
-           ids wich have a different type_and_subtype will be ignored.
-           @param ids: a list of ids
-           @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
+        '''return a collection of objects of type_and_subtype using only those ids
+        which have the selected type_and_subtype
+        ids wich have a different type_and_subtype will be ignored.
+        
+        @param ids: a list of ids
+        @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
         '''          
         maindict = self.papasevent.get_collection(type_and_subtype)
         fids = self.filter_ids(ids, type_and_subtype) 
@@ -88,8 +90,9 @@ class HistoryHelper(object):
             return dict()
         
     def get_linked_collection(self, uid, type_and_subtype, direction="undirected"):
-        '''Get all ids that are linked to the uid and have the required type_and_subtype
-        arguments:
+        '''Get all ids that are linked to the uid and have the required
+        type_and_subtype
+        
         @param uid  = unique identifier
         @param type_and_subtype = type of object (eg 'es')
         @param direction = says what type of linkage to use "undirected"/"parents"/"children"
