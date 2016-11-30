@@ -3,8 +3,7 @@ from heppy.papas.graphtools.DAG import BreadthFirstSearchIterative, DAGFloodFill
 from heppy.papas.data.identifier import Identifier
 
 class HistoryHelper(object):
-    '''   
-       Tool to assist with printing, plotting and reconstructing histories.
+    '''Tool to assist with printing, plotting and reconstructing histories.
        
        It allows extraction of information from the papasevent
        
@@ -20,7 +19,7 @@ class HistoryHelper(object):
        uid =hist.id_from_pretty("pg66")
        
        #or select a reconstructed particle 
-       #uid = rec_particles.keys()[0].uniqueid
+       uid = rec_particles.keys()[0].uniqueid
        
        #and see what simulated particles are linked to it
        sim_particles = self.get_linked_collection(uid,'ps')

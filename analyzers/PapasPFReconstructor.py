@@ -67,7 +67,7 @@ class PapasPFReconstructor(Analyzer):
             particles = self.reconstructor.particles
             splitblocks = self.reconstructor.splitblocks
         event.papasevent.add_collection(particles)
-        event.papasevent.add_collection(splitblocks)        
+        event.papasevent.add_collection(splitblocks)
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
         reconstructed_particle_list = sorted( self.reconstructor.particles.values(),
                                               key = lambda ptc: ptc.e(),

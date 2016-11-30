@@ -1,5 +1,7 @@
 import heppy.framework.config as cfg
 from heppy.configuration import Collider
+import logging
+
 
 # Use a Selector to select stable gen particles for simulation
 # from the output of "source" 
@@ -73,7 +75,8 @@ pfreconstruct = cfg.Analyzer(
     block_type_and_subtype = 'br',
     # instance_label = 'papas_PFreconstruction', 
     detector = detector,
-    output = 'rec_particles'
+    output = 'rec_particles',
+    log_level=logging.WARNING
 )
 
 # Use a Selector to select leptons from the output of papas simulation.

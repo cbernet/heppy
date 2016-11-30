@@ -41,7 +41,8 @@ from EventStore import EventStore as Events
 from heppy.framework.event import Event
 # comment the following line to see all the collections stored in the event 
 # if collection is listed then print loop.event.papasevent will include the collections
-Event.print_patterns=['rec_particles', 'gen_particles_stable']
+# Event.print_patterns=['rec_particles', 'gen_particles_stable']
+Event.print_patterns=['rec_particles', 'gen_particles_stable', 'sum_all*']
 
 # definition of the collider
 # help(Collider) for more information
@@ -51,7 +52,7 @@ Collider.SQRTS = 240.
 
 # definition of an input sample (also called a component)
 comp = cfg.Component(
-    'ee_Z_mumu',
+    'ee_Z_ee',
     files = [
         # here we have a single input root file.
         # the absolute path must be used to be able to run on the batch.
@@ -79,11 +80,35 @@ from heppy.test.papas_cfg import papas, papas_sequence, detector
 from heppy.test.papas_cfg import papasdisplaycompare as display 
 
 
+from heppy.analyzers.P4SumBuilder import P4SumBuilder
+sum_particles = cfg.Analyzer(
+    P4SumBuilder, 
+    output='sum_all_ptcs',
+    particles='rec_particles'
+)
+
+sum_gen = cfg.Analyzer(
+    P4SumBuilder, 
+    output='sum_all_gen',
+    particles='gen_particles_stable'
+)
+
+from heppy.analyzers.GlobalEventTreeProducer import GlobalEventTreeProducer
+tree = cfg.Analyzer(
+    GlobalEventTreeProducer,
+    sum_all='sum_all_ptcs',
+    sum_all_gen='sum_all_gen'
+    )
+
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
     papas_sequence,
+    sum_particles,
+    sum_gen, 
+    tree, 
     display
 )   
 

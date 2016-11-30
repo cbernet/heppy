@@ -206,6 +206,15 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             ptc.clusters_smeared[smeared.layer] = smeared
 
     def simulate_electron(self, ptc):
+        '''Simulate an electron corresponding to gen particle ptc.
+        
+        Uses the methods detector.electron_energy_resolution
+        and detector.electron_acceptance to smear the electron track.
+        Later on, the particle flow algorithm will use the tracks
+        coming from an electron to reconstruct electrons.
+        
+        This method does not simulate an electron energy deposit in the ECAL.
+        '''
         pdebugger.info("Simulating Electron")
         ecal = self.detector.elements['ecal']
         propagator(ptc.q()).propagate_one(
@@ -213,10 +222,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             ecal.volume.inner,
             self.detector.elements['field'].magnitude
         )
-        cluster = self.make_cluster(ptc, 'ecal')
-        smeared_cluster = self.smear_cluster(cluster, ecal)
-        if smeared_cluster:
-            ptc.clusters_smeared[smeared_cluster.layer] = smeared_cluster
         eres = self.detector.electron_energy_resolution(ptc)
         scale_factor = random.gauss(1, eres)
         track = ptc.track
@@ -231,6 +236,15 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             pdebugger.info(str('Rejected {}'.format(smeared_track)))
     
     def simulate_muon(self, ptc):
+        '''Simulate a muon corresponding to gen particle ptc
+        
+        Uses the methods detector.muon_energy_resolution
+        and detector.muon_acceptance to smear the muon track.
+        Later on, the particle flow algorithm will use the tracks
+        coming from a muon to reconstruct muons.
+        
+        This method does not simulate energy deposits in the calorimeters
+        '''
         pdebugger.info("Simulating Muon")
         self.propagate(ptc)
         ptres = self.detector.muon_pt_resolution(ptc)

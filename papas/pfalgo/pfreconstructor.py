@@ -137,19 +137,13 @@ class PFReconstructor(object):
     def reconstruct_block(self, block):
         ''' see class description for summary of reconstruction approach
         '''
-        particles = dict()
         uids = block.element_uniqueids
         self.locked = dict( (uid, False) for uid in uids )
-        # reconstruct muons
-        def is_from_lepton(uid, pdgid):
-            genptcs = self.history_helper.get_linked_collection(uid, 'ps', 'parents')
-            genleptons = [gen for gen in genptcs.values() if abs(gen.pdgid()) == pdgid]
-            return bool(len(genleptons))
-        for uid in sorted(uids):
-            if Identifier.is_track(uid) and \
-               is_from_lepton(uid, 13):
-                parent_ids = [block.uniqueid, uid]
-                self.reconstruct_track(self.papasevent.get_object(uid), 13, parent_ids)
+        # first reconstruct muons and electrons
+        self.reconstruct_muons(block)
+        self.reconstruct_electrons(block)
+        # keeping only the elements that have not been used so far
+        uids = [uid for uid in uids if not self.locked[uid]]
         if len(uids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
             uid = uids[0]
             parent_ids = [block.uniqueid, uid]
@@ -182,6 +176,45 @@ class PFReconstructor(object):
                         #TODO add in extra photonsbut decide where they should go?
         self.unused.extend([uid for uid in block.element_uniqueids if not self.locked[uid]])       
        
+       
+    def is_from_particle(self, unique_id, type_and_subtype, pdgid):
+        '''@returns: True if object unique_id comes, directly or indirectly,
+        from a particle of type type_and_subtype, with this absolute pdgid. 
+        '''
+        parents = self.history_helper.get_linked_collection(unique_id,
+                                                            type_and_subtype,
+                                                            'parents')
+        parents_pdgid_filtered = [parent for parent in parents.values()
+                                  if abs(parent.pdgid()) == pdgid]
+        return bool(len(parents_pdgid_filtered))
+       
+       
+    def reconstruct_muons(self, block):
+        '''Reconstruct muons in block.'''
+        uids = block.element_uniqueids
+        for uid in sorted(uids):
+            if Identifier.is_track(uid) and \
+               self.is_from_particle(uid, 'ps', 13):
+                parent_ids = [block.uniqueid, uid]
+                self.reconstruct_track(self.papasevent.get_object(uid),
+                                       13, parent_ids)
+                
+       
+    def reconstruct_electrons(self, block):
+        '''Reconstruct electrons in block.'''
+        uids = block.element_uniqueids
+        for uid in sorted(uids):
+            if Identifier.is_track(uid) and \
+               self.is_from_particle(uid, 'ps', 11):
+                parent_ids = [block.uniqueid, uid]
+                track = self.papasevent.get_object(uid)
+                ptc = self.reconstruct_track(track,
+                                             11, parent_ids)
+                # the simulator does not simulate electron energy deposits in ecal.
+                # therefore, one should not lock the ecal clusters linked to the
+                # electron track as these clusters are coming from other particles.
+                
+             
     def insert_particle(self, parent_ids, newparticle):
         ''' The new particle will be inserted into the history_nodes (if present).
             A new node for the particle will be created if needed.
@@ -382,6 +415,7 @@ class PFReconstructor(object):
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle, track)))
         self.insert_particle(parent_ids, particle)
+        return particle
 
     def __str__(self):
         theStr = ['New Rec Particles:']
