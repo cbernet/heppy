@@ -23,9 +23,11 @@ source = cfg.Analyzer(
     gen_particles = 'skimmedGenParticles',
 
     electrons = 'electrons',
+    electronITags = 'electronITags',
     electronsToMC = 'electronsToMC',
 
     muons = 'muons',
+    muonITags = 'muonITags',
     muonsToMC = 'muonsToMC',
     
 )

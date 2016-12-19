@@ -16,4 +16,3 @@ class GenAnalyzer(Analyzer):
                 if hasBottom(ancestor.pdgid() ):
                     event.hadrons_from_b.append(hadron)
                     break 
-        
