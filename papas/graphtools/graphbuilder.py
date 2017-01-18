@@ -29,6 +29,8 @@ class GraphBuilder(object):
         '''
         self.ids = ids
         self.edges = edges
+        
+        sort_key =  lambda x: x
 
         # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict((idt, Node(idt)) for idt in ids)
@@ -40,13 +42,14 @@ class GraphBuilder(object):
         # build the subgraphs of connected nodes
         self.subgraphs = []
         #sort option  below is needed for consistent orderings and is required for a match with papascpp
-        for subgraphlist in DAGFloodFill(self.nodes, sort=True).blocks: # change to subgraphs
+        for subgraphlist in DAGFloodFill(self.nodes, sort_key).subgraphs:
             element_ids = [] 
             # NB the nodes that are found by FloodFill are the Nodes describing links between items
             # we want the ids of these nodes
             for node in subgraphlist:
                 element_ids.append(node.get_value())        
-            self.subgraphs.append(sorted(element_ids)) #newsort
+            self.subgraphs.append(element_ids) 
+    
 
     def __str__(self):
         descrip = "{ "

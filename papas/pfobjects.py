@@ -2,6 +2,7 @@ import math
 from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
+from heppy.configuration import Collider
 
 #add angular size needs to be fixed since at the moment the angluar size is set by the first elementsize
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
@@ -270,7 +271,13 @@ class Particle(BaseParticle):
                  subtype='s'):
         self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype, self.e())
+        idvalue = 0.
+        if Collider.BEAMS == 'ee':
+            idvalue=self.e()
+        else:
+            idvalue=self.pt()
+           
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype, idvalue)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -291,6 +298,7 @@ class Particle(BaseParticle):
         return kind == 11 or kind == 22
 
     def set_path(self, path, option=None):
+        '''option w = write '''
         if option == 'w' or self.path is None:
             self.path = path
             if self.q(): # todo check this is OK for multiple scattering?

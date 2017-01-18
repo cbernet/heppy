@@ -14,7 +14,6 @@ from ROOT import TVector3, TLorentzVector
 
 #Discuss with colin self.locked vs ecal.locked
 #209 in reconstruct_block extra ecals to be added in
-#remove sort
 
 class PFReconstructor(object):
     ''' The reconstructor takes an event containing blocks of elements
