@@ -38,8 +38,8 @@ class PFBlock(object):
         #make a uniqueid for this block
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype, len(element_ids))
         
-        #comment out energy sorting  for now as not available C++
-        sortby = lambda x: (Identifier.type_letter(x) , -x)
+        #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
+        sortby = lambda x: (Identifier.type_letter(x), -x)
         self.element_uniqueids = sorted(element_ids, key=sortby)
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
@@ -106,7 +106,7 @@ class PFBlock(object):
                     linked_ids.append(edge.id2)
                 else:
                     linked_ids.append(edge.id1)
-        return sorted(linked_ids)
+        return sorted(linked_ids) 
     
     def short_elements_string(self):
         ''' Construct a string description of each of the elements in a block.
