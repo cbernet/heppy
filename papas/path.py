@@ -33,7 +33,7 @@ class Path(object):
         return self.origin + self.udir * self.speed * time
         
     def vz(self):
-        '''Speed magnitude along z axis '''
+        '''Speed magnitude along z axis'''
         return self.p4.Beta() * constants.c * self.udir.Z()
 
     def vperp(self):
