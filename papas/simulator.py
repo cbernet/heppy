@@ -200,9 +200,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
                     if smeared:
                         ptc.clusters_smeared[smeared.layer] = smeared
-        if ptc.uniqueid == 10261412268235292905:
-            x = 3
-            pass
         cluster = self.make_cluster(ptc, 'hcal', 1-frac_ecal)
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:
@@ -321,8 +318,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            if ptc.uniqueid==10261413468422799590:
-                x = 3
 
 if __name__ == '__main__':
 

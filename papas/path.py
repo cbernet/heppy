@@ -15,16 +15,13 @@ class Path(object):
     def __init__(self, p4, origin):
         self.p4 = p4
         self.udir = p4.Vect().Unit()
-        print "origin", origin.Z()
         self.origin = origin
         self.speed = self.p4.Beta() * constants.c
         self.points = OrderedDict()
         self.points['vertex'] = origin
 
     def time_at_z(self, z):
-        
         dest_time = (z - self.origin.Z())/self.vz()
-        print dest_time, z, self.origin.Z(), self.vz()
         return dest_time
 
     def deltat(self, path_length):
@@ -37,7 +34,6 @@ class Path(object):
         
     def vz(self):
         '''Speed magnitude along z axis '''
-        print self.p4.Beta() * constants.c * self.udir.Z() , self.speed *self.udir.Z()
         return self.p4.Beta() * constants.c * self.udir.Z()
 
     def vperp(self):

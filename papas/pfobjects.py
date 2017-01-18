@@ -78,8 +78,7 @@ class Cluster(PFObject):
         self.layer = layer
         self.particle = particle
         self.subclusters = [self]
-        if self.uniqueid == 5658733449062645996:
-            print self.info()
+        
         # self.absorbed = []
 
     def set_size(self, value):

@@ -163,7 +163,8 @@ class PFReconstructor(object):
             for uid in uids: 
                 if Identifier.is_hcal(uid):
                     self.reconstruct_hcal(block, uid)
-            for uid in uids: 
+            for uid in sorted(uids, reverse = True): 
+                print "uid" , uid;
                 if Identifier.is_track(uid) and not self.locked[uid]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -284,7 +285,8 @@ class PFReconstructor(object):
         hcal = self.papasevent.get_object(hcalid)
         assert (len(block.linked_ids(hcalid, "hcal_hcal")) == 0)  
 
-        trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
+        trackids = block.linked_ids(hcalid, "hcal_track")  
+        trackids.sort(reverse = True)
         for trackid in trackids:
             tracks.append(self.papasevent.get_object(trackid))
             for ecalid in block.linked_ids(trackid, "ecal_track"):
