@@ -155,7 +155,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                           beampipe.volume.outer,
                                           self.detector.elements['field'].magnitude)
 
-        mscat.multiple_scattering(ptc, beampipe, self.detector.elements['field'].magnitude)
+        #pdebug editted out
+        #mscat.multiple_scattering(ptc, beampipe, self.detector.elements['field'].magnitude)
 
         #re-propagate after multiple scattering in the beam pipe
         #indeed, multiple scattering is applied within the beam pipe,
@@ -199,7 +200,9 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     smeared = self.smear_cluster(cluster, hcal, acceptance=ecal)
                     if smeared:
                         ptc.clusters_smeared[smeared.layer] = smeared
-
+        if ptc.uniqueid == 10261412268235292905:
+            x = 3
+            pass
         cluster = self.make_cluster(ptc, 'hcal', 1-frac_ecal)
         smeared = self.smear_cluster(cluster, hcal)
         if smeared:
@@ -225,6 +228,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         eres = self.detector.electron_energy_resolution(ptc)
         scale_factor = random.gauss(1, eres)
         track = ptc.track
+        pdebugger.info(" ".join(("Made", ptc.track.__str__())))
         smeared_track = SmearedTrack(track,
                                      track.p3 * scale_factor,
                                      track.charge,
@@ -250,6 +254,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         ptres = self.detector.muon_pt_resolution(ptc)
         scale_factor = random.gauss(1, ptres)
         track = ptc.track
+        pdebugger.info(" ".join(("Made", ptc.track.__str__())))
         smeared_track = SmearedTrack(track,
                                      track.p3 * scale_factor,
                                      track.charge,
@@ -316,6 +321,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
+            if ptc.uniqueid==10261413468422799590:
+                x = 3
 
 if __name__ == '__main__':
 

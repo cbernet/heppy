@@ -55,7 +55,8 @@ comp = cfg.Component(
     files = [
         # here we have a single input root file.
         # the absolute path must be used to be able to run on the batch.
-        os.path.abspath('ee_ZH_Zmumu_Hbb.root')
+        #os.path.abspath('ee_ZH_Zmumu_Hbb.root')
+        "/Users/alice/fcc/papasmodular/heppy/ee_ZH_Zmumu_Hbb.root"
     ]
 )
 
@@ -77,6 +78,14 @@ source = cfg.Analyzer(
 from heppy.test.papas_cfg import papas, papas_sequence, detector
 
 from heppy.test.papas_cfg import papasdisplaycompare as display 
+
+
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+PDebugger,
+output_to_stdout = True, #optional
+debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+)
 
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
@@ -216,6 +225,7 @@ tree = cfg.Analyzer(
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
+    pdebug,
     source,
     papas_sequence,
     leptons_true,

@@ -18,12 +18,12 @@ class PFObject(object):
     '''
 
 
-    def __init__(self, pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype='u'):
+    def __init__(self, pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype='u', value = 0.0):
         super(PFObject, self).__init__()
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(pfobjecttype, subtype)
+        self.uniqueid=Identifier.make_id(pfobjecttype, subtype, value)
 
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -37,6 +37,9 @@ class PFObject(object):
 
     def info(self):
         return ""
+    
+    def energy(self):
+        return 0;
 
     def __str__(self):
         return '{classname}: {pretty:6}:{uid}: {info}'.format(
@@ -64,9 +67,9 @@ class Cluster(PFObject):
             self.subtype = 't'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
         if layer == 'ecal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype, max(energy, 0.))
         elif layer == 'hcal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype, max(energy, 0.))
         else :
             assert (False)
         self.position = position
@@ -75,6 +78,8 @@ class Cluster(PFObject):
         self.layer = layer
         self.particle = particle
         self.subclusters = [self]
+        if self.uniqueid == 5658733449062645996:
+            print self.info()
         # self.absorbed = []
 
     def set_size(self, value):
@@ -187,7 +192,10 @@ class Cluster(PFObject):
     def short_info(self):
         return '{e:.1f}'.format(
             e = self.energy,
-        )     
+        )   
+    
+    def id_value(self):
+        return self.energy;
 
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
@@ -198,11 +206,14 @@ class SmearedCluster(Cluster):
 class MergedCluster(Cluster):
     '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
 
-    def __init__(self, mother):
+    def __init__(self, mother, energy):
         self.mother = mother
 
         self.subtype = 'm'
-        super(MergedCluster, self).__init__(mother.energy, mother.position, mother._size, mother.layer, mother.particle)
+        if energy is None:
+            energy = mother.energy
+        super(MergedCluster, self).__init__(energy, mother.position, mother._size, mother.layer, mother.particle)
+        self.energy = mother.energy
         self.subclusters = [mother]  
 
     def __iadd__(self, other):
@@ -231,7 +242,7 @@ class Track(PFObject):
     def __init__(self, p3, charge, path, particle=None, subtype='t'):
         if not hasattr(self, 'subtype'):
             self.subtype = subtype        
-        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, self.subtype)
+        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, self.subtype, p3.Mag())
 
         self.p3 = p3
         self.pt = p3.Perp()
@@ -268,7 +279,7 @@ class Particle(BaseParticle):
                  subtype='s'):
         self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype, self.e())
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -291,8 +302,9 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
-            if self.q(): # todo check this is OK for multiple scattering?
+            if self.q() and option != 'c': # todo check this is OK for multiple scattering?
                 self.track = Track(self.p3(), self.q(), self.path)
+                
     
     def short_info(self):
         tmp = '{pdgid:} ({e:.1f})'
@@ -314,7 +326,7 @@ class Particle(BaseParticle):
         mainstr = super(Particle, self).__str__()
         idstr = '{pretty:6}:{uid}'.format(
             pretty=Identifier.pretty(self.uniqueid),
-            uid=self.uniqueid)
+            uid=self.uniqueid)        
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)

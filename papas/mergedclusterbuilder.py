@@ -44,7 +44,8 @@ class MergedClusterBuilder(GraphBuilder):
         self.merged = dict()
 
         # collate ids of clusters
-        uniqueids = list(clusters.keys())         
+        uniqueids = list(clusters.keys())
+        uniqueids.sort(reverse=True)
              
         #make the edges match cpp by using the same approach as cpp
         edges = dict()
@@ -67,14 +68,17 @@ class MergedClusterBuilder(GraphBuilder):
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs:
-            subgraphids.sort()
+            subgraphids.sort(reverse=True)
             first = None
             supercluster =None
             snode = None
+            totalenergy = 0.
+            for elemid in subgraphids :
+                totalenergy += self.clusters[elemid].energy
             for elemid in subgraphids :
                 if not first:
                     first = elemid
-                    supercluster = MergedCluster(self.clusters[elemid])
+                    supercluster = MergedCluster(self.clusters[elemid], totalenergy)
                     self.merged[supercluster.uniqueid] = supercluster;
                     if (self.history_nodes) :
                         snode = Node(supercluster.uniqueid)
@@ -84,5 +88,5 @@ class MergedClusterBuilder(GraphBuilder):
                     supercluster += thing
                 if (self.history_nodes) :
                     self.history_nodes[elemid].add_child(snode)
-                pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))
-            pdebugger.info(str('Made {}\n'.format(supercluster)))
+                pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid]))
+            pdebugger.info(str('Made {}'.format(supercluster)))
