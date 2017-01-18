@@ -3,7 +3,7 @@ from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 
-#add angular size needs to be fixed since at the moment the angluar size is set by the first elemensizet
+#add angular size needs to be fixed since at the moment the angluar size is set by the first elementsize
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
 
 class PFObject(object):
@@ -37,9 +37,6 @@ class PFObject(object):
 
     def info(self):
         return ""
-    
-    def energy(self):
-        return 0;
 
     def __str__(self):
         return '{classname}: {pretty:6}:{uid}: {info}'.format(
@@ -80,7 +77,6 @@ class Cluster(PFObject):
         self.layer = layer
         self.particle = particle
         self.subclusters = [self]
-        
         # self.absorbed = []
 
     def set_size(self, value):
@@ -193,10 +189,7 @@ class Cluster(PFObject):
     def short_info(self):
         return '{e:.1f}'.format(
             e = self.energy,
-        )   
-    
-    def id_value(self):
-        return self.energy;
+        )
 
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
@@ -300,9 +293,12 @@ class Particle(BaseParticle):
     def set_path(self, path, option=None):
         if option == 'w' or self.path is None:
             self.path = path
-            if self.q() and option != 'c': # todo check this is OK for multiple scattering?
+            if self.q(): # todo check this is OK for multiple scattering?
                 self.track = Track(self.p3(), self.q(), self.path)
-                
+    
+    def set_track(self, track):
+        self.track =track 
+        self.path=track.path;
     
     def short_info(self):
         tmp = '{pdgid:} ({e:.1f})'
@@ -318,13 +314,12 @@ class Particle(BaseParticle):
     
     def __repr__(self):
         return str(self)
-        
 
     def __str__(self):
         mainstr = super(Particle, self).__str__()
         idstr = '{pretty:6}:{uid}'.format(
             pretty=Identifier.pretty(self.uniqueid),
-            uid=self.uniqueid)        
+            uid=self.uniqueid)
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)

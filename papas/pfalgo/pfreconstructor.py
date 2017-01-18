@@ -284,7 +284,7 @@ class PFReconstructor(object):
         hcal = self.papasevent.get_object(hcalid)
         assert (len(block.linked_ids(hcalid, "hcal_hcal")) == 0)  
 
-        trackids = block.linked_ids(hcalid, "hcal_track")  
+        trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block  
         for trackid in trackids:
             tracks.append(self.papasevent.get_object(trackid))
             for ecalid in block.linked_ids(trackid, "ecal_track"):
@@ -413,7 +413,7 @@ class PFReconstructor(object):
         p4.SetVectM(track.p3, mass)
         particle = Particle(p4, vertex, charge, pdgid, subtype='r')
         #todo fix this so it picks up smeared track points (need to propagagte smeared track)
-        particle.set_path(track.path, 'c') #copy track rather than make a new one
+        particle.set_track(track) #copy track rather than make a new one
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle, track)))
         self.insert_particle(parent_ids, particle)
