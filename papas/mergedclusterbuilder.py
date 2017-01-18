@@ -72,7 +72,7 @@ class MergedClusterBuilder(GraphBuilder):
             supercluster =None
             snode = None
             totalenergy = 0.
-            #we the merged cluster to have an identifier that matches its total energy
+            #we want the merged cluster to have an identifier that matches its total energy
             for elemid in subgraphids :
                 totalenergy += self.clusters[elemid].energy
             for elemid in subgraphids :

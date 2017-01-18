@@ -284,8 +284,8 @@ class PFReconstructor(object):
         hcal = self.papasevent.get_object(hcalid)
         assert (len(block.linked_ids(hcalid, "hcal_hcal")) == 0)  
 
-        trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block  
-        for trackid in trackids:
+        trackids = block.linked_ids(hcalid, "hcal_track")    
+        for trackid in sorted(trackids, reverse = True): #sort by decreasing energy
             tracks.append(self.papasevent.get_object(trackid))
             for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
