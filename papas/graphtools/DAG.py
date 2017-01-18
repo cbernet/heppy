@@ -174,17 +174,20 @@ class BreadthFirstSearchIterative(object):
 
 class DAGFloodFill(object):
 
-    def __init__(self, elements, first_label = 1):
-        '''Iterate through all nodes and 
-        use Breadth first search to find connected groups'''
+    def __init__(self, elements, first_label = 1, sort = False):
+        '''Iterate through all nodes and use Breadth first search to find connected groups
+        elements is a dictionary of nodes indexed by the node value
+        first_label is used to give a unique number to each subgroup that is created
+        sort can be used to specify that the nodes should be processed in value order
+        '''
         self.visited = {}
         self.label = first_label
         self.visited = dict()
         self.blocks = []
         uids = elements.keys();
-        uids.sort()
+        if sort:
+            uids.sort()
         for uid in uids:
-        #for uid, node in elements.iteritems():
             node = elements[uid]
             if self.visited.get(node, False): #already done so skip the rest
                 continue
