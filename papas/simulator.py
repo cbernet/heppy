@@ -155,8 +155,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                           beampipe.volume.outer,
                                           self.detector.elements['field'].magnitude)
 
-        #pdebug editted out
-        #mscat.multiple_scattering(ptc, beampipe, self.detector.elements['field'].magnitude)
+        #pdebug edit next line  out to match cpp, need to discuss with Colin
+        mscat.multiple_scattering(ptc, beampipe, self.detector.elements['field'].magnitude)
 
         #re-propagate after multiple scattering in the beam pipe
         #indeed, multiple scattering is applied within the beam pipe,

@@ -58,8 +58,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 121.8, 1)
-            self.assertAlmostEqual(sigma, 25.4, 1)
+            self.assertAlmostEqual(mean, 114.03, 1)
+            self.assertAlmostEqual(sigma, 20.12, 1)
 
         def test_analysis_sorting(self):
             self.looper.process(0)

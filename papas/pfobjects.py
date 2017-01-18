@@ -297,9 +297,9 @@ class Particle(BaseParticle):
                 self.track = Track(self.p3(), self.q(), self.path)
     
     def set_track(self, track):
-        self.track =track 
-        self.path=track.path;
-    
+        self.track = track 
+        self.path = track.path;
+
     def short_info(self):
         tmp = '{pdgid:} ({e:.1f})'
         #needed for now to get match with C++

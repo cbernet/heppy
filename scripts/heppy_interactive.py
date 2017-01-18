@@ -4,9 +4,6 @@ import imp
 config = None
 display_config = None
 
-
-
-
 def load_config(heppy_cfg_path):
     '''@return: configuration object from heppy config file'''
     global config
@@ -16,7 +13,6 @@ def load_config(heppy_cfg_path):
     config = cfgmod.config
     cfgfile.close()
     display_config = cfgmod.display
-    
     return config
 
 def next():
