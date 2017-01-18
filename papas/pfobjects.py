@@ -62,14 +62,16 @@ class Cluster(PFObject):
     #TODO: not sure this plays well with SmearedClusters
     max_energy = 0.
 
-    def __init__(self, energy, position, size_m, layer='ecal_in', particle=None):
+    def __init__(self, energy, position, size_m, layer='ecal_in', particle=None, idvalue = None):
         if not hasattr(self, 'subtype'):
             self.subtype = 't'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
+        if idvalue== None:
+            idvalue = max(energy, 0.)
         if layer == 'ecal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype, max(energy, 0.))
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype, idvalue)
         elif layer == 'hcal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype, max(energy, 0.))
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype, idvalue)
         else :
             assert (False)
         self.position = position
@@ -205,14 +207,11 @@ class SmearedCluster(Cluster):
 class MergedCluster(Cluster):
     '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
 
-    def __init__(self, mother, energy):
+    def __init__(self, mother, idvalue = None):
+        '''idvalue will be used to help create the merged cluster unique identifier'''
         self.mother = mother
-
         self.subtype = 'm'
-        if energy is None:
-            energy = mother.energy
-        super(MergedCluster, self).__init__(energy, mother.position, mother._size, mother.layer, mother.particle)
-        self.energy = mother.energy
+        super(MergedCluster, self).__init__(mother.energy, mother.position, mother._size, mother.layer, mother.particle, idvalue)
         self.subclusters = [mother]  
 
     def __iadd__(self, other):

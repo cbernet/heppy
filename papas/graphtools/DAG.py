@@ -185,7 +185,7 @@ class DAGFloodFill(object):
         self.visited = dict()
         self.blocks = []
         uids = elements.keys();
-        if sort:
+        if sort: #sorting allows for consistent ordering eg when comparing with cpp FloodFill
             uids.sort()
         for uid in uids:
             node = elements[uid]

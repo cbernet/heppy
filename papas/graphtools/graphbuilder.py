@@ -39,7 +39,8 @@ class GraphBuilder(object):
 
         # build the subgraphs of connected nodes
         self.subgraphs = []
-        for subgraphlist in DAGFloodFill(self.nodes).blocks: # change to subgraphs
+        #sort option  below is needed for consistent orderings and is required for a match with papascpp
+        for subgraphlist in DAGFloodFill(self.nodes, sort=True).blocks: # change to subgraphs
             element_ids = [] 
             # NB the nodes that are found by FloodFill are the Nodes describing links between items
             # we want the ids of these nodes
