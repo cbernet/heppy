@@ -271,12 +271,13 @@ class Particle(BaseParticle):
                  subtype='s'):
         self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
+        
+    #allow the value used in the particle unique id to depend on the collider type
         idvalue = 0.
         if Collider.BEAMS == 'ee':
             idvalue=self.e()
         else:
             idvalue=self.pt()
-           
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype, idvalue)
         self.vertex = vertex
         self.path = None
@@ -298,7 +299,6 @@ class Particle(BaseParticle):
         return kind == 11 or kind == 22
 
     def set_path(self, path, option=None):
-        '''option w = write '''
         if option == 'w' or self.path is None:
             self.path = path
             if self.q(): # todo check this is OK for multiple scattering?

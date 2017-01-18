@@ -150,7 +150,7 @@ class HistoryHelper(object):
             each subgroup is a list of ids
         '''        
         self.subgraphs = []
-        for subgraphlist in DAGFloodFill(self.history).blocks: # change to subgraphs
+        for subgraphlist in DAGFloodFill(self.history).subgraphs:
             element_ids = [node.get_value() for node in subgraphlist]            
             self.subgraphs.append(sorted(element_ids, reverse = True)) 
         self.subgraphs.sort(key = len, reverse = True) #biggest to smallest group

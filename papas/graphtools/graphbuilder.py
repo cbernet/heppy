@@ -29,9 +29,7 @@ class GraphBuilder(object):
         '''
         self.ids = ids
         self.edges = edges
-        
-        sort_key =  lambda x: x
-
+        sort_key =  lambda x: x #to match cpp
         # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict((idt, Node(idt)) for idt in ids)
         for edge in edges.itervalues():

@@ -44,9 +44,7 @@ class MergedClusterBuilder(GraphBuilder):
         self.merged = dict()
 
         # collate ids of clusters
-        uniqueids = list(clusters.keys());
-        uniqueids.sort(reverse = True);
-        
+        uniqueids = list(clusters.keys())
              
         #make the edges match cpp by using the same approach as cpp
         edges = dict()

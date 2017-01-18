@@ -37,7 +37,6 @@ class PFBlock(object):
         '''
         #make a uniqueid for this block
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype, len(element_ids))
-        
         #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
         sortby = lambda x: (Identifier.type_letter(x), -x)
         self.element_uniqueids = sorted(element_ids, key=sortby)
