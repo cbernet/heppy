@@ -3,6 +3,7 @@ from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
 from heppy.papas.data.identifier import Identifier
 from heppy.configuration import Collider
+from ROOT import TVector3
 
 #add angular size needs to be fixed since at the moment the angluar size is set by the first elementsize
 #in a merged cluster. If the merged cluster is formed in a different order then the angular size will be different
@@ -11,6 +12,8 @@ class PFObject(object):
     '''Base class for all particle flow objects (tracks, clusters, etc).
     Particle flow objects of different types can be linked together
     forming graphs called "blocks".
+    All PFObjects have a unique identifier which encodes information about the object type, subtype and an associated value such 
+    as energy or pt. See Identifier class for more details. 
 
     attributes:
     linked : list of PFObjects linked to this one
@@ -19,12 +22,16 @@ class PFObject(object):
     '''
 
 
-    def __init__(self, pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype='u', value = 0.0):
+    def __init__(self, pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype='u', identifiervalue = 0.0):
+        '''@param pfobjecttype: type of the object to be created (used in Identifier class) eg Identifier.PFOBJECTTYPE.ECALCLUSTER
+           @param subtype: Identifier subtype, eg 'm' for merged
+           @param identifiervalue: The value to be encoded into the Identifier eg energy or pt
+    '''
         super(PFObject, self).__init__()
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(pfobjecttype, subtype, value)
+        self.uniqueid=Identifier.make_id(pfobjecttype, subtype, identifiervalue)
 
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -60,16 +67,16 @@ class Cluster(PFObject):
     #TODO: not sure this plays well with SmearedClusters
     max_energy = 0.
 
-    def __init__(self, energy, position, size_m, layer='ecal_in', particle=None, idvalue = None):
+    def __init__(self, energy, position, size_m, layer='ecal_in', particle=None, identifiervalue = None):
         if not hasattr(self, 'subtype'):
             self.subtype = 't'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
-        if idvalue== None:
-            idvalue = max(energy, 0.)
+        if identifiervalue== None:
+            identifiervalue = max(energy, 0.)
         if layer == 'ecal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype, idvalue)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype, identifiervalue)
         elif layer == 'hcal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype, idvalue)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype, identifiervalue)
         else :
             assert (False)
         self.position = position
@@ -201,12 +208,23 @@ class SmearedCluster(Cluster):
 class MergedCluster(Cluster):
     '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
 
-    def __init__(self, mother, idvalue = None):
-        '''idvalue will be used to help create the merged cluster unique identifier'''
-        self.mother = mother
+    def __init__(self, clusters, identifiervalue = None):
+        '''identifiervalue will be used to help create the merged cluster unique identifier'''
+        position = None
+        energy = 0.
+        firstcluster = None
+        for cluster in clusters:
+            if not firstcluster:
+                firstcluster = cluster
+                position = cluster.position *cluster.energy
+                energy = cluster.energy
+            else:
+                position += cluster.position*cluster.energy
+                energy += cluster.energy
+        position *= (1./energy)           
         self.subtype = 'm'
-        super(MergedCluster, self).__init__(mother.energy, mother.position, mother._size, mother.layer, mother.particle, idvalue)
-        self.subclusters = [mother]  
+        super(MergedCluster, self).__init__(energy, position, firstcluster._size, firstcluster.layer, identifiervalue= energy)
+        self.subclusters = clusters 
 
     def __iadd__(self, other):
         '''TODO: why not using iadd from base class'''

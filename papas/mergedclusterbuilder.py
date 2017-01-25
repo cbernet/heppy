@@ -66,27 +66,13 @@ class MergedClusterBuilder(GraphBuilder):
 
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
-        for subgraphids in self.subgraphs:
-            subgraphids.sort(reverse=True) #start with biggest clusters 
-            first = None
-            supercluster =None
-            snode = None
-            totalenergy = 0.
-            #we want the merged cluster to have an identifier that matches its total energy
-            for elemid in subgraphids :
-                totalenergy += self.clusters[elemid].energy
-            for elemid in subgraphids :
-                if not first:
-                    first = elemid
-                    supercluster = MergedCluster(self.clusters[elemid], totalenergy)
-                    self.merged[supercluster.uniqueid] = supercluster;
-                    if (self.history_nodes) :
-                        snode = Node(supercluster.uniqueid)
-                        self.history_nodes[supercluster.uniqueid] = snode 
-                else:
-                    thing = self.clusters[elemid]
-                    supercluster += thing
-                if (self.history_nodes) :
-                    self.history_nodes[elemid].add_child(snode)
-                pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid]))
+        for subgraphids in self.subgraphs: # TODO may want to order subgraphs from largest to smallest at some point
+            subgraphids.sort(reverse=True) #start with highest E or pT clusters
+            subclusters = [self.clusters[id] for id in subgraphids]
+            supercluster = MergedCluster(subclusters)
+            self.merged[supercluster.uniqueid] = supercluster;
+            if (self.history_nodes) :
+                snode = Node(supercluster.uniqueid)
+                self.history_nodes[supercluster.uniqueid] = snode             
+            #pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid]))
             pdebugger.info(str('Made {}'.format(supercluster)))

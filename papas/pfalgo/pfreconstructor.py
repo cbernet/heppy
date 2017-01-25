@@ -137,7 +137,7 @@ class PFReconstructor(object):
     def reconstruct_block(self, block):
         ''' see class description for summary of reconstruction approach
         '''
-        uids = block.element_uniqueids
+        uids = block.element_uniqueids #ids are already stored in sorted order inside block
         self.locked = dict( (uid, False) for uid in uids )
         # first reconstruct muons and electrons
         self.reconstruct_muons(block)
@@ -158,7 +158,7 @@ class PFReconstructor(object):
                                        parent_ids)
                 
         else: #TODO
-            for uid in uids: #already sorted to have higher energy things first
+            for uid in uids: #already sorted to have higher energy things first (see pfblock)
                 if Identifier.is_hcal(uid):
                     self.reconstruct_hcal(block, uid)
             for uid in uids: #already sorted to have higher energy things first

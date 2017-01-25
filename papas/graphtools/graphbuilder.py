@@ -45,8 +45,8 @@ class GraphBuilder(object):
             # NB the nodes that are found by FloodFill are the Nodes describing links between items
             # we want the ids of these nodes
             for node in subgraphlist:
-                element_ids.append(node.get_value())        
-            self.subgraphs.append(element_ids) 
+                element_ids.append(node.get_value())
+            self.subgraphs.append(sorted(element_ids, reverse=True)) 
     
 
     def __str__(self):

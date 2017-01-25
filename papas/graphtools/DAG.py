@@ -177,7 +177,7 @@ class DAGFloodFill(object):
     def __init__(self, elements, sort_key = None, first_label = 1):
         '''Iterate through all nodes and use Breadth first search to find connected groups
         elements is a dictionary of nodes indexed by the node value
-        first_label is used to give a unique number to each subgroup that is created
+        first_label is used to give a unique number to each subgraph that is created
         sort can be used to specify that the nodes should be processed in value order
         '''
         self.visited = {}
