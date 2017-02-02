@@ -216,10 +216,10 @@ class MergedCluster(Cluster):
         for cluster in clusters:
             if not firstcluster:
                 firstcluster = cluster
-                position = cluster.position *cluster.energy
+                position = cluster.position * cluster.energy
                 energy = cluster.energy
             else:
-                position += cluster.position*cluster.energy
+                position += cluster.position * cluster.energy
                 energy += cluster.energy
         position *= (1./energy)           
         self.subtype = 'm'
