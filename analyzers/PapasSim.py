@@ -57,6 +57,9 @@ class PapasSim(Analyzer):
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
         event.simulator = self
         papasevent = PapasEvent(event.iEv)
+        self.particles = dict()
+        #self.splitblocks = dict()
+        #blocks = papasevent.get_collection(block_type_and_subtype)           
         setattr(event, "papasevent", papasevent)        
         pfsim_particles = []
         gen_particles = getattr(event, self.cfg_ana.gen_particles)

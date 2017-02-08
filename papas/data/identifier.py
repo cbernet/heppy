@@ -17,7 +17,7 @@ class Identifier(long):
     from left: bits 64 to 61 = PFOBJECTTYPE enumeration eg ECAL, HCAL, PARTICLE (max value = 7)
                bits 60 to 53 = subtype - a single char eg 'g'
                bits 52 to 20 = encoded float value eg energy
-               bits 21 to 1 = unique id (max value = 2097152 -1)
+               bits 21 to 1 = index to collection (max value = 2097152 -1)
 
     Note that sorting on id will result in sorting by:
     type
@@ -26,7 +26,6 @@ class Identifier(long):
     uniqueid
         '''    
 
-    _id = count(1)
 
     class PFOBJECTTYPE:
         NONE = 0
@@ -37,7 +36,7 @@ class Identifier(long):
         BLOCK = 5
 
     @classmethod    
-    def make_id(cls, type, subtype='u', value = 0.):
+    def make_id(cls, type, index, subtype='u', value = 0.):
         '''Creates a unique id
         @param type: defined by enumeration PFOBJECTTYPE eg ECALCLUSTER
         @param subtype:single letter subtype code eg 'm' for merged
@@ -45,28 +44,47 @@ class Identifier(long):
         '''
     
         assert(value >= 0) #actually I would like it to work with negative numbers but need to change float to bit conversions
-        x = cls._id.next()
+        
         #shift all the parts and join together	
         typeshift = type << 61
         valueshift = Identifier._float_to_bits(value) << 21
         subtypeshift = ord(subtype.lower()) << 53
-        uid = subtypeshift | valueshift | typeshift | x
+        uid = subtypeshift | valueshift | typeshift | index
 
         #verify		
-        assert (Identifier.get_unique_id(uid) == x )
+        assert (Identifier.get_index(uid) == index )
         if value != 0:
             assert(abs(Identifier.get_value(uid) - value) < abs(value) * 10 ** -6)
         assert (Identifier.get_type(uid) == type)
         assert (Identifier.get_subtype(uid) == subtype)
-        if x >= 2**(21 -1):
-            raise ValueError('identifer unique counter id has exceeded maximum value allowed')
+        if index >= 2**(21 -1):
+            raise ValueError('identifer index has exceeded maximum value allowed')
+    
         return uid
 
     @staticmethod      
-    def get_unique_id( ident):
+    def get_index( ident):
         '''Takes an identifier and returns the unique counter component of it
         @param: unique identifier'''
         return ident & 0b111111111111111111111
+    
+    @staticmethod      
+    def get_unique_id( ident):
+        '''The unique id combines the index, type and subtype to form a shorter unique identifier (without the value)'''
+        bitshift = 21  +  61 - 53
+        typeshift = Identifier.get_type(ident) << 29
+        subtypeshift = ord(Identifier.get_subtype(ident)) << 21
+        uniqueid = subtypeshift |  typeshift | Identifier.get_index(ident) 
+        
+        #verify		
+        assert (uniqueid >> bitshift & 0b111 == Identifier.get_type(ident) )
+        assert (uniqueid >> 61 -53  & 0b11111111 == Identifier.get_subtype(ident) )
+        assert (uniqueid >> 61 -53  & 0b11111111 == Identifier.get_subtype(ident) )
+        assert ( (ident >> 0b111111111111111111111) == Identifier.get_index(ident))
+    
+        return uniqueid
+                
+    
 
     @staticmethod  
     def get_type ( ident):
@@ -148,7 +166,7 @@ class Identifier(long):
         '''returns a pretty string representation of the identifier with the two letter typ_and_subtype and the uniqueid
            @param ident: unique identifier
         '''          
-        return  Identifier.type_and_subtype(ident) + str(Identifier.get_unique_id(ident))
+        return  Identifier.type_and_subtype(ident) + str(Identifier.get_index(ident))
 
     @staticmethod
     def _float_to_bits (floatvalue):  #standard float packing
