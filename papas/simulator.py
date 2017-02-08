@@ -24,7 +24,6 @@ def pfsimparticle(ptc, index):
     pid = ptc.pdgid()
     simptc = PFSimParticle(tp4, vertex, charge, index, pid)
     pdebugger.info(" ".join(("Made", simptc.__str__())))
-     
     simptc.gen_ptc = ptc
     return simptc
 
@@ -65,17 +64,17 @@ class Simulator(object):
                                       self.detector.elements['field'].magnitude)
         
     def cluster_collection(self, layer):
-        if cylname == 'ecal_in':
+        if layer == 'ecal_in':
             return self.true_ecals
-        elif cylname == 'hcal_in':
+        elif layer == 'hcal_in':
             return self.true_hcals
         else:
             raise SimulationError("unrecognised layer for a cluster")        
         
     def smeared_cluster_collection(self, layer):
-        if cylname == 'ecal_in':
+        if layer == 'ecal_in':
             return self.smeared_ecals
-        elif cylname == 'hcal_in':
+        elif layer == 'hcal_in':
             return self.smeared_hcals
         else:
             raise SimulationError("unrecognised layer for a smeared cluster")    
@@ -104,8 +103,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             self.logger.warning(errormsg)
             raise SimulationError('Particle not extrapolated to the detector, so cannot make a cluster there. No worries for now, problem will be solved :-)')
         clusters = self.cluster_collection(cylname)
-        cluster = Cluster(ptc.p4().E()*fraction, ptc.points[cylname], size, cylname, ptc, 
-                          index=len(clusters.size))
+        cluster = Cluster(ptc.p4().E()*fraction, ptc.points[cylname], size, len(clusters), cylname, ptc 
+                         )
         #update collections and history
         ptc.clusters[cylname] = cluster
         clusters[cluster.uniqueid] = cluster 
@@ -113,7 +112,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         pdebugger.info(" ".join(("Made", cluster.__str__())))
         return cluster
 
-    def make_and_store_smeared_cluster(self, cluster, detector, accept=False, acceptance=None):
+    def make_and_store_smeared_cluster(self, cluster, ptc, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.
         If accept is False (default), returns None if the smeared
         cluster is not in the detector acceptance. '''
@@ -126,15 +125,15 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                          energy,
                                          cluster.position,
                                          cluster.size(),
+                                         len(clusters),
                                          cluster.layer,
                                          cluster.particle, 
-                                         index=len(clusters))
+                                         )
         pdebugger.info(str('Made {}'.format(smeared_cluster)))
                   
         
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
-            ptc.clusters[cylname] = smeared_cluster
             clusters[smeared_cluster.uniqueid] = smeared_cluster                      
             self.update_history(smeared_cluster.uniqueid, ptc.uniqueid)            
             return smeared_cluster
@@ -155,6 +154,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         self.true_tracks[track.uniqueid] = track                     
         self.update_history(track.uniqueid, ptc.uniqueid)          
         ptc.set_track(track)
+        return track
         
     def make_smeared_track(self, track, resolution):
         #TODO smearing depends on particle type!
@@ -164,7 +164,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                      track.p3 * scale_factor,
                                      track.charge,
                                      track.path,
-                                     index = self.smeared_tracks.size())
+                                     index = len(self.smeared_tracks))
         pdebugger.info(" ".join(("Made", smeared_track.__str__())))
         return smeared_track  
 
@@ -175,7 +175,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         propagator(ptc.q()).propagate_one(ptc,
                                           ecal.volume.inner)
         cluster = self.make_and_store_cluster(ptc, detname)
-        smeared = self.make_and_store_smeared_cluster(cluster, ecal)
+        smeared = self.make_and_store_smeared_cluster(cluster, ptc,  ecal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
@@ -194,13 +194,13 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         beampipe = self.detector.elements['beampipe']
         frac_ecal = 0.
         
-        if ptc.charge() != 0 :
+        if ptc.q() != 0 :
             track = self.make_and_store_track(ptc)
-            resolution = self.detector.elements['tracker'].ptResolution(track)
-            smeared_track = make_smeared_track(track, resolution)
+            resolution = self.detector.elements['tracker'].pt_resolution(track)
+            smeared_track = self.make_smeared_track(track, resolution)
             if self.detector.elements['tracker'].acceptance(smeared_track):
                 self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-                self.update_history(smeared_track.uniqueid, ptc.uid())    
+                self.update_history(smeared_track.uniqueid, ptc.uniqueid )   
                 ptc.track_smeared = smeared_track 
             else:
                 pdebugger.info(str('Rejected {}'.format(smeared_track)))
@@ -250,11 +250,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     # For now, using the hcal resolution and acceptance
                     # for hadronic cluster
                     # in the ECAL. That's not a bug!
-                    smeared = self.make_and_store_smeared_cluster(cluster, hcal, acceptance=ecal)
+                    smeared = self.make_and_store_smeared_cluster(cluster, ptc, hcal, acceptance=ecal)
                     if smeared:
                         ptc.clusters_smeared[smeared.layer] = smeared
         cluster = self.make_and_store_cluster(ptc, 'hcal', 1-frac_ecal)
-        smeared = self.make_and_store_smeared_cluster(cluster, hcal)
+        smeared = self.make_and_store_smeared_cluster(cluster, ptc, hcal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
@@ -281,7 +281,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         
         if self.detector.electron_acceptance(smeared_track):
                 self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-                self.update_history(smeared_track.uniqueid, ptc.uid())    
+                self.update_history(smeared_track.uniqueid, ptc.uniqueid)  
                 ptc.track_smeared = smeared_track 
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_track)))
@@ -303,7 +303,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         smeared_track = self.make_smeared_track(track, ptres)
         if self.detector.muon_acceptance(smeared_track):
             self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-            self.update_history(smeared_track.uniqueid, ptc.uid())    
+            self.update_history(smeared_track.uniqueid, ptc.uniqueid)    
             ptc.track_smeared = smeared_track 
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_track)))
@@ -373,7 +373,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            self.simulated_particles[ptc.uid()]= ptc
+            self.simulated_particles[ptc.uniqueid]= ptc
 
 if __name__ == '__main__':
 
