@@ -48,7 +48,7 @@ class P4(object):
 
     def m(self):
         '''mass'''
-        return self._tlv.M()
+        return abs(self._tlv.M())
     
     
     def sort_key(self):

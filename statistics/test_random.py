@@ -24,6 +24,11 @@ class TestRandom(unittest.TestCase):
         b0 = random.uniform(0, 1)
         b1 = random.expovariate(3)
         b2 = random.gauss(1,3)
+        
+        #newseed
+        random.seed(999999)
+        c0 = random.uniform(0, 1)
+              
 
         #unseeded should be different to seeded
         self.assertFalse(a0==r0)
@@ -34,6 +39,9 @@ class TestRandom(unittest.TestCase):
         self.assertEqual(a0,b0)
         self.assertEqual(a1,b1)
         self.assertEqual(a2,b2)
+        
+        #newseeded should be different to seeded
+        self.assertFalse(b0==c0)
 
 
 if __name__ == '__main__':

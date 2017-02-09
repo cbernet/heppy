@@ -34,7 +34,7 @@ class Particle(P4):
         return str(self)
     
     def __str__(self):
-        tmp = '{className} : pdgid = {pdgid:5}, status = {status:3}, q = {q:2} {p4}'
+        tmp = '{className} : pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
         return tmp.format(
             className = self.__class__.__name__,
             pdgid = self.pdgid(),

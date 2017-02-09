@@ -74,7 +74,7 @@ class TestPropagator(unittest.TestCase):
         cyl2 = SurfaceCylinder('cyl2', 2., 1.)
         field = 3.8
         particle = Particle( LorentzVector(2., 0, 1, 5),
-                             Point(0., 0., 0.), -1)        
+                             Point(0., 0., 0.), -1)   
         debug_info = helix.propagate_one(particle, cyl1, field)
         particle = Particle( LorentzVector(0., 2, 1, 5),
                              Point(0., 0., 0.), -1)        

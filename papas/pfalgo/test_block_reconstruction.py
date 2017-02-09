@@ -16,9 +16,9 @@ class Cluster(object):
               layer is ecal/hcal
         '''
         if (layer == 'ecal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't')
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, uid, 't')
         elif (layer == 'hcal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER,  't')
+            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER, uid,  't')
         else:
             assert false
         self.layer = layer
@@ -35,7 +35,7 @@ class Track(object):
     def __init__(self, uid):
         ''' uid is unique integer from 1-99
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 't')
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  uid, 't')
         self.uid = uid
         self.layer = 'tracker'
         self.energy=0
@@ -51,7 +51,7 @@ class Particle(object):
         ''' uid is unique integer from 301-399
             pdgid is particle uid eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,'g')
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, uid, 'g')
         #print "particle: ",self.uniqueid," ",uid
         self.pdgid = pdgid
         self.uid = uid
@@ -68,7 +68,7 @@ class ReconstructedParticle(Particle):
         ''' uid is unique integer from 601-699
             pdgid is particle uid eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, 'r')
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,  uid,'r')
         self.pdgid = pdgid
         self.uid = uid
         
@@ -110,7 +110,9 @@ class Event(object):
             if subtype == 'g':
                 return self.sim_particles[uniqueid]       
             elif subtype == 'r':
-                return self.reconstructed_particles[uniqueid]  
+                return self.reconstructed_particles[uniqueid]
+        elif type == Identifier.PFOBJECTTYPE.BLOCK:
+            return self.blocks[uniqueid]
         else:
             assert(False)   
 
