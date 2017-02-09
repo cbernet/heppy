@@ -21,6 +21,7 @@ class TestMerger(unittest.TestCase):
 
         
     def test_merge_pair_away(self):
+
         clusters = [ Cluster(20, TVector3(1,0,0), 0.04, 'hcal_in'),
                      Cluster(20, TVector3(1,1.1,0.0), 0.04, 'hcal_in')]
         merge_clusters(clusters, 'hcal_in')

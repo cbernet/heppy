@@ -26,7 +26,7 @@ class TestCluster(unittest.TestCase):
         ecal = cms.elements['ecal']
         energies = []
         for i in range(10000):
-            smeared = simulator.smear_cluster(cluster, ecal, accept=True)
+            smeared = simulator.make_and_store_smeared_cluster(cluster, 0, ecal, accept=True)
             h_e.Fill(smeared.energy)
             energies.append(smeared.energy)
         npe = np.array(energies)
@@ -58,7 +58,7 @@ class TestCluster(unittest.TestCase):
         smeared_clusters = []
         min_energy = -999.
         for cluster in clusters:
-            smeared_cluster = simulator.smear_cluster(cluster, ecal)
+            smeared_cluster = simulator.make_and_store_smeared_cluster(cluster, 0,  ecal)
             if smeared_cluster:
                 h_evseta.Fill(smeared_cluster.position.Eta(),
                               smeared_cluster.energy)

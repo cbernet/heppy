@@ -75,6 +75,4 @@ class MergedClusterBuilder(GraphBuilder):
                 self.history_nodes[supercluster.uniqueid] = snode
                 for id in subgraphids:
                     self.history_nodes[id].add_child(snode)
-                
-            #pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid]))
             pdebugger.info(str('Made {}'.format(supercluster)))
