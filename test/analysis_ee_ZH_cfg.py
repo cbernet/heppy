@@ -78,14 +78,6 @@ from heppy.test.papas_cfg import papas, papas_sequence, detector
 
 from heppy.test.papas_cfg import papasdisplaycompare as display 
 
-
-from heppy.analyzers.PDebugger import PDebugger
-pdebug = cfg.Analyzer(
-PDebugger,
-output_to_stdout = False, #optional
-debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
-)
-
 # Use a Selector to select leptons from the output of papas simulation.
 # Currently, we're treating electrons and muons transparently.
 # we could use two different instances for the Selector module
@@ -225,7 +217,6 @@ tree = cfg.Analyzer(
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
-    pdebug,
     papas_sequence,
     leptons_true,
     iso_leptons,
