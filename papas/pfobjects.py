@@ -323,10 +323,12 @@ class Particle(BaseParticle):
                 if self.track is None:
                     raise Exception( "Oh dear this track should already exist")
                 self.track.path = self.path
+                if self.track_smeared:
+                    self.track_smeared.path = self.path #is this really what we want
     
     def set_track(self, track):
         self.track = track 
-        #self.path = track.path;
+        self.path = track.path;
 
     def short_info(self):
         tmp = '{pdgid:} ({e:.1f})'

@@ -52,7 +52,7 @@ class BlockBuilder(GraphBuilder):
         ''' 
         for subgraph in self.subgraphs:
             #make the block
-            block = PFBlock(subgraph,  self.edges, subtype= self.subtype)        
+            block = PFBlock(subgraph, self.edges, len(self.blocks), subtype=self.subtype)        
             pdebugger.info("Made {}".format(block))
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] = block        

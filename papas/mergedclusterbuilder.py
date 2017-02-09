@@ -61,18 +61,20 @@ class MergedClusterBuilder(GraphBuilder):
         
         #make sure we use the original history and update it as needed
         self.history_nodes = history_nodes
+        self._make_and_store_merged_clusters()
 
-        self._make_merged_clusters()
-
-    def _make_merged_clusters(self):
+    def _make_and_store_merged_clusters(self):
         #carry out the merging of linked clusters
         for subgraphids in self.subgraphs: # TODO may want to order subgraphs from largest to smallest at some point
             subgraphids.sort(reverse=True) #start with highest E or pT clusters
             subclusters = [self.clusters[id] for id in subgraphids]
-            supercluster = MergedCluster(subclusters)
+            supercluster = MergedCluster(subclusters, len(self.merged))
             self.merged[supercluster.uniqueid] = supercluster;
             if (self.history_nodes) :
                 snode = Node(supercluster.uniqueid)
-                self.history_nodes[supercluster.uniqueid] = snode             
+                self.history_nodes[supercluster.uniqueid] = snode
+                for id in subgraphids:
+                    self.history_nodes[id].add_child(snode)
+                
             #pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid]))
             pdebugger.info(str('Made {}'.format(supercluster)))
