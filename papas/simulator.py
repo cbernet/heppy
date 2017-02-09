@@ -108,11 +108,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         #update collections and history
         ptc.clusters[cylname] = cluster
         clusters[cluster.uniqueid] = cluster 
-        self.update_history(cluster.uniqueid, ptc.uniqueid)          
+        self.update_history(ptc.uniqueid, cluster.uniqueid,)          
         pdebugger.info(" ".join(("Made", cluster.__str__())))
         return cluster
 
-    def make_and_store_smeared_cluster(self, cluster, parentid, detector, accept=False, acceptance=None):
+    def make_and_store_smeared_cluster(self, cluster, detector, accept=False, acceptance=None):
         '''Returns a copy of self with a smeared energy.
         If accept is False (default), returns None if the smeared
         cluster is not in the detector acceptance. '''
@@ -131,13 +131,13 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             clusters[smeared_cluster.uniqueid] = smeared_cluster                      
-            self.update_history(smeared_cluster.uniqueid, parentid)            
+            self.update_history(cluster.uniqueid, smeared_cluster.uniqueid)            
             return smeared_cluster
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_cluster)))
             return None
     
-    def update_history(self, childid, parentid) :
+    def update_history(self, parentid, childid) :
         '''Updates the history adding new nodes if needed and recording parent child relationship'''
         if not self.history.has_key(childid): 
             self.history[childid] = Node(childid)
@@ -151,7 +151,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         track = Track(ptc.p3(), ptc.q(), ptc.path, index=len(self.true_tracks))
         pdebugger.info(" ".join(("Made", track.__str__())))
         self.true_tracks[track.uniqueid] = track                     
-        self.update_history(track.uniqueid, ptc.uniqueid)          
+        self.update_history(ptc.uniqueid, track.uniqueid)          
         ptc.set_track(track)
         return track
         
@@ -174,7 +174,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         propagator(ptc.q()).propagate_one(ptc,
                                           ecal.volume.inner)
         cluster = self.make_and_store_cluster(ptc, detname)
-        smeared = self.make_and_store_smeared_cluster(cluster, ptc.uniqueid,  ecal)
+        smeared = self.make_and_store_smeared_cluster(cluster,  ecal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
@@ -198,7 +198,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             smeared_track = self.make_smeared_track(track, resolution)
             if self.detector.elements['tracker'].acceptance(smeared_track):
                 self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-                self.update_history(smeared_track.uniqueid, ptc.uniqueid )   
+                self.update_history(track.uniqueid, smeared_track.uniqueid )   
                 ptc.track_smeared = smeared_track 
             else:
                 pdebugger.info(str('Rejected {}'.format(smeared_track)))
@@ -245,11 +245,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                     # For now, using the hcal resolution and acceptance
                     # for hadronic cluster
                     # in the ECAL. That's not a bug!
-                    smeared = self.make_and_store_smeared_cluster(cluster, ptc.uniqueid, hcal, acceptance=ecal)
+                    smeared = self.make_and_store_smeared_cluster(cluster, hcal, acceptance=ecal)
                     if smeared:
                         ptc.clusters_smeared[smeared.layer] = smeared
         cluster = self.make_and_store_cluster(ptc, 'hcal', 1-frac_ecal)
-        smeared = self.make_and_store_smeared_cluster(cluster, ptc.uniqueid, hcal)
+        smeared = self.make_and_store_smeared_cluster(cluster, hcal)
         if smeared:
             ptc.clusters_smeared[smeared.layer] = smeared
 
@@ -275,7 +275,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         smeared_track = self.make_smeared_track(track, eres)
         if self.detector.electron_acceptance(smeared_track):
                 self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-                self.update_history(smeared_track.uniqueid, ptc.uniqueid)  
+                self.update_history(track.uniqueid, smeared_track.uniqueid)  
                 ptc.track_smeared = smeared_track 
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_track)))
@@ -297,7 +297,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         smeared_track = self.make_smeared_track(track, ptres)
         if self.detector.muon_acceptance(smeared_track):
             self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-            self.update_history(smeared_track.uniqueid, ptc.uniqueid)    
+            self.update_history(track.uniqueid, smeared_track.uniqueid)    
             ptc.track_smeared = smeared_track 
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_track)))
