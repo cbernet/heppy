@@ -17,7 +17,7 @@ class PFBlock(object):
              use  get_edge(id1,id2) to find an edge
      
      Usage:
-            block = PFBlock(element_ids,  edges, 'r') 
+            block = PFBlock(element_ids,  edges, index, 'r') 
             for uid in block.element_uniqueids:
                  print papasevent.get_object(uid).__str__() + "\n"
             

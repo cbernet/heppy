@@ -355,6 +355,9 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         
         # import pdb; pdb.set_trace()
         for gen_ptc in ptcs:
+            if gen_ptc.q() and gen_ptc.pt() < 0.2 and abs(gen_ptc.pdgid()) >= 100:
+               # to avoid numerical problems in propagation
+               continue      
             ptc = pfsimparticle(gen_ptc, len(self.simulated_particles))
             self.history[ptc.uniqueid] = Node(ptc.uniqueid)
             if ptc.pdgid() == 22:
@@ -368,9 +371,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             elif abs(ptc.pdgid()) in [12, 14, 16]:
                 self.simulate_neutrino(ptc)
             elif abs(ptc.pdgid()) > 100: #TODO make sure this is ok
-                if ptc.q() and ptc.pt() < 0.2:
-                    # to avoid numerical problems in propagation
-                    continue
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
             self.simulated_particles[ptc.uniqueid]= ptc
