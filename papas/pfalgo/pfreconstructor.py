@@ -14,7 +14,6 @@ from ROOT import TVector3, TLorentzVector
 
 #Discuss with colin self.locked vs ecal.locked
 #209 in reconstruct_block extra ecals to be added in
-#remove sort
 
 class PFReconstructor(object):
     ''' The reconstructor takes an event containing blocks of elements
@@ -83,12 +82,13 @@ class PFReconstructor(object):
         
         # simplify the blocks by editing the links so that each track will end up linked to at most one hcal
         # then recalculate the blocks
-        for blockid in sorted(blocks.keys()): 
+        for blockid in sorted(blocks.keys(), reverse=True): #big blocks come first
+            pdebugger.info(str('Splitting {}'.format(blocks[blockid])))
             newblocks = self.simplify_blocks(blocks[blockid], self.papasevent.history)
             self.splitblocks.update(newblocks)      
     
         #reconstruct each of the resulting blocks        
-        for b in sorted(self.splitblocks.keys()):  #put big interesting blocks first
+        for b in sorted(self.splitblocks.keys(), reverse=True):  #put big interesting blocks first
             sblock = self.splitblocks[b]
             pdebugger.info('Processing {}'.format(sblock))
             self.reconstruct_block(sblock)
@@ -137,7 +137,7 @@ class PFReconstructor(object):
     def reconstruct_block(self, block):
         ''' see class description for summary of reconstruction approach
         '''
-        uids = block.element_uniqueids
+        uids = block.element_uniqueids #ids are already stored in sorted order inside block
         self.locked = dict( (uid, False) for uid in uids )
         # first reconstruct muons and electrons
         self.reconstruct_muons(block)
@@ -158,10 +158,10 @@ class PFReconstructor(object):
                                        parent_ids)
                 
         else: #TODO
-            for uid in sorted(uids): 
+            for uid in uids: #already sorted to have higher energy things first (see pfblock)
                 if Identifier.is_hcal(uid):
                     self.reconstruct_hcal(block, uid)
-            for uid in sorted(uids): 
+            for uid in uids: #already sorted to have higher energy things first
                 if Identifier.is_track(uid) and not self.locked[uid]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
@@ -192,7 +192,7 @@ class PFReconstructor(object):
     def reconstruct_muons(self, block):
         '''Reconstruct muons in block.'''
         uids = block.element_uniqueids
-        for uid in sorted(uids):
+        for uid in uids:
             if Identifier.is_track(uid) and \
                self.is_from_particle(uid, 'ps', 13):
                 parent_ids = [block.uniqueid, uid]
@@ -203,7 +203,7 @@ class PFReconstructor(object):
     def reconstruct_electrons(self, block):
         '''Reconstruct electrons in block.'''
         uids = block.element_uniqueids
-        for uid in sorted(uids):
+        for uid in uids:
             if Identifier.is_track(uid) and \
                self.is_from_particle(uid, 'ps', 11):
                 parent_ids = [block.uniqueid, uid]
@@ -282,8 +282,8 @@ class PFReconstructor(object):
         hcal = self.papasevent.get_object(hcalid)
         assert (len(block.linked_ids(hcalid, "hcal_hcal")) == 0)  
 
-        trackids = block.linked_ids(hcalid, "hcal_track")  #sorted within block
-        for trackid in trackids:
+        trackids = block.linked_ids(hcalid, "hcal_track")
+        for trackid in sorted(trackids, reverse = True): #sort by decreasing energy
             tracks.append(self.papasevent.get_object(trackid))
             for ecalid in block.linked_ids(trackid, "ecal_track"):
                 # the ecals get all grouped together for all tracks in the block
@@ -411,7 +411,7 @@ class PFReconstructor(object):
         p4.SetVectM(track.p3, mass)
         particle = Particle(p4, vertex, charge, pdgid, subtype='r')
         #todo fix this so it picks up smeared track points (need to propagagte smeared track)
-        particle.set_path(track.path)
+        particle.set_track(track) #refer to existing track rather than make a new one
         self.locked[track.uniqueid] = True
         pdebugger.info(str('Made {} from {}'.format(particle, track)))
         self.insert_particle(parent_ids, particle)

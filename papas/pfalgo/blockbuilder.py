@@ -67,7 +67,7 @@ class BlockBuilder(GraphBuilder):
 
     def __str__(self):
         descrip = "{ "
-        for block in   sorted(self.blocks, key = lambda k: (len(self.blocks[k].element_uniqueids), self.blocks[k].short_info()),reverse =True):            
+        for block in sorted(blocks.keys(), reverse=True): #do largest blocks first          
             descrip = descrip + self.blocks[block].__str__() 
         descrip = descrip + "}\n"
         return descrip  

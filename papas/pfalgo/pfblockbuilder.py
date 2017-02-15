@@ -36,7 +36,6 @@ class PFBlockBuilder(BlockBuilder):
                     distance = float
             subtype says which identifier subtype to use when creating new blocks eg 'r' reconstructed, 's' split
         '''
-        uniqueids = sorted(uniqueids)
         self.papasevent = papasevent
         if self.papasevent.history is None:
             self.papasevent.history = dict((idt, Node(idt)) for idt in uniqueids)

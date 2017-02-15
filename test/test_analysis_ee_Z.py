@@ -48,8 +48,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 90.04, 1)
-            self.assertAlmostEqual(sigma, 10.31, 1)
+            self.assertAlmostEqual(mean, 89.87, 1)
+            self.assertAlmostEqual(sigma, 14.62, 1)
 
 if __name__ == '__main__':
 

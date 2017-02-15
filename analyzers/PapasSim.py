@@ -6,6 +6,7 @@ from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
+from heppy.particles.p4 import P4
 
 import heppy.statistics.rrandom as random
 
@@ -67,8 +68,8 @@ class PapasSim(Analyzer):
         pfsim_particles = self.simulator.ptcs
 
         #these are the particles before simulation
-        simparticles = sorted(pfsim_particles,
-                              key=lambda ptc: ptc.e(), reverse=True)     
+        simparticles = sorted(pfsim_particles, key=P4.sort_key)
+
         setattr(event, self.simname, simparticles)
     
         #create dicts of clusters, particles etc (todo?:move a lot of this into simulator)

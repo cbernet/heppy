@@ -169,7 +169,7 @@ class Identifier(long):
         ''' Resets the internal Identifier counter to 1
         '''
         cls._id=count(1)
-        pdebugger.info("reset ID")
+        #pdebugger.info("reset ID")
         return
 
 if __name__ == '__main__':

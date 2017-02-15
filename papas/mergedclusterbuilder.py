@@ -29,12 +29,12 @@ class MergedClusterBuilder(GraphBuilder):
                 link_type = 'ecal_ecal', 'ecal_track' etc
                 is_link = true/false
                 distance = float
-        hist_nodes is an optional dictionary of Nodes : { id:Node1, id: Node2 etc}
+        history_nodes is an optional dictionary of Nodes : { id:Node1, id: Node2 etc}
             it could for example contain the simulation history nodes
             A Node contains the id of an item (cluster, track, particle etc)
             and says what it is linked to (its parents and children)
-            if hist_nodes is provided it will be added to with the new block information
-            If hist_nodes is not provided one will be created, it will contain nodes
+            if history_nodes is provided it will be added to with the new block information
+            If history_nodes is not provided one will be created, it will contain nodes
             corresponding to each of the tracks, ecal etc and also for the blocks that
             are created by the event block builder.
         '''
@@ -44,7 +44,7 @@ class MergedClusterBuilder(GraphBuilder):
         self.merged = dict()
 
         # collate ids of clusters
-        uniqueids = list(clusters.keys())         
+        uniqueids = list(clusters.keys())
              
         #make the edges match cpp by using the same approach as cpp
         edges = dict()
@@ -66,23 +66,13 @@ class MergedClusterBuilder(GraphBuilder):
 
     def _make_merged_clusters(self):
         #carry out the merging of linked clusters
-        for subgraphids in self.subgraphs:
-            subgraphids.sort()
-            first = None
-            supercluster =None
-            snode = None
-            for elemid in subgraphids :
-                if not first:
-                    first = elemid
-                    supercluster = MergedCluster(self.clusters[elemid])
-                    self.merged[supercluster.uniqueid] = supercluster;
-                    if (self.history_nodes) :
-                        snode = Node(supercluster.uniqueid)
-                        self.history_nodes[supercluster.uniqueid] = snode 
-                else:
-                    thing = self.clusters[elemid]
-                    supercluster += thing
-                if (self.history_nodes) :
-                    self.history_nodes[elemid].add_child(snode)
-                pdebugger.info('Merged Cluster from {}\n'.format(self.clusters[elemid]))
-            pdebugger.info(str('Made {}\n'.format(supercluster)))
+        for subgraphids in self.subgraphs: # TODO may want to order subgraphs from largest to smallest at some point
+            subgraphids.sort(reverse=True) #start with highest E or pT clusters
+            subclusters = [self.clusters[id] for id in subgraphids]
+            supercluster = MergedCluster(subclusters)
+            self.merged[supercluster.uniqueid] = supercluster;
+            if (self.history_nodes) :
+                snode = Node(supercluster.uniqueid)
+                self.history_nodes[supercluster.uniqueid] = snode             
+            #pdebugger.info('Merged Cluster from {}'.format(self.clusters[elemid]))
+            pdebugger.info(str('Made {}'.format(supercluster)))

@@ -36,11 +36,9 @@ class PFBlock(object):
            
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype) 
-        self.element_uniqueids = sorted(element_ids, key=lambda  x: Identifier.type_letter(x)) 
-
-        #comment out energy sorting  for now as not available C++
-        sortby = lambda x: Identifier.type_letter(x)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype, len(element_ids))
+        #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
+        sortby = lambda x: (Identifier.type_letter(x), -x)
         self.element_uniqueids = sorted(element_ids, key=sortby)
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
@@ -164,7 +162,7 @@ class PFBlock(object):
 
         # make the header line for the matrix
         count = 0
-        matrixstr = "\n"
+        matrixstr = ""
         if len(self.element_uniqueids) > 1:
             matrixstr = "    distances:\n        "
             for e1 in self.element_uniqueids :
