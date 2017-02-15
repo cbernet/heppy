@@ -193,6 +193,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         beampipe = self.detector.elements['beampipe']
         frac_ecal = 0.
         if ptc.q() != 0 :
+            #track is now made outside of the particle and then the particle is told where the track is
             track = self.make_and_store_track(ptc)
             resolution = self.detector.elements['tracker'].pt_resolution(track)
             smeared_track = self.make_smeared_track(track, resolution)
@@ -335,9 +336,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         return
 
     def simulate(self, ptcs, history):
-        self.reset()         
+        self.reset()
         self.history = history
-        
         # import pdb; pdb.set_trace()
         for gen_ptc in ptcs:
             if gen_ptc.q() and gen_ptc.pt() < 0.2 and abs(gen_ptc.pdgid()) >= 100:

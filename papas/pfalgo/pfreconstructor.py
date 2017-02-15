@@ -264,7 +264,7 @@ class PFReconstructor(object):
         '''
            block: element ids and edges 
            hcalid: uid of the hcal being processed her
-        
+
            has hcal and has a track
                 -> add up all connected tracks, turn each track into a charged hadron
                 -> add up all ecal energies

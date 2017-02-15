@@ -18,13 +18,14 @@ owned by the algorithm)
 
 The visitor pattern also allows the visit method to dynamically depend on both the object and the visitor
 
-example of setting up Nodes:
+example:: 
+setting up Nodes:
         self.nodes = dict( (i, Node(i) ) for i in range(10) 
         self.nodes[0].add_child(self.nodes[1])
         self.nodes[0].add_child(self.nodes[2])
 traversing nodes:        
         BFS = BreadthFirstSearchIterative(self.nodes[0],"undirected")
-        see alos test_DAG.py
+        see also test_DAG.py
 '''
 
 
@@ -36,16 +37,16 @@ class Node(object):
     But there may be loops in the undirected version of the DAG
 
     attributes:
-       value = the item of interest (around which the node is wrapped)
-       children = list of child nodes
-       parents  = list of parent node
-       undirected_links = combined list of parents and children
+       @param value: the item of interest (around which the node is wrapped)
+       @param children: list of child nodes
+       @param parents: list of parent node
+       @param undirected_links: combined list of parents and children
     '''
 
     def __init__(self, value):
         '''constructor. 
-        value can be anything, even a complex object. 
-        example:
+        @param value: can be anything, even a complex object. 
+        example::
            newnode=Node(uniqueid)
         '''
         self.value = value   # wrapped object
@@ -175,19 +176,19 @@ class BreadthFirstSearchIterative(object):
 class DAGFloodFill(object):
 
     def __init__(self, elements, sort_key = None, first_label = 1):
-        '''Iterate through all nodes and use Breadth first search to find connected groups
-        elements is a dictionary of nodes indexed by the node value
-        first_label is used to give a unique number to each subgraph that is created
-        sort can be used to specify that the nodes should be processed in value order
+        '''Iterate through all nodes and use Breadth first search to find connected groups.
+        @param elements: a dictionary of nodes indexed by the node value
+        @param first_label: used to give a unique number to each subgraph that is created
+        @param sort: can be used to specify that the nodes should be processed in value order
         '''
         self.visited = {}
         self.label = first_label
         self.visited = dict()
         self.subgraphs = []
         uids = elements.keys();
-        if sort_key: #sorting allows for consistent ordering eg when comparing with cpp FloodFill 
-            #Note that C++ uses an unordered_map and on Mac automatically has nodes in ascending order on key
-            #not sure how to vary this , nor if it would be same on all systems
+        if sort_key: #sorting allows for consistent ordering eg when comparing with cpp.
+            #Note that C++ uses an unordered_map and on Mac this automatically has nodes that are in ascending order on key
+            #not sure how to vary this, nor if it would be same on all systems.
             uids.sort(key=sort_key)
         for uid in uids:
             node = elements[uid]

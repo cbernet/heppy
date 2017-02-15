@@ -56,7 +56,7 @@ class PapasSim(Analyzer):
             self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
         #these are the particles before simulation
-        simparticles = sorted(self.simulator.ptcs, key=P4.sort_key)
+        simparticles = sorted(self.simulator.ptcs, key=P4.sort_key, reverse=True)
         setattr(event, self.simname, simparticles)
         papasevent.history = self.simulator.history
         papasevent.add_collection(self.simulator.simulated_particles)
