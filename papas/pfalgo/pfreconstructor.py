@@ -344,6 +344,7 @@ class PFReconstructor(object):
                         #again history is confusingbecause hcal is used to provide direction
                         #be better to make several smaller photons one per ecal?
                         parent_ids = [block.uniqueid] + [ecal.uniqueid for ecal in ecals]
+                        self.locked[hcal.uniqueid] = False # temp fix by alice
                         self.reconstruct_cluster(hcal, 'ecal_in', parent_ids, ecal_energy)
 
         else: # case where there are no tracks make a neutral hadron for each hcal

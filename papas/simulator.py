@@ -186,8 +186,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         ptc should behave as pfobjects.Particle.
         '''
         pdebugger.info("Simulating Hadron")
+        
         #implement beam pipe scattering
-
         ecal = self.detector.elements['ecal']
         hcal = self.detector.elements['hcal']
         beampipe = self.detector.elements['beampipe']
@@ -228,7 +228,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         propagator(ptc.q()).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
-
+        
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)
             path_length = ecal.material.path_length(ptc)

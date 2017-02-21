@@ -48,6 +48,8 @@ class PapasSim(Analyzer):
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
         event.simulator = self
         papasevent = PapasEvent(event.iEv)
+        if event.iEv ==60:
+            print "132"
         setattr(event, "papasevent", papasevent)        
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         try:
@@ -71,6 +73,7 @@ class PapasSim(Analyzer):
         self.merge_clusters(papasevent) #add to simulator class? 
         #useful when producing outputs from a papasevent
         papasevent.iEv = event.iEv
+            
 
     def merge_clusters(self, papasevent): # todo move to a separate analyzer
         #For Now merge the simulated clusters as a separate pre-stage (prior to new reconstruction)        

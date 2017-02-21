@@ -224,7 +224,7 @@ debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
-    #pdebug,
+    pdebug,
     papas_sequence,
     leptons_true,
     iso_leptons,

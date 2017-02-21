@@ -105,7 +105,7 @@ class PFBlock(object):
                     linked_ids.append(edge.id2)
                 else:
                     linked_ids.append(edge.id1)
-        return sorted(linked_ids)
+        return linked_ids
     
     def short_elements_string(self):
         ''' Construct a string description of each of the elements in a block.
@@ -124,10 +124,11 @@ class PFBlock(object):
         count = 0
         elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
-            elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({uid})\n".format(
+            elemdetails += "{shortname:>7}{count} = {strdescrip:9} value={val:8.4f} ({uid})\n".format(
                 shortname=Identifier.type_letter(uid),
                 count=count,
                 strdescrip=Identifier.pretty(uid),
+                val=Identifier.get_value(uid),
                 uid=uid)
             count = count + 1
         return elemdetails
