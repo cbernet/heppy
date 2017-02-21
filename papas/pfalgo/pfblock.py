@@ -105,7 +105,7 @@ class PFBlock(object):
                     linked_ids.append(edge.id2)
                 else:
                     linked_ids.append(edge.id1)
-        return sorted(linked_ids)
+        return linked_ids
     
     def short_elements_string(self):
         ''' Construct a string description of each of the elements in a block.
