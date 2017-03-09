@@ -17,6 +17,8 @@ class BlockBuilder(GraphBuilder):
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
                 an edge records the distance between two ids
+        startindex : the index of the blocks collection into which the new blocks are to be added 
+                (used to create Identifiers for new blocks)
         subtype :used when creating unique identifiers, normally 'r' reconstructed or 's' split
         history : dictionary of nodes that describe which elements are parents of which blocks 
                   it is provided so that the actions of the block builder can be recorded
@@ -29,16 +31,18 @@ class BlockBuilder(GraphBuilder):
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self, ids, edges, subtype, history = None,):
+    def __init__(self, ids, edges, startindex, subtype, history = None,):
         '''
         ids   : list of unique identifiers eg of tracks, clusters etc
         edges : dict of edges which contains all edges between the ids (and maybe more)
                 an edge records the distance/link between two ids
+        startindex : the index of the blocks collection into which the new blocks are to be added (used to create Identifier)
         subtype :used when creating unique identifiers, normally 'r' reconstructed or 's' split
         history : dict of history nodes into which the history of the blockbuilder can be added
         '''
         self.history = history
         self.subtype = subtype
+        self.startindex = startindex
         super(BlockBuilder, self).__init__(ids, edges)       
 
         # build the blocks of connected nodes
@@ -52,7 +56,7 @@ class BlockBuilder(GraphBuilder):
         ''' 
         for subgraph in self.subgraphs:
             #make the block
-            block = PFBlock(subgraph,  self.edges, subtype= self.subtype)        
+            block = PFBlock(subgraph, self.edges, self.startindex + len(self.blocks), subtype=self.subtype)        
             pdebugger.info("Made {}".format(block))
             #put the block in the dict of blocks            
             self.blocks[block.uniqueid] = block        

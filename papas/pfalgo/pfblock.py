@@ -17,7 +17,7 @@ class PFBlock(object):
              use  get_edge(id1,id2) to find an edge
      
      Usage:
-            block = PFBlock(element_ids,  edges, 'r') 
+            block = PFBlock(element_ids,  edges, index, 'r') 
             for uid in block.element_uniqueids:
                  print papasevent.get_object(uid).__str__() + "\n"
             
@@ -26,7 +26,7 @@ class PFBlock(object):
     temp_block_count = 0 #sequential numbering of blocks, not essential but helpful for debugging
 
     
-    def __init__(self, element_ids, edges, subtype): 
+    def __init__(self, element_ids, edges, index, subtype): 
         ''' 
             element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
             edges: is a dictionary of edges, it must contain at least all needed edges.
@@ -36,7 +36,7 @@ class PFBlock(object):
            
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, subtype, len(element_ids))
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, index, subtype, len(element_ids))
         #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
         sortby = lambda x: (Identifier.type_letter(x), -x)
         self.element_uniqueids = sorted(element_ids, key=sortby)
@@ -124,10 +124,11 @@ class PFBlock(object):
         count = 0
         elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
-            elemdetails += "{shortname:>7}{count} = {strdescrip:9} ({uid})\n".format(
+            elemdetails += "{shortname:>7}{count} = {strdescrip:9} value={val:8.4f} ({uid})\n".format(
                 shortname=Identifier.type_letter(uid),
                 count=count,
                 strdescrip=Identifier.pretty(uid),
+                val=Identifier.get_value(uid),
                 uid=uid)
             count = count + 1
         return elemdetails

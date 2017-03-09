@@ -23,7 +23,7 @@ class PFBlockBuilder(BlockBuilder):
             for b in builder.blocks.itervalues() :
                 print b
     '''
-    def __init__(self, papasevent, uniqueids, ruler, subtype = 'r'):
+    def __init__(self, papasevent, uniqueids, ruler, startindex=0, subtype='r'):
         '''
             papasevent a PapasEvent (see above)            
             uniqueids list of which ids from papasevent to build blocks out of
@@ -51,7 +51,7 @@ class PFBlockBuilder(BlockBuilder):
                     edges[edge.key] = edge
 
         #use the underlying BlockBuilder to construct the blocks        
-        super(PFBlockBuilder, self).__init__(uniqueids, edges, subtype, self.papasevent.history)
+        super(PFBlockBuilder, self).__init__(uniqueids, edges, startindex, subtype, self.papasevent.history)
 
     def _make_edge(self, id1, id2, ruler):
         ''' id1, id2 are the unique ids of the two items
