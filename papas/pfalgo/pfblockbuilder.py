@@ -2,7 +2,7 @@ from blockbuilder import BlockBuilder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
 
-class PFBlockBuilder(BlockBuil der):
+class PFBlockBuilder(BlockBuilder):
     ''' PFBlockBuilder creates edges to describe distances between particle flow elements 
         taken from a papasevent (clusters,tracks etc)
         It uses the edges to construct a set of disconnected blocks

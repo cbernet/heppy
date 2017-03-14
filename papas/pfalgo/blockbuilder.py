@@ -27,7 +27,7 @@ class BlockBuilder(SubgraphBuilder):
         blocks: the resulting blocks
     
         Usage example:
-            builder = BlockBuilder(ids, edges, 'r', history)
+            builder = BlockBuilder(ids, edges, 0, 'r', history)
             for b in builder.blocks.itervalues() :
                 print b
     '''
