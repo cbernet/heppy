@@ -28,17 +28,18 @@ class PFBlock(object):
     
     def __init__(self, element_ids, edges, index, subtype): 
         ''' 
-            element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
-            edges: is a dictionary of edges, it must contain at least all needed edges.
+            @param element_ids:  list of the uniqueids of the elements to go in this block [id1,id2,...]
+            @param edges: is a dictionary of edges, it must contain at least all needed edges.
                    It is not a problem if it contains
                    additional edges as only the ones needed will be extracted
-            subtype: used when making unique identifier, will normally be 'r' for reconstructed blocks and 's' for split blocks
+            @param index: index into the collection of blocks into which new block will be added
+            @param subtype: used when making unique identifier, will normally be 'r' for reconstructed blocks and 's' for split blocks
            
         '''
         #make a uniqueid for this block
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, index, subtype, len(element_ids))
         #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
-        sortby = lambda x: (Identifier.type_letter(x), -x)
+        sortby = lambda x: (Identifier.type_letter(x), -Identifier.get_value(x))
         self.element_uniqueids = sorted(element_ids, key=sortby)
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
@@ -77,8 +78,8 @@ class PFBlock(object):
         The list is sorted in order of increasing distance
 
         Arguments:
-        uniqueid : is the id of item of interest
-        edgetype : is an optional type of edge. If specified only links of the given edgetype will be returned
+        @param uniqueid: is the id of item of interest
+        @param edgetype: is an optional type of edge. If specified only links of the given edgetype will be returned
         '''
         linked_edges = []
         for edge in self.edges.itervalues():
@@ -124,7 +125,7 @@ class PFBlock(object):
         count = 0
         elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
-            elemdetails += "{shortname:>7}{count} = {strdescrip:9} value={val:8.4f} ({uid})\n".format(
+            elemdetails += "{shortname:>7}{count} = {strdescrip:9} value={val:5.1f} ({uid})\n".format(
                 shortname=Identifier.type_letter(uid),
                 count=count,
                 strdescrip=Identifier.pretty(uid),

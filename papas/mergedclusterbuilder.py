@@ -10,28 +10,29 @@ class MergedClusterBuilder(SubgraphBuilder):
         The blocks will contain overlapping clusters and then be used to merge the clusters.
         
         attributes:
-             merged - the dictionary of merged clusters
+             merged - the dictionary of merged clusters.
         
         Usage example:
-             (will return the merged clusters to the event)
-            event.ecal_clusters =  MergingBlockBuilder(event.ecal_clusters, ruler).merged_clusters
+             This will return the merged clusters to the event.
+            event.ecal_clusters =  MergingBlockBuilder(event.ecal_clusters, ruler.merged_clusters
             
     '''
     def __init__(self, clusters, ruler, history_nodes):
         '''
-        @param clusters: a dictionary : {id1:ecal1, id2:ecal2, ...}
-        @param ruler: measures distance between two clusters
+        @param clusters: a dictionary : {id1:ecal1, id2:ecal2, ...}.
+        @param ruler: measures distance between two clusters,
             see Distance class for example.
             It should take the two objects as arguments and return a tuple
             of the form:
                 link_type = 'ecal_ecal'
                 is_link = true/false
                 distance = float
-        @param history_nodes: an optional dictionary of Nodes : { id:Node1, id: Node2 etc}.
+        @param history_nodes: a dictionary of Nodes : { id:Node1, id: Node2 etc}.
             It could for example contain the simulation history nodes.
-            A Node contains the id of a cluster
+            A Node contains the id of a cluster.
             and says what it is linked to (its parents and children).
-            New block information will be added to the history
+            New mergedcluster history detailing which clusters the mergedcluster was made from
+            will be added to the existing history
         '''
         self.clusters = clusters
         
@@ -60,9 +61,9 @@ class MergedClusterBuilder(SubgraphBuilder):
 
     def _make_and_store_merged_clusters(self):
         '''
-            This takes the subgraphs of connected clusters that are to be merged and makes a new MergedCluster
-            it stores the new MergedCluser into the self.merged_clusters collection
-            it then updates the history to recrd the links between the clusters and the merged cluster.
+            This takes the subgraphs of connected clusters that are to be merged, and makes a new MergedCluster.
+            It stores the new MergedCluser into the self.merged_clusters collection.
+            It then updates the history to record the links between the clusters and the merged cluster.
         '''
         for subgraph in self.subgraphs: # TODO may want to order subgraphs from largest to smallest at some point
             subgraph.sort(reverse=True) #start with highest E or pT clusters
