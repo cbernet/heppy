@@ -17,7 +17,7 @@ class Identifier(long):
     from left: bits 64 to 61 = PFOBJECTTYPE enumeration eg ECAL, HCAL, PARTICLE (max value = 7)
                bits 60 to 53 = subtype - a single char eg 'g'
                bits 52 to 20 = encoded float value eg energy
-               bits 21 to 1 = index to collection (max value = 2097152 -1)
+               bits 21 to 1 = index number of the collection to which this obejct will belong (max value = 2097152 -1)
 
     Note that sorting on id will result in sorting by:
     type
@@ -186,13 +186,13 @@ class Identifier(long):
 
 if __name__ == '__main__':
 
-    uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 1.23456)
-    id1 = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 12.782) 
+    uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  1, 's', 1.23456)
+    id1 = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  2, 's', 12.782) 
    
-    assert (Identifier.pretty(id1) == 'st2')
+    assert (Identifier.pretty(id1) == 'ts2')
     ids = []
     for i in range(0,100):
-        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, 's', 2**(-i) )
+        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  i, 's', 2**(-i) )
         ids.append(uid)
     ids = sorted(ids, reverse = True)
     for uid in ids:

@@ -19,7 +19,7 @@ class PFBlockBuilder(BlockBuilder):
         
         Usage example:
 
-            builder = PFBlockBuilder(papasevent, uniqueids, ruler)
+            builder = PFBlockBuilder(papasevent, uniqueids, 3, ruler)
             for b in builder.blocks.itervalues() :
                 print b
     '''
@@ -34,6 +34,7 @@ class PFBlockBuilder(BlockBuilder):
                     link_type = 'ecal_ecal', 'ecal_track' etc
                     is_link = true/false
                     distance = float
+            startindex is the index number for this block within the collection of blocks being created
             subtype says which identifier subtype to use when creating new blocks eg 'r' reconstructed, 's' split
         '''
         self.papasevent = papasevent
