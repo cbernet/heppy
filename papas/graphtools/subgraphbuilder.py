@@ -29,7 +29,7 @@ class SubgraphBuilder(object):
         '''
         self.ids = ids
         self.edges = edges
-        sort_key =  lambda x: x #to match cpp
+        
         # build the block nodes (separate graph which will use distances between items to determine links)
         self.nodes = dict((idt, Node(idt)) for idt in ids)
         for edge in edges.itervalues():
@@ -41,7 +41,7 @@ class SubgraphBuilder(object):
         self.subgraphs = []
         
         #sort option  below is needed for consistent orderings and is required for a match with papascpp
-        for subgraph in DAGFloodFill(self.nodes, sort_key).subgraphs:
+        for subgraph in DAGFloodFill(self.nodes, dosorting=True).subgraphs:
             # each of the subgraphs returned by floodfill is a list of nodes that are connected
             # we want the ids of these nodes
             self.subgraphs.append( sorted((node.get_value() for node in subgraph), reverse=True) )  
