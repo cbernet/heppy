@@ -123,9 +123,17 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         return cluster
 
     def make_and_store_smeared_cluster(self, cluster, detector, accept=False, acceptance=None):
-        '''Returns a copy of self with a smeared energy.
-        If accept is False (default), returns None if the smeared
-        cluster is not in the detector acceptance. '''
+        '''Returns a copy of cluster, after a gaussian smearing of the energy.
+        
+        The smeared cluster is stored for further processing.
+        
+        @param cluster: the cluster to be smeared.
+        @param detector: detector object from which the energy resolution, energy response
+          and acceptance parametrizations are taken.
+        @param accept: if set to true, always accept the cluster after smearing
+        @param acceptance: optional detedctor object for acceptance.
+          if provided, and if accept is False, used in place of detector.acceptance
+        '''
         eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
         response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
@@ -146,7 +154,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_cluster)))
             return None
-    
+        
     def update_history(self, parentid, childid) :
         '''Updates the history adding new nodes if needed and recording parent child relationship'''
         child = self.history.setdefault(childid, Node(childid)) #creates a new node if it is not there already
@@ -163,9 +171,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         ptc.set_track(track)
         return track
         
-    def make_smeared_track(self, track, resolution):
+    def make_and_store_smeared_track(self, ptc, track,
+                                     detector_resolution, detector_acceptance):
         '''create a new smeared track'''
         #TODO smearing depends on particle type!
+        resolution = detector_resolution(ptc)
         scale_factor = random.gauss(1, resolution)
         smeared_track = SmearedTrack(track,
                                      track.p3 * scale_factor,
@@ -173,7 +183,14 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                      track.path,
                                      index = len(self.smeared_tracks))
         pdebugger.info(" ".join(("Made", smeared_track.__str__())))
-        return smeared_track  
+        if detector_acceptance(smeared_track):
+            self.smeared_tracks[smeared_track.uniqueid] = smeared_track
+            self.update_history(track.uniqueid, smeared_track.uniqueid )   
+            ptc.track_smeared = smeared_track             
+            return smeared_track  
+        else:
+            pdebugger.info(str('Rejected {}'.format(smeared_track)))
+            return None
 
     def simulate_photon(self, ptc):
         pdebugger.info("Simulating Photon")
@@ -203,15 +220,13 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         if ptc.q() != 0 :
             #track is now made outside of the particle and then the particle is told where the track is
             track = self.make_and_store_track(ptc)
-            resolution = self.detector.elements['tracker'].pt_resolution(track)
-            smeared_track = self.make_smeared_track(track, resolution)
-            if self.detector.elements['tracker'].acceptance(smeared_track):
-                self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-                self.update_history(track.uniqueid, smeared_track.uniqueid )   
-                ptc.track_smeared = smeared_track 
-            else:
-                pdebugger.info(str('Rejected {}'.format(smeared_track)))
-        
+            tracker = self.detector.elements['tracker']
+            smeared_track = self.make_and_store_smeared_track(
+                ptc, 
+                track, 
+                tracker.resolution,
+                tracker.acceptance
+            )
         propagator(ptc.q()).propagate_one(ptc,
                                           beampipe.volume.inner,
                                           self.detector.elements['field'].magnitude)
@@ -280,14 +295,12 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             ecal.volume.inner,
             self.detector.elements['field'].magnitude
         )
-        eres = self.detector.electron_energy_resolution(ptc)
-        smeared_track = self.make_smeared_track(track, eres)
-        if self.detector.electron_acceptance(smeared_track):
-                self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-                self.update_history(track.uniqueid, smeared_track.uniqueid)  
-                ptc.track_smeared = smeared_track 
-        else:
-            pdebugger.info(str('Rejected {}'.format(smeared_track)))
+        smeared_track = self.make_and_store_smeared_track(
+            ptc, track,
+            self.detector.electron_resolution,
+            self.detector.electron_acceptance
+        )
+
     
     def simulate_muon(self, ptc):
         '''Simulate a muon corresponding to gen particle ptc
@@ -302,46 +315,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         pdebugger.info("Simulating Muon")  
         track = self.make_and_store_track(ptc)
         self.propagate(ptc)
-        ptres = self.detector.muon_pt_resolution(ptc)
-        smeared_track = self.make_smeared_track(track, ptres)
-        if self.detector.muon_acceptance(smeared_track):
-            self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-            self.update_history(track.uniqueid, smeared_track.uniqueid)    
-            ptc.track_smeared = smeared_track 
-        else:
-            pdebugger.info(str('Rejected {}'.format(smeared_track)))
-
-    def smear_muon(self, ptc):
-        pdebugger.info("Smearing Muon")
-        self.propagate(ptc)
-        if ptc.q() != 0:
-            pdebugger.info(" ".join(("Made", ptc.track.__str__())))
-        smeared = copy.deepcopy(ptc)
-        return smeared
-
-    def smear_electron(self, ptc):
-        pdebugger.info("Smearing Electron")
-        ecal = self.detector.elements['ecal']
-        propagator(ptc.q()).propagate_one(ptc,
-                                          ecal.volume.inner,
-                                          self.detector.elements['field'].magnitude)
-        if ptc.q() != 0:
-            pdebugger.info(" ".join(("Made", ptc.track.__str__())))
-        smeared = copy.deepcopy(ptc)
-        return smeared
-
-    def propagate_muon(self, ptc):
-        pdebugger.info("Propogate Muon")
-        self.propagate(ptc)
-        return
-
-    def propagate_electron(self, ptc):
-        pdebugger.info("Propogate Electron")
-        ecal = self.detector.elements['ecal']
-        propagator(ptc.q()).propagate_one(ptc,
-                                          ecal.volume.inner,
-                                          self.detector.elements['field'].magnitude)
-        return
+        smeared_track = self.make_and_store_smeared_track(
+            ptc, track,
+            self.detector.muon_resolution,
+            self.detector.muon_acceptance
+        )
 
     def simulate(self, ptcs, history):
         self.reset()
