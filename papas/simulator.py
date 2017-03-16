@@ -3,9 +3,7 @@ import copy
 import shelve
 from heppy.papas.propagator import propagator
 from heppy.papas.pfobjects import Cluster, SmearedCluster, SmearedTrack, Track
-from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.data.papasevent import  PapasEvent
-from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 import heppy.papas.multiple_scattering as mscat
 from heppy.papas.papas_exceptions import SimulationError
@@ -13,19 +11,6 @@ from heppy.utils.pdebug import pdebugger
 import heppy.statistics.rrandom as random
 from heppy.papas.graphtools.DAG import Node
 
-
-def pfsimparticle(ptc, index):
-    '''Create a PFSimParticle from a particle.
-    The PFSimParticle will have the same p4, vertex, charge, pdg ID.
-    '''
-    tp4 = ptc.p4()
-    vertex = ptc.start_vertex().position()
-    charge = ptc.q()
-    pid = ptc.pdgid()
-    simptc = PFSimParticle(tp4, vertex, charge, index, pid)
-    pdebugger.info(" ".join(("Made", simptc.__str__())))
-    simptc.gen_ptc = ptc
-    return simptc
 
 class Simulator(object):
 
@@ -325,11 +310,11 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         self.reset()
         self.history = history
         # import pdb; pdb.set_trace()
-        for gen_ptc in ptcs:
-            if gen_ptc.q() and gen_ptc.pt() < 0.2 and abs(gen_ptc.pdgid()) >= 100:
+        for ptc in ptcs:
+            if ptc.q() and ptc.pt() < 0.2 and abs(ptc.pdgid()) >= 100:
                 # to avoid numerical problems in propagation (and avoid making a particle that is not used)
                 continue      
-            ptc = pfsimparticle(gen_ptc, len(self.simulated_particles))
+            # ptc = pfsimparticle(gen_ptc, len(self.simulated_particles))
             self.history[ptc.uniqueid] = Node(ptc.uniqueid)
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
