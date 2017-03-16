@@ -83,9 +83,9 @@ class PapasDisplay(Analyzer):
             if particles_collection:
                 self.register_particles(particles_collection.values(), i)
             for type_and_subtype in self.cfg_ana.clusters_type_and_subtypes[i]:
-                cluster_collection = event.papasevent.get_collection(type_and_subtype)
-                if cluster_collection:
-                    self.register_clusters(cluster_collection.values(), i)
+                clusters = event.papasevent.get_collection(type_and_subtype)
+                if clusters:
+                    self.register_clusters(clusters.values(), i)
  
     def register_particles(self, particles, side=0):
         '''

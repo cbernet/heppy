@@ -39,12 +39,9 @@ class Simulator(object):
         self.logger = logger
         self.reset()   
 
-    def write_ptcs(self, dbname):
-        db = shelve.open(dbname)
-        db['ptcs'] = self.ptcs
-        db.close()
-
     def reset(self):
+        '''Reset the simulator (clears all collections). To be called at each event.
+        '''
         self.ptcs = []
         self.simulated_particles = dict()
         self.smeared_tracks=dict()
@@ -63,11 +60,24 @@ class Simulator(object):
         propagator(ptc.q()).propagate([ptc], self.detector.cylinders(),
                                       self.detector.elements['field'].magnitude)
         
-    def cluster_collection(self, layer):
+    def cluster_collection(self, layer, smeared):
+        '''returns the correct cluster collection depending on the layer,
+        and whether the true or smeared collection is requested.
+        
+        @param layer: either "ecal_in" or "hcal_in".
+        @param smeared: boolean - if True, the smeared collection is returned.
+         otherwise, the unsmeared collection
+        '''
         if layer == 'ecal_in':
-            return self.true_ecals
+            if smeared:
+                return self.smeared_ecals
+            else:
+                return self.true_ecals
         elif layer == 'hcal_in':
-            return self.true_hcals
+            if smeared:
+                return self.smeared_hcals
+            else:
+                return self.true_hcals
         else:
             raise SimulationError("unrecognised layer for a cluster")        
         
@@ -103,7 +113,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                               det=detector.volume.inner)
             self.logger.warning(errormsg)
             raise SimulationError('Particle not extrapolated to the detector, so cannot make a cluster there. No worries for now, problem will be solved :-)')
-        clusters = self.cluster_collection(cylname)
+        clusters = self.cluster_collection(cylname, smeared=False)
         cluster = Cluster(ptc.p4().E()*fraction, ptc.points[cylname], size, cylname, len(clusters), ptc)
         #update collections and history
         ptc.clusters[cylname] = cluster
@@ -119,7 +129,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         eres = detector.energy_resolution(cluster.energy, cluster.position.Eta())
         response = detector.energy_response(cluster.energy, cluster.position.Eta())
         energy = cluster.energy * random.gauss(response, eres)
-        clusters = self.smeared_cluster_collection(cluster.layer)
+        clusters = self.cluster_collection(cluster.layer, smeared=True)
         smeared_cluster = SmearedCluster(cluster,
                                          energy,
                                          cluster.position,
