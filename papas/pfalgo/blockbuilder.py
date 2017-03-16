@@ -1,10 +1,10 @@
 from heppy.papas.graphtools.DAG import Node, DAGFloodFill
 from heppy.papas.pfalgo.pfblock import PFBlock
-from heppy.papas.graphtools.graphbuilder import GraphBuilder
+from heppy.papas.graphtools.subgraphbuilder import SubgraphBuilder
 from heppy.utils.pdebug import pdebugger
 
         
-class BlockBuilder(GraphBuilder):
+class BlockBuilder(SubgraphBuilder):
     ''' BlockBuilder takes a set of identifiers and a dict of associated edges which have distance and link info
         It uses the distances between elements to construct a set of blocks
         Each element will end up in one (and only one block)

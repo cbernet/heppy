@@ -3,8 +3,8 @@ from heppy.utils.pdebug import pdebugger
 from heppy.papas.data.identifier import Identifier
 import collections
 
-class GraphBuilder(object):
-    ''' GraphBuilder takes a set of identifiers and a dict of associated edges which have distance and link info
+class SubgraphBuilder(object):
+    ''' SubgraphBuilder takes a set of identifiers and a dict of associated edges which have distance and link info
         It uses the distances between elements to construct a set of subgraphs
         Each element will end up in one (and only one) subgraph
         
@@ -18,7 +18,7 @@ class GraphBuilder(object):
         subgraphs : a list of subgraphs, each subgraph is a list of connected ids
 
         Usage example:
-            graph = GraphBuilder(ids, edges)
+            graph = SubgraphBuilder(ids, edges)
             
     '''
     def __init__(self, ids, edges):
@@ -39,15 +39,12 @@ class GraphBuilder(object):
 
         # build the subgraphs of connected nodes
         self.subgraphs = []
+        
         #sort option  below is needed for consistent orderings and is required for a match with papascpp
-        for subgraphlist in DAGFloodFill(self.nodes, sort_key).subgraphs:
-            element_ids = [] 
-            # NB the nodes that are found by FloodFill are the Nodes describing links between items
+        for subgraph in DAGFloodFill(self.nodes, sort_key).subgraphs:
+            # each of the subgraphs returned by floodfill is a list of nodes that are connected
             # we want the ids of these nodes
-            for node in subgraphlist:
-                element_ids.append(node.get_value())
-            self.subgraphs.append(sorted(element_ids, reverse=True)) 
-    
+            self.subgraphs.append( sorted((node.get_value() for node in subgraph), reverse=True) )  
 
     def __str__(self):
         descrip = "{ "

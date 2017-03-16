@@ -47,10 +47,8 @@ class PapasSim(Analyzer):
     def process(self, event):
         #random.seed(0xdeadbeef) #Useful to make results reproducable between loops and single runs
         event.simulator = self
-        papasevent = PapasEvent(event.iEv)
-        if event.iEv ==60:
-            print "132"
-        setattr(event, "papasevent", papasevent)        
+        event.papasevent = PapasEvent(event.iEv)   
+        papasevent = event.papasevent
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         try:
             self.simulator.simulate(gen_particles, papasevent.history)
@@ -60,7 +58,6 @@ class PapasSim(Analyzer):
         #these are the particles before simulation
         simparticles = sorted(self.simulator.ptcs, key=P4.sort_key, reverse=True)
         setattr(event, self.simname, simparticles)
-        papasevent.history = self.simulator.history
         papasevent.add_collection(self.simulator.simulated_particles)
         papasevent.add_collection(self.simulator.true_tracks)
         papasevent.add_collection(self.simulator.smeared_tracks)
@@ -82,9 +79,9 @@ class PapasSim(Analyzer):
         merged_hcals = dict()
         ecals = papasevent.get_collection('es')
         if ecals:
-            merged_ecals = MergedClusterBuilder(papasevent.get_collection('es'), ruler, papasevent.history).merged
+            merged_ecals = MergedClusterBuilder(papasevent.get_collection('es'), ruler, papasevent.history).merged_clusters
         hcals = papasevent.get_collection('hs')
         if hcals:        
-            merged_hcals = MergedClusterBuilder(papasevent.get_collection('hs'), ruler, papasevent.history).merged
+            merged_hcals = MergedClusterBuilder(papasevent.get_collection('hs'), ruler, papasevent.history).merged_clusters
         papasevent.add_collection(merged_ecals)
         papasevent.add_collection(merged_hcals)
