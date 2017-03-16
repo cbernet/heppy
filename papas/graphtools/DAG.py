@@ -175,7 +175,7 @@ class BreadthFirstSearchIterative(object):
 
 class DAGFloodFill(object):
 
-    def __init__(self, elements, sort_key = None, first_label = 1):
+    def __init__(self, elements, dosorting = None, first_label = 1):
         '''Iterate through all nodes and use Breadth first search to find connected groups.
         @param elements: a dictionary of nodes indexed by the node value
         @param first_label: used to give a unique number to each subgraph that is created
@@ -186,10 +186,10 @@ class DAGFloodFill(object):
         self.visited = dict()
         self.subgraphs = []
         uids = elements.keys();
-        if sort_key: #sorting allows for consistent ordering eg when comparing with cpp.
+        if dosorting: #sorting allows for consistent ordering eg when comparing with cpp.
             #Note that C++ uses an unordered_map and on Mac this automatically has nodes that are in ascending order on key
             #not sure how to vary this, nor if it would be same on all systems.
-            uids.sort(key=sort_key)
+            uids.sort()
         for uid in uids:
             node = elements[uid]
             if self.visited.get(node, False): #already done so skip the rest

@@ -139,11 +139,9 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
     
     def update_history(self, parentid, childid) :
         '''Updates the history adding new nodes if needed and recording parent child relationship'''
-        if not self.history.has_key(childid): 
-            self.history[childid] = Node(childid)
-        if not self.history.has_key( parentid): 
-            self.history[ parentid] = Node( parentid)        
-        self.history[parentid].add_child(self.history[childid])  
+        child = self.history.setdefault(childid, Node(childid)) #creates a new node if it is not there already
+        parent = self.history.setdefault(parentid, Node(parentid))
+        parent.add_child(child)   
 
     def make_and_store_track(self, ptc):
         '''creates a new track, adds it into the true_tracks collection and
