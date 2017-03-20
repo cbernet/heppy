@@ -88,6 +88,7 @@ class Cluster(PFObject):
         # self.absorbed = []
 
     def set_size(self, value):
+        '''Set cluster radius in cm.'''
         self._size = value
         try:
             self._angularsize = math.atan(self._size / self.position.Mag())
@@ -95,10 +96,17 @@ class Cluster(PFObject):
             import pdb; pdb.set_trace()
 
     def size(self):
+        '''Returns the cluster radius in cm.
+        
+        Only valid for non-merged clusters.
+        '''
         return self._size
 
     def angular_size(self):
-        #angular_size is only properly specified for single (unmerged) clusters
+        '''Returns the cluster radius in radians.
+        
+        Only valid for non-merged clusters.
+        '''
         return self._angularsize
 
     def is_inside_clusters(self, other):
@@ -147,13 +155,7 @@ class Cluster(PFObject):
         subdists = [(subc.position - point).Mag() for subc in self.subclusters]
         dist = min(subdists)
         return False, dist
-
-        #subdists = [ (subc.position - point).Mag() for subc in self.subclusters ]
-        #dist = min(subdists)
-        #if dist < self.size():
-            #return True, dist
-        #else:
-            #return False, dist
+    
 
     def __iadd__(self, other):
         if other.layer != self.layer:
@@ -255,17 +257,15 @@ class Track(PFObject):
         super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
 
         self.p3 = p3
-        self.pt = p3.Perp()
-        self.energy = p3.Mag()  #TODO clarify energy and momentum
         self.charge = charge
         self.path = path
         self.particle = particle
         self.layer = 'tracker'
 
     def info(self):
-        return '{e:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            pt=self.pt,
-            e=self.energy,
+        return '{p:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
+            pt=self.p3.Perp(),
+            p=self.p3.Mag(),
             theta=math.pi/2. - self.p3.Theta(),
             phi=self.p3.Phi()
         )

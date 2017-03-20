@@ -1,5 +1,5 @@
 from heppy.framework.analyzer import Analyzer
-from heppy.papas.pfobjects import Particle as PFSimParticle
+from heppy.papas.pfobjects import Particle 
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
@@ -52,15 +52,14 @@ class PapasSim(Analyzer):
         event.papasevent = PapasEvent(event.iEv)   
         papasevent = event.papasevent
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        def pfsimparticle(ptc, index):
-            '''Create a PFSimParticle from a particle.
-            The PFSimParticle will have the same p4, vertex, charge, pdg ID.
+        def simparticle(ptc, index):
+            '''Create a sim particle to be used in papas from an input particle.
             '''
             tp4 = ptc.p4()
             vertex = ptc.start_vertex().position()
             charge = ptc.q()
             pid = ptc.pdgid()
-            simptc = PFSimParticle(tp4, vertex, charge, index, pid)
+            simptc = Particle(tp4, vertex, charge, index, pid)
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             simptc.gen_ptc = ptc
             return simptc
