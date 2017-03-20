@@ -1,4 +1,5 @@
 from heppy.framework.analyzer import Analyzer
+from heppy.papas.pfobjects import Particle as PFSimParticle
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
@@ -7,6 +8,7 @@ from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
 from heppy.particles.p4 import P4
+from heppy.utils.pdebug import pdebugger
 import heppy.statistics.rrandom as random
 
 class PapasSim(Analyzer):
@@ -50,8 +52,22 @@ class PapasSim(Analyzer):
         event.papasevent = PapasEvent(event.iEv)   
         papasevent = event.papasevent
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
+        def pfsimparticle(ptc, index):
+            '''Create a PFSimParticle from a particle.
+            The PFSimParticle will have the same p4, vertex, charge, pdg ID.
+            '''
+            tp4 = ptc.p4()
+            vertex = ptc.start_vertex().position()
+            charge = ptc.q()
+            pid = ptc.pdgid()
+            simptc = PFSimParticle(tp4, vertex, charge, index, pid)
+            pdebugger.info(" ".join(("Made", simptc.__str__())))
+            simptc.gen_ptc = ptc
+            return simptc
+        simptcs = [pfsimparticle(ptc, index)
+                   for index, ptc in enumerate(gen_particles)]
         try:
-            self.simulator.simulate(gen_particles, papasevent.history)
+            self.simulator.simulate(simptcs, papasevent.history)
         except (PropagationError, SimulationError) as err:
             self.mainLogger.error(str(err) + ' -> Event discarded')
             return False
