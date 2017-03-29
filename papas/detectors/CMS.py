@@ -115,8 +115,8 @@ class Tracker(DetectorElement):
 
     def acceptance(self, track):
         # return False
-        pt = track.pt
-        eta = abs(track.p3.Eta())
+        pt = track.p3() .Pt()
+        eta = abs(track.p3() .Eta())
         if eta < 1.35 and pt>0.5:
             return random.uniform(0,1)<0.95
         elif eta < 2.5 and pt>0.5:
@@ -126,7 +126,7 @@ class Tracker(DetectorElement):
 
     def resolution(self, track):
         # TODO: depends on the field
-        pt = track.pt
+        pt = track.p3() .Pt()
         return 1.1e-2
 
     
@@ -153,13 +153,13 @@ class BeamPipe(DetectorElement):
 class CMS(Detector):
         
     def electron_acceptance(self, track):
-        return track.p3.Mag() > 5 and abs(track.p3.Eta()) < 2.5
+        return track.p3() .Mag() > 5 and abs(track.p3() .Eta()) < 2.5
 
     def electron_resolution(self, ptc):
         return 0.1 / math.sqrt(ptc.e())
             
     def muon_acceptance(self, track):
-        return track.pt > 5 and abs(track.p3.Eta()) < 2.5
+        return track.p3() .Pt() > 5 and abs(track.p3() .Eta()) < 2.5
             
     def muon_resolution(self, ptc):
         return 0.02 

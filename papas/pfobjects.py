@@ -256,18 +256,21 @@ class Track(PFObject):
             self.subtype = subtype        
         super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
 
-        self.p3 = p3
+        self._p3 = p3
         self.charge = charge
         self.path = path
         self.particle = particle
         self.layer = 'tracker'
 
+    def p3(self):
+        return self._p3
+
     def info(self):
         return '{p:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
-            pt=self.p3.Perp(),
-            p=self.p3.Mag(),
-            theta=math.pi/2. - self.p3.Theta(),
-            phi=self.p3.Phi()
+            pt=self._p3.Perp(),
+            p=self._p3.Mag(),
+            theta=math.pi/2. - self._p3.Theta(),
+            phi=self._p3.Phi()
         )
 
     def short_info(self):

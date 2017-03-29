@@ -63,7 +63,7 @@ class PapasSim(Analyzer):
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             simptc.gen_ptc = ptc
             return simptc
-        simptcs = [pfsimparticle(ptc, index)
+        simptcs = [simparticle(ptc, index)
                    for index, ptc in enumerate(gen_particles)]
         try:
             self.simulator.simulate(simptcs, papasevent.history)

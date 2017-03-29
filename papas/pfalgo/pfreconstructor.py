@@ -302,7 +302,7 @@ class PFReconstructor(object):
         hcal_energy = hcal.energy
         if len(tracks):
             ecal_energy = sum(ecal.energy for ecal in ecals)
-            track_energy = sum(track.energy for track in tracks)
+            track_energy = sum(track.p3().Mag() for track in tracks)
             for track in tracks:
                 #make a charged hadron
                 parent_ids = [block.uniqueid, track.uniqueid]  
@@ -409,7 +409,7 @@ class PFReconstructor(object):
         pdgid = pdgid * track.charge
         mass, charge = particle_data[pdgid]
         p4 = TLorentzVector()
-        p4.SetVectM(track.p3, mass)
+        p4.SetVectM(track.p3() , mass)
         particle = Particle(p4, vertex, charge, len(self.particles), pdgid,  subtype='r')
         #todo fix this so it picks up smeared track points (need to propagagte smeared track)
         particle.set_track(track) #refer to existing track rather than make a new one

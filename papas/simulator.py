@@ -163,7 +163,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         resolution = detector_resolution(ptc)
         scale_factor = random.gauss(1, resolution)
         smeared_track = SmearedTrack(track,
-                                     track.p3 * scale_factor,
+                                     track._p3 * scale_factor,
                                      track.charge,
                                      track.path,
                                      index = len(self.smeared_tracks))
