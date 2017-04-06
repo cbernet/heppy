@@ -124,7 +124,7 @@ class Tracker(DetectorElement):
         else:
             return False
 
-    def pt_resolution(self, track):
+    def resolution(self, track):
         # TODO: depends on the field
         pt = track.pt
         return 1.1e-2
@@ -155,13 +155,13 @@ class CMS(Detector):
     def electron_acceptance(self, track):
         return track.p3.Mag() > 5 and abs(track.p3.Eta()) < 2.5
 
-    def electron_energy_resolution(self, ptc):
+    def electron_resolution(self, ptc):
         return 0.1 / math.sqrt(ptc.e())
             
     def muon_acceptance(self, track):
         return track.pt > 5 and abs(track.p3.Eta()) < 2.5
             
-    def muon_pt_resolution(self, ptc):
+    def muon_resolution(self, ptc):
         return 0.02 
     
     def __init__(self):

@@ -22,7 +22,7 @@ class PFObject(object):
     '''
 
 
-    def __init__(self, pfobjecttype=Identifier.PFOBJECTTYPE.NONE, subtype='u', identifiervalue = 0.0):
+    def __init__(self, pfobjecttype, index, subtype='u', identifiervalue = 0.0):
         '''@param pfobjecttype: type of the object to be created (used in Identifier class) eg Identifier.PFOBJECTTYPE.ECALCLUSTER
            @param subtype: Identifier subtype, eg 'm' for merged
            @param identifiervalue: The value to be encoded into the Identifier eg energy or pt
@@ -31,7 +31,7 @@ class PFObject(object):
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(pfobjecttype, subtype, identifiervalue)
+        self.uniqueid=Identifier.make_id(pfobjecttype, index, subtype, identifiervalue)
 
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -67,16 +67,16 @@ class Cluster(PFObject):
     #TODO: not sure this plays well with SmearedClusters
     max_energy = 0.
 
-    def __init__(self, energy, position, size_m, layer='ecal_in', particle=None, identifiervalue = None):
+    def __init__(self, energy, position, size_m, layer='ecal_in',index=0, particle=None, identifiervalue=None):
         if not hasattr(self, 'subtype'):
             self.subtype = 't'
         #may be better to have one PFOBJECTTYPE.CLUSTER type and also use the layer...
         if identifiervalue== None:
             identifiervalue = max(energy, 0.)
         if layer == 'ecal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, self.subtype, identifiervalue)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, index, self.subtype, identifiervalue)
         elif layer == 'hcal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, self.subtype, identifiervalue)
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, index, self.subtype, identifiervalue)
         else :
             assert (False)
         self.position = position
@@ -208,7 +208,7 @@ class SmearedCluster(Cluster):
 class MergedCluster(Cluster):
     '''The MergedCluster is used to hold a cluster that has been merged from other clusters '''
 
-    def __init__(self, clusters, identifiervalue = None):
+    def __init__(self, clusters, index=0, identifiervalue=None):
         '''identifiervalue will be used to help create the merged cluster unique identifier'''
         position = None
         energy = 0.
@@ -223,7 +223,7 @@ class MergedCluster(Cluster):
                 energy += cluster.energy
         position *= (1./energy)           
         self.subtype = 'm'
-        super(MergedCluster, self).__init__(energy, position, firstcluster._size, firstcluster.layer, identifiervalue= energy)
+        super(MergedCluster, self).__init__(energy, position, firstcluster._size, firstcluster.layer, index, identifiervalue=energy)
         self.subclusters = clusters 
 
     def __iadd__(self, other):
@@ -249,10 +249,10 @@ class Track(PFObject):
     - path : contains the trajectory parameters and points
     '''
     
-    def __init__(self, p3, charge, path, particle=None, subtype='t'):
+    def __init__(self, p3, charge, path, index=0, particle=None, subtype='t'):
         if not hasattr(self, 'subtype'):
             self.subtype = subtype        
-        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, self.subtype, p3.Mag())
+        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
 
         self.p3 = p3
         self.pt = p3.Perp()
@@ -284,9 +284,7 @@ class SmearedTrack(Track):
         super(SmearedTrack, self).__init__(*args, **kwargs)
 
 class Particle(BaseParticle):
-    def __init__(self, tlv, vertex, charge,
-                 pdgid=None,
-                 subtype='s'):
+    def __init__(self, tlv, vertex, charge, index=0, pdgid=None, subtype='s'):
         self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
         
@@ -296,7 +294,7 @@ class Particle(BaseParticle):
             idvalue=self.e()
         else:
             idvalue=self.pt()
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, subtype, idvalue)
+        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, index, subtype, idvalue)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -320,7 +318,10 @@ class Particle(BaseParticle):
         if option == 'w' or self.path is None:
             self.path = path
             if self.q(): # todo check this is OK for multiple scattering?
-                self.track = Track(self.p3(), self.q(), self.path)
+                if self.track:
+                    self.track.path = self.path
+                if self.track_smeared:
+                    self.track_smeared.path = self.path #is this really what we want
     
     def set_track(self, track):
         self.track = track 

@@ -1,8 +1,8 @@
 from edge import Edge
-from graphbuilder import GraphBuilder
+from subgraphbuilder import SubgraphBuilder
 import unittest 
 
-class TestGraphBuilder( unittest.TestCase ):
+class TestSubgraphBuilder( unittest.TestCase ):
 
     def setUp(self):
         '''
@@ -44,8 +44,8 @@ class TestGraphBuilder( unittest.TestCase ):
     
     
     def test_graph(self):
-        graphbuilder = GraphBuilder(self.ids, self.edges)
-        subgraphs = graphbuilder.subgraphs
+        subgraphbuilder = SubgraphBuilder(self.ids, self.edges)
+        subgraphs = subgraphbuilder.subgraphs
         #test we get back 2 subgroups
         self.assertEqual(len(subgraphs), 2 )
         

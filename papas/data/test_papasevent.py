@@ -13,12 +13,13 @@ class TestPapasEvent(unittest.TestCase):
         mixed = dict()
 
         for i in range(0, 2):
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 4.5)
+            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, i,'t', 4.5)
             ecals[uid] = uid
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 's', 4.5)
+        for i in range(0, 2):
+            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, i, 's', 4.5)
             tracks[uid] = uid            
         
-        lastid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 't', 3)
+        lastid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 3, 't', 3)
         ecals[lastid] = lastid    
         
         papasevent.add_collection(ecals)
@@ -37,7 +38,7 @@ class TestPapasEvent(unittest.TestCase):
         self.assertTrue( len(papasevent.get_collection('et'))  == 3 )
         
         #check get_object
-        self.assertTrue( Identifier.pretty(papasevent.get_object(lastid))  == 'et5' )
+        self.assertTrue( Identifier.pretty(papasevent.get_object(lastid))  == 'et3' )
         self.assertTrue( papasevent.get_object(499)  is None )       
 
 if __name__ == '__main__':
