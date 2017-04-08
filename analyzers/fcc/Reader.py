@@ -115,7 +115,7 @@ class Reader(Analyzer):
             if hasattr(self.cfg_ana, 'bTags'):
                 for bjet in store.get(self.cfg_ana.bTags):
                     jets[Jet(bjet.jet())].tags['bf'] = bjet.tag()
-                   
+
             if hasattr(self.cfg_ana, 'cTags'):
                 for cjet in store.get(self.cfg_ana.cTags):
                     jets[Jet(cjet.jet())].tags['cf'] = cjet.tag()
