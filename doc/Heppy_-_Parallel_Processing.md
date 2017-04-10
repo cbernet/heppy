@@ -179,3 +179,9 @@ or
 ```
 nohup ./batchScript.sh &
 ```
+
+Alternatively, if you want to resubmit all failed jobs on the batch queue, do something like:
+
+```
+heppy_check.py Outdir/*Chunk* -b 'bsub -q 1nh'
+```

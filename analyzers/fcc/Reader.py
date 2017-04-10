@@ -98,7 +98,6 @@ class Reader(Analyzer):
             if weightcoll:
                 event.weight = weightcoll[0].value()
 
-
         if hasattr(self.cfg_ana, 'gen_particles'):
             get_collection(Particle, 'gen_particles')
 
@@ -116,7 +115,7 @@ class Reader(Analyzer):
             if hasattr(self.cfg_ana, 'bTags'):
                 for bjet in store.get(self.cfg_ana.bTags):
                     jets[Jet(bjet.jet())].tags['bf'] = bjet.tag()
-        
+
             if hasattr(self.cfg_ana, 'cTags'):
                 for cjet in store.get(self.cfg_ana.cTags):
                     jets[Jet(cjet.jet())].tags['cf'] = cjet.tag()
@@ -125,13 +124,64 @@ class Reader(Analyzer):
                 for taujet in store.get(self.cfg_ana.tauTags):
                     jets[Jet(taujet.jet())].tags['tauf'] = taujet.tag()
 
+        ############################
+        #  jet substructure stuff  #
+        ############################
+        
+        fatjetcoll = get_collection(Jet, 'fatjets')
+        if fatjetcoll:
+            fatjets = dict()
+            for jet in fatjetcoll:
+                fatjets[jet] = jet
+            # store N-subjettiness up to 3
+            if hasattr(self.cfg_ana, 'jetsOneSubJettiness'):
+                for tjet in store.get(self.cfg_ana.jetsOneSubJettiness):
+                    fatjets[Jet(tjet.jet())].tau1 = tjet.tag()
+
+            if hasattr(self.cfg_ana, 'jetsTwoSubJettiness'):
+                for tjet in store.get(self.cfg_ana.jetsTwoSubJettiness):
+                    fatjets[Jet(tjet.jet())].tau2 = tjet.tag()
+            if hasattr(self.cfg_ana, 'jetsThreeSubJettiness'):
+                for tjet in store.get(self.cfg_ana.jetsThreeSubJettiness):
+                    fatjets[Jet(tjet.jet())].tau3 = tjet.tag()
+
+            from collections import defaultdict
+            # store subjets according to various algorithms
+            # the first entry of subjets list is the "cleaned" fastjet itself
+            
+            # trimming
+            if hasattr(self.cfg_ana, 'subjetsTrimming') and hasattr(self.cfg_ana, 'subjetsTrimmingTagged'):
+                 relations = defaultdict(list)
+                 for tjet in store.get(self.cfg_ana.subjetsTrimmingTagged):
+                      for i in range(tjet.subjets_size()):
+                          relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
+                 for fatjet, subjets in relations.items():
+                     fatjets[fatjet].subjetsTrimming = subjets
+
+            # pruning
+            if hasattr(self.cfg_ana, 'subjetsPruning') and hasattr(self.cfg_ana, 'subjetsPruningTagged'):
+                 relations = defaultdict(list)
+                 for tjet in store.get(self.cfg_ana.subjetsPruningTagged):
+                      for i in range(tjet.subjets_size()):
+                          relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
+                 for fatjet, subjets in relations.items():
+                     fatjets[fatjet].subjetsPruning = subjets
+
+            # soft drop
+            if hasattr(self.cfg_ana, 'subjetsSoftDrop') and hasattr(self.cfg_ana, 'subjetsSoftDropTagged'):
+                 relations = defaultdict(list)
+                 for tjet in store.get(self.cfg_ana.subjetsSoftDropTagged):
+                      for i in range(tjet.subjets_size()):
+                          relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
+                 for fatjet, subjets in relations.items():
+                     fatjets[fatjet].subjetsSoftDrop = subjets
+
 
         class Iso(object):
             def __init__(self):
                 self.sumpt=-9999
                 self.sume=-9999
                 self.num=-9999
-
 
         electrons = dict()
         if hasattr(self.cfg_ana, 'electrons'):
@@ -148,7 +198,6 @@ class Reader(Analyzer):
                 for ele in store.get(self.cfg_ana.electronsToMC):
                     if ele.sim() and ele.rec():
                         electrons[Particle(ele.rec())].gen = Particle(ele.sim())
-
 
         muons = dict()
         if hasattr(self.cfg_ana, 'muons'):
