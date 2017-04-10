@@ -39,8 +39,7 @@ class PFBlock(object):
         #make a uniqueid for this block
         self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, index, subtype, len(element_ids))
         #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
-        sortby = lambda x: (Identifier.type_letter(x), -Identifier.get_value(x))
-        self.element_uniqueids = sorted(element_ids, key=sortby)
+        self.element_uniqueids = sorted(element_ids, reverse=True)
         #sequential numbering of blocks, not essential but helpful for debugging
         self.block_count = PFBlock.temp_block_count
         PFBlock.temp_block_count += 1
@@ -189,7 +188,7 @@ class PFBlock(object):
                     elif self.get_edge(e1, e2).distance is None:
                         rowstr += "     ---"
                     elif not self.get_edge(e1, e2).linked:
-                        rowstr += "     xxx"
+                        rowstr += "     ---"
                     else :
                         rowstr += "{:8.4f}".format(self.get_edge(e1, e2).distance)
                 matrixstr += "{:>8}".format(rowname) + rowstr + "\n"

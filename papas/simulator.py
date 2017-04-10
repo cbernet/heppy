@@ -313,7 +313,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         for ptc in ptcs:
             if ptc.q() and ptc.pt() < 0.2 and abs(ptc.pdgid()) >= 100:
                 # to avoid numerical problems in propagation (and avoid making a particle that is not used)
-                continue      
+                continue
+            pdebugger.info(str('Simulating {}'.format(ptc)))
             # ptc = pfsimparticle(gen_ptc, len(self.simulated_particles))
             self.history[ptc.uniqueid] = Node(ptc.uniqueid)
             if ptc.pdgid() == 22:
