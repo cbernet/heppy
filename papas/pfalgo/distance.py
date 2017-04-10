@@ -33,11 +33,13 @@ class Distance(object):
         return None, False, None
     
     def ecal_ecal(self, ele1, ele2):
+        '''Only used for cluster merging'''
         #modified this to also deal with clusters that are merged clusters
         link_ok, dist = ele1.is_inside_clusters(ele2)
         return ('ecal_in', 'ecal_in'), link_ok,  dist
 
     def hcal_hcal(self, ele1, ele2):
+        '''Only used for cluster merging'''
         link_ok, dist = ele1.is_inside_clusters(ele2)
         return ('hcal_in', 'hcal_in'), link_ok, dist 
     
@@ -57,8 +59,8 @@ class Distance(object):
         link_ok, dist = hcal.is_inside(tp)
         return ('hcal_in', 'tracker'), link_ok, dist
 
-    def ecal_hcal(self, ele1, ele2):
-        link_ok, dist = ele1.is_inside_clusters(ele2)    
-        return ('ecal_in', 'hcal_in'), link_ok, dist 
+##    def ecal_hcal(self, ele1, ele2):
+##        link_ok, dist = ele1.is_inside_clusters(ele2)    
+##        return ('ecal_in', 'hcal_in'), link_ok, dist 
 
 distance = Distance()

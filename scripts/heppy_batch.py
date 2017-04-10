@@ -180,8 +180,10 @@ fi"""
 #BSUB -q 8nm
 # ulimit -v 3000000 # NO
 unset LD_LIBRARY_PATH
+unset PYTHONHOME
+unset PYTHONPATH
 echo 'copying job dir to worker'
-source /afs/cern.ch/exp/fcc/sw/0.7/init_fcc_stack.sh
+source /cvmfs/fcc.cern.ch/sw/0.8/init_fcc_stack.sh  
 cd $HEPPY
 source ./init.sh
 echo 'environment:'
@@ -326,7 +328,7 @@ python {looper} pycfg.py config.pck --options=options.json
 echo
 echo 'sending the job directory back'
 mv Loop/* ./
-""" 
+""".format(looper=looper.__file__) 
    return script
 
 
