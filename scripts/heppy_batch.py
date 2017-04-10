@@ -326,7 +326,7 @@ python {looper} pycfg.py config.pck --options=options.json
 echo
 echo 'sending the job directory back'
 mv Loop/* ./
-""" 
+""".format(looper=looper.__file__) 
    return script
 
 
