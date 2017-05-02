@@ -1,7 +1,6 @@
 '''Jet clusterizer based on fastjet.'''
 
 from heppy.framework.analyzer import Analyzer
-from heppy.framework.event import Event
 
 from heppy.particles.tlv.jet import Jet
 from heppy.particles.jet import JetConstituents
@@ -18,8 +17,7 @@ elif os.environ.get('CMSSW_BASE'):
     from ROOT import heppy
     CCJetClusterizer = heppy.JetClusterizer
 
-import math
-    
+
 class JetClusterizer(Analyzer):
     '''Jet clusterizer based on fastjet (kt-ee algorithm)
     
@@ -54,6 +52,7 @@ class JetClusterizer(Analyzer):
         super(JetClusterizer, self).__init__(*args, **kwargs)
         args = self.cfg_ana.fastjet_args
         self.clusterize = None
+        self.njets = 0
         if 'ptmin' in args and 'njets' in args:
             raise ValueError('cannot specify both ptmin and njets arguments')
         if 'ptmin' in args:
@@ -62,9 +61,10 @@ class JetClusterizer(Analyzer):
                 return self.clusterizer.make_inclusive_jets(args['ptmin']) 
             self.clusterize = clusterize
         elif 'njets' in args:
+            self.njets = args['njets']
             self.clusterizer = CCJetClusterizer(1)
             def clusterize():
-                return self.clusterizer.make_exclusive_jets(args['njets']) 
+                return self.clusterizer.make_exclusive_jets(self.njets) 
             self.clusterize = clusterize
         else:
             raise ValueError('specify either ptmin or njets') 
@@ -97,7 +97,13 @@ class JetClusterizer(Analyzer):
         particles = getattr(event, self.cfg_ana.particles)
         # removing neutrinos
         particles = [ptc for ptc in particles if abs(ptc.pdgid()) not in [12,14,16]]
-        self.clusterizer.clear();
+        if len(particles) < self.njets:
+            err = 'Cannot make {} jets with {} particles -> Event discarded'.format(
+                self.njets, len(particles)
+            )
+            self.mainLogger.error(err)
+            return False
+        self.clusterizer.clear()
         for ptc in particles:
             self.clusterizer.add_p4( ptc.p4() )
         self.clusterize()
