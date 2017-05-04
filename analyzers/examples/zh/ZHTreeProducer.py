@@ -45,6 +45,8 @@ class ZHTreeProducer(Analyzer):
         higgses = getattr(event, self.cfg_ana.higgses)
         if len(higgses)>0:
             higgs = higgses[0]
+            # if higgs.m() < 30:
+            #    import pdb; pdb.set_trace()
             fillParticle(self.tree, 'higgs', higgs)
             fillLepton(self.tree, 'higgs_1', higgs.legs[0])
             fillLepton(self.tree, 'higgs_2', higgs.legs[1])

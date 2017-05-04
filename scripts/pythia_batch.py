@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import shutil
 import re
@@ -8,6 +10,8 @@ def batchScriptLocal(index, cardfname):
     '''prepare a local version of the batch script, to run using nohup'''
 
     script = """#!/bin/bash
+pwd
+echo {cardfname}
 echo 'running job' {index}
 echo
 fcc-pythia8-generate {cardfname}
@@ -108,7 +112,7 @@ def main(options, args, batchManager):
     
     listOfValues = range(njobs)
     batchManager.PrepareJobs( listOfValues )
-    waitingTime = 0.1
+    waitingTime = 5
     batchManager.SubmitJobs( waitingTime )
 
 
