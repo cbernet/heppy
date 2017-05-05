@@ -36,7 +36,7 @@ fi"""
 # ulimit -v 3000000 # NO
 unset LD_LIBRARY_PATH
 echo 'copying job dir to worker'
-source /afs/cern.ch/exp/fcc/sw/0.8pre/setup.sh
+source /afs/cern.ch/exp/fcc/sw/0.8/setup.sh
 cd $HEPPY
 source ./init.sh
 echo 'environment:'
