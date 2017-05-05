@@ -200,7 +200,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         #implement beam pipe scattering
         ecal = self.detector.elements['ecal']
         hcal = self.detector.elements['hcal']
-        beampipe = self.detector.elements['beampipe']
         frac_ecal = 0.
         if ptc.q() != 0 :
             #track is now made outside of the particle and then the particle is told where the track is
@@ -212,27 +211,6 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                 tracker.resolution,
                 tracker.acceptance
             )
-        propagator(ptc.q()).propagate_one(ptc,
-                                          beampipe.volume.inner,
-                                          self.detector.elements['field'].magnitude)
-
-        propagator(ptc.q()).propagate_one(ptc,
-                                          beampipe.volume.outer,
-                                          self.detector.elements['field'].magnitude)
-
-        #pdebug next line  must be editted out to match cpp
-        #mscat.multiple_scattering(ptc, beampipe, self.detector.elements['field'].magnitude)
-
-        #re-propagate after multiple scattering in the beam pipe
-        #indeed, multiple scattering is applied within the beam pipe,
-        #so the extrapolation points to the beam pipe entrance and exit
-        #change after multiple scattering.
-        propagator(ptc.q()).propagate_one(ptc,
-                                           beampipe.volume.inner,
-                                           self.detector.elements['field'].magnitude)
-        propagator(ptc.q()).propagate_one(ptc,
-                                           beampipe.volume.outer,
-                                           self.detector.elements['field'].magnitude)
         propagator(ptc.q()).propagate_one(ptc,
                                            ecal.volume.inner,
                                            self.detector.elements['field'].magnitude)
