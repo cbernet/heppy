@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import shutil
 import re
@@ -8,6 +10,8 @@ def batchScriptLocal(index, cardfname):
     '''prepare a local version of the batch script, to run using nohup'''
 
     script = """#!/bin/bash
+pwd
+echo {cardfname}
 echo 'running job' {index}
 echo
 fcc-pythia8-generate {cardfname}
@@ -31,8 +35,10 @@ fi"""
 #BSUB -q 8nm
 # ulimit -v 3000000 # NO
 unset LD_LIBRARY_PATH
+unset PYTHONHOME
+unset PYTHONPATH
 echo 'copying job dir to worker'
-source /afs/cern.ch/exp/fcc/sw/0.8pre/setup.sh
+source /cvmfs/fcc.cern.ch/sw/0.8/init_fcc_stack.sh
 cd $HEPPY
 source ./init.sh
 echo 'environment:'
@@ -108,7 +114,7 @@ def main(options, args, batchManager):
     
     listOfValues = range(njobs)
     batchManager.PrepareJobs( listOfValues )
-    waitingTime = 0.1
+    waitingTime = 5
     batchManager.SubmitJobs( waitingTime )
 
 
