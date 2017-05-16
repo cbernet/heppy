@@ -12,6 +12,7 @@ def fill( tree, varName, value ):
 def bookP4( tree, pName ):
     var(tree, '{pName}_e'.format(pName=pName))
     var(tree, '{pName}_pt'.format(pName=pName))
+    var(tree, '{pName}_pz'.format(pName=pName))
     var(tree, '{pName}_theta'.format(pName=pName))
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
@@ -20,6 +21,7 @@ def bookP4( tree, pName ):
 def fillP4( tree, pName, p4 ):
     fill(tree, '{pName}_e'.format(pName=pName), p4.e() )
     fill(tree, '{pName}_pt'.format(pName=pName), p4.pt() )
+    fill(tree, '{pName}_pz'.format(pName=pName), p4.p3().Z() )
     fill(tree, '{pName}_theta'.format(pName=pName), p4.theta() )
     fill(tree, '{pName}_eta'.format(pName=pName), p4.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), p4.phi() )
@@ -153,12 +155,14 @@ def bookZed(tree, pName):
     bookLepton(tree, '{pName}_1'.format(pName=pName)  )
     bookLepton(tree, '{pName}_2'.format(pName=pName)  )
     var(tree, '{pName}_acol'.format(pName=pName))
+    var(tree, '{pName}_acop'.format(pName=pName))
 
 def fillZed(tree, pName, zed):
     fillParticle(tree, pName, zed)
     fillLepton(tree, '{pName}_1'.format(pName=pName), zed.leg1() )
     fillLepton(tree, '{pName}_2'.format(pName=pName), zed.leg2() )
     fill(tree, '{pName}_acol'.format(pName=pName), zed.acollinearity() * 180./math.pi)
+    fill(tree, '{pName}_acop'.format(pName=pName), zed.acoplanarity() * 180./math.pi)
 
 def bookMet(tree, pName):
     var(tree, '{pName}_pt'.format(pName=pName)  )
