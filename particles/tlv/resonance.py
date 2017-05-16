@@ -30,6 +30,7 @@ class Resonance2(Resonance):
         pid is the pdg id of the resonance.
         '''
         super(Resonance2, self).__init__([leg1, leg2], pid)
+        self._acollinearity = leg1.p3().Angle(leg2.p3())
 
     def leg1(self):
         '''return first leg'''
@@ -38,3 +39,9 @@ class Resonance2(Resonance):
     def leg2(self):
         '''return second leg'''
         return self.legs[1]
+
+    def acollinearity(self):
+        '''return the angle between the two legs, in radians'''
+        return self._acollinearity
+    
+        

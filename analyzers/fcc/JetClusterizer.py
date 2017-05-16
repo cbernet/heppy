@@ -98,11 +98,21 @@ class JetClusterizer(Analyzer):
         # removing neutrinos
         particles = [ptc for ptc in particles if abs(ptc.pdgid()) not in [12,14,16]]
         if len(particles) < self.njets:
-            err = 'Cannot make {} jets with {} particles -> Event discarded'.format(
-                self.njets, len(particles)
-            )
-            self.mainLogger.error(err)
-            return False
+            if hasattr(self.cfg_ana, 'njets_required') and self.cfg_ana.njets_required == False:
+                # not enough particles for the required number of jets,
+                # making no jet
+                setattr(event, self.cfg_ana.output, [])
+                return True                
+
+            else:
+                # njets_required not provided, or njets_required set to True
+                err = 'Cannot make {} jets with {} particles -> Event discarded'.format(
+                    self.njets, len(particles)
+                )
+                self.mainLogger.error(err)
+                # killing the sequence, as the user requests exactly njets
+                return False
+        # enough particles to make the required number of jets
         self.clusterizer.clear()
         for ptc in particles:
             self.clusterizer.add_p4( ptc.p4() )
