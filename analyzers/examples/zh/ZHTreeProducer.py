@@ -13,10 +13,11 @@ class ZHTreeProducer(Analyzer):
                               'recreate')
         self.tree = Tree( 'events', '')
         bookParticle(self.tree, 'recoil')
-        bookJet(self.tree, 'jet1')
-        bookJet(self.tree, 'jet2')
-        bookJet(self.tree, 'jet3')
-        bookJet(self.tree, 'jet4')
+        self.taggers = ['b', 'bmatch']
+        bookJet(self.tree, 'jet1', self.taggers)
+        bookJet(self.tree, 'jet2', self.taggers)
+        bookJet(self.tree, 'jet3', self.taggers)
+        bookJet(self.tree, 'jet4', self.taggers)
 ##        bookParticle(self.tree, 'zed')
 ##        bookLepton(self.tree, 'zed_1')
 ##        bookLepton(self.tree, 'zed_2')
@@ -42,7 +43,7 @@ class ZHTreeProducer(Analyzer):
         for ijet, jet in enumerate(jets):
             if ijet==4:
                 break
-            fillJet(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet)
+            fillJet(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet, self.taggers)
         higgses = getattr(event, self.cfg_ana.higgses)
         if len(higgses)>0:
             higgs = higgses[0]

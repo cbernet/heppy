@@ -29,14 +29,18 @@ class ChargedHadronsFromB(Analyzer):
         event.hadrons_from_b = []
         event.hadrons_not_from_b = []
         for hadron in charged_hadrons:
-            ancestors = event.genbrowser.ancestors(hadron)
-            is_from_b = False 
-            for ancestor in ancestors:
-                if hasBottom(ancestor.pdgid() ):
-                    is_from_b = True
+            is_from_b = is_ptc_from_b(event, hadron, event.genbrowser)
             if is_from_b:
                 event.hadrons_from_b.append(hadron)
             else:
                 event.hadrons_not_from_b.append(hadron)
+
+def is_ptc_from_b(event, hadron, browser):
+    ancestors = browser.ancestors(hadron)
+    is_from_b = False 
+    for ancestor in ancestors:
+        if hasBottom(ancestor.pdgid() ):
+            is_from_b = True
+    return is_from_b
             
         
