@@ -16,7 +16,7 @@ def is_matched_to_b(jet):
     return is_bjet
 
 
-def is_from_b(jet, event, fraction):
+def is_from_b(jet, event, fraction=0.1):
     '''returns true if more than a fraction of the jet energy
     is from a b.'''
     history = HistoryHelper(event.papasevent)
@@ -25,22 +25,20 @@ def is_from_b(jet, event, fraction):
                                       event.gen_vertices)       
     sum_e_from_b = 0
     charged_ptcs = jet.constituents[211]
-    print '*' * 50
-    print jet
+    from_b = False
     for ptc in charged_ptcs:
         print ptc
         simids = history.get_linked_collection(ptc.uniqueid, 'ps')
         for simid in simids:
             simptc = event.papasevent.get_object(simid)
             if is_ptc_from_b(event, simptc.gen_ptc, event.genbrowser):
-                print 'from b'
-                print simptc
-                sum_e_from_b += simptc.e()
-            else:
-                print 'NOT from b'
-        print '*'
-    print sum_e_from_b / jet.e()
-    return True
+                from_b = True
+                break
+        sum_e_from_b += ptc.e()        
+    bfrac = sum_e_from_b / jet.e()
+    jet.tags['bfrac'] = bfrac
+    return bfrac > fraction
+
     
 
 
@@ -80,7 +78,7 @@ class ParametrizedBTagger(Analyzer):
         '''
         jets = getattr(event, self.cfg_ana.input_jets)
         for jet in jets:
-            is_bjet = is_from_b(jet, event, fraction=0.5)
-            is_b_tagged = self.cfg_ana.roc.is_tagged(is_bjet)
-            jet.tags['b'] = is_b_tagged
+            is_bjet = is_from_b(jet, event, fraction=0.1)
+            is_btagged = self.cfg_ana.roc.is_tagged(is_bjet)
+            jet.tags['b'] = is_btagged
             jet.tags['bmatch'] = is_bjet

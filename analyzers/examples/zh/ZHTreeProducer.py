@@ -13,7 +13,7 @@ class ZHTreeProducer(Analyzer):
                               'recreate')
         self.tree = Tree( 'events', '')
         bookParticle(self.tree, 'recoil')
-        self.taggers = ['b', 'bmatch']
+        self.taggers = ['b', 'bmatch', 'bfrac']
         bookJet(self.tree, 'jet1', self.taggers)
         bookJet(self.tree, 'jet2', self.taggers)
         bookJet(self.tree, 'jet3', self.taggers)
