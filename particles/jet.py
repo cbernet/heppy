@@ -94,6 +94,7 @@ class JetConstituents(dict):
                       ]
         for pdgid in all_pdgids:
             self[pdgid] = JetComponent(pdgid)
+        self.particles = []
 
     def validate(self, jet_energy, tolerance = 1e-2):
         '''Calls pdb if total component energy != jet energy'''
@@ -108,7 +109,8 @@ class JetConstituents(dict):
             self[pdgid].append(ptc)
         except KeyError:
             import pdb; pdb.set_trace()
-
+        self.particles.append(ptc)
+            
     def sort(self):
         '''Sort constituent particles by decreasing energy.'''
         for ptcs in self.values():

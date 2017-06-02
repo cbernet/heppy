@@ -80,8 +80,6 @@ zed_tree = cfg.Analyzer(
 
 
 from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
-from heppy.test.jet_tree_cff import jet_tree_sequence
-
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -89,9 +87,6 @@ sequence = cfg.Sequence(
     source,
     # gen_particles_stable, 
     papas_sequence,
-#    jet_tree_sequence('gen_particles_stable',
-#                      'rec_particles',
-#                      2, None),
     sum_particles,
     sum_gen, 
     zed_tree
