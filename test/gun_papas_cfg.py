@@ -91,8 +91,6 @@ from heppy.test.papas_cfg import papas, papas_sequence, detector
 
 from heppy.test.papas_cfg import papasdisplay as display 
 
-from jet_tree_cff import jet_tree_sequence
-
 from heppy.analyzers.P4SumBuilder import P4SumBuilder
 sum_particles = cfg.Analyzer(
     P4SumBuilder, 
@@ -121,11 +119,6 @@ sequence = cfg.Sequence(
     source, 
     papas_sequence,
     display
-#    jet_tree_sequence('gen_particles_stable','rec_particles',
-#    njets=None, ptmin=0.5),
-#    sum_particles,
-#    sum_gen,
-#    zed_tree
 )
 
 # Specifics for particle gun events
