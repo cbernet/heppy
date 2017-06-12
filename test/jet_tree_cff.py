@@ -1,13 +1,26 @@
 import heppy.framework.config as cfg
 
-def jet_tree_sequence(gen_ptcs, rec_ptcs, njets, ptmin):
-
+def jet_tree_sequence(gen_ptcs, rec_ptcs, njets=None, ptmin=None):
+    '''returns this sequence:
+    
+        return ( {'gen_jets': gen_jets,
+              'jets': jets,
+              'jet_match': jet_match,
+              'jet_tree': jet_tree},
+             sequence )
+             
+    @param gen_ptcs: gen particles to be used for gen jets
+    @param rec_ptcs: rec particles to be used for rec jets
+    @param njets: number of jets in exclusive mode
+    @param ptmin: minimum jet pt in inclusive mode
+    '''
     fastjet_args = None
     if njets:
         fastjet_args = dict(njets=njets)
-    else:
+    elif ptmin is not None:
         fastjet_args = dict(ptmin=ptmin)
-    
+    else:
+        raise ValueError('provide either njets or ptmin')
     
     from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
     gen_jets = cfg.Analyzer(
@@ -27,8 +40,8 @@ def jet_tree_sequence(gen_ptcs, rec_ptcs, njets, ptmin):
     from heppy.analyzers.Matcher import Matcher
     jet_match = cfg.Analyzer(
         Matcher,
-        match_particles = 'jets',
-        particles = 'gen_jets',
+        match_particles = 'gen_jets',
+        particles = 'jets',
         delta_r = 0.3
         )
 
@@ -37,7 +50,12 @@ def jet_tree_sequence(gen_ptcs, rec_ptcs, njets, ptmin):
         JetTreeProducer,
         tree_name = 'events',
         tree_title = 'jets',
-        jets = 'gen_jets'
+        jets = 'jets'
         )
 
-    return [gen_jets, jets, jet_match, jet_tree]
+    sequence = [gen_jets, jets, jet_match, jet_tree]
+    return ( {'gen_jets': gen_jets,
+              'jets': jets,
+              'jet_match': jet_match,
+              'jet_tree': jet_tree},
+             sequence )

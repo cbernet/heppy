@@ -1,6 +1,7 @@
 from heppy.particles.tlv.particle import Particle
-from ROOT import TLorentzVector
+from ROOT import TLorentzVector, TVector3
 from rootobj import RootObj
+import math
 
 class Resonance(Particle, RootObj):
     """Resonance decaying to two or more particles (legs).
@@ -38,3 +39,21 @@ class Resonance2(Resonance):
     def leg2(self):
         '''return second leg'''
         return self.legs[1]
+
+    def acollinearity(self):
+        '''return the angle between the two legs, in radians'''
+        return self.leg1().p3().Angle(self.leg2().p3())
+    
+    def acoplanarity(self, axis=None):
+        '''return the angle between the lepton plane and the provided axis.
+        
+        If axis is None, using the z axis.
+        '''
+        # normal to lepton plane
+        if axis is None:
+            axis = TVector3(0, 0, 1)
+        normal = self.leg1().p3().Cross(self.leg2().p3()).Unit()
+        angle = normal.Angle(axis)
+        while angle > math.pi / 2.:
+            angle -= math.pi / 2.
+        return angle

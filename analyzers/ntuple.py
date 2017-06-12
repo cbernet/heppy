@@ -1,4 +1,5 @@
 #!/bin/env python
+import math
 
 def var( tree, varName, type=float ):
     tree.var(varName, type)
@@ -11,6 +12,7 @@ def fill( tree, varName, value ):
 def bookP4( tree, pName ):
     var(tree, '{pName}_e'.format(pName=pName))
     var(tree, '{pName}_pt'.format(pName=pName))
+    var(tree, '{pName}_pz'.format(pName=pName))
     var(tree, '{pName}_theta'.format(pName=pName))
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
@@ -19,6 +21,7 @@ def bookP4( tree, pName ):
 def fillP4( tree, pName, p4 ):
     fill(tree, '{pName}_e'.format(pName=pName), p4.e() )
     fill(tree, '{pName}_pt'.format(pName=pName), p4.pt() )
+    fill(tree, '{pName}_pz'.format(pName=pName), p4.p3().Z() )
     fill(tree, '{pName}_theta'.format(pName=pName), p4.theta() )
     fill(tree, '{pName}_eta'.format(pName=pName), p4.eta() )
     fill(tree, '{pName}_phi'.format(pName=pName), p4.phi() )
@@ -28,22 +31,22 @@ def fillP4( tree, pName, p4 ):
 
 def bookParticle( tree, pName ):
     var(tree, '{pName}_pdgid'.format(pName=pName))
-    var(tree, '{pName}_ip'.format(pName=pName)) #TODO Colin clean up hierarchy
-    var(tree, '{pName}_ip_signif'.format(pName=pName))
+##    var(tree, '{pName}_ip'.format(pName=pName)) #TODO Colin clean up hierarchy
+##    var(tree, '{pName}_ip_signif'.format(pName=pName))
     bookP4(tree, pName)
     
 def fillParticle( tree, pName, particle ):
     fill(tree, '{pName}_pdgid'.format(pName=pName), particle.pdgid() )
-    ip = -99
-    ip_signif = -1e9
-    if hasattr(particle, 'path'):
-        path = particle.path
-        if hasattr(path, 'IP'):
-            ip = path.IP
-        if hasattr(path, 'IP_signif'):
-            ip_signif = path.IP_signif
-    fill(tree, '{pName}_ip'.format(pName=pName), ip )
-    fill(tree, '{pName}_ip_signif'.format(pName=pName), ip_signif )
+##    ip = -99
+##    ip_signif = -1e9
+##    if hasattr(particle, 'path'):
+##        path = particle.path
+##        if hasattr(path, 'IP'):
+##            ip = path.IP
+##        if hasattr(path, 'IP_signif'):
+##            ip_signif = path.IP_signif
+##    fill(tree, '{pName}_ip'.format(pName=pName), ip )
+##    fill(tree, '{pName}_ip_signif'.format(pName=pName), ip_signif )
     fillP4(tree, pName, particle )
 
 
@@ -149,13 +152,17 @@ def fillIsoParticle(tree, pName, ptc, lepton):
     
 def bookZed(tree, pName):
     bookParticle(tree, pName )
-    bookParticle(tree, '{pName}_leg1'.format(pName=pName)  )
-    bookParticle(tree, '{pName}_leg2'.format(pName=pName)  )
+    bookLepton(tree, '{pName}_1'.format(pName=pName)  )
+    bookLepton(tree, '{pName}_2'.format(pName=pName)  )
+    var(tree, '{pName}_acol'.format(pName=pName))
+    var(tree, '{pName}_acop'.format(pName=pName))
 
 def fillZed(tree, pName, zed):
     fillParticle(tree, pName, zed)
-    fillParticle(tree, '{pName}_leg1'.format(pName=pName), zed.leg1 )
-    fillParticle(tree, '{pName}_leg2'.format(pName=pName), zed.leg2 )
+    fillLepton(tree, '{pName}_1'.format(pName=pName), zed.leg1() )
+    fillLepton(tree, '{pName}_2'.format(pName=pName), zed.leg2() )
+    fill(tree, '{pName}_acol'.format(pName=pName), zed.acollinearity() * 180./math.pi)
+    fill(tree, '{pName}_acop'.format(pName=pName), zed.acoplanarity() * 180./math.pi)
 
 def bookMet(tree, pName):
     var(tree, '{pName}_pt'.format(pName=pName)  )

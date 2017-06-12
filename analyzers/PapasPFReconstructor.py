@@ -55,21 +55,13 @@ class PapasPFReconstructor(Analyzer):
            reconstructed paricles and updated history_nodes to the event object
            arguments:
                     event must contain a papasevent which must contain tracks, ecals, hcals and blocks'''
-    
-        ecals = event.papasevent.get_collection(self.cfg_ana.ecal_type_and_subtype);
-        hcals = event.papasevent.get_collection(self.cfg_ana.hcal_type_and_subtype);
-        tracks = event.papasevent.get_collection(self.cfg_ana.track_type_and_subtype);
-        blocks = event.papasevent.get_collection(self.cfg_ana.block_type_and_subtype);
-        particles = dict()
-        splitblocks = dict()
-        if blocks:
-            self.reconstructor.reconstruct( event.papasevent, self.cfg_ana.block_type_and_subtype)
-            particles = self.reconstructor.particles
-            splitblocks = self.reconstructor.splitblocks
+        self.reconstructor.reconstruct( event.papasevent, self.cfg_ana.block_type_and_subtype)
+        particles = self.reconstructor.particles
+        splitblocks = self.reconstructor.splitblocks
         event.papasevent.add_collection(particles)
         event.papasevent.add_collection(splitblocks)
         #for particle comparison we want a list of particles (instead of a dict) so that we can sort and compare
-        reconstructed_particle_list = sorted( self.reconstructor.particles.values(),
+        reconstructed_particle_list = sorted( particles.values(),
                                               key = lambda ptc: ptc.e(),
                                               reverse=True)
         setattr(event, self.cfg_ana.output, reconstructed_particle_list)

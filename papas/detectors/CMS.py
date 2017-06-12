@@ -140,6 +140,7 @@ class Field(DetectorElement):
         super(Field, self).__init__('tracker', volume,  mat)
 
 class BeamPipe(DetectorElement):
+    '''Beam pipe is not used in the simulation at the moment, so no need to define it.'''
 
     def __init__(self):
         #Material Seamless AISI 316 LN, External diameter 53 mm, Wall thickness 1.5 mm (hors cms) X0 1.72 cm

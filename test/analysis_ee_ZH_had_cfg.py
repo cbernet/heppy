@@ -189,14 +189,43 @@ compute_jet_energy = cfg.Analyzer(
 # in the roc module
 # cms_roc is a numpy array, so one can easily scale
 # the cms performance, help(numpy.array) for more info.
-from heppy.analyzers.ParametrizedBTagger import ParametrizedBTagger
-from heppy.analyzers.roc import cms_roc
-cms_roc.set_working_point(0.7)
-btag = cfg.Analyzer(
-    ParametrizedBTagger,
-    input_jets='rescaled_jets',
-    roc=cms_roc
-)
+
+btag_type = 'smeared'
+btag = None
+if btag_type == 'parametrized':
+    from heppy.analyzers.ParametrizedBTagger import ParametrizedBTagger
+    from heppy.analyzers.roc import cms_roc
+    cms_roc.set_working_point(0.7)
+    btag = cfg.Analyzer(
+        ParametrizedBTagger,
+        input_jets='rescaled_jets',
+        roc=cms_roc
+    )
+elif btag_type == 'smeared':
+    def track_selection_function(track):
+        return track.q() != 0 and \
+        abs(track.path.smeared_impact_parameter) < 2.5e-3 and \
+        track.path.ip_resolution < 7.5e-4 and \
+        track.e() > 0.4
+    
+    import math
+    def aleph_resolution(ptc):
+        momentum = ptc.p3().Mag()
+        return math.sqrt(25.**2 + 95.**2/ (momentum**2) )*1e-6
+    
+    from heppy.analyzers.ImpactParameterJetTag import ImpactParameterJetTag
+    btag = cfg.Analyzer(
+        ImpactParameterJetTag,
+        jets = 'jets',
+        method = 'simple',
+        track_selection = track_selection_function,
+        resolution = aleph_resolution,
+        #mva attributes, not mandatory
+        mva_filename = '../02_b_tagging/18_without_beampipe_simple_ILD/ntuple/qq_ILD_spIP/analyzers.ZqqIPJetsTreeProducer.ZqqIPJetsTreeProducer_1/tree.root',
+        mva_treename = 'events',
+        mva_background_selection = 'quark_type <= 4',
+        mva_signal_selection = 'quark_type == 5',
+    )    
 
 # reconstruction of the H and Z resonances.
 # for now, use for the Higgs the two b jets with the mass closest to mH
@@ -264,3 +293,4 @@ config = cfg.Config(
     services = [],
     events_class = Events
 )
+

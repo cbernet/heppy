@@ -357,7 +357,8 @@ class MCComponent( Component ):
     
     def __init__(self, name, files, triggers=[], xSection=1,
                  nGenEvents=None,
-                 effCorrFactor=None, **kwargs ):
+                 effCorrFactor=1,
+                 **kwargs ):
         super( MCComponent, self).__init__( name = name,
                                             files = files,
                                             triggers = triggers, **kwargs )
@@ -372,13 +373,13 @@ class MCComponent( Component ):
         '''Returns the normalization weight for a given integrated luminosity
         
         '''
-        # if intLumi is None:
-        #    intLumi = Weight.FBINV
+        if intLumi is None:
+            intLumi = self.intLumi
         #COLIN THIS WEIGHT STUFF IS REALLY BAD!!
         # use the existing Weight class or not? guess so...
         return Weight( genNEvents = self.nGenEvents,
                        xSection = self.xSection,
-                       intLumi = self.intLumi,
+                       intLumi = intLumi,
                        genEff = 1/self.effCorrFactor,
                        addWeight = self.addWeight )
 
