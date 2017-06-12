@@ -62,7 +62,7 @@ class PapasEvent(Event):
         self.collections[the_type] = collection        
     
     def get_collection(self, type_and_subtype):
-        return self.collections.get(type_and_subtype, None)
+        return self.collections.get(type_and_subtype, {})
 
     def get_object(self, uid):
         '''get an object corresponding to a unique uid'''
