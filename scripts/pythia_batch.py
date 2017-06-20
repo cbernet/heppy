@@ -37,7 +37,7 @@ unset LD_LIBRARY_PATH
 unset PYTHONHOME
 unset PYTHONPATH
 echo 'copying job dir to worker'
-source /cvmfs/fcc.cern.ch/sw/0.8/init_fcc_stack.sh
+source {fccswpath}/init_fcc_stack.sh  
 cd $HEPPY
 source ./init.sh
 echo 'environment:'
@@ -53,7 +53,8 @@ echo 'running'
 fcc-pythia8-generate {cardfname} {selection}  
 echo
 {copy}
-""".format(cardfname=cardfname, selection=selection, copy=cpCmd)
+""".format(cardfname=cardfname, selection=selection, copy=cpCmd,
+           fccswpath=os.environ['FCCSWPATH'])
 
    return script
 
