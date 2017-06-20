@@ -34,7 +34,7 @@ class TestPapasEvent(unittest.TestCase):
         self.assertRaises(ValueError, papasevent.add_collection, mixed)
         
         #get we can get back collections OK
-        self.assertTrue( papasevent.get_collection('zz') is None)
+        self.assertTrue( len(papasevent.get_collection('zz')) == 0 )  # this one does not exist 
         self.assertTrue( len(papasevent.get_collection('et'))  == 3 )
         
         #check get_object
