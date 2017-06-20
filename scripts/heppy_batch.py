@@ -181,9 +181,9 @@ fi"""
 # ulimit -v 3000000 # NO
 unset LD_LIBRARY_PATH
 unset PYTHONHOME
-unset PYTHONPATH
+export PYTHONPATH={pythonpath}
 echo 'copying job dir to worker'
-source /cvmfs/fcc.cern.ch/sw/0.8/init_fcc_stack.sh  
+source {fccswpath}/init_fcc_stack.sh  
 cd $HEPPY
 source ./init.sh
 echo 'environment:'
@@ -199,7 +199,8 @@ echo 'running'
 python {looper} pycfg.py config.pck
 echo
 {copy}
-""".format(looper=looper.__file__, copy=cpCmd)
+""".format(looper=looper.__file__, copy=cpCmd, 
+           pythonpath=os.getcwd(), fccswpath=os.environ['FCCSWPATH'])
 
    return script
 
