@@ -19,9 +19,7 @@ class ZHTreeProducer(Analyzer):
         self.taggers = ['b', 'bmatch', 'bfrac']
         bookJet(self.tree, 'jet1', self.taggers)
         bookJet(self.tree, 'jet2', self.taggers)
-        bookParticle(self.tree, 'higgs')
-        bookParticle(self.tree, 'higgs_1')
-        bookParticle(self.tree, 'higgs_2')
+        bookHbb(self.tree, 'higgs')
         bookParticle(self.tree, 'misenergy')
        
     def process(self, event):
@@ -46,9 +44,7 @@ class ZHTreeProducer(Analyzer):
             higgs = higgses[0]
             # if higgs.m() < 30:
             #    import pdb; pdb.set_trace()
-            fillParticle(self.tree, 'higgs', higgs)
-            fillLepton(self.tree, 'higgs_1', higgs.legs[0])
-            fillLepton(self.tree, 'higgs_2', higgs.legs[1])
+            fillHbb(self.tree, 'higgs', higgs)
         self.tree.tree.Fill()
         
     def write(self, setup):
