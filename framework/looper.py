@@ -208,6 +208,16 @@ Make sure that the configuration object is of class cfg.Analyzer.
         At each event, self.process is called.
         At the end of the loop, Analyzer.endLoop is called.
         """
+
+        def initialize_timer(iEv):
+            if iEv%100 == 0:
+                if not hasattr(self,'start_time'):
+                    self.logger.info( 'event {iEv}'.format(iEv=iEv))
+                    self.start_time = timeit.default_timer()
+                    self.start_time_event = iEv
+                else:
+                    self.logger.warning( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+
         nEvents = self.nEvents
         firstEvent = self.firstEvent
         iEv = firstEvent
@@ -227,13 +237,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         if hasattr(self.events, '__getitem__'):
             # events backend supports indexing, e.g. CMS, FCC, bare root
             for iEv in range(firstEvent, firstEvent+nEvents):
-                if iEv%100 == 0:
-                    if not hasattr(self,'start_time'):
-                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
-                        self.start_time = timeit.default_timer()
-                        self.start_time_event = iEv
-                    else:
-                        self.logger.warning( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+                initialize_timer(iEv)
                 try:
                     self.process( iEv )
                     self.nEvProcessed += 1
@@ -252,14 +256,8 @@ Make sure that the configuration object is of class cfg.Analyzer.
             for ii, event in enumerate(self.events):
                 if ii < firstEvent:
                     continue
+                initialize_timer(iEv)
                 iEv += 1
-                if iEv%100 == 0:
-                    if not hasattr(self,'start_time'):
-                        self.logger.warning( 'event {iEv}'.format(iEv=iEv))
-                        self.start_time = timeit.default_timer()
-                        self.start_time_event = iEv
-                    else:
-                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
                 try:
                     self.event = Event(iEv, event, self.setup)
                     self.iEvent = iEv
