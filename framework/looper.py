@@ -338,6 +338,8 @@ possibly skipping a number of events at the beginning.
             ret = False
             try:
                 ret = analyzer.process( self.event )
+                ret = True if ret is None else ret
+                self.event.analyzers.append((analyzer, ret))
             except:
                 #TODO: check that this works fine with non podio inputs, e.g. plain TChains.
                 if hasattr(self.event, 'input') and \
@@ -356,7 +358,7 @@ possibly skipping a number of events at the beginning.
             if self.timeReport:
                 self.timeReport[i]['events'] += 1
                 if self.timeReport[i]['events'] > 0:
-                    self.timeReport[i]['time'] += timeit.default_timer() - start
+                    self.timeReport[i]['time'] += timeit.default_timer() - start                  
             if ret == False:
                 return (False, analyzer.name)
         return (True, analyzer.name)
