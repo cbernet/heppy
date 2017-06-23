@@ -138,7 +138,6 @@ if __name__ == '__main__':
 
     loop = Looper( 'looper', config,
                    nEvents=100,
-                   nPrint=0,
-                   timeReport=True)
+                   nPrint=0 )
     loop.process(6)
     print loop.event

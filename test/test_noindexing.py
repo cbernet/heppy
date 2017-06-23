@@ -24,8 +24,7 @@ class TestNoIndexing(unittest.TestCase):
     def test_all_events_processed(self):
         loop = Looper( self.outdir, config,
                        nEvents=None,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         loop.loop()
         loop.write()
         logfile = open('/'.join([self.outdir, 'log.txt']))
@@ -43,8 +42,7 @@ class TestNoIndexing(unittest.TestCase):
         loop = Looper( self.outdir, config,
                        nEvents=None,
                        firstEvent=first,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         loop.loop()
         loop.write()
         # input file has 200 entries
@@ -57,8 +55,7 @@ class TestNoIndexing(unittest.TestCase):
         '''
         loop = Looper( self.outdir, config,
                        nEvents=None,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         self.assertRaises(TypeError, loop.process, 10)
         
        

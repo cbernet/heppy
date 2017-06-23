@@ -32,9 +32,11 @@ class Event(object):
                                                      # have a name starting by "jet" 
        
     Object attributes:
-      iEv = event processing index, starting at 0
-      eventWeight = a weight, set to 1 at the beginning of the processing
-      input = input, as determined by the looper
+      iEv: event processing index, starting at 0
+      eventWeight: a weight, set to 1 at the beginning of the processing
+      input: input, as determined by the looper
+      analyzers: list of analyzers that processed this event, with their result, in the form:
+          [(analyzer_name, result?), ...]
     #TODO: provide a clear interface for access control (put, get, del products) - we should keep track of the name and id of the analyzer.
     '''
 
@@ -46,6 +48,7 @@ class Event(object):
         self.input = input_data
         self.setup = setup
         self.eventWeight = eventWeight
+        self.analyzers = []
 
     def _get_print_attrs(self, subname=""):
         '''returns a dict of printable information of an event

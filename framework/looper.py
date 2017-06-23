@@ -3,17 +3,21 @@
 
 import ROOT 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 import os
 import sys
 import imp
 import logging
 import pprint
 from math import ceil
-from event import Event
 import timeit
-from heppy.framework.exceptions import UserStop
 import resource
 import json
+from event import Event
+
+from heppy.framework.exceptions import UserStop
+from heppy.statistics.counter import Counter
+
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -57,7 +61,7 @@ class Looper(object):
                   nEvents=None,
                   firstEvent=0,
                   nPrint=0,
-                  timeReport=False,
+                  timeReport=True,
                   quiet=False,
                   memCheckFromEvent=-1,
                   stopFlag = None):
@@ -96,10 +100,12 @@ class Looper(object):
         self._analyzers = []
         # and in a dict for easy user access
         self._analyzer_dict = dict()
+        self.analyzer_counter = Counter('analyzers')
         for anacfg in self.config.sequence:
             anaobj = self._build(anacfg)
             self._analyzers.append(anaobj)
-            self._analyzer_dict[anacfg.name] = anaobj        
+            self._analyzer_dict[anacfg.name] = anaobj
+            self.analyzer_counter.register(anacfg.name)
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
@@ -208,6 +214,16 @@ Make sure that the configuration object is of class cfg.Analyzer.
         At each event, self.process is called.
         At the end of the loop, Analyzer.endLoop is called.
         """
+
+        def initialize_timer(iEv):
+            if iEv%100 == 0:
+                if not hasattr(self,'start_time'):
+                    self.logger.info( 'event {iEv}'.format(iEv=iEv))
+                    self.start_time = timeit.default_timer()
+                    self.start_time_event = iEv
+                else:
+                    self.logger.warning( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+
         nEvents = self.nEvents
         firstEvent = self.firstEvent
         iEv = firstEvent
@@ -227,13 +243,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         if hasattr(self.events, '__getitem__'):
             # events backend supports indexing, e.g. CMS, FCC, bare root
             for iEv in range(firstEvent, firstEvent+nEvents):
-                if iEv%100 == 0:
-                    if not hasattr(self,'start_time'):
-                        self.logger.info( 'event {iEv}'.format(iEv=iEv))
-                        self.start_time = timeit.default_timer()
-                        self.start_time_event = iEv
-                    else:
-                        self.logger.warning( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
+                initialize_timer(iEv)
                 try:
                     self.process( iEv )
                     self.nEvProcessed += 1
@@ -252,14 +262,8 @@ Make sure that the configuration object is of class cfg.Analyzer.
             for ii, event in enumerate(self.events):
                 if ii < firstEvent:
                     continue
+                initialize_timer(iEv)
                 iEv += 1
-                if iEv%100 == 0:
-                    if not hasattr(self,'start_time'):
-                        self.logger.warning( 'event {iEv}'.format(iEv=iEv))
-                        self.start_time = timeit.default_timer()
-                        self.start_time_event = iEv
-                    else:
-                        self.logger.info( 'event %d (%.1f ev/s)' % (iEv, (iEv-self.start_time_event)/float(timeit.default_timer() - self.start_time)) )
                 try:
                     self.event = Event(iEv, event, self.setup)
                     self.iEvent = iEv
@@ -274,13 +278,15 @@ Make sure that the configuration object is of class cfg.Analyzer.
                     print 'Stopped loop following a UserStop exception:'
                     print err
                     break            
-            
+        for analyzer in self._analyzers:
+            analyzer.endLoop(self.setup)            
+        self._write_log()
+
+    def _write_log(self):
         warning = self.logger.warning
         warning('')
         warning( self.cfg_comp )
         warning('')        
-        for analyzer in self._analyzers:
-            analyzer.endLoop(self.setup)
         if self.timeReport:
             allev = max([x['events'] for x in self.timeReport])
             warning("\n      ---- TimeReport (all times in ms; first evt is skipped) ---- ")
@@ -298,6 +304,10 @@ Make sure that the configuration object is of class cfg.Analyzer.
             warning("%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------"))
             warning("%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( passev, allev, 1000*totPerProcEv, 1000*totPerAllEv, 100.0, "TOTAL"))
             warning("")
+        warning( self.analyzer_counter )
+        # the following must be printed to the log file in all cases,
+        # as the heppy batch scripts rely on this line to decide whether
+        # processing is succesful.
         logfile = open('/'.join([self.name,'log.txt']),'a')
         logfile.write('number of events processed: {nEv}\n'.format(
             nEv=self.nEvProcessed)
@@ -340,6 +350,8 @@ possibly skipping a number of events at the beginning.
             ret = False
             try:
                 ret = analyzer.process( self.event )
+                ret = True if ret is None else ret
+                self.event.analyzers.append((analyzer, ret))
             except:
                 #TODO: check that this works fine with non podio inputs, e.g. plain TChains.
                 if hasattr(self.event, 'input') and \
@@ -358,9 +370,11 @@ possibly skipping a number of events at the beginning.
             if self.timeReport:
                 self.timeReport[i]['events'] += 1
                 if self.timeReport[i]['events'] > 0:
-                    self.timeReport[i]['time'] += timeit.default_timer() - start
+                    self.timeReport[i]['time'] += timeit.default_timer() - start                  
             if ret == False:
                 return (False, analyzer.name)
+            else:
+                self.analyzer_counter.inc(analyzer.name)                
         return (True, analyzer.name)
 
     def write(self):

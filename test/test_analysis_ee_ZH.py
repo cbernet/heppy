@@ -38,8 +38,7 @@ if context.name == 'fcc':
             config.components[0].files = [fname]
             self.looper = Looper( self.outdir, config,
                                   nEvents=50,
-                                  nPrint=0,
-                                  timeReport=True)
+                                  nPrint=0 )
             import logging
             logging.disable(logging.CRITICAL)
 
