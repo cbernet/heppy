@@ -61,7 +61,7 @@ class Looper(object):
                   nEvents=None,
                   firstEvent=0,
                   nPrint=0,
-                  timeReport=False,
+                  timeReport=True,
                   quiet=False,
                   memCheckFromEvent=-1,
                   stopFlag = None):
