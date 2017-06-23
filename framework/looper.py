@@ -3,17 +3,21 @@
 
 import ROOT 
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+
 import os
 import sys
 import imp
 import logging
 import pprint
 from math import ceil
-from event import Event
 import timeit
-from heppy.framework.exceptions import UserStop
 import resource
 import json
+from event import Event
+
+from heppy.framework.exceptions import UserStop
+from heppy.statistics.counter import Counter
+
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -96,10 +100,12 @@ class Looper(object):
         self._analyzers = []
         # and in a dict for easy user access
         self._analyzer_dict = dict()
+        self.analyzer_counter = Counter('analyzers')
         for anacfg in self.config.sequence:
             anaobj = self._build(anacfg)
             self._analyzers.append(anaobj)
-            self._analyzer_dict[anacfg.name] = anaobj        
+            self._analyzer_dict[anacfg.name] = anaobj
+            self.analyzer_counter.register(anacfg.name)
         self.nEvents = nEvents
         self.firstEvent = firstEvent
         self.nPrint = int(nPrint)
@@ -272,13 +278,15 @@ Make sure that the configuration object is of class cfg.Analyzer.
                     print 'Stopped loop following a UserStop exception:'
                     print err
                     break            
-            
+        for analyzer in self._analyzers:
+            analyzer.endLoop(self.setup)            
+        self._write_log()
+
+    def _write_log(self):
         warning = self.logger.warning
         warning('')
         warning( self.cfg_comp )
         warning('')        
-        for analyzer in self._analyzers:
-            analyzer.endLoop(self.setup)
         if self.timeReport:
             allev = max([x['events'] for x in self.timeReport])
             warning("\n      ---- TimeReport (all times in ms; first evt is skipped) ---- ")
@@ -296,6 +304,10 @@ Make sure that the configuration object is of class cfg.Analyzer.
             warning("%9s   %9s    %9s   %9s   %s" % ("---------","--------","---------", "---------", "-------------"))
             warning("%9d   %9d   %10.2f  %10.2f %5.1f%%   %s" % ( passev, allev, 1000*totPerProcEv, 1000*totPerAllEv, 100.0, "TOTAL"))
             warning("")
+        warning( self.analyzer_counter )
+        # the following must be printed to the log file in all cases,
+        # as the heppy batch scripts rely on this line to decide whether
+        # processing is succesful.
         logfile = open('/'.join([self.name,'log.txt']),'a')
         logfile.write('number of events processed: {nEv}\n'.format(
             nEv=self.nEvProcessed)
@@ -361,6 +373,8 @@ possibly skipping a number of events at the beginning.
                     self.timeReport[i]['time'] += timeit.default_timer() - start                  
             if ret == False:
                 return (False, analyzer.name)
+            else:
+                self.analyzer_counter.inc(analyzer.name)                
         return (True, analyzer.name)
 
     def write(self):

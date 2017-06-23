@@ -74,7 +74,7 @@ class Counter(diclist):
                 eff2 = -1.
             else:
                 eff2 = float(count)/init
-            retstr += '\t {level:<40} {count:>9} \t {eff1:4.2f} \t {eff2:6.4f}\n'.format(
+            retstr += '\t {level:<60} {count:>9} \t {eff1:4.2f} \t {eff2:6.4f}\n'.format(
                 level=level,
                 count=count,
                 eff1=eff1,
