@@ -26,9 +26,6 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                               'test/data/ee_Z_ddbar.root'])
             config.components[0].files = [fname]
-            self.looper = Looper( self.outdir, config,
-                                  nEvents=100,
-                                  nPrint=0 )
             import logging
             logging.disable(logging.CRITICAL)
 
@@ -36,12 +33,17 @@ if context.name == 'fcc':
             shutil.rmtree(self.outdir)
             logging.disable(logging.NOTSET)
 
-        def test_analysis(self):
+        def test_z_cms(self):
             '''Check for an almost perfect match with reference.
             Will fail if physics algorithms are modified,
             so should probably be removed from test suite,
             or better: be made optional. 
             '''
+            from heppy.papas.detectors.CMS import cms
+            config.sequence[2].detector = cms
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=100,
+                                  nPrint=0 )
             self.looper.loop()
             self.looper.write()
             rootfile = '/'.join([self.outdir,
@@ -49,6 +51,26 @@ if context.name == 'fcc':
             mean, sigma = plot(rootfile)
             self.assertAlmostEqual(mean, 91.28, 1)
             self.assertAlmostEqual(sigma, 13.65, 1)
+
+        def test_z_clic(self):
+            '''Check for an almost perfect match with reference.
+            Will fail if physics algorithms are modified,
+            so should probably be removed from test suite,
+            or better: be made optional. 
+            '''
+            from heppy.papas.detectors.CLIC import clic
+            config.sequence[2].detector = clic
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=100,
+                                  nPrint=0 )            
+            self.looper.loop()
+            self.looper.write()
+            rootfile = '/'.join([self.outdir,
+                                'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
+            mean, sigma = plot(rootfile)
+            self.assertAlmostEqual(mean, 84.91, 1)
+            self.assertAlmostEqual(sigma, 4.56, 1)
+
 
 if __name__ == '__main__':
 

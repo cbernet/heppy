@@ -1,3 +1,4 @@
+import math
 
 class SurfaceCylinder(object):
 
@@ -5,6 +6,14 @@ class SurfaceCylinder(object):
         self.name = name
         self.rad = rad
         self.z = z
+
+    def theta_junction(self):
+        '''Return theta of the barrel endcap junction'''
+        return math.atan(self.rad/self.z)
+    
+    def eta_junction(self):
+        '''Return eta of the barrel endcap junction'''
+        return -math.log( math.tan(self.theta_junction() / 2.) )
 
     def __str__(self):
         return '{} : {}, R={:5.2f}, z={:5.2f}'.format(
