@@ -81,6 +81,12 @@ zed_tree = cfg.Analyzer(
 
 from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
 
+from heppy.papas.detectors.CLIC import clic
+papas.detector = clic
+
+from heppy.test.papas_cfg import papasdisplaycompare as display 
+display.detector = clic
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
@@ -89,7 +95,8 @@ sequence = cfg.Sequence(
     papas_sequence,
     sum_particles,
     sum_gen, 
-    zed_tree
+    zed_tree,
+    display
     )
 
 # Specifics to read FCC events 
