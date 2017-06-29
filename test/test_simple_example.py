@@ -30,8 +30,7 @@ class TestSimpleExample(unittest.TestCase):
     def test_all_events_processed(self):
         loop = Looper( self.outdir, config,
                        nEvents=None,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         loop.loop()
         loop.write()
         logfile = open('/'.join([self.outdir, 'log.txt']))
@@ -49,8 +48,7 @@ class TestSimpleExample(unittest.TestCase):
         loop = Looper( self.outdir, config,
                        nEvents=None,
                        firstEvent=first,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         loop.loop()
         loop.write()
         # input file has 200 entries
@@ -60,8 +58,7 @@ class TestSimpleExample(unittest.TestCase):
     def test_process_event(self):
         loop = Looper( self.outdir, config,
                        nEvents=None,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         loop.process(10)
         self.assertEqual(loop.event.input.var1, 10)
         loop.process(10)
@@ -71,8 +68,7 @@ class TestSimpleExample(unittest.TestCase):
         config_with_stopper.sequence.insert(1, stopper)
         loop = Looper( self.outdir, config_with_stopper,
                        nEvents=None,
-                       nPrint=0,
-                       timeReport=True)
+                       nPrint=0 )
         self.assertRaises(UserStop, loop.process, 10)
   
     def test_rewrite(self):

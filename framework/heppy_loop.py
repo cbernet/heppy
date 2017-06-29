@@ -54,8 +54,7 @@ def runLoop( comp, outDir, config, options):
     loop = Looper( fullName,
                    config,
                    options.nevents, 0,
-                   nPrint = options.nprint,
-                   timeReport = options.timeReport,
+                   nPrint = options.nprint, 
                    quiet = options.quiet,
                    memCheckFromEvent = memcheck,
                    stopFlag = _globalGracefulStopFlag)
@@ -206,11 +205,6 @@ def create_parser():
                       dest="interactive",
                       action='store_true',
                       help="stay in the command line prompt instead of exiting",
-                      default=False)
-    parser.add_option("-t", "--timereport", 
-                      dest="timeReport",
-                      action='store_true',
-                      help="Make a report of the time used by each analyzer",
                       default=False)
     parser.add_option("-v", "--verbose",
                       dest="verbose",

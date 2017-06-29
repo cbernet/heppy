@@ -164,6 +164,20 @@ def fillZed(tree, pName, zed):
     fill(tree, '{pName}_acol'.format(pName=pName), zed.acollinearity() * 180./math.pi)
     fill(tree, '{pName}_acop'.format(pName=pName), zed.acoplanarity() * 180./math.pi)
 
+def bookHbb(tree, pName):
+    bookParticle(tree, pName )
+    bookParticle(tree, '{pName}_1'.format(pName=pName)  )
+    bookParticle(tree, '{pName}_2'.format(pName=pName)  )
+    var(tree, '{pName}_acol'.format(pName=pName))
+    var(tree, '{pName}_acop'.format(pName=pName))
+
+def fillHbb(tree, pName, higgs):
+    fillParticle(tree, pName, higgs)
+    fillParticle(tree, '{pName}_1'.format(pName=pName), higgs.leg1() )
+    fillParticle(tree, '{pName}_2'.format(pName=pName), higgs.leg2() )
+    fill(tree, '{pName}_acol'.format(pName=pName), higgs.acollinearity() * 180./math.pi)
+    fill(tree, '{pName}_acop'.format(pName=pName), higgs.acoplanarity() * 180./math.pi)
+
 def bookMet(tree, pName):
     var(tree, '{pName}_pt'.format(pName=pName)  )
     var(tree, '{pName}_sumet'.format(pName=pName)  )    

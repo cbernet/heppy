@@ -12,36 +12,31 @@ class ZHTreeProducer(Analyzer):
                                         'tree.root']),
                               'recreate')
         self.tree = Tree( 'events', '')
-        bookParticle(self.tree, 'recoil')
+        if hasattr(self.cfg_ana, 'recoil'):
+            bookParticle(self.tree, 'recoil')
+        if hasattr(self.cfg_ana, 'zeds'):  
+            bookZed(self.tree, 'zed')
         self.taggers = ['b', 'bmatch', 'bfrac']
         bookJet(self.tree, 'jet1', self.taggers)
         bookJet(self.tree, 'jet2', self.taggers)
-        bookJet(self.tree, 'jet3', self.taggers)
-        bookJet(self.tree, 'jet4', self.taggers)
-##        bookParticle(self.tree, 'zed')
-##        bookLepton(self.tree, 'zed_1')
-##        bookLepton(self.tree, 'zed_2')
-        bookZed(self.tree, 'zed')        
-        bookParticle(self.tree, 'higgs')
-        bookParticle(self.tree, 'higgs_1')
-        bookParticle(self.tree, 'higgs_2')
+        bookHbb(self.tree, 'higgs')
         bookParticle(self.tree, 'misenergy')
        
     def process(self, event):
         self.tree.reset()
-        recoil = getattr(event, self.cfg_ana.recoil)
-        fillParticle(self.tree, 'recoil', recoil)        
+        if hasattr(self.cfg_ana, 'recoil'):
+            recoil = getattr(event, self.cfg_ana.recoil)    
+            fillParticle(self.tree, 'recoil', recoil)
+        if hasattr(self.cfg_ana, 'zeds'):  
+            zeds = getattr(event, self.cfg_ana.zeds)
+            if len(zeds)>0:
+                zed = zeds[0]
+                fillZed(self.tree, 'zed', zed)
         misenergy = getattr(event, self.cfg_ana.misenergy)
         fillParticle(self.tree, 'misenergy', misenergy )        
-        zeds = getattr(event, self.cfg_ana.zeds)
-        if len(zeds)>0:
-            zed = zeds[0]
-            fillZed(self.tree, 'zed', zed)
-##            fillLepton(self.tree, 'zed_1', zed.legs[0])
-##            fillLepton(self.tree, 'zed_2', zed.legs[1])
         jets = getattr(event, self.cfg_ana.jets)
         for ijet, jet in enumerate(jets):
-            if ijet==4:
+            if ijet == 2:
                 break
             fillJet(self.tree, 'jet{ijet}'.format(ijet=ijet+1), jet, self.taggers)
         higgses = getattr(event, self.cfg_ana.higgses)
@@ -49,9 +44,7 @@ class ZHTreeProducer(Analyzer):
             higgs = higgses[0]
             # if higgs.m() < 30:
             #    import pdb; pdb.set_trace()
-            fillParticle(self.tree, 'higgs', higgs)
-            fillLepton(self.tree, 'higgs_1', higgs.legs[0])
-            fillLepton(self.tree, 'higgs_2', higgs.legs[1])
+            fillHbb(self.tree, 'higgs', higgs)
         self.tree.tree.Fill()
         
     def write(self, setup):

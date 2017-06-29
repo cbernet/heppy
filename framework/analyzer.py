@@ -148,3 +148,6 @@ class Analyzer(object):
         if hasattr(self, 'averages') and len( self.averages ) > 0:
             ave = '\n'.join(map(str, self.averages))
         return '\n'.join( [ana, count, ave] )
+
+    def __repr__(self):
+        return self.name
