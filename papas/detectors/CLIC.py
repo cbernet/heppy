@@ -180,18 +180,34 @@ class BeamPipe(DetectorElement):
 class CLIC(Detector):
         
     def electron_acceptance(self, track):
-        return track.p3() .Mag() > 5 and abs(track.p3() .Eta()) < 2.5
+        '''returns True if electron is seen.'''
+        return track.p3().Mag() > 5 and abs(track.p3().Eta()) < 2.5
 
     def electron_resolution(self, ptc):
+        '''returns the relative electron resolution'''
         return 0.1 / math.sqrt(ptc.e())
             
     def muon_acceptance(self, track):
-        return track.p3() .Pt() > 5 and abs(track.p3() .Eta()) < 2.5
+        '''returns True if muon is seen.
+        
+        The CLIC CDR gives 99% for E > 7.5GeV and polar angle > 10 degrees
+        '''
+        return track.p3().Mag() > 7.5 and \
+               abs(track.theta()) < 80. * math.pi / 180.
             
     def muon_resolution(self, ptc):
-        return 0.02 
+        '''returns the relative muon resolution.
+        
+        In CLIC, the momentum resolution of the tracker is excellent and,
+        due to the large amount of material before the muon chambers,
+        the muon chambers cannot improve the resolution.
+        Therefore, using the momentum resolution of the tracker (CLIC CDR, section 8.1.1)
+        '''
+        return self.elements['tracker'].resolution(ptc)
+        # return 0.02 
     
     def ip_resolution(self, ptc):
+        '''Not used yet'''
         pass
     
     def __init__(self):

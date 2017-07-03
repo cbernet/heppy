@@ -3,22 +3,18 @@ import time
 
 holder = list()
 
-def plot(fname):    
+def plot(fname, nbins=50, xmin=10, xmax=200):    
     root_file = TFile(fname)
     tree = root_file.Get('events')
-    
-    canvas = TCanvas("canvas", "canvas", 600,600)
-    
-    hist = TH1F("hist", ";mass of all particles (GeV)", 50, 0, 200)
+    canvas = TCanvas("canvas", "canvas", 600,600)  
+    hist = TH1F("hist", ";mass of all particles (GeV)", nbins, 0, 200)
     tree.Draw('sum_all_m>>hist', '', '') 
-    hist.Fit("gaus")
+    hist.Fit("gaus", "LM", "", xmin, xmax)
     gPad.Update()
     gPad.SaveAs('sum_all_m.png')
     time.sleep(1)
     func = hist.GetFunction("gaus")
-
     holder.extend([root_file, tree, canvas, hist, func])
-    
     return func.GetParameter(1), func.GetParameter(2)
 
 if __name__ == '__main__':
