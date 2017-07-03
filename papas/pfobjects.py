@@ -265,11 +265,14 @@ class Track(PFObject):
     def p3(self):
         return self._p3
 
+    def theta(self):
+        return math.pi/2. - self._p3.Theta()
+
     def info(self):
         return '{p:7.2f} {pt:7.2f} {theta:5.2f} {phi:5.2f}'.format(
             pt=self._p3.Perp(),
             p=self._p3.Mag(),
-            theta=math.pi/2. - self._p3.Theta(),
+            theta=self.theta(),
             phi=self._p3.Phi()
         )
 
@@ -280,11 +283,13 @@ class Track(PFObject):
 
     
 class SmearedTrack(Track):
+    
     def __init__(self, mother, *args, **kwargs):
         self.mother = mother
         self.path = mother.path  # pass this to init below?
         self.subtype = 's'
         super(SmearedTrack, self).__init__(*args, **kwargs)
+
 
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge, index=0, pdgid=None, subtype='s'):
@@ -353,6 +358,7 @@ class Particle(BaseParticle):
         fields = mainstr.split(':')
         fields.insert(1, idstr)
         return ':'.join(fields)
+
 
 if __name__ == '__main__':
     from ROOT import TVector3

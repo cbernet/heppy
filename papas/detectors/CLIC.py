@@ -101,27 +101,58 @@ class HCAL(DetectorElement):
 
     
 class Tracker(DetectorElement):
-    #TODO acceptance and resolution 
-    #depend on the particle type
-    
+   
     def __init__(self):
-        volume = VolumeCylinder('tracker', 2.14, 2.6)
-        mat = material.void
-        super(Tracker, self).__init__('tracker', volume,  mat)
+        super(Tracker, self).__init__('tracker',
+                                      VolumeCylinder('tracker', 2.14, 2.6),
+                                      material.void)
+        self.theta_max = 0.8 * math.pi / 180.
+        # CLIC CDR Table 5.3.
+        # using our definition of theta (equal to zero at eta=0)
+        # first line added by hand for small angles,
+        # with a bad resolution.
+        # these tracks will not be accepted anyway,
+        # but please pay attention to the acceptance method.
+        self.resmap = [ (90, 8.2e-2, 9.1e-2),  
+                        (80, 8.2e-4, 9.1e-3),
+                        (30, 9.9e-5, 3.8e-3),
+                        (20, 3.9e-5, 1.6e-3),
+                        (10, 2e-5, 7.2e-4) ]  
 
     def acceptance(self, track):
-        # return False
-        pt = track.p3() .Pt()
-        eta = abs(track.p3() .Eta())
-        if eta < 3. and pt > 0.5:  #TODO check these values 
-            return True
-        else:
-            return False
+        '''Returns True if the track is seen.
+        
+        Acceptance from the CLIC CDF p107, Fig. 5.12 without background.
+        The tracker is taken to be efficient up to theta = 80 degrees. 
+        '''
+        pt = track.p3().Pt()
+        theta = abs(track.theta())
+        if theta < self.theta_max:
+            if pt > 0.4:
+                random.uniform(0,1) < 0.95
+            elif pt > 2:
+                random.uniform(0,1) < 0.99
+        return False
+
+    def _sigmapt_over_pt2(self, a, b, pt):
+        '''CLIC CDR Eq. 5.1'''
+        return math.sqrt( a ** 2 + (b / pt) ** 2)           
 
     def resolution(self, track):
-        # TODO: depends on the field
-        pt = track.p3() .Pt()
-        return 1.1e-2
+        '''Returns relative resolution on the track momentum
+        
+        CLIC CDR, Table 5.3
+        '''
+        pt = track.p3().Pt()
+        # matching the resmap defined above.
+        theta = abs(track.theta()) * 180 / math.pi
+        the_a, the_b = None, None
+        for maxtheta, a, b in reversed(self.resmap):
+            if theta < maxtheta:
+                the_a, the_b = a, b
+                break
+        res = self._sigmapt_over_pt2(the_a, the_b, pt) * pt
+        return res
 
     
 
@@ -133,8 +164,9 @@ class Field(DetectorElement):
         mat = material.void
         super(Field, self).__init__('tracker', volume,  mat)
 
+
 class BeamPipe(DetectorElement):
-    '''Beam pipe is not used in the simulation at the moment, so no need to define it.'''
+    '''Beam pipe is not used in the simulation at the moment, so no real need to define it.'''
 
     def __init__(self):
         #Material Seamless AISI 316 LN, External diameter 53 mm, Wall thickness 1.5 mm (hors CLIC) X0 1.72 cm
@@ -159,12 +191,15 @@ class CLIC(Detector):
     def muon_resolution(self, ptc):
         return 0.02 
     
+    def ip_resolution(self, ptc):
+        pass
+    
     def __init__(self):
         super(CLIC, self).__init__()
         self.elements['tracker'] = Tracker()
         self.elements['ecal'] = ECAL()
         self.elements['hcal'] = HCAL()
-        # field limited to 2T for FCC-ee
+        # field limited to 2 T for FCC-ee 
         self.elements['field'] = Field(2.)
         self.elements['beampipe'] = BeamPipe()
 

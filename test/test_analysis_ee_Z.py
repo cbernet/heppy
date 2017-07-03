@@ -61,15 +61,15 @@ if context.name == 'fcc':
             from heppy.papas.detectors.CLIC import clic
             config.sequence[2].detector = clic
             self.looper = Looper( self.outdir, config,
-                                  nEvents=100,
+                                  nEvents=500,
                                   nPrint=0 )            
             self.looper.loop()
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 84.91, 1)
-            self.assertAlmostEqual(sigma, 4.56, 1)
+            self.assertAlmostEqual(mean, 83.65, 1)
+            self.assertAlmostEqual(sigma, 5.67, 1)
 
 
 if __name__ == '__main__':
