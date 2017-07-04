@@ -23,9 +23,6 @@ if context.name == 'fcc':
         def setUp(self):
             random.seed(0xdeadbeef)
             self.outdir = tempfile.mkdtemp()
-            fname = '/'.join([os.environ['HEPPY'],
-                              'test/data/ee_Z_ddbar.root'])
-            config.components[0].files = [fname]
             import logging
             logging.disable(logging.CRITICAL)
 
@@ -40,6 +37,9 @@ if context.name == 'fcc':
             or better: be made optional. 
             '''
             from heppy.papas.detectors.CMS import cms
+            fname = '/'.join([os.environ['HEPPY'],
+                                      'test/data/ee_Z_ddbar.root'])
+            config.components[0].files = [fname]
             config.sequence[2].detector = cms
             self.looper = Looper( self.outdir, config,
                                   nEvents=100,
@@ -49,8 +49,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 91.28, 1)
-            self.assertAlmostEqual(sigma, 13.65, 1)
+            self.assertAlmostEqual(mean, 94.6, 1)
+            self.assertAlmostEqual(sigma, 15.1, 1)
 
         def test_z_clic(self):
             '''Check for an almost perfect match with reference.
@@ -59,6 +59,31 @@ if context.name == 'fcc':
             or better: be made optional. 
             '''
             from heppy.papas.detectors.CLIC import clic
+            fname = '/'.join([os.environ['HEPPY'],
+                                      'test/data/ee_Z_ddbar.root'])
+            config.components[0].files = [fname]
+            config.sequence[2].detector = clic
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=100,
+                                  nPrint=0 )            
+            self.looper.loop()
+            self.looper.write()
+            rootfile = '/'.join([self.outdir,
+                                'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
+            mean, sigma = plot(rootfile)
+            self.assertAlmostEqual(mean, 83.24, 1)
+            self.assertAlmostEqual(sigma, 7.37, 1)
+
+        def test_z_mumu_clic(self):
+            '''Check for an almost perfect match with reference.
+            Will fail if physics algorithms are modified,
+            so should probably be removed from test suite,
+            or better: be made optional. 
+            '''
+            from heppy.papas.detectors.CLIC import clic
+            fname = '/'.join([os.environ['HEPPY'],
+                                      'test/data/ee_Z_mumu.root'])
+            config.components[0].files = [fname]
             config.sequence[2].detector = clic
             self.looper = Looper( self.outdir, config,
                                   nEvents=500,
@@ -67,10 +92,11 @@ if context.name == 'fcc':
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
-            mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 83.65, 1)
-            self.assertAlmostEqual(sigma, 5.67, 1)
+            mean, sigma = plot(rootfile, nbins=400)
+            self.assertAlmostEqual(mean, 90.84, 1)
+            self.assertAlmostEqual(sigma, 1.32, 1)
 
+        
 
 if __name__ == '__main__':
 

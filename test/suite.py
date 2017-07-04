@@ -11,10 +11,10 @@ if __name__ == '__main__':
     suites = []
     
     pcks = [
+        'test',  # if particles is before test, test fails! 
         'analyzers',
         'display', 
         'framework',
-        'test',  # if particles is before test, test fails! 
         'papas', 
         'particles',
         'statistics',
