@@ -166,6 +166,7 @@ def compute_IP(helix, primary_vertex, jet_direction):
     helix.ip_proj_jet_axis = helix.jet_direction.Dot( helix.vector_impact_parameter )
     helix.sign_impact_parameter = sign( helix.ip_proj_jet_axis )
     helix.impact_parameter = helix.vector_impact_parameter.Mag() * helix.sign_impact_parameter
+    return helix.impact_parameter
 
 
 from ROOT import TCanvas, TGraph, TLine
