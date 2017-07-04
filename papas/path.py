@@ -3,7 +3,7 @@ from scipy import constants
 from ROOT import TVector3, TLorentzVector
 from heppy.utils.deltar import deltaPhi
 from collections import OrderedDict
-import scipy.optimize as opti # need to compute impact parameters
+import scipy.optimize 
 from numpy import sign
 import heppy.statistics.rrandom as random
 
@@ -107,7 +107,7 @@ class Helix(Path):
         z = self.vz() * time + self.origin.Z()
         return x,y,z
         
-    def compute_IP(self, vertex,jet):
+    def compute_IP(self, vertex, jet_direction):
         '''find the impact parameter of the trajectory with respect to a given
         point (vertex). The impact parameter has the same sign as the scalar product of
         the vector pointing from the given vertex to  the point of closest
@@ -119,21 +119,47 @@ class Helix(Path):
         *   IPcoord = TVector3 of the point of closest approach to the
             primary vertex
         '''
-        self.vertex_IP = vertex
+        self.IP_origin = vertex
         def distquad (time):
             x,y,z = self.coord_at_time(time)
             dist2 = (x-vertex.x())**2 + (y-vertex.y())**2\
             + (z-vertex.z())**2 
             return dist2
-        minim_answer = opti.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
-        self.closest_t = minim_answer[1]
+        minim_answer = scipy.optimize.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
+        self.IP_t = minim_answer[1]
         vector_IP = self.point_at_time(minim_answer[1]) - vertex
-        Pj = jet.p4().Vect().Unit()
-        signIP  = vector_IP.Dot(Pj)
-        self.IP = minim_answer[4]**(1.0/2)*sign(signIP)
-        
+        Pj = jet_direction.Unit()
+        self.IP_sign  = vector_IP.Dot(Pj)
+        self.IP = minim_answer[4]**(1.0/2)*sign(self.IP_sign)
         x,y,z = self.coord_at_time(minim_answer[1])
-        self.IPcoord = TVector3(x, y, z)
+        self.IP_coord = TVector3(x, y, z)
+        return self.IP
+       
+    def compute_IP_2(self, vertex, jet_direction):
+        self.IP_origin = vertex
+        def distquad (time):
+            x,y,z = self.coord_at_time(time)
+            dist2 = (x-vertex.x())**2 + (y-vertex.y())**2 + (z-vertex.z())**2 
+            return dist2
+        minim_answer = scipy.optimize.minimize_scalar(
+            distquad,
+            bracket = [-0.5e-14, 0.5e-14],
+            # bounds = [-1e-11, 1e-11],
+            args=(),
+            # method='bounded',
+            tol=1e-12,
+            # options={'disp': 0, 'maxiter': 1e5, 'xatol': 1e-20}             
+        )
+        self.IP_t = minim_answer.x
+        self.IP_vector = self.point_at_time(self.IP_t) - vertex
+        jet_direction = jet_direction.Unit()
+        self.IP_sign  = self.IP_vector.Dot(jet_direction)
+        if self.IP_sign == 0:
+            self.IP_sign = 1
+        self.IP = self.IP_vector.Mag()*sign(self.IP_sign)
+        x,y,z = self.coord_at_time(self.IP_t)
+        self.IP_coord = TVector3(x, y, z)
+        return self.IP        
        
     def compute_theta_0(self, x, X_0):
         '''Computes the square root of the variance, sigma, of the multiple
@@ -186,3 +212,4 @@ if __name__ == '__main__':
     helix = Helix(3.8, 1, p4, TVector3(0,0,0))
     length = helix.path_length(1e-9)
     helix.deltat(length)
+    
