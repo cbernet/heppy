@@ -7,7 +7,8 @@ from heppy.utils.computeIP import *
 # from heppy.utils.ComputeMVA import ComputeMVA
 
 class ImpactParameterJetTag(Analyzer):
-    """Compute impact paramaters for every charged track and combine them to obtain b-tag variables for every jet inside the event.
+    """Compute impact paramaters for every charged track
+    and combine them to obtain b-tag variables for every jet inside the event.
 
     The analyzer requires a resolution function for the impact parameter and a track selection function.
 
@@ -52,31 +53,78 @@ class ImpactParameterJetTag(Analyzer):
     TODO: Fix implementation with MVA
     """
 
-    def smearing_significance_IP(self, ptc):
-        """Given a particle, smear the IP and compute the track significance and the probability that the track comes from the primary vertex.
+    def process(self, event):
 
-        The smearing is made with a gaussian variable with mean = 0 and sigma = resolution; in addition the smearing is applied to the x' and y' component of the IP, that are the component in a frame in which the vector IP lies on the x'y' plane.
+        primary_vertex = TVector3(0, 0, 0)
+        jets = getattr(event, self.cfg_ana.jets)
+
+        for i, jet in enumerate(jets):
+            for id, ptcs in jet.constituents.iteritems():
+                for ptc in ptcs:
+                    if ptc.q() == 0:
+                        continue
+                    #COLIN simple method seems bugged, see TestPath
+                    if self.cfg_ana.method == 'simple':
+                        #COLIN replace this by a call to Helix.compute_IP
+                        compute_IP(ptc.path, primary_vertex, jet.p3())
+                    #COLIN complex not used, can remove method flag
+                    elif self.cfg_ana.method == 'complex':
+                        compute_IP_wrt_direction(ptc.path, primary_vertex, jet.p3())
+                    self.smearing_significance_IP(ptc)
+
+            #COLIN do jet tagging in a separate analyzer
+            self.jet_tag(jet)
+            jet.n_signif_larger3, jet.m_inv_signif_larger3, jet.angle_wrt_jet_dir_larger3 = self.jet_attributes(jet,3,1)
+
+            #COLIN remove mva stuff, can be re-added later
+            if hasattr(self, 'b_tag_mva'):
+                jet_mva_variables = [jet.logbtag,
+                                     jet.n_signif_larger3,
+                                     jet.m_inv_signif_larger3,
+                                     jet.angle_wrt_jet_dir_larger]
+
+                jet.combined_b_tag = self.b_tag_mva.ComputePvalue(jet_mva_variables)
+
+
+    def smearing_significance_IP(self, ptc):
+        """Given a particle, smear the IP and compute the track significance
+        and the probability that the track comes from the primary vertex.
+
+        The smearing is made with a gaussian variable with mean = 0 and sigma = resolution;
+        in addition the smearing is applied to the x' and y' component of the IP,
+        that are the component in a frame in which the vector IP lies on the x'y' plane.
         """
         resolution = self.cfg_ana.resolution(ptc)
         ptc.path.ip_resolution = resolution
-
+        
+        #COLIN: is this just taking the X and Y component? 
         ptc.path.x_prime = ptc.path.vector_impact_parameter.Mag()*math.cos(ptc.path.vector_impact_parameter.Phi())
         ptc.path.y_prime = ptc.path.vector_impact_parameter.Mag()*math.sin(ptc.path.vector_impact_parameter.Phi())
+        #COLIN: is the goal to just do ptc.path.vector_impact_parameter.Perp() ? 
         ptc.path.z_prime = 0
+        
         ptc.path.vector_ip_rotated = TVector3(ptc.path.x_prime, ptc.path.y_prime, ptc.path.z_prime)
 
+        #COLIN: shouldn't smearing be done on the magnitude of the impact parameter vector?
+        #in other words, I think that smearing should be correlated on the x and y components. 
         ptc.path.ip_smear_factor_x = random.gauss(0, ptc.path.ip_resolution)
         ptc.path.ip_smear_factor_y = random.gauss(0, ptc.path.ip_resolution)
+        #COLIN: the resolution should be in the same units as the impact parameter vector. m? 
         ptc.path.x_prime_smeared = ptc.path.x_prime + ptc.path.ip_smear_factor_x
         ptc.path.y_prime_smeared = ptc.path.y_prime + ptc.path.ip_smear_factor_y
         ptc.path.z_prime_smeared = 0
-        ptc.path.vector_ip_rotated_smeared = TVector3(ptc.path.x_prime_smeared, ptc.path.y_prime_smeared, ptc.path.z_prime_smeared)
-
+        ptc.path.vector_ip_rotated_smeared = TVector3(ptc.path.x_prime_smeared,
+                                                      ptc.path.y_prime_smeared,
+                                                      ptc.path.z_prime_smeared)
+        #COLIN keeping the sign of the impact parameter before smearing? not sure it's a good idea. 
         ptc.path.smeared_impact_parameter = ptc.path.vector_ip_rotated_smeared.Mag() * ptc.path.sign_impact_parameter
         ptc.path.significance_impact_parameter = ptc.path.smeared_impact_parameter / ptc.path.ip_resolution
+        #COLIN track probability is probably more about tagging, so shouldn't be done here. 
         ptc.path.track_probability = self.track_probability(ptc)
 
         if self.cfg_ana.method == 'complex':
+            #COLIN don't we want to do that in all cases?
+            #COLIN remove dependence to cfg_ana by introducing addtl arg to function
             ptc.path.min_dist_to_jet_significance = ptc.path.sign_impact_parameter\
                                                     * ptc.path.min_dist_to_jet.Mag()\
                                                     / ptc.path.ip_resolution
@@ -84,15 +132,20 @@ class ImpactParameterJetTag(Analyzer):
     def track_probability(self, particle):
         """Compute the probability that the track comes from the primary vertex according to the resolution.
 
-        The track probability is computed as the p-value of the track significance with respect to the expected distribution produced only by the effect of the resoution. For a gaussian resolution, like in this case, this takes an easy expression.
+        The track probability is computed as the p-value of the track significance with respect to the expected distribution produced only by the effect of the resoution.
+        For a gaussian resolution, like in this case, this takes an easy expression.
 
         If the track has negative significance, the probability as it had positive significance is assigned, but with the negative sign.
         """
         def gaussian(x):
             return math.exp((-0.5)*x**2)
-
+        #COLIN: this does not look like a p-value to me.
+        #The pvalue would be the integral of the gaussian starting from significance_impact_parameter to infinity.  
         track_prob = gaussian(particle.path.significance_impact_parameter)
         if particle.path.significance_impact_parameter < 0:
+            #COLIN check how these guys are used later on. I do not think
+            # these negative probabilities should be used to lower the jet b probability
+            # possibly return None instead?
             return (-1)*track_prob
         else:
             return track_prob
@@ -115,7 +168,7 @@ class ImpactParameterJetTag(Analyzer):
         for id, ptcs in jet.constituents.iteritems():
             for ptc in ptcs :
                 if self.cfg_ana.track_selection(ptc) == True and \
-                ptc.path.significance_impact_parameter > 0:
+                   ptc.path.significance_impact_parameter > 0:
                     n_track += 1
                     log_prob_product += 0.5 * ptc.path.significance_impact_parameter**2
 
@@ -135,7 +188,8 @@ class ImpactParameterJetTag(Analyzer):
             jet.tags['b_pvprob'] = pvprob 
             jet.logbtag = logtag
             jet.log10btag = - logtag * math.log10(math.exp(1))
-        #COLIN hack define working point for integration
+        #COLIN hack to define working point, necessary for integration
+        #should have a flag in the cfg for the working point.
         jet.tags['b'] = jet.tags['b_pvprob'] < 1e-2
 
     def jet_attributes(self, jet, significance, sign):
@@ -181,31 +235,4 @@ class ImpactParameterJetTag(Analyzer):
                                         my_tree.CopyTree(self.cfg_ana.mva_background_selection),
                                         my_tree.CopyTree(self.cfg_ana.mva_signal_selection)
                                         )
-
-    def process(self, event):
-
-        primary_vertex = TVector3(0, 0, 0)
-        jets = getattr(event, self.cfg_ana.jets)
-
-        for i, jet in enumerate(jets):
-            for id, ptcs in jet.constituents.iteritems():
-                for ptc in ptcs:
-                    if ptc.q() == 0:
-                        continue
-                    if self.cfg_ana.method == 'simple':
-                        compute_IP(ptc.path, primary_vertex, jet.p3())
-                    elif self.cfg_ana.method == 'complex':
-                        compute_IP_wrt_direction(ptc.path, primary_vertex, jet.p3())
-                    self.smearing_significance_IP(ptc)
-
-            self.jet_tag(jet)
-            jet.n_signif_larger3, jet.m_inv_signif_larger3, jet.angle_wrt_jet_dir_larger3 = self.jet_attributes(jet,3,1)
-
-            if hasattr(self, 'b_tag_mva'):
-                jet_mva_variables = [jet.logbtag,
-                                     jet.n_signif_larger3,
-                                     jet.m_inv_signif_larger3,
-                                     jet.angle_wrt_jet_dir_larger]
-
-                jet.combined_b_tag = self.b_tag_mva.ComputePvalue(jet_mva_variables)
 
