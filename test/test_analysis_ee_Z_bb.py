@@ -8,8 +8,8 @@ import heppy.framework.context as context
 
 if context.name == 'fcc':
 
-    from analysis_ee_Z_cfg import config
-    from heppy.test.plot_ee_Z import plot
+    from analysis_ee_Z_bb_cfg import config
+    from heppy.test.plot_ee_b import Plotter
     from heppy.framework.looper import Looper
     from ROOT import TFile
 
@@ -45,9 +45,13 @@ if context.name == 'fcc':
                                   nEvents=100,
                                   nPrint=0 )
             self.looper.loop()
-##            self.looper.write()
-##            rootfile = '/'.join([self.outdir,
-##                                'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
+            self.looper.write()
+            rootfile = '/'.join([self.outdir,
+                                'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
+            plotter = Plotter(rootfile)
+            self.assertGreater(plotter.bfrac(), 0.95)
+            self.assertAlmostEqual(plotter.beff(), 0.7, places=2)
+    
 ##            mean, sigma = plot(rootfile)
 ##            self.assertAlmostEqual(mean, 94.6, 1)
 ##            self.assertAlmostEqual(sigma, 15.1, 1)
