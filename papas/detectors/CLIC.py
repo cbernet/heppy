@@ -106,7 +106,7 @@ class Tracker(DetectorElement):
         super(Tracker, self).__init__('tracker',
                                       VolumeCylinder('tracker', 2.14, 2.6),
                                       material.void)
-        self.theta_max = 0.8 * math.pi / 180.
+        self.theta_max = 80. * math.pi / 180.
         # CLIC CDR Table 5.3.
         # using our definition of theta (equal to zero at eta=0)
         # first line added by hand for small angles,
@@ -129,9 +129,9 @@ class Tracker(DetectorElement):
         theta = abs(track.theta())
         if theta < self.theta_max:
             if pt > 0.4:
-                random.uniform(0,1) < 0.95
+                return random.uniform(0,1) < 0.95
             elif pt > 2:
-                random.uniform(0,1) < 0.99
+                return random.uniform(0,1) < 0.99
         return False
 
     def _sigmapt_over_pt2(self, a, b, pt):

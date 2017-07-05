@@ -3,7 +3,7 @@ import time
 
 holder = list()
 
-def plot(fname, nbins=50, xmin=10, xmax=200):    
+def plot(fname, nbins=100, xmin=10, xmax=200):    
     root_file = TFile(fname)
     tree = root_file.Get('events')
     canvas = TCanvas("canvas", "canvas", 600,600)  

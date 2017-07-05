@@ -33,15 +33,13 @@ Collider.SQRTS = 91.
 import glob
 ee_Z_ddbar = cfg.Component(
     'ee_Z_ddbar',
-    files = ['ee_Z_ddbar.root'] 
+    files = ['data/ee_Z_ddbar.root'] 
     )
 ee_Z_ddbar.splitFactor = len(ee_Z_ddbar.files)
 
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
-    files = [
-        'ee_Z_bbbar.root'
-    ]
+    files = ['data/ee_Z_bbbar.root']
 )
 
 
@@ -82,7 +80,7 @@ zed_tree = cfg.Analyzer(
 from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
 from heppy.test.papas_cfg import papasdisplaycompare as display 
 
-do_clic = False
+do_clic = True
 if do_clic:
     from heppy.papas.detectors.CLIC import clic
     papas.detector = clic    

@@ -49,7 +49,7 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 94.6, 1)
+            self.assertAlmostEqual(mean, 94.7, 1)
             self.assertAlmostEqual(sigma, 15.1, 1)
 
         def test_z_clic(self):
@@ -71,8 +71,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 83.24, 1)
-            self.assertAlmostEqual(sigma, 7.37, 1)
+            self.assertAlmostEqual(mean, 84.06, 1)
+            self.assertAlmostEqual(sigma, 6.47, 1)
 
         def test_z_mumu_clic(self):
             '''Check for an almost perfect match with reference.
