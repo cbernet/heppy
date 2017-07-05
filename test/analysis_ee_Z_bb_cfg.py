@@ -69,8 +69,6 @@ btag.roc = cms_roc
 # b tagging, IP smearing
 from heppy.test.btag_ip_smearing_2_cfg import btag_ip_smearing
 
-
-
 do_clic = False
 if do_clic:
     from heppy.papas.detectors.CLIC import clic
