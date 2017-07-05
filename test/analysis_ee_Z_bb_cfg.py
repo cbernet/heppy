@@ -33,7 +33,7 @@ Collider.SQRTS = 91.
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
     files = [
-        'data/ee_Z_bbbar.root'
+        'data/ee_Z_ddbar.root'
     ]
 )
 
@@ -61,10 +61,15 @@ jets = cfg.Analyzer(
     njets_required=False
 )
 
-# b tagging 
+# b tagging, parametrized
 from heppy.test.btag_parametrized_cfg import btag_parametrized, btag
 from heppy.analyzers.roc import cms_roc
 btag.roc = cms_roc
+
+# b tagging, IP smearing
+from heppy.test.btag_ip_smearing_cfg import btag_ip_smearing
+
+
 
 do_clic = False
 if do_clic:
@@ -80,7 +85,7 @@ jet_tree = cfg.Analyzer(
     tree_name = 'events',
     tree_title = 'jets',
     jets = 'jets',
-    taggers = ['b', 'bmatch', 'bfrac'], 
+    taggers = ['b', 'b_ip', 'bmatch', 'bfrac'], 
     njets = 2, 
     store_match =False
 )
@@ -94,6 +99,7 @@ sequence = cfg.Sequence(
     papas_sequence,
     jets, 
     btag_parametrized,
+    btag_ip_smearing, 
     jet_tree, 
     display
     )

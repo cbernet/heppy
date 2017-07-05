@@ -190,7 +190,7 @@ class ImpactParameterJetTag(Analyzer):
             jet.log10btag = - logtag * math.log10(math.exp(1))
         #COLIN hack to define working point, necessary for integration
         #should have a flag in the cfg for the working point.
-        jet.tags['b'] = jet.tags['b_pvprob'] < 1e-2
+        jet.tags['b_ip'] = jet.tags['b_pvprob'] < 1e-2
 
     def jet_attributes(self, jet, significance, sign):
         """Given a jet, compute the multiplicity, invariant mass and angle of the tracks with signficance larger or smaller than a given value, passing the track selection.

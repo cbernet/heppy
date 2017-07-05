@@ -30,15 +30,12 @@ if context.name == 'fcc':
             shutil.rmtree(self.outdir)
             logging.disable(logging.NOTSET)
 
-        def test_z_cms(self):
-            '''Check for an almost perfect match with reference.
-            Will fail if physics algorithms are modified,
-            so should probably be removed from test suite,
-            or better: be made optional. 
+        def test_beff_cms(self):
+            '''Check b matching probability and b tag efficiency in CMS 
             '''
             from heppy.papas.detectors.CMS import cms
             fname = '/'.join([os.environ['HEPPY'],
-                                      'test/data/ee_Z_bbbar.root'])
+                              'test/data/ee_Z_bbbar.root'])
             config.components[0].files = [fname]
             config.sequence[2].detector = cms
             self.looper = Looper( self.outdir, config,
@@ -52,6 +49,22 @@ if context.name == 'fcc':
             self.assertGreater(plotter.bfrac(), 0.95)
             self.assertAlmostEqual(plotter.beff(), 0.7, places=2)
     
+        def test_fake_cms(self):
+            '''Check fake rate in CMS
+            '''
+            from heppy.papas.detectors.CMS import cms
+            fname = '/'.join([os.environ['HEPPY'],
+                              'test/data/ee_Z_ddbar.root'])
+            config.components[0].files = [fname]
+            config.sequence[2].detector = cms
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=100,
+                                  nPrint=0 )
+            self.looper.loop()
+            self.looper.write()
+            rootfile = '/'.join([self.outdir,
+                                 'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
+
 ##            mean, sigma = plot(rootfile)
 ##            self.assertAlmostEqual(mean, 94.6, 1)
 ##            self.assertAlmostEqual(sigma, 15.1, 1)
