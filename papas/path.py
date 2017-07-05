@@ -95,7 +95,6 @@ class Helix(Path):
         '''ds2 = dx2+dy2+dz2 = [w2rho2 + vz2] dt2'''
         return math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)*deltat
  
- #______________________________________________________________________________   
     def coord_at_time(self, time):
         '''returns x,y,z at time t'''
         x = self.origin.X() + \
@@ -108,16 +107,12 @@ class Helix(Path):
         return x,y,z
         
     def compute_IP(self, vertex, jet_direction):
-        '''find the impact parameter of the trajectory with respect to a given
-        point (vertex). The impact parameter has the same sign as the scalar product of
-        the vector pointing from the given vertex to  the point of closest
-        approach with the given jet direction.
+        '''Returns the impact parameter and sets the following variables:
         
-        new attributes :
-        *   closest_t = time of closest approach to the primary vertex.
-        *   IP = signed impact parameter
-        *   IPcoord = TVector3 of the point of closest approach to the
-            primary vertex
+        IP_origin: vertex with respect to which IP is computed
+        IP_t : time of point of closest approach
+        IP_sign: sign of impact parameter
+        IP_vector: vector going from origin to point of closest approach
         '''
         self.IP_origin = vertex
         def distquad (time):
@@ -127,15 +122,23 @@ class Helix(Path):
             return dist2
         minim_answer = scipy.optimize.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
         self.IP_t = minim_answer[1]
-        vector_IP = self.point_at_time(minim_answer[1]) - vertex
+        self.IP_vector = self.point_at_time(minim_answer[1]) - vertex
         Pj = jet_direction.Unit()
-        self.IP_sign  = vector_IP.Dot(Pj)
+        self.IP_sign  = self.IP_vector.Dot(Pj)
         self.IP = minim_answer[4]**(1.0/2)*sign(self.IP_sign)
-        x,y,z = self.coord_at_time(minim_answer[1])
-        self.IP_coord = TVector3(x, y, z)
+        # same as IP_vector, deprecated, used in ImpactParameter.py
+        # x,y,z = self.coord_at_time(minim_answer[1])
+        # self.IP_coord = TVector3(x, y, z)
         return self.IP
        
     def compute_IP_2(self, vertex, jet_direction):
+        '''Returns the impact parameter and sets the following variables:
+        
+        IP_origin: vertex with respect to which IP is computed
+        IP_t : time of point of closest approach
+        IP_sign: sign of impact parameter
+        IP_vector: vector going from origin to point of closest approach
+        '''
         self.IP_origin = vertex
         def distquad (time):
             x,y,z = self.coord_at_time(time)
@@ -157,52 +160,44 @@ class Helix(Path):
         if self.IP_sign == 0:
             self.IP_sign = 1
         self.IP = self.IP_vector.Mag()*sign(self.IP_sign)
-        x,y,z = self.coord_at_time(self.IP_t)
-        self.IP_coord = TVector3(x, y, z)
+        # same as IP_vector, deprecated, used in ImpactParameter.py
+        # x,y,z = self.coord_at_time(self.IP_t)
+        # self.IP_coord = TVector3(x, y, z)
         return self.IP        
-       
-    def compute_theta_0(self, x, X_0):
-        '''Computes the square root of the variance, sigma, of the multiple
-        scattering angle due to matter interactions, using the formula in PDG
-        booklet, Passage of particles through matter, multiple scattering through small angles
-        equation 10.'''
-        P = self.p4.Vect().Dot(self.udir)
-        self.theta_0 = 1.0*13.6e-3/(1.0*self.speed/constants.c*P)
-        self.theta_0 *= abs(self.charge)*(1.0*abs(x/X_0))**(1.0/2)*(1+0.038*math.log(1.0*abs(x/X_0)))
-        self.xX_0 = 1.0*x/X_0
-    
-    def compute_IP_signif(self, IP, theta_0, scat_point):
-        # ! are we sure sigma_IP_due_IP_algo_precise isnt overestimated ?
-        # it is an approximation : we stay here in a plan containing the primary
-        # vertex, the IP_point and the deviated one. But geometrically the new
-        # IP_point isnt in that plan (cos(theta) factor ~ 1)
-        delta_t = 1e-15
-        delta_s = delta_t * self.speed *1.0
-        sigma_s = delta_s
-        sigma_IP_due_IP_algo_precise = IP*1.0/(math.cos(math.atan(sigma_s/IP)))-IP
-        sigma_IP_due_other = 1e-5
-        
-        if theta_0 == None or scat_point == None:
-            self.IP_signif = IP*1.0/(sigma_IP_due_IP_algo_precise**2+sigma_IP_due_other**2)**0.5
-        else :        
-            phi_t_scat = self.phi( scat_point.X(), scat_point.Y())
-            t_scat = self.time_at_phi(phi_t_scat)
-            fly_distance = self.speed * 1.0 * t_scat
-            # for the IP significance : estimation 
-            sigma_IP_due_scattering = fly_distance*math.tan((2)**0.5*theta_0)
-            sigma_IP_tot = ( sigma_IP_due_IP_algo_precise**2 + sigma_IP_due_scattering**2 + sigma_IP_due_other**2 )**0.5
-            self.IP_signif = IP*1.0/sigma_IP_tot
-            self.IP_sigma = sigma_IP_tot
-        
-            
- #______________________________________________________________________________    
+   
+## The following two methods are deprecated, used in ImpactParameter.py    
+##    def compute_theta_0(self, x, X_0):
+##        '''Computes the square root of the variance, sigma, of the multiple
+##        scattering angle due to matter interactions, using the formula in PDG
+##        booklet, Passage of particles through matter, multiple scattering through small angles
+##        equation 10.'''
+##        P = self.p4.Vect().Dot(self.udir)
+##        self.theta_0 = 1.0*13.6e-3/(1.0*self.speed/constants.c*P)
+##        self.theta_0 *= abs(self.charge)*(1.0*abs(x/X_0))**(1.0/2)*(1+0.038*math.log(1.0*abs(x/X_0)))
+##        self.xX_0 = 1.0*x/X_0   
+##    def compute_IP_signif(self, IP, theta_0, scat_point):
+##        # ! are we sure sigma_IP_due_IP_algo_precise isnt overestimated ?
+##        # it is an approximation : we stay here in a plan containing the primary
+##        # vertex, the IP_point and the deviated one. But geometrically the new
+##        # IP_point isnt in that plan (cos(theta) factor ~ 1)
+##        delta_t = 1e-15
+##        delta_s = delta_t * self.speed *1.0
+##        sigma_s = delta_s
+##        sigma_IP_due_IP_algo_precise = IP*1.0/(math.cos(math.atan(sigma_s/IP)))-IP
+##        sigma_IP_due_other = 1e-5
+##        
+##        if theta_0 == None or scat_point == None:
+##            self.IP_signif = IP*1.0/(sigma_IP_due_IP_algo_precise**2+sigma_IP_due_other**2)**0.5
+##        else :        
+##            phi_t_scat = self.phi( scat_point.X(), scat_point.Y())
+##            t_scat = self.time_at_phi(phi_t_scat)
+##            fly_distance = self.speed * 1.0 * t_scat
+##            # for the IP significance : estimation 
+##            sigma_IP_due_scattering = fly_distance*math.tan((2)**0.5*theta_0)
+##            sigma_IP_tot = ( sigma_IP_due_IP_algo_precise**2 + sigma_IP_due_scattering**2 + sigma_IP_due_other**2 )**0.5
+##            self.IP_signif = IP*1.0/sigma_IP_tot
+##            self.IP_sigma = sigma_IP_tot
 
-    # def deltat(self, path_length):
-    #     #TODO: shouldn't this just use beta????
-    #     d1 = path_length / (self.p4.Beta()*constants.c)
-    #     # d2 = path_length / math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)
-    #     return d1
-        
     
 if __name__ == '__main__':
 
