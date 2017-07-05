@@ -73,6 +73,19 @@ if do_clic:
     display.detector = clic
     #TODO replace by clic ROC!
 
+
+from heppy.analyzers.JetTreeProducer import JetTreeProducer
+jet_tree = cfg.Analyzer(
+    JetTreeProducer,
+    tree_name = 'events',
+    tree_title = 'jets',
+    jets = 'jets',
+    taggers = ['b', 'bmatch', 'bfrac'], 
+    njets = 2, 
+    store_match =False
+)
+
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
@@ -80,7 +93,8 @@ sequence = cfg.Sequence(
     # gen_particles_stable, 
     papas_sequence,
     jets, 
-    btag_parametrized, 
+    btag_parametrized,
+    jet_tree, 
     display
     )
 
