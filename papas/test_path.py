@@ -54,12 +54,14 @@ class TestPath(unittest.TestCase):
             ip_luc = helix.compute_IP(origin, smom)
             nplaces = 8
             self.assertAlmostEqual(abs(ip_luc), radius, places=nplaces)
-            #COLIN in the following, I modify Nic's minimization args
+            #COLIN->NIC in the following, I modify Nic's minimization args
             # so that they work, and to reach Lucas' precision
             # it works with nplaces = 5 though.
             self.assertAlmostEqual(abs(ip_mine), radius, places=nplaces)
-            #COLIN: Nicolo's minimization does not give the right result
-            # could be that it only works for very small distances? 
+            #COLIN->NIC: Nicolo's minimization does not give the right result
+            # could be that it only works for very small distances?
+            # can be tested by uncommenting the following line and
+            # running this test file
             # self.assertAlmostEqual(abs(ip2), radius, places=nplaces)
 ##            print math.cos(angle), math.sin(angle), radius
 ##            ip_pos.Print()

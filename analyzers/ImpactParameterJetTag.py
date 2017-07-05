@@ -63,7 +63,7 @@ class ImpactParameterJetTag(Analyzer):
                 for ptc in ptcs:
                     if ptc.q() == 0:
                         continue
-                    #COLIN simple method seems bugged, see TestPath
+                    #COLIN simple method seems bugged, see test_path.py
                     if self.cfg_ana.method == 'simple':
                         #COLIN replace this by a call to Helix.compute_IP
                         compute_IP(ptc.path, primary_vertex, jet.p3())
@@ -97,29 +97,30 @@ class ImpactParameterJetTag(Analyzer):
         resolution = self.cfg_ana.resolution(ptc)
         ptc.path.ip_resolution = resolution
         
-        #COLIN: is this just taking the X and Y component? 
+        #COLIN->NIC: is this just taking the X and Y component?
         ptc.path.x_prime = ptc.path.vector_impact_parameter.Mag()*math.cos(ptc.path.vector_impact_parameter.Phi())
         ptc.path.y_prime = ptc.path.vector_impact_parameter.Mag()*math.sin(ptc.path.vector_impact_parameter.Phi())
-        #COLIN: is the goal to just do ptc.path.vector_impact_parameter.Perp() ? 
         ptc.path.z_prime = 0
         
+        #COLIN->NIC: is the goal to just do ptc.path.vector_impact_parameter.Perp()? why is that called "rotated?"
         ptc.path.vector_ip_rotated = TVector3(ptc.path.x_prime, ptc.path.y_prime, ptc.path.z_prime)
 
-        #COLIN: shouldn't smearing be done on the magnitude of the impact parameter vector?
+        #COLIN->NIC: shouldn't smearing be done on the magnitude of the impact parameter vector?
         #in other words, I think that smearing should be correlated on the x and y components. 
         ptc.path.ip_smear_factor_x = random.gauss(0, ptc.path.ip_resolution)
         ptc.path.ip_smear_factor_y = random.gauss(0, ptc.path.ip_resolution)
-        #COLIN: the resolution should be in the same units as the impact parameter vector. m? 
+        #COLIN: the resolution should be in the same units as the impact parameter vector (meters?)
         ptc.path.x_prime_smeared = ptc.path.x_prime + ptc.path.ip_smear_factor_x
         ptc.path.y_prime_smeared = ptc.path.y_prime + ptc.path.ip_smear_factor_y
         ptc.path.z_prime_smeared = 0
         ptc.path.vector_ip_rotated_smeared = TVector3(ptc.path.x_prime_smeared,
                                                       ptc.path.y_prime_smeared,
                                                       ptc.path.z_prime_smeared)
-        #COLIN keeping the sign of the impact parameter before smearing? not sure it's a good idea. 
+        #COLIN->NIC It looks like we are keeping the sign of the impact parameter before smearing. Why?
+        # I think that smearing should be able to change the sign. 
         ptc.path.smeared_impact_parameter = ptc.path.vector_ip_rotated_smeared.Mag() * ptc.path.sign_impact_parameter
         ptc.path.significance_impact_parameter = ptc.path.smeared_impact_parameter / ptc.path.ip_resolution
-        #COLIN track probability is probably more about tagging, so shouldn't be done here. 
+        #COLIN track probability is about tagging, not impact parameter smearing. do that in a separate JetTag analyzer
         ptc.path.track_probability = self.track_probability(ptc)
 
         if self.cfg_ana.method == 'complex':
@@ -137,13 +138,14 @@ class ImpactParameterJetTag(Analyzer):
 
         If the track has negative significance, the probability as it had positive significance is assigned, but with the negative sign.
         """
+        #COLIN->NIC: is this method used? 
         def gaussian(x):
             return math.exp((-0.5)*x**2)
-        #COLIN: this does not look like a p-value to me.
+        #COLIN->NIC: this does not look like a p-value to me.
         #The pvalue would be the integral of the gaussian starting from significance_impact_parameter to infinity.  
         track_prob = gaussian(particle.path.significance_impact_parameter)
         if particle.path.significance_impact_parameter < 0:
-            #COLIN check how these guys are used later on. I do not think
+            #COLIN->NIC check how these guys are used later on. I do not think
             # these negative probabilities should be used to lower the jet b probability
             # possibly return None instead?
             return (-1)*track_prob
