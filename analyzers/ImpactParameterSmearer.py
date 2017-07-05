@@ -1,4 +1,5 @@
 from heppy.framework.analyzer import Analyzer
+from heppy.papas.path import ImpactParameter
 from ROOT import TVector3, TLorentzVector, TFile, TTree
 # from heppy.papas.path import Helix
 import math
@@ -27,8 +28,10 @@ class ImpactParameterSmearer(Analyzer):
             for ptcs in jet.constituents.values():
                 for ptc in ptcs:
                     if ptc.q() == 0:
-                        continue    
-                    ptc.path.compute_IP_2(primary_vertex, jet.p3())
+                        continue
+                    ptc.path.impact_parameter = ImpactParameter(ptc.path,
+                                                                primary_vertex,
+                                                                jet.p3())
                     resolution = self.cfg_ana.resolution(ptc)
                     ptc.path.IP_resolution = resolution
                     gx = random.gauss(0, ptc.path.IP_resolution)
@@ -48,8 +51,9 @@ def smear_IP(path, gx, gy):
     # ptc.path.ip_resolution = resolution
     
     #COLIN->NIC: is this just taking the X and Y component?
-    path.x_prime = path.IP_vector.Mag()*math.cos(path.IP_vector.Phi())
-    path.y_prime = path.IP_vector.Mag()*math.sin(path.IP_vector.Phi())
+    ipvector = path.impact_parameter.vector
+    path.x_prime = ipvector.Mag()*math.cos(ipvector.Phi())
+    path.y_prime = ipvector.Mag()*math.sin(ipvector.Phi())
     path.z_prime = 0
     
     #COLIN->NIC: is the goal to just do path.vector_impact_parameter.Perp()? why is that called "rotated?"
@@ -66,7 +70,7 @@ def smear_IP(path, gx, gy):
                                               path.z_prime_smeared)
     #COLIN->NIC It looks like we are keeping the sign of the impact parameter before smearing. Why?
     # I think that smearing should be able to change the sign. 
-    path.smeared_impact_parameter = path.vector_ip_rotated_smeared.Mag() * path.IP_sign
+    path.smeared_impact_parameter = path.vector_ip_rotated_smeared.Mag() * path.impact_parameter.sign
     path.significance_impact_parameter = path.smeared_impact_parameter / path.IP_resolution
     #COLIN track probability is about tagging, not impact parameter smearing. do that in a separate JetTag analyzer
     # path.track_probability = self.track_probability(ptc)

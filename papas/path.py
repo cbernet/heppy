@@ -105,41 +105,16 @@ class Helix(Path):
             + self.v_over_omega.Y() * math.sin(self.omega*time)
         z = self.vz() * time + self.origin.Z()
         return x,y,z
-        
-    def compute_IP(self, vertex, jet_direction):
-        '''Returns the impact parameter and sets the following variables:
-        
-        IP_origin: vertex with respect to which IP is computed
-        IP_t : time of point of closest approach
-        IP_sign: sign of impact parameter
-        IP_vector: vector going from origin to point of closest approach
-        '''
-        self.IP_origin = vertex
-        def distquad (time):
-            x,y,z = self.coord_at_time(time)
-            dist2 = (x-vertex.x())**2 + (y-vertex.y())**2\
-            + (z-vertex.z())**2 
-            return dist2
-        minim_answer = scipy.optimize.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
-        self.IP_t = minim_answer[1]
-        self.IP_vector = self.point_at_time(minim_answer[1]) - vertex
-        Pj = jet_direction.Unit()
-        self.IP_sign  = self.IP_vector.Dot(Pj)
-        self.IP = minim_answer[4]**(1.0/2)*sign(self.IP_sign)
-        return self.IP
        
-    def compute_IP_2(self, vertex, jet_direction):
-        '''Returns the impact parameter and sets the following variables:
-        
-        IP_origin: vertex with respect to which IP is computed
-        IP_t : time of point of closest approach
-        IP_sign: sign of impact parameter
-        IP_vector: vector going from origin to point of closest approach
-        '''
-        self.IP_origin = vertex
+    
+class ImpactParameter(object):
+    
+    def __init__(self, helix, origin, jet_direction, resolution=0.):
+        self.helix = helix
+        self.origin = origin
         def distquad (time):
-            x,y,z = self.coord_at_time(time)
-            dist2 = (x-vertex.x())**2 + (y-vertex.y())**2 + (z-vertex.z())**2 
+            x,y,z = self.helix.coord_at_time(time)
+            dist2 = (x-origin.x())**2 + (y-origin.y())**2 + (z-origin.z())**2 
             return dist2
         minim_answer = scipy.optimize.minimize_scalar(
             distquad,
@@ -150,16 +125,26 @@ class Helix(Path):
             tol=1e-12,
             # options={'disp': 0, 'maxiter': 1e5, 'xatol': 1e-20}             
         )
-        self.IP_t = minim_answer.x
-        self.IP_vector = self.point_at_time(self.IP_t) - vertex
+        self.time = minim_answer.x
+        self.vector = self.helix.point_at_time(self.time) - origin
         jet_direction = jet_direction.Unit()
-        self.IP_sign  = self.IP_vector.Dot(jet_direction)
-        if self.IP_sign == 0:
-            self.IP_sign = 1
-        self.IP = self.IP_vector.Mag()*sign(self.IP_sign)
-        return self.IP        
-
-    
+        self.sign  = self.vector.Dot(jet_direction)
+        if self.sign == 0:
+            self.sign = 1
+        self.value = self.vector.Mag()*sign(self.sign)
+        if resolution:
+            self.significance = self.value / resolution
+                        
+    def __str__(self):
+        def vector_desc(name, vec):
+            return '{:7}\t: mag={:3.2f}, phi={:3.2f}, theta={:3.2f}'.format(
+                name, vec.Mag(), vec.Phi(), vec.Theta()
+            )       
+        lines = [ vector_desc('origin', self.origin), 
+                  vector_desc('IP', self.vector), ]
+        return '\n'.join(lines)
+        
+        
 if __name__ == '__main__':
 
     from ROOT import TLorentzVector, TVector3
