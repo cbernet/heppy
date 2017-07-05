@@ -67,7 +67,7 @@ class TestPath(unittest.TestCase):
 ##            helix_vertex.Print()
 ##            smom.Print()
 ##            helix.IP_vector.Print()
-            print 'mine', ip_mine, 'nic', ip_nic, 'luca', ip_luc, radius
+##            print 'mine', ip_mine, 'nic', ip_nic, 'luca', ip_luc, radius
 ##            print
             
             

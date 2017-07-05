@@ -155,9 +155,9 @@ class ImpactParameter(Analyzer):
                     else :
                         ptc.path.compute_IP_signif(ptc.path.IP, None, None)
                     
-                    dx = ptc.path.IPcoord.x() - assumed_vertex.x()
-                    dy = ptc.path.IPcoord.y() - assumed_vertex.y()
-                    dz = ptc.path.IPcoord.z() - assumed_vertex.z()
+                    dx = ptc.path.IP_coord.x() - assumed_vertex.x()
+                    dy = ptc.path.IP_coord.y() - assumed_vertex.y()
+                    dz = ptc.path.IP_coord.z() - assumed_vertex.z()
                     if ptc.path.p4.Perp() > pt_min and (dx**2 + dy**2)**0.5 < dxy_max and dz**2 < dz_max**2 :
                         ipsig_ptcs.append([ptc.path.IP_signif, ptc])
                         
