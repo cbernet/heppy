@@ -1,13 +1,14 @@
 import unittest
 
 from path import Helix
+from heppy.analyzers.ImpactParameterSmearer import smear_IP
 from ROOT import TLorentzVector, TVector3
 from heppy.utils.computeIP import compute_IP
 import numpy as np
 import math
 import copy
 
-class TestPath(unittest.TestCase):
+class TestPath(unittest.TestCase):        
     
     def test_ip_simple(self):
         '''This simple test works for all three methods'''
@@ -73,6 +74,16 @@ class TestPath(unittest.TestCase):
 ##            print
             
             
+    def test_smear(self):
+        # goes along x
+        p4 = TLorentzVector(1, 0, 0, 1.1)
+        # starts at y = 0.1
+        vertex = TVector3(0, 0.1, 0)
+        helix = Helix(1, 1, p4, vertex)
+        origin = TVector3()
+        helix.IP_resolution = 1
+        helix.compute_IP_2(origin, p4.Vect())
+        smear_IP(helix, -1, -1)
     
             
         

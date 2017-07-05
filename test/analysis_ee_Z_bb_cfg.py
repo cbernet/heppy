@@ -67,7 +67,7 @@ from heppy.analyzers.roc import cms_roc
 btag.roc = cms_roc
 
 # b tagging, IP smearing
-from heppy.test.btag_ip_smearing_cfg import btag_ip_smearing
+from heppy.test.btag_ip_smearing_2_cfg import btag_ip_smearing
 
 
 
