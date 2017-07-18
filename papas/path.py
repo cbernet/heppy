@@ -108,8 +108,40 @@ class Helix(Path):
        
     
 class ImpactParameter(object):
+    '''Performs impact parameter calculation, and stores relevant information.'''
     
     def __init__(self, helix, origin, jet_direction, resolution=0.):
+        '''Constructs impact parameter.
+        
+        @param helix: the helix for which the impact parameter is
+          calculated.
+        @param origin: TVector3-like vertex of origin, w/r to which
+          the impact parameter is calculated
+        @param jet_direction: TVector3-like, necessary to calculate
+          the sign of the impact parameter
+        @param resolution: resolution estimate to calculate the
+          impact parameter significance
+        
+        The impact parameter calculation involves a minimization
+        performed using the brent method of scipy.optimize.minimize_scalar.
+        The point of closest approach must be within -5 and +5 ns
+        of the helix vertex (point of reference on the helix,
+        not the primary vertex).
+        
+        Interesting attributes:
+        - helix: the corresponding helix
+        - origin: the corresponding primary vertex
+        - time: the time corresponding to the point of closest approach
+          on the helix
+        - vector: from the origin to the point of closest approach
+        - sign: impact parameter sign
+        - value: impact parameter value, defined as the distance between
+          the primary vertex and the point of closest approach,
+          times the sign
+        - significance
+          impact parameter significance, defined as the value divided
+          by the resolution.
+        '''
         self.helix = helix
         self.origin = origin
         def distquad (time):
@@ -118,12 +150,10 @@ class ImpactParameter(object):
             return dist2
         minim_answer = scipy.optimize.minimize_scalar(
             distquad,
-            bracket = [-0.5e-14, 0.5e-14],
-            # bounds = [-1e-11, 1e-11],
-            args=(),
-            # method='bounded',
-            tol=1e-12,
-            # options={'disp': 0, 'maxiter': 1e5, 'xatol': 1e-20}             
+            method='brent', 
+            bracket = [-5e-9, 5e-9],
+            options={'xtol': 1e-20, 'maxiter': 1e5},
+            tol=None,
         )
         self.time = minim_answer.x
         self.vector = self.helix.point_at_time(self.time) - origin

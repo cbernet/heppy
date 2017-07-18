@@ -155,7 +155,7 @@ def compute_IP(helix, primary_vertex, jet_direction):
 
     helix.min_approach = minimize_scalar(pr_vertex_track_distance,
                                         bracket = None,
-                                        bounds = [-1e-11, 1e-11],
+                                        bounds = [-5e-9, 5e-9],
                                         args=(),
                                         method='bounded',
                                         tol=None,
