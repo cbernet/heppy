@@ -44,19 +44,23 @@ class TestPath(unittest.TestCase):
         for radius, angle, momentum in zip(radii, angles, momenta):
             ip_pos = TVector3(math.cos(angle), math.sin(angle), 0)
             ip_pos *= radius
-            smom = TVector3(math.cos(angle-math.pi/2.),
+            p3 = TVector3(math.cos(angle-math.pi/2.),
                             math.sin(angle-math.pi/2.), 0)
-            smom *= momentum
+            p3 *= momentum
             p4 = TLorentzVector()
-            p4.SetVectM(smom, mass)
+            p4.SetVectM(p3, mass)
             helix_vertex = copy.deepcopy(ip_pos)
-            delta = copy.deepcopy(smom.Unit())
+            delta = copy.deepcopy(p3.Unit())
             delta *= radius
             helix_vertex += delta
             helix = Helix(field, 1., p4, helix_vertex)
-            ip_nic = compute_IP(helix, origin, smom)
-            ip_obj = ImpactParameter(helix, origin, smom)
-            verbose = False
+            # jet direction is 0.1 radians away from particle direction
+            # to obtain a positivive IP sign
+            jet_dir = copy.deepcopy(p3).Unit()
+            jet_dir.RotateZ(0.1)
+            ip_nic = compute_IP(helix, origin, jet_dir)
+            ip_obj = ImpactParameter(helix, origin, jet_dir)
+            verbose = True
             places = 8
             if verbose:
                 print '-' * 50
