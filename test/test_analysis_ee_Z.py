@@ -9,7 +9,7 @@ import heppy.framework.context as context
 if context.name == 'fcc':
 
     from analysis_ee_Z_cfg import config
-    from heppy.test.plot_ee_Z import plot
+    from heppy.test.plot_ee_Z import plot_ee_mass
     from heppy.framework.looper import Looper
     from ROOT import TFile
 
@@ -31,7 +31,7 @@ if context.name == 'fcc':
             logging.disable(logging.NOTSET)
 
         def test_z_cms(self):
-            '''Check for an almost perfect match with reference.
+            '''Check Z mass in ee->Z->ddbar (CMS).
             Will fail if physics algorithms are modified,
             so should probably be removed from test suite,
             or better: be made optional. 
@@ -48,12 +48,12 @@ if context.name == 'fcc':
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
-            mean, sigma = plot(rootfile)
+            mean, sigma = plot_ee_mass(rootfile)
             self.assertAlmostEqual(mean, 94.7, 1)
             self.assertAlmostEqual(sigma, 15.1, 1)
 
         def test_z_clic(self):
-            '''Check for an almost perfect match with reference.
+            '''Check Z mass in ee->Z->ddbar (CLIC).
             Will fail if physics algorithms are modified,
             so should probably be removed from test suite,
             or better: be made optional. 
@@ -70,12 +70,12 @@ if context.name == 'fcc':
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
-            mean, sigma = plot(rootfile)
+            mean, sigma = plot_ee_mass(rootfile)
             self.assertAlmostEqual(mean, 84.06, 1)
             self.assertAlmostEqual(sigma, 6.47, 1)
 
         def test_z_mumu_clic(self):
-            '''Check for an almost perfect match with reference.
+            '''Check Z mass in ee->Z->mumu (CLIC).
             Will fail if physics algorithms are modified,
             so should probably be removed from test suite,
             or better: be made optional. 
@@ -92,7 +92,7 @@ if context.name == 'fcc':
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
-            mean, sigma = plot(rootfile, nbins=400)
+            mean, sigma = plot_ee_mass(rootfile, nbins=400)
             self.assertAlmostEqual(mean, 90.84, 1)
             self.assertAlmostEqual(sigma, 1.32, 1)
 

@@ -2,8 +2,10 @@ from ROOT import TFile, TCanvas, TH1F, gPad
 import time
 
 holder = list()
+tree = None
 
-def plot(fname, nbins=100, xmin=10, xmax=200):    
+def plot_ee_mass(fname, nbins=100, xmin=10, xmax=200):
+    global tree
     root_file = TFile(fname)
     tree = root_file.Get('events')
     canvas = TCanvas("canvas", "canvas", 600,600)  
@@ -25,7 +27,7 @@ if __name__ == '__main__':
         print 'usage <ZHTreeProducer root file>'
         sys.exit(1)
 
-    mean, sigma = plot(sys.argv[1])
+    mean, sigma = plot_ee_mass(sys.argv[1])
     print mean, sigma
     
     
