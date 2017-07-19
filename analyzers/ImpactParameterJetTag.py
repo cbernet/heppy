@@ -131,12 +131,18 @@ class ImpactParameterJetTag(Analyzer):
                                                     / ptc.path.ip_resolution
 
     def track_probability(self, particle):
-        """Compute the probability that the track comes from the primary vertex according to the resolution.
+        """Compute the probability that the track comes from the primary vertex
+        according to the resolution.
 
-        The track probability is computed as the p-value of the track significance with respect to the expected distribution produced only by the effect of the resoution.
-        For a gaussian resolution, like in this case, this takes an easy expression.
+        The track probability is computed as the p-value of the track significance
+        with respect to the expected distribution produced
+        only by the effect of the resolution.
+        For a gaussian resolution, like in this case,
+        this takes an easy expression.
 
-        If the track has negative significance, the probability as it had positive significance is assigned, but with the negative sign.
+        If the track has negative significance,
+        the probability as it had positive significance is assigned,
+        but with the negative sign.
         """
         #COLIN->NIC: is this method used? 
         def gaussian(x):
