@@ -92,7 +92,29 @@ if context.name == 'fcc':
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
-            mean, sigma = plot_ee_mass(rootfile, nbins=400)
+            mean, sigma = plot_ee_mass(rootfile, nbins=400, xmin=70, xmax=110)
+            self.assertAlmostEqual(mean, 90.84, 1)
+            self.assertAlmostEqual(sigma, 1.32, 1)
+
+        def test_z_ee_clic(self):
+            '''Check Z mass in ee->Z->ee (CLIC).
+            Will fail if physics algorithms are modified,
+            so should probably be removed from test suite,
+            or better: be made optional. 
+            '''
+            from heppy.papas.detectors.CLIC import clic
+            fname = '/'.join([os.environ['HEPPY'],
+                                      'test/data/ee_Z_ee.root'])
+            config.components[0].files = [fname]
+            config.sequence[2].detector = clic
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=500,
+                                  nPrint=0 )            
+            self.looper.loop()
+            self.looper.write()
+            rootfile = '/'.join([self.outdir,
+                                'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
+            mean, sigma = plot_ee_mass(rootfile, nbins=400, xmin=70, xmax=110)
             self.assertAlmostEqual(mean, 90.84, 1)
             self.assertAlmostEqual(sigma, 1.32, 1)
 

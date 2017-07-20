@@ -180,12 +180,21 @@ class BeamPipe(DetectorElement):
 class CLIC(Detector):
         
     def electron_acceptance(self, track):
-        '''returns True if electron is seen.'''
-        return track.p3().Mag() > 5 and abs(track.p3().Eta()) < 2.5
+        '''returns True if electron is seen.
+        
+        No information, cooking something up.
+        '''
+        if track.p3().Mag() > 5 and \
+           abs(track.theta()) < 80. * math.pi / 180.:
+            return random.uniform(0, 1) < 0.95  
 
     def electron_resolution(self, ptc):
-        '''returns the relative electron resolution'''
-        return 0.1 / math.sqrt(ptc.e())
+        '''returns the relative electron resolution.
+        
+        The CLIC CDR does not give any value for the electron resolution.
+        We simply use the ECAL resolution.
+        '''
+        return self.elements['ecal'].energy_resolution(ptc.e(), ptc.eta())
             
     def muon_acceptance(self, track):
         '''returns True if muon is seen.
