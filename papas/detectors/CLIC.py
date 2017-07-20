@@ -25,7 +25,7 @@ class ECAL(DetectorElement):
         # as for ILD (thresholds chosen by Mogens)
         self.emin = {'barrel':0.5, 'endcap':0.5}
         # CLIC CDR p.123. adding a noise term of 1%
-        self.eres = {'barrel':[0.165, 0.010, 0.015]}
+        self.eres = {'barrel':[0.167, 0.010, 0.011]}
         super(ECAL, self).__init__('ecal', volume,  mat)
 
     def energy_resolution(self, energy, eta=0.):
@@ -204,7 +204,6 @@ class CLIC(Detector):
         Therefore, using the momentum resolution of the tracker (CLIC CDR, section 8.1.1)
         '''
         return self.elements['tracker'].resolution(ptc)
-        # return 0.02 
     
     def ip_resolution(self, ptc):
         '''Not used yet'''
