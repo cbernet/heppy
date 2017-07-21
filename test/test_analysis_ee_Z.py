@@ -115,8 +115,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot_ee_mass(rootfile, nbins=400, xmin=70, xmax=110)
-            self.assertAlmostEqual(mean, 90.84, 1)
-            self.assertAlmostEqual(sigma, 1.32, 1)
+            self.assertAlmostEqual(mean, 90.77, 1)
+            self.assertAlmostEqual(sigma, 2.00, 1)
 
         
 

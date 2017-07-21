@@ -60,7 +60,7 @@ class TestPath(unittest.TestCase):
             jet_dir.RotateZ(0.1)
             ip_nic = compute_IP(helix, origin, jet_dir)
             ip_obj = ImpactParameter(helix, origin, jet_dir)
-            verbose = True
+            verbose = False
             places = 8
             if verbose:
                 print '-' * 50

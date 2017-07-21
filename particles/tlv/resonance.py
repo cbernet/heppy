@@ -66,5 +66,15 @@ class Resonance2(Resonance):
         p2 = self.leg2().p3()
         normal = p1.Cross(p2).Unit()
         angle = abs(normal.Angle(axis) - math.pi / 2.)
-        return angle
+        return angle * 180 / math.pi
+
+    def cross(self):
+        '''Patrick's acoplanarity variable
+        '''
+        p1 = self.leg1().p3()
+        p2 = self.leg2().p3()
+        cross = p1.Unit().Cross(p2.Unit())
+        cross = abs(cross.z())
+        cross = math.asin(cross) 
+        return cross * 180 / math.pi
 

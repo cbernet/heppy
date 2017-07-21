@@ -30,7 +30,6 @@ class TestResonance(unittest.TestCase):
         boosts = np.linspace(1, 50, nzeds)
         thetas = np.linspace(1, math.pi, nzeds)
         for mass, boost, theta in zip(masses, boosts, thetas):
-            print mass, boost, theta
             energy = mass / 2.
             ptc1 = Particle(11, -1,
                             TLorentzVector(0, energy, 0, energy))
@@ -44,17 +43,12 @@ class TestResonance(unittest.TestCase):
             bp4 = copy.deepcopy(resonance.p4())
             boost_vector = p4_lab.BoostVector()
             bp4.Boost(boost_vector)
-            bp4.Print()
             places = 8
             self.assertAlmostEqual(bp4.Vect().Mag(), boost, places)
             self.assertAlmostEqual(bp4.M(), mass, places)
             resonance.boost(boost_vector)
             self.assertAlmostEqual(bp4.E(), resonance.e(), places)
-##            print resonance.acoplanarity(), acop_patrick(resonance.leg1(),
-##                                                         resonance.leg2())
-##            self.assertEqual(resonance.acoplanarity(), acop_patrick(resonance.leg1(),
-##                                                                    resonance.leg2()))
-##
+
     def test_resonance(self):
         ptc1 = Particle(11, -1, TLorentzVector(1, 0, 0, 1))
         ptc2 = Particle(-11, 1, TLorentzVector(2, 0, 0, 2))
@@ -72,7 +66,7 @@ class TestResonance(unittest.TestCase):
         ptc1 = Particle(11, -1, TLorentzVector(1, 2, 3, 7))
         ptc2 = Particle(-11, 1, TLorentzVector(2, 3, 4, 10))
         reso = Resonance( ptc1, ptc2, 23 )
-        self.assertEqual(reso.acoplanarity(),
+        self.assertEqual(reso.cross(),
                          acop_patrick(reso.leg1(), reso.leg2()))
         
 
