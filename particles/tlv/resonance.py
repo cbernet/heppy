@@ -65,6 +65,6 @@ class Resonance2(Resonance):
         p1 = self.leg1().p3()
         p2 = self.leg2().p3()
         normal = p1.Cross(p2).Unit()
-        angle = normal.Angle(axis) - math.pi / 2.
+        angle = abs(normal.Angle(axis) - math.pi / 2.)
         return angle
 
