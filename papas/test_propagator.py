@@ -11,7 +11,7 @@ class TestPropagator(unittest.TestCase):
         cyl1 = SurfaceCylinder('cyl1', 1, 2)
         cyl2 = SurfaceCylinder('cyl2', 2, 1)
 
-        particle = Particle( LorentzVector(1, 0, 1, 2.), origin, 0)
+        particle = Particle( LorentzVector(1, 0, 1, 2.), origin, 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         straight_line.propagate_one( particle, cyl2 )
         self.assertEqual( len(particle.points), 3)
@@ -22,7 +22,7 @@ class TestPropagator(unittest.TestCase):
         self.assertAlmostEqual( particle.points['cyl2'].Z(), 1. )
         
         # testing extrapolation to -z 
-        particle = Particle( LorentzVector(1, 0, -1, 2.), origin, 0)
+        particle = Particle( LorentzVector(1, 0, -1, 2.), origin, 0, 22)
         # import pdb; pdb.set_trace()
         straight_line.propagate_one( particle, cyl1 )
         straight_line.propagate_one( particle, cyl2 )
@@ -34,38 +34,38 @@ class TestPropagator(unittest.TestCase):
 
         # extrapolating from a vertex close to +endcap
         particle = Particle( LorentzVector(1, 0, 1, 2.),
-                             Point(0,0,1.5), 0)
+                             Point(0,0,1.5), 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         self.assertAlmostEqual( particle.points['cyl1'].Perp(), 0.5 )
         
         # extrapolating from a vertex close to -endcap
         particle = Particle( LorentzVector(1, 0, -1, 2.),
-                             Point(0,0,-1.5), 0)
+                             Point(0,0,-1.5), 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         self.assertAlmostEqual( particle.points['cyl1'].Perp(), 0.5 )
         
         # extrapolating from a non-zero radius
         particle = Particle( LorentzVector(0, 0.5, 1, 2.),
-                             Point(0,0.5,0), 0)
+                             Point(0,0.5,0), 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         self.assertAlmostEqual( particle.points['cyl1'].Perp(), 1. )
         self.assertAlmostEqual( particle.points['cyl1'].Z(), 1. )
 
         # extrapolating from a z outside the cylinder
         particle = Particle( LorentzVector(0, 0, -1, 2.),
-                             Point(0,0,2.5), 0)
+                             Point(0,0,2.5), 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         self.assertFalse( 'cyl1' in particle.points ) 
         
         # extrapolating from a z outside the cylinder, negative
         particle = Particle( LorentzVector(0, 0, -1, 2.),
-                             Point(0,0,-2.5), 0)
+                             Point(0,0,-2.5), 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         self.assertFalse( 'cyl1' in particle.points ) 
 
         # extrapolating from a rho outside the cylinder
         particle = Particle( LorentzVector(0, 0, -1, 2.),
-                             Point(0,1.1,0), 0)
+                             Point(0,1.1,0), 0, 22)
         straight_line.propagate_one( particle, cyl1 )
         self.assertFalse( 'cyl1' in particle.points ) 
                 
@@ -74,10 +74,10 @@ class TestPropagator(unittest.TestCase):
         cyl2 = SurfaceCylinder('cyl2', 2., 1.)
         field = 3.8
         particle = Particle( LorentzVector(2., 0, 1, 5),
-                             Point(0., 0., 0.), -1)   
+                             Point(0., 0., 0.), -1, -211)   
         debug_info = helix.propagate_one(particle, cyl1, field)
         particle = Particle( LorentzVector(0., 2, 1, 5),
-                             Point(0., 0., 0.), -1)        
+                             Point(0., 0., 0.), -1, -211)        
         debug_info = helix.propagate_one(particle, cyl1, field)
 
         

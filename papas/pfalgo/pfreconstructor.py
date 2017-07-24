@@ -386,7 +386,7 @@ class PFReconstructor(object):
             momentum = math.sqrt(energy**2 - mass**2)
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
-        particle = Particle(p4, vertex, charge, len(self.particles), pdg_id, subtype='r')
+        particle = Particle(p4, vertex, charge, pdg_id, len(self.particles), subtype='r')
         # alice: this may be a bit strange because we can make a photon 
         # with a path where the point is actually that of the hcal?
         # nb this only is problem if the cluster and the assigned layer 
@@ -410,7 +410,7 @@ class PFReconstructor(object):
         mass, charge = particle_data[pdgid]
         p4 = TLorentzVector()
         p4.SetVectM(track.p3() , mass)
-        particle = Particle(p4, vertex, charge, len(self.particles), pdgid,  subtype='r')
+        particle = Particle(p4, vertex, charge, pdgid, len(self.particles), subtype='r')
         #todo fix this so it picks up smeared track points (need to propagagte smeared track)
         particle.set_track(track) #refer to existing track rather than make a new one
         self.locked[track.uniqueid] = True

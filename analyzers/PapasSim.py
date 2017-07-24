@@ -59,7 +59,7 @@ class PapasSim(Analyzer):
             vertex = ptc.start_vertex().position()
             charge = ptc.q()
             pid = ptc.pdgid()
-            simptc = Particle(tp4, vertex, charge, index, pid)
+            simptc = Particle(tp4, vertex, charge, pid, index)
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             simptc.gen_ptc = ptc
             return simptc

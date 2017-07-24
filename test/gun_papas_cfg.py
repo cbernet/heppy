@@ -78,8 +78,8 @@ source = cfg.Analyzer(
     thetamax = 0.1,
     phimin = math.pi/2.,
     phimax = math.pi/2.,
-    ptmin = 5,
-    ptmax = 10,
+    ptmin = 1,
+    ptmax = 1,
     flat_pt = False,
     papas = True
 )
