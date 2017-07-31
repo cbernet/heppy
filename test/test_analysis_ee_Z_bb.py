@@ -37,7 +37,9 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                               'test/data/ee_Z_bbbar.root'])
             config.components[0].files = [fname]
-            config.sequence[2].detector = cms
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = cms
             self.looper = Looper( self.outdir, config,
                                   nEvents=100,
                                   nPrint=0 )
@@ -56,7 +58,9 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                               'test/data/ee_Z_ddbar.root'])
             config.components[0].files = [fname]
-            config.sequence[2].detector = cms
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = cms
             self.looper = Looper( self.outdir, config,
                                   nEvents=100,
                                   nPrint=0 )
