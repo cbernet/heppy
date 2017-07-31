@@ -47,7 +47,9 @@ if context.name == 'fcc':
             or better: be made optional. 
             '''
             from heppy.papas.detectors.CMS import cms
-            config.sequence[2].detector = cms
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = cms
             # import pdb; pdb.set_trace()
             fname = '/'.join([os.environ['HEPPY'],
                                       'test/data/ee_ZH_Zmumu_Hbb.root'])

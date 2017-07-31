@@ -40,7 +40,9 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                                       'test/data/ee_Z_ddbar.root'])
             config.components[0].files = [fname]
-            config.sequence[2].detector = cms
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = cms
             self.looper = Looper( self.outdir, config,
                                   nEvents=100,
                                   nPrint=0 )
@@ -62,7 +64,10 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                                       'test/data/ee_Z_ddbar.root'])
             config.components[0].files = [fname]
-            config.sequence[2].detector = clic
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = clic
+    
             self.looper = Looper( self.outdir, config,
                                   nEvents=100,
                                   nPrint=0 )            
@@ -71,8 +76,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot_ee_mass(rootfile)
-            self.assertAlmostEqual(mean, 84.06, 1)
-            self.assertAlmostEqual(sigma, 6.47, 1)
+            self.assertAlmostEqual(mean, 86.48, 1)
+            self.assertAlmostEqual(sigma, 6.21, 1)
 
         def test_z_mumu_clic(self):
             '''Check Z mass in ee->Z->mumu (CLIC).
@@ -84,7 +89,9 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                                       'test/data/ee_Z_mumu.root'])
             config.components[0].files = [fname]
-            config.sequence[2].detector = clic
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = clic
             self.looper = Looper( self.outdir, config,
                                   nEvents=500,
                                   nPrint=0 )            
@@ -106,7 +113,9 @@ if context.name == 'fcc':
             fname = '/'.join([os.environ['HEPPY'],
                                       'test/data/ee_Z_ee.root'])
             config.components[0].files = [fname]
-            config.sequence[2].detector = clic
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = clic
             self.looper = Looper( self.outdir, config,
                                   nEvents=500,
                                   nPrint=0 )            
