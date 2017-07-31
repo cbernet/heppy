@@ -67,7 +67,6 @@ if context.name == 'fcc':
             for s in config.sequence:
                 if hasattr( s,'detector'):
                     s.detector = clic
-    
             self.looper = Looper( self.outdir, config,
                                   nEvents=100,
                                   nPrint=0 )            
