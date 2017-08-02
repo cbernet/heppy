@@ -40,7 +40,7 @@ class TestMultiProcessing(unittest.TestCase):
     def test_multiprocessing(self): 
         from heppy.framework.heppy_loop import create_parser, main
         parser = create_parser()
-        options, args = parser.parse_args()
+        options, args = parser.parse_args([])
         options.iEvent = None
         options.nprint = 0
         cfg = '/'.join( [ context.heppy_path, 

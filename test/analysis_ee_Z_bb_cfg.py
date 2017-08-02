@@ -30,20 +30,14 @@ Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
 
 # input definition
-import glob
-ee_Z_ddbar = cfg.Component(
-    'ee_Z_ddbar',
-    files = ['data/ee_Z_ddbar.root'] 
-    )
-ee_Z_ddbar.splitFactor = len(ee_Z_ddbar.files)
-
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
-    files = ['data/ee_Z_bbbar.root']
+    files = [
+        'data/ee_Z_ddbar.root'
+    ]
 )
 
-
-selectedComponents = [ee_Z_ddbar]
+selectedComponents = [ee_Z_bbbar]
 
 # read FCC EDM events from the input root file(s)
 # do help(Reader) for more information
@@ -54,38 +48,46 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
-from heppy.analyzers.P4SumBuilder import P4SumBuilder
-sum_particles = cfg.Analyzer(
-    P4SumBuilder, 
-    output='sum_all_ptcs',
-    #    particles='gen_particles_stable'
-    particles='rec_particles'
+from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
+from heppy.test.papas_cfg import papasdisplaycompare as display 
+
+# Make jets 
+from heppy.analyzers.fcc.JetClusterizer import JetClusterizer
+jets = cfg.Analyzer(
+    JetClusterizer,
+    output = 'jets',
+    particles = 'rec_particles',
+    fastjet_args = dict( njets = 2 ),
+    njets_required=False
 )
 
-sum_gen = cfg.Analyzer(
-    P4SumBuilder, 
-    output='sum_all_gen',
-    particles='gen_particles_stable'
-)
+# b tagging, parametrized
+from heppy.test.btag_parametrized_cfg import btag_parametrized, btag
+from heppy.analyzers.roc import cms_roc
+btag.roc = cms_roc
 
+# b tagging, IP smearing
+from heppy.test.btag_ip_smearing_2_cfg import btag_ip_smearing
 
-from heppy.analyzers.GlobalEventTreeProducer import GlobalEventTreeProducer
-zed_tree = cfg.Analyzer(
-    GlobalEventTreeProducer, 
-    sum_all='sum_all_ptcs', 
-    sum_all_gen='sum_all_gen'
-)
-
-
-from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare, pfreconstruct
-from heppy.test.papas_cfg import papasdisplaycompare as display
-
-do_clic = True
+do_clic = False
 if do_clic:
     from heppy.papas.detectors.CLIC import clic
     papas.detector = clic    
     display.detector = clic
-    pfreconstruct.detector = clic
+    #TODO replace by clic ROC!
+
+
+from heppy.analyzers.JetTreeProducer import JetTreeProducer
+jet_tree = cfg.Analyzer(
+    JetTreeProducer,
+    tree_name = 'events',
+    tree_title = 'jets',
+    jets = 'jets',
+    taggers = ['b', 'b_ip', 'bmatch', 'bfrac'], 
+    njets = 2, 
+    store_match =False
+)
+
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
@@ -93,9 +95,10 @@ sequence = cfg.Sequence(
     source,
     # gen_particles_stable, 
     papas_sequence,
-    sum_particles,
-    sum_gen, 
-    zed_tree,
+    jets, 
+    btag_parametrized,
+    btag_ip_smearing, 
+    jet_tree, 
     display
     )
 

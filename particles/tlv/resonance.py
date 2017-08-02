@@ -21,6 +21,17 @@ class Resonance(Particle, RootObj):
             tlv += leg.p4()
         super(Resonance, self).__init__(pid, charge, tlv, status=3)
 
+    def boost(self, boost_vector):
+        '''Boost the resonance and its legs to another lorentz frame.
+        
+        See the ROOT documentation for the definition of the boost vector.
+        If you have a p4, you can get it by doing p4.BoostVector()
+        '''
+        self._tlv.Boost(boost_vector)
+        for leg in self.legs:
+            leg._tlv.Boost(boost_vector)
+        
+        
             
 class Resonance2(Resonance):
     '''Resonance decaying to two legs.'''
@@ -49,11 +60,21 @@ class Resonance2(Resonance):
         
         If axis is None, using the z axis.
         '''
-        # normal to lepton plane
         if axis is None:
             axis = TVector3(0, 0, 1)
-        normal = self.leg1().p3().Cross(self.leg2().p3()).Unit()
-        angle = normal.Angle(axis)
-        while angle > math.pi / 2.:
-            angle -= math.pi / 2.
-        return angle
+        p1 = self.leg1().p3()
+        p2 = self.leg2().p3()
+        normal = p1.Cross(p2).Unit()
+        angle = abs(normal.Angle(axis) - math.pi / 2.)
+        return angle * 180 / math.pi
+
+    def cross(self):
+        '''Patrick's acoplanarity variable
+        '''
+        p1 = self.leg1().p3()
+        p2 = self.leg2().p3()
+        cross = p1.Unit().Cross(p2.Unit())
+        cross = abs(cross.z())
+        cross = math.asin(cross) 
+        return cross * 180 / math.pi
+

@@ -50,7 +50,10 @@ def jet_tree_sequence(gen_ptcs, rec_ptcs, njets=None, ptmin=None):
         JetTreeProducer,
         tree_name = 'events',
         tree_title = 'jets',
-        jets = 'jets'
+        jets = 'jets',
+        taggers = [], 
+        njets = 2, 
+        store_match = True
         )
 
     sequence = [gen_jets, jets, jet_match, jet_tree]

@@ -9,18 +9,22 @@ def fill( tree, varName, value ):
 
 # simple p4
 
-def bookP4( tree, pName ):
+def bookP4( tree, pName):
     var(tree, '{pName}_e'.format(pName=pName))
     var(tree, '{pName}_pt'.format(pName=pName))
+    var(tree, '{pName}_px'.format(pName=pName))
+    var(tree, '{pName}_py'.format(pName=pName))
     var(tree, '{pName}_pz'.format(pName=pName))
     var(tree, '{pName}_theta'.format(pName=pName))
     var(tree, '{pName}_eta'.format(pName=pName))
     var(tree, '{pName}_phi'.format(pName=pName))
     var(tree, '{pName}_m'.format(pName=pName))
 
-def fillP4( tree, pName, p4 ):
+def fillP4( tree, pName, p4):
     fill(tree, '{pName}_e'.format(pName=pName), p4.e() )
     fill(tree, '{pName}_pt'.format(pName=pName), p4.pt() )
+    fill(tree, '{pName}_px'.format(pName=pName), p4.p3().X() )
+    fill(tree, '{pName}_py'.format(pName=pName), p4.p3().Y() )
     fill(tree, '{pName}_pz'.format(pName=pName), p4.p3().Z() )
     fill(tree, '{pName}_theta'.format(pName=pName), p4.theta() )
     fill(tree, '{pName}_eta'.format(pName=pName), p4.eta() )

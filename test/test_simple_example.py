@@ -73,7 +73,7 @@ class TestSimpleExample(unittest.TestCase):
   
     def test_rewrite(self):
         parser = create_parser()
-        options, args = parser.parse_args()
+        options, args = parser.parse_args([])
         options.iEvent = None
         options.nprint = 0
         cfg = '/'.join( [ context.heppy_path, 

@@ -11,10 +11,10 @@ if __name__ == '__main__':
     suites = []
     
     pcks = [
+        'test',  # if particles is before test, test fails! 
         'analyzers',
         'display', 
         'framework',
-        'test',  # if particles is before test, test fails! 
         'papas', 
         'particles',
         'statistics',
@@ -22,12 +22,13 @@ if __name__ == '__main__':
         ]
 
     for pck in pcks:
-        suites.append(unittest.TestLoader().discover(pck))
+        loader =  unittest.TestLoader()
+        suites.append(loader.discover(pck))
 
     suite = unittest.TestSuite(suites)
     # result = unittest.TextTestResult(sys.stdout, True, 1)
     # suite.run(result)
-    runner = unittest.TextTestRunner()
+    runner = unittest.TextTestRunner(verbosity=2)
     runner.run(suite)
 
  

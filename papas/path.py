@@ -3,7 +3,7 @@ from scipy import constants
 from ROOT import TVector3, TLorentzVector
 from heppy.utils.deltar import deltaPhi
 from collections import OrderedDict
-import scipy.optimize as opti # need to compute impact parameters
+import scipy.optimize 
 from numpy import sign
 import heppy.statistics.rrandom as random
 
@@ -95,7 +95,6 @@ class Helix(Path):
         '''ds2 = dx2+dy2+dz2 = [w2rho2 + vz2] dt2'''
         return math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)*deltat
  
- #______________________________________________________________________________   
     def coord_at_time(self, time):
         '''returns x,y,z at time t'''
         x = self.origin.X() + \
@@ -106,78 +105,76 @@ class Helix(Path):
             + self.v_over_omega.Y() * math.sin(self.omega*time)
         z = self.vz() * time + self.origin.Z()
         return x,y,z
-        
-    def compute_IP(self, vertex,jet):
-        '''find the impact parameter of the trajectory with respect to a given
-        point (vertex). The impact parameter has the same sign as the scalar product of
-        the vector pointing from the given vertex to  the point of closest
-        approach with the given jet direction.
-        
-        new attributes :
-        *   closest_t = time of closest approach to the primary vertex.
-        *   IP = signed impact parameter
-        *   IPcoord = TVector3 of the point of closest approach to the
-            primary vertex
-        '''
-        self.vertex_IP = vertex
-        def distquad (time):
-            x,y,z = self.coord_at_time(time)
-            dist2 = (x-vertex.x())**2 + (y-vertex.y())**2\
-            + (z-vertex.z())**2 
-            return dist2
-        minim_answer = opti.bracket(distquad, xa = -0.5e-14, xb = 0.5e-14)
-        self.closest_t = minim_answer[1]
-        vector_IP = self.point_at_time(minim_answer[1]) - vertex
-        Pj = jet.p4().Vect().Unit()
-        signIP  = vector_IP.Dot(Pj)
-        self.IP = minim_answer[4]**(1.0/2)*sign(signIP)
-        
-        x,y,z = self.coord_at_time(minim_answer[1])
-        self.IPcoord = TVector3(x, y, z)
        
-    def compute_theta_0(self, x, X_0):
-        '''Computes the square root of the variance, sigma, of the multiple
-        scattering angle due to matter interactions, using the formula in PDG
-        booklet, Passage of particles through matter, multiple scattering through small angles
-        equation 10.'''
-        P = self.p4.Vect().Dot(self.udir)
-        self.theta_0 = 1.0*13.6e-3/(1.0*self.speed/constants.c*P)
-        self.theta_0 *= abs(self.charge)*(1.0*abs(x/X_0))**(1.0/2)*(1+0.038*math.log(1.0*abs(x/X_0)))
-        self.xX_0 = 1.0*x/X_0
     
-    def compute_IP_signif(self, IP, theta_0, scat_point):
-        # ! are we sure sigma_IP_due_IP_algo_precise isnt overestimated ?
-        # it is an approximation : we stay here in a plan containing the primary
-        # vertex, the IP_point and the deviated one. But geometrically the new
-        # IP_point isnt in that plan (cos(theta) factor ~ 1)
-        delta_t = 1e-15
-        delta_s = delta_t * self.speed *1.0
-        sigma_s = delta_s
-        sigma_IP_due_IP_algo_precise = IP*1.0/(math.cos(math.atan(sigma_s/IP)))-IP
-        sigma_IP_due_other = 1e-5
-        
-        if theta_0 == None or scat_point == None:
-            self.IP_signif = IP*1.0/(sigma_IP_due_IP_algo_precise**2+sigma_IP_due_other**2)**0.5
-        else :        
-            phi_t_scat = self.phi( scat_point.X(), scat_point.Y())
-            t_scat = self.time_at_phi(phi_t_scat)
-            fly_distance = self.speed * 1.0 * t_scat
-            # for the IP significance : estimation 
-            sigma_IP_due_scattering = fly_distance*math.tan((2)**0.5*theta_0)
-            sigma_IP_tot = ( sigma_IP_due_IP_algo_precise**2 + sigma_IP_due_scattering**2 + sigma_IP_due_other**2 )**0.5
-            self.IP_signif = IP*1.0/sigma_IP_tot
-            self.IP_sigma = sigma_IP_tot
-        
-            
- #______________________________________________________________________________    
-
-    # def deltat(self, path_length):
-    #     #TODO: shouldn't this just use beta????
-    #     d1 = path_length / (self.p4.Beta()*constants.c)
-    #     # d2 = path_length / math.sqrt(self.omega**2 * self.rho**2 + self.vz()**2)
-    #     return d1
-        
+class ImpactParameter(object):
+    '''Performs impact parameter calculation, and stores relevant information.'''
     
+    def __init__(self, helix, origin, jet_direction, resolution=0.):
+        '''Constructs impact parameter.
+        
+        @param helix: the helix for which the impact parameter is
+          calculated.
+        @param origin: TVector3-like vertex of origin, w/r to which
+          the impact parameter is calculated
+        @param jet_direction: TVector3-like, necessary to calculate
+          the sign of the impact parameter
+        @param resolution: resolution estimate to calculate the
+          impact parameter significance
+        
+        The impact parameter calculation involves a minimization
+        performed using the brent method of scipy.optimize.minimize_scalar.
+        The point of closest approach must be within -5 and +5 ns
+        of the helix vertex (point of reference on the helix,
+        not the primary vertex).
+        
+        Interesting attributes:
+        - helix: the corresponding helix
+        - origin: the corresponding primary vertex
+        - time: the time corresponding to the point of closest approach
+          on the helix
+        - vector: from the origin to the point of closest approach
+        - sign: impact parameter sign
+        - value: impact parameter value, defined as the distance between
+          the primary vertex and the point of closest approach,
+          times the sign
+        - significance
+          impact parameter significance, defined as the value divided
+          by the resolution.
+        '''
+        self.helix = helix
+        self.origin = origin
+        def distquad (time):
+            x,y,z = self.helix.coord_at_time(time)
+            dist2 = (x-origin.x())**2 + (y-origin.y())**2 + (z-origin.z())**2 
+            return dist2
+        minim_answer = scipy.optimize.minimize_scalar(
+            distquad,
+            method='brent', 
+            bracket = [-5e-9, 5e-9],
+            options={'xtol': 1e-20, 'maxiter': 1e5},
+            tol=None,
+        )
+        self.time = minim_answer.x
+        self.vector = self.helix.point_at_time(self.time) - origin
+        jet_direction = jet_direction.Unit()
+        self.sign  = self.vector.Dot(jet_direction)
+        if self.sign == 0:
+            self.sign = 1
+        self.value = self.vector.Mag()*sign(self.sign)
+        if resolution:
+            self.significance = self.value / resolution
+                        
+    def __str__(self):
+        def vector_desc(name, vec):
+            return '{:7}\t: mag={:3.2f}, phi={:3.2f}, theta={:3.2f}'.format(
+                name, vec.Mag(), vec.Phi(), vec.Theta()
+            )       
+        lines = [ vector_desc('origin', self.origin), 
+                  vector_desc('IP', self.vector), ]
+        return '\n'.join(lines)
+        
+        
 if __name__ == '__main__':
 
     from ROOT import TLorentzVector, TVector3
@@ -186,3 +183,4 @@ if __name__ == '__main__':
     helix = Helix(3.8, 1, p4, TVector3(0,0,0))
     length = helix.path_length(1e-9)
     helix.deltat(length)
+    
