@@ -217,7 +217,7 @@ from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
 PDebugger,
 output_to_stdout = False, #optional
-debug_filename = None #os.getcwd()+'/python_physics_debug.log' #optional argument
+debug_filename = None #No physics debug output unless this is subsequently set
 )
 
 # definition of a sequence of analyzers,

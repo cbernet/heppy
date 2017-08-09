@@ -11,7 +11,6 @@ import heppy.framework.context as context
 if context.name == 'fcc':
 
     from analysis_ee_ZH_cfg import config
-    #from heppy.test.plot_ee_ZH import plot
     from heppy.framework.looper import Looper
     from ROOT import TFile
 
@@ -49,7 +48,6 @@ if context.name == 'fcc':
             # import pdb; pdb.set_trace()
             fname = '/'.join([os.environ['HEPPY'],
                                       'test/data/ee_ZH_Zmumu_Hbb.root'])
-            #fname = os.path.abspath('ee_ZH_Zmumu_Hbb.root')
             config.components[0].files = [fname]
             looper = Looper( self.outdir, config,
                                           nEvents=10,

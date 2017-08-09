@@ -87,12 +87,11 @@ if do_clic:
     display.detector = clic
     pfreconstruct.detector = clic
 
-        
 from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
 PDebugger,
 output_to_stdout = False, #optional
-debug_filename = None #os.getcwd()+'/python_physics_dd.log' #optional argument
+debug_filename = None #No output
 )
 
 # definition of a sequence of analyzers,

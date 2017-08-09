@@ -10,14 +10,11 @@ import heppy.framework.context as context
 if context.name == 'fcc':
 
     from analysis_ee_Z_cfg import config
-    from heppy.test.plot_ee_Z import plot_ee_mass
     from heppy.framework.looper import Looper
     from ROOT import TFile
 
     import logging
-    #todo check with Colin regarding the logging level which turns off pdebug also
-    #logging.getLogger().setLevel(logging.ERROR)
-    logging.getLogger().setLevel(logging.INFO)
+    logging.getLogger().setLevel(logging.ERROR)
     
     import heppy.statistics.rrandom as random
 
@@ -27,6 +24,7 @@ if context.name == 'fcc':
             random.seed(0xdeadbeef)
             self.outdir = tempfile.mkdtemp()
             import logging
+            #Alice: I turned this off otherwise no pdebug output. Ask Colin why it is on and if this is OK
             #logging.disable(logging.CRITICAL)
 
         def tearDown(self):
