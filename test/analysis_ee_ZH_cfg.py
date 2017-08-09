@@ -217,14 +217,14 @@ from heppy.analyzers.PDebugger import PDebugger
 pdebug = cfg.Analyzer(
 PDebugger,
 output_to_stdout = False, #optional
-debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+debug_filename = None #os.getcwd()+'/python_physics_debug.log' #optional argument
 )
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
-    #pdebug,
+    pdebug,
     papas_sequence,
     leptons_true,
     iso_leptons,

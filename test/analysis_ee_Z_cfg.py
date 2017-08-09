@@ -87,10 +87,19 @@ if do_clic:
     display.detector = clic
     pfreconstruct.detector = clic
 
+        
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+PDebugger,
+output_to_stdout = False, #optional
+debug_filename = None #os.getcwd()+'/python_physics_dd.log' #optional argument
+)
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
+    pdebug,
     # gen_particles_stable, 
     papas_sequence,
     sum_particles,

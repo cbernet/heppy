@@ -92,12 +92,14 @@ class PFReconstructor(object):
             sblock = self.splitblocks[b]
             pdebugger.info('Processing {}'.format(sblock))
             self.reconstruct_block(sblock)
+            pdebugger.info("Finished block")
 
         #check if anything is unused
         if len(self.unused):
             self.log.warning(str(self.unused))
         self.log.info("Particles:")
-        self.log.info(str(self))         
+        self.log.info(str(self))
+        pdebugger.info("Finished reconstruction")
 
     def simplify_blocks(self, block, history_nodes=None):
         ''' Block: a block which contains list of element ids and set of edges that connect them
