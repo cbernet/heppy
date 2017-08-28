@@ -39,8 +39,8 @@ class PDebugger(Analyzer):
             pdebug.set_stream(sys.stdout,level=logging.INFO)
             pdebug.pdebugger.setLevel(logging.INFO)
 
-        #turn on output to file if requested
-        if hasattr(self.cfg_ana, 'debug_filename'):
+        #turn on output to file if requested, if filename is None then no output is produced
+        if hasattr(self.cfg_ana, 'debug_filename') and self.cfg_ana.debug_filename:
             pdebug.set_file(self.cfg_ana.debug_filename)
             pdebug.pdebugger.setLevel(logging.INFO)
 
