@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.WARNING)
 
 comp = cfg.Component(
     'example',
-     files = ["root://eospublic.cern.ch//eos/fcc/hh/tutorials/ttbar/ttbar_1.root"]
+     files = ["root://eospublic.cern.ch//eos/experiment/fcc/hh/tutorials/ttbar/ttbar_1.root"]
 )
 selectedComponents = [comp]
 
