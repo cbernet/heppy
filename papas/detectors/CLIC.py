@@ -186,7 +186,9 @@ class CLIC(Detector):
         '''
         if track.p3().Mag() > 5 and \
            abs(track.theta()) < 80. * math.pi / 180.:
-            return random.uniform(0, 1) < 0.95  
+            return random.uniform(0, 1) < 0.95
+        else:
+            return False
 
     def electron_resolution(self, ptc):
         '''returns the relative electron resolution.

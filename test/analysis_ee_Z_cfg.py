@@ -78,9 +78,10 @@ zed_tree = cfg.Analyzer(
 
 
 from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
-from heppy.test.papas_cfg import papasdisplaycompare as display 
+from heppy.test.papas_cfg import papasdisplaycompare as display
+display = papasdisplay
 
-do_clic = True
+do_clic = False
 if do_clic:
     from heppy.papas.detectors.CLIC import clic
     papas.detector = clic    
