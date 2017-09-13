@@ -153,34 +153,38 @@ def bookIsoParticle(tree, pName):
 def fillIsoParticle(tree, pName, ptc, lepton):
     fillParticle(tree, pName, ptc)
     fillLepton(tree, '{pName}_lep'.format(pName=pName), lepton)
-    
-def bookZed(tree, pName):
+
+def bookResonance(pName, tree):
     bookParticle(tree, pName )
+    var(tree, '{pName}_acol'.format(pName=pName))
+    var(tree, '{pName}_acop'.format(pName=pName))
+    var(tree, '{pName}_cross'.format(pName=pName))
+
+def fillResonance(tree, pName, resonance):
+    fillParticle(tree, pName, resonance)
+    fill(tree, '{pName}_acol'.format(pName=pName), resonance.acollinearity() )
+    fill(tree, '{pName}_acop'.format(pName=pName), resonance.acoplanarity() )
+    fill(tree, '{pName}_cross'.format(pName=pName), resonance.cross() )
+   
+def bookZed(tree, pName):
+    bookResonance(pName, tree)
     bookLepton(tree, '{pName}_1'.format(pName=pName)  )
     bookLepton(tree, '{pName}_2'.format(pName=pName)  )
-    var(tree, '{pName}_acol'.format(pName=pName))
-    var(tree, '{pName}_acop'.format(pName=pName))
 
 def fillZed(tree, pName, zed):
-    fillParticle(tree, pName, zed)
+    fillResonance(tree, pName, zed)
     fillLepton(tree, '{pName}_1'.format(pName=pName), zed.leg1() )
     fillLepton(tree, '{pName}_2'.format(pName=pName), zed.leg2() )
-    fill(tree, '{pName}_acol'.format(pName=pName), zed.acollinearity() * 180./math.pi)
-    fill(tree, '{pName}_acop'.format(pName=pName), zed.acoplanarity() * 180./math.pi)
 
 def bookHbb(tree, pName):
-    bookParticle(tree, pName )
+    bookResonance(pName, tree)
     bookParticle(tree, '{pName}_1'.format(pName=pName)  )
     bookParticle(tree, '{pName}_2'.format(pName=pName)  )
-    var(tree, '{pName}_acol'.format(pName=pName))
-    var(tree, '{pName}_acop'.format(pName=pName))
 
 def fillHbb(tree, pName, higgs):
-    fillParticle(tree, pName, higgs)
+    fillResonance(tree, pName, higgs)
     fillParticle(tree, '{pName}_1'.format(pName=pName), higgs.leg1() )
     fillParticle(tree, '{pName}_2'.format(pName=pName), higgs.leg2() )
-    fill(tree, '{pName}_acol'.format(pName=pName), higgs.acollinearity() * 180./math.pi)
-    fill(tree, '{pName}_acop'.format(pName=pName), higgs.acoplanarity() * 180./math.pi)
 
 def bookMet(tree, pName):
     var(tree, '{pName}_pt'.format(pName=pName)  )

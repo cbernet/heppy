@@ -21,6 +21,7 @@ class ZHTreeProducer(Analyzer):
         bookJet(self.tree, 'jet2', self.taggers)
         bookHbb(self.tree, 'higgs')
         bookParticle(self.tree, 'misenergy')
+        var(self.tree, 'n_nu')
        
     def process(self, event):
         self.tree.reset()
@@ -45,6 +46,9 @@ class ZHTreeProducer(Analyzer):
             # if higgs.m() < 30:
             #    import pdb; pdb.set_trace()
             fillHbb(self.tree, 'higgs', higgs)
+        neutrinos = getattr(event, 'neutrinos', None)
+        if neutrinos:
+            fill(self.tree, 'n_nu', len(neutrinos))
         self.tree.tree.Fill()
         
     def write(self, setup):

@@ -292,7 +292,7 @@ class SmearedTrack(Track):
 
 
 class Particle(BaseParticle):
-    def __init__(self, tlv, vertex, charge, index=0, pdgid=None, subtype='s'):
+    def __init__(self, tlv, vertex, charge, pdgid, index=0, subtype='s'):
         self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
         

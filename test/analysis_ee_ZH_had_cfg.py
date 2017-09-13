@@ -190,7 +190,7 @@ compute_jet_energy = cfg.Analyzer(
 # cms_roc is a numpy array, so one can easily scale
 # the cms performance, help(numpy.array) for more info.
 
-btag_type = 'smeared'
+btag_type = 'parametrized'
 btag = None
 if btag_type == 'parametrized':
     from heppy.analyzers.ParametrizedBTagger import ParametrizedBTagger
