@@ -119,7 +119,7 @@ def main(options, args, batchManager):
         
     listOfValues = range(njobs)
     batchManager.PrepareJobs( listOfValues )
-    waitingTime = 2
+    waitingTime = 1
     batchManager.SubmitJobs( waitingTime )
 
 

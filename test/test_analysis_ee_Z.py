@@ -30,7 +30,7 @@ if context.name == 'fcc':
             shutil.rmtree(self.outdir)
             logging.disable(logging.NOTSET)
 
-        def test_z_cms(self):
+        def test_z_1_cms(self):
             '''Check Z mass in ee->Z->ddbar (CMS).
             Will fail if physics algorithms are modified,
             so should probably be removed from test suite,
@@ -54,7 +54,7 @@ if context.name == 'fcc':
             self.assertAlmostEqual(mean, 94.7, 1)
             self.assertAlmostEqual(sigma, 15.1, 1)
 
-        def test_z_clic(self):
+        def test_z_2_clic(self):
             '''Check Z mass in ee->Z->ddbar (CLIC).
             Will fail if physics algorithms are modified,
             so should probably be removed from test suite,
