@@ -2,6 +2,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
+from heppy.particles.fcc.particle_link import Particle_Link
 from heppy.particles.fcc.met import Met
 import heppy.configuration
 
@@ -74,7 +75,7 @@ class Reader(Analyzer):
     def process(self, event):
         store = event.input
 
-        def get_collection(class_object, coll_label, sort=True):
+        def get_collection(class_object, coll_label, coll_subtype = None, sort=True):
             pycoll = None
             if hasattr(self.cfg_ana, coll_label):
                 coll_name = getattr( self.cfg_ana, coll_label)
@@ -83,7 +84,10 @@ class Reader(Analyzer):
                     raise MissingCollection(
                         'collection {} is missing'.format(coll_name)
                         )
-                pycoll = map(class_object, coll)
+                if coll_subtype == None:
+                    pycoll = map(class_object, coll)
+                else:
+                    pycoll = map( lambda x: class_object(x,  subtype = coll_subtype), coll)
                 if sort:
                     pycoll.sort(reverse=True)
                 setattr(event, coll_label, pycoll)
@@ -99,13 +103,16 @@ class Reader(Analyzer):
                 event.weight = weightcoll[0].value()
 
         if hasattr(self.cfg_ana, 'gen_particles'):
-            get_collection(Particle, 'gen_particles')
-            
-        if hasattr(self.cfg_ana, 'papasreconstructed'):
-            get_collection(Particle, 'papasreconstructed')        
+            get_collection(Particle, 'gen_particles', coll_subtype='g' )
+
+        if hasattr(self.cfg_ana, 'rec_particles'):
+            get_collection(Particle, 'rec_particles', coll_subtype='r' )
+        
+        if hasattr(self.cfg_ana, 'gen_rec_links'):
+            get_collection(Particle_Link, 'gen_rec_links')
 
         if hasattr(self.cfg_ana, 'gen_vertices'):
-            get_collection(Vertex, 'gen_vertices', False)
+            get_collection(Vertex, 'gen_vertices', sort = False)
 
         if hasattr(self.cfg_ana, 'gen_jets'):
             get_collection(Jet, 'gen_jets')

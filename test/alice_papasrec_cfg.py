@@ -56,7 +56,9 @@ comp = cfg.Component(
     files = 
         # here we have a single input root file.
         # the absolute path must be used to be able to run on the batch.
-        os.path.abspath('/Users/alice/temp/outputfccmulti_544/papasout_2.1_0.root')
+        #os.path.abspath('/Users/alice/temp/outputfccmulti_544/papasout_2.1_0.root')
+        os.path.abspath('/Users/alice/temp/output.root')
+        
         #glob.glob(os.path.join(os.path.abspath('/Users/alice/temp/outputfccmulti_544/'),"*.root"))
 )
 #comp.splitFactor = len(comp.files)
@@ -70,14 +72,42 @@ from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
     gen_particles = 'GenParticle',
-    papasreconstructed= 'papasreconstructed',
-    gen_vertices = 'Genvertex'
+    rec_particles= 'papasreconstructed',
+    gen_rec_links= 'papasParticleLinks',
+    gen_vertices = 'GenVertex'
+)
+
+
+#from heppy.analyzers.Selector import Selector
+#gen_particles_stable = cfg.Analyzer(
+    #Selector,
+    #output = 'gen_particles_stable',
+    ## output = 'particles',
+    #input_objects = 'gen_particles',
+    #filter_func = lambda x : x.status()==1 and abs(x.pdgid()) not in [12,14,16] and x.pt()>1e-5
+#)
+
+# configure the papas fast simulation with the CMS detector
+# help(Papas) for more information
+# history nodes keeps track of which particles produced which tracks, clusters 
+from heppy.analyzers.PapasEventFromRoot import PapasEventFromRoot
+# from heppy.analyzers.Papas import Papas
+from heppy.papas.detectors.CMS import CMS
+detector = CMS()
+
+papasfromroot = cfg.Analyzer(
+    PapasEventFromRoot,
+    instance_label = 'papasfromroot',
+    gen_particles = 'gen_particles',
+    rec_particles = 'rec_particles',
+    gen_rec_links = 'gen_rec_links',
+    verbose = True
 )
 
 # importing the papas simulation and reconstruction sequence,
 # as well as the detector used in papas
 # check papas_cfg.py for more information
-from heppy.test.papas_cfg import papas, papas_sequence, detector
+#from heppy.test.papas_cfg import papas, papas_sequence, detector
 
 from heppy.test.papas_cfg import papasdisplaycompare as display 
 
@@ -91,7 +121,7 @@ leptons_true = cfg.Analyzer(
     Selector,
     'sel_leptons',
     output = 'leptons_true',
-    input_objects = 'papasreconstructed',
+    input_objects = 'rec_particles',
     filter_func = lambda ptc: ptc.e()>10. and abs(ptc.pdgid()) in [11, 13]
 )
 
@@ -102,7 +132,7 @@ from heppy.particles.isolation import EtaPhiCircle
 iso_leptons = cfg.Analyzer(
     IsolationAnalyzer,
     candidates = 'leptons_true',
-    particles = 'papasreconstructed',
+    particles = 'rec_particles',
     iso_area = EtaPhiCircle(0.4)
 )
 
@@ -136,22 +166,16 @@ zeds = cfg.Analyzer(
 # help(RecoilBuilder) for more information
 sqrts = Collider.SQRTS 
 
+# compute the missing 4-momentum
 from heppy.analyzers.RecoilBuilder import RecoilBuilder
-recoil = cfg.Analyzer(
-    RecoilBuilder,
-    instance_label = 'recoil',
-    output = 'recoil',
-    sqrts = sqrts,
-    to_remove = 'zeds_legs'
-) 
-
 missing_energy = cfg.Analyzer(
     RecoilBuilder,
     instance_label = 'missing_energy',
     output = 'missing_energy',
-    sqrts = sqrts,
-    to_remove = 'papasreconstructed'
+    sqrts = Collider.SQRTS,
+    to_remove = 'rec_particles'
 ) 
+
 
 # Creating a list of particles excluding the decay products of the best zed.
 # help(Masker) for more information
@@ -159,7 +183,7 @@ from heppy.analyzers.Masker import Masker
 particles_not_zed = cfg.Analyzer(
     Masker,
     output = 'particles_not_zed',
-    input = 'papasreconstructed',
+    input = 'rec_particles',
     mask = 'zeds_legs',
 )
 
@@ -228,12 +252,13 @@ debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
 sequence = cfg.Sequence(
     source,
     pdebug,
-    papas_sequence,
+    papasfromroot,
+    #papas_sequence,
     leptons_true,
     iso_leptons,
     sel_iso_leptons,
     zeds,
-    recoil,
+    #recoil,
     missing_energy,
     particles_not_zed,
     jets,

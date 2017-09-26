@@ -43,6 +43,6 @@ class RecoilBuilder(Analyzer):
         recoil_p4 = TLorentzVector(0, 0, 0, sqrts)
         for ptc in to_remove:
             recoil_p4 -= ptc.p4()
-        recoil = Recoil(0, 0, recoil_p4, 1) 
+        recoil = Recoil(0, 0, recoil_p4, status = 1) 
         setattr(event, self.cfg_ana.output, recoil)
                 

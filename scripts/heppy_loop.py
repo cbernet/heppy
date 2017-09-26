@@ -4,8 +4,7 @@ if __name__ == '__main__':
     from heppy.framework.heppy_loop import * 
     parser = create_parser()
     (options,args) = parser.parse_args()
-    
-    
+
     #alice
     options.force = True
     

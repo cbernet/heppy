@@ -39,7 +39,7 @@ class Particle(P4):
         return str(self)
     
     def __str__(self):
-        tmp = '{className} : {idstr} : pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
+        tmp = '{className} :{idstr}: pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
         idstr = "none"
         if self.uniqueid()!=0 :
             idstr = '{pretty:6}:{uid}'.format(

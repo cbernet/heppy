@@ -33,8 +33,8 @@ Collider.SQRTS = 91.
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
     files = [
-        'data/ee_Z_ddbar.root'
-       # '/Users/alice/fcc/papasmodular/heppy/data/ee_Z_ddbar.root'
+       # 'data/ee_Z_ddbar.root'
+        '/Users/alice/fcc/papasmodular/heppy/data/ee_Z_ddbar.root'
     ]
 )
 
@@ -89,11 +89,18 @@ jet_tree = cfg.Analyzer(
     store_match =False
 )
 
+from heppy.analyzers.PDebugger import PDebugger
+pdebug = cfg.Analyzer(
+PDebugger,
+output_to_stdout = False, #optional
+debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
+)
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
+    pdebug,
     # gen_particles_stable, 
     papas_sequence,
     jets, 
