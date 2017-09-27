@@ -52,6 +52,8 @@ class PapasSim(Analyzer):
         event.papasevent = PapasEvent(event.iEv)   
         papasevent = event.papasevent
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
+        #make a dict from the gen_particles list so that it can be stored into the papasevent collections
+        gen_particles_collection = {x.uniqueid():x for x in gen_particles}
         def simparticle(ptc, index):
             '''Create a sim particle to be used in papas from an input particle.
             '''
@@ -61,7 +63,13 @@ class PapasSim(Analyzer):
             pid = ptc.pdgid()
             simptc = Particle(tp4, vertex, charge, pid, index)
             pdebugger.info(" ".join(("Made", simptc.__str__())))
-            simptc.gen_ptc = ptc
+            #simptc.gen_ptc = ptc # no longer needed (hopefully)
+            #record that sim particle derives from gen particle
+            nodeid=simptc.uniqueid()
+            child = papasevent.history.setdefault(nodeid, Node(nodeid)) #creates a new node if it is not there already
+            nodeif= ptc.uniqueid()
+            parent = papasevent.history.setdefault(nodeid, Node(nodeid))
+            parent.add_child(child)
             return simptc
         simptcs = [simparticle(ptc, index)
                    for index, ptc in enumerate(gen_particles)]
@@ -73,6 +81,7 @@ class PapasSim(Analyzer):
         #these are the particles before simulation
         simparticles = sorted(self.simulator.ptcs, key=P4.sort_key, reverse=True)
         setattr(event, self.simname, simparticles)
+        papasevent.add_collection(gen_particles_collection)
         papasevent.add_collection(self.simulator.simulated_particles)
         papasevent.add_collection(self.simulator.true_tracks)
         papasevent.add_collection(self.simulator.smeared_tracks)
@@ -80,7 +89,7 @@ class PapasSim(Analyzer):
         papasevent.add_collection(self.simulator.true_hcals)
         papasevent.add_collection(self.simulator.smeared_ecals)
         papasevent.add_collection(self.simulator.true_ecals)  
-        
+
         #todo move to separate analyzer
         self.merge_clusters(papasevent) #add to simulator class? 
         #useful when producing outputs from a papasevent

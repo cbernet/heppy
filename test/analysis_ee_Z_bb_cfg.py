@@ -34,6 +34,7 @@ ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
     files = [
         'data/ee_Z_ddbar.root'
+       # '/Users/alice/fcc/papasmodular/heppy/data/ee_Z_ddbar.root'
     ]
 )
 

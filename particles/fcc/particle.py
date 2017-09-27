@@ -3,11 +3,13 @@ from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
 from heppy.utils.pdebug import pdebugger
+from heppy.papas.data.identifier import Identifier
+
 import copy
 
 class Particle(BaseParticle, POD):
     
-    def __init__(self, fccobj):
+    def __init__(self, fccobj, ptype = 'g'):
         super(Particle, self).__init__(fccobj)
         self._charge = fccobj.core().charge
         self._pid = fccobj.core().pdgId
@@ -22,7 +24,7 @@ class Particle(BaseParticle, POD):
         self._tlv = TLorentzVector()
         p4 = fccobj.core().p4
         self._tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
-        #write(str('Made Pythia {}').format(self))
+        self._uid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,  fccobj.getObjectID().index, ptype, self._tlv.E())
         
     def __deepcopy__(self, memodict={}):
         newone = type(self).__new__(type(self))

@@ -7,9 +7,10 @@ from heppy.papas.data.identifier import Identifier
 import math
 
 class Particle(BaseParticle, RootObj):
-    def __init__(self, pdgid, charge, tlv, status=1):
+    def __init__(self, pdgid, charge, tlv, index, subtype, status=1):
         super(Particle, self).__init__()
         self._pid = pdgid
+        self._uid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, index, subtype, tlv.E())
         self._charge = charge
         self._tlv = tlv
         self._status = status

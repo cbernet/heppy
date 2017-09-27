@@ -103,7 +103,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         #update collections and history
         ptc.clusters[cylname] = cluster
         clusters[cluster.uniqueid] = cluster 
-        self.update_history(ptc.uniqueid, cluster.uniqueid,)          
+        self.update_history(ptc.uniqueid(), cluster.uniqueid)
         pdebugger.info(" ".join(("Made", cluster.__str__())))
         return cluster
 
@@ -134,7 +134,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         det = acceptance if acceptance else detector
         if det.acceptance(smeared_cluster) or accept:
             clusters[smeared_cluster.uniqueid] = smeared_cluster                      
-            self.update_history(cluster.uniqueid, smeared_cluster.uniqueid)            
+            self.update_history(cluster.uniqueid, smeared_cluster.uniqueid)
             return smeared_cluster
         else:
             pdebugger.info(str('Rejected {}'.format(smeared_cluster)))
@@ -152,7 +152,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         track = Track(ptc.p3(), ptc.q(), ptc.path, index=len(self.true_tracks))
         pdebugger.info(" ".join(("Made", track.__str__())))
         self.true_tracks[track.uniqueid] = track                     
-        self.update_history(ptc.uniqueid, track.uniqueid)          
+        self.update_history(ptc.uniqueid(), track.uniqueid)      
         ptc.set_track(track)
         return track
         
@@ -170,7 +170,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         pdebugger.info(" ".join(("Made", smeared_track.__str__())))
         if detector_acceptance(smeared_track):
             self.smeared_tracks[smeared_track.uniqueid] = smeared_track
-            self.update_history(track.uniqueid, smeared_track.uniqueid )   
+            self.update_history(track.uniqueid, smeared_track.uniqueid)   
             ptc.track_smeared = smeared_track             
             return smeared_track  
         else:
@@ -293,8 +293,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                 # to avoid numerical problems in propagation (and avoid making a particle that is not used)
                 continue
             pdebugger.info(str('Simulating {}'.format(ptc)))
-            # ptc = pfsimparticle(gen_ptc, len(self.simulated_particles))
-            self.history[ptc.uniqueid] = Node(ptc.uniqueid)
+            uniqueid = ptc.uniqueid()
+            parent = self.history.setdefault(uniqueid, Node(uniqueid))
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11: #check with colin
@@ -308,7 +308,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             elif abs(ptc.pdgid()) > 100: #TODO make sure this is ok
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            self.simulated_particles[ptc.uniqueid]= ptc
+            self.simulated_particles[uniqueid]= ptc
 
 if __name__ == '__main__':
 

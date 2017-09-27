@@ -4,6 +4,8 @@ from heppy.papas.data.historyhelper import HistoryHelper
 from heppy.analyzers.ChargedHadronsFromB import is_ptc_from_b
 from heppy.particles.genbrowser import GenBrowser
 
+from heppy.papas.data.identifier import Identifier
+
 def is_matched_to_b(jet):
     '''returns true if jet.match is a b quark.
     matching must be done before.
@@ -26,11 +28,11 @@ def is_from_b(jet, event, fraction=0.01):
     sum_e_from_b = 0
     # charged_ptcs = jet.constituents[211]
     for ptc in jet.constituents.particles:
-        simids = history.get_linked_collection(ptc.uniqueid, 'ps')
+        genids = history.get_linked_collection(ptc.uniqueid(), 'pg')
         from_b = False
-        for simid in simids:
-            simptc = event.papasevent.get_object(simid)
-            if is_ptc_from_b(event, simptc.gen_ptc, event.genbrowser):
+        for genid in genids:
+            genptc = event.papasevent.get_object(genid)
+            if is_ptc_from_b(event, genptc, event.genbrowser):
                 from_b = True
                 break
         if from_b:
@@ -38,8 +40,6 @@ def is_from_b(jet, event, fraction=0.01):
     bfrac = sum_e_from_b / jet.e()
     jet.tags['bfrac'] = bfrac
     return bfrac > fraction
-
-    
 
 
 class ParametrizedBTagger(Analyzer):

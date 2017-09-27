@@ -226,7 +226,7 @@ class PFReconstructor(object):
         #some parts of the block, there are frequently ambiguities and so for now the particle is
         #linked to everything in the block
         if newparticle:
-            newid = newparticle.uniqueid
+            newid = newparticle.uniqueid()
             self.particles[newid] = newparticle            
             #check if history nodes exists
             if self.papasevent.history is None:

@@ -174,8 +174,8 @@ class HistoryHelper(object):
         #questions 1  & 3
         for rec_particle in self.papasevent.get_collection('pr').values():
             if abs(rec_particle.pdgid())>100 and rec_particle.q() != 0: #charged hadron
-                parent_ids= self.get_linked_ids(rec_particle.uniqueid,"parents")
+                parent_ids= self.get_linked_ids(rec_particle.uniqueid(),"parents")
                 smeared_ecals = self.get_collection(parent_ids, 'es') 
-                sim_particles = self.get_linked_collection(rec_particle.uniqueid,'ps')
+                sim_particles = self.get_linked_collection(rec_particle.uniqueid(),'ps')
             
  
