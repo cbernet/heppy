@@ -28,12 +28,11 @@ def is_from_b(jet, event, fraction=0.01):
     sum_e_from_b = 0
     # charged_ptcs = jet.constituents[211]
     for ptc in jet.constituents.particles:
+        ptcids = history.get_linked_collection(ptc.uniqueid(), 'ps')
         from_b = False
-        genids = history.get_linked_collection(ptc.uniqueid(), 'pg')
-        from_b = False
-        for genid in genids:
-            genptc = event.papasevent.get_object(genid)
-            if is_ptc_from_b(event, genptc, event.genbrowser):
+        for ptcid in ptcids:
+            ptc = event.papasevent.get_object(ptcid)
+            if is_ptc_from_b(event, ptc.gen_ptc, event.genbrowser):
                 from_b = True
                 break
         if from_b:

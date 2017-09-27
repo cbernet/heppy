@@ -62,6 +62,7 @@ class PapasSim(Analyzer):
             charge = ptc.q()
             pid = ptc.pdgid()
             simptc = Particle(tp4, vertex, charge, pid, index)
+            simptc.gen_ptc = ptc
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             #record that sim particle derives from gen particle
             nodeid=simptc.uniqueid()

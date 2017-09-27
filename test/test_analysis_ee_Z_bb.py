@@ -8,8 +8,8 @@ import heppy.framework.context as context
 
 if context.name == 'fcc':
 
-    #from analysis_ee_Z_bb_cfg import config
-    from analysis_ee_Z_bb_FCCSW_cfg import config
+    from analysis_ee_Z_bb_cfg import config
+    #from analysis_ee_Z_bb_FCCSW_cfg import config
     from heppy.test.plot_ee_b import Plotter
     from heppy.framework.looper import Looper
     from ROOT import TFile
