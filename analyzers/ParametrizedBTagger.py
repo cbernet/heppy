@@ -16,7 +16,7 @@ def is_matched_to_b(jet):
     return is_bjet
 
 
-def is_from_b(jet, event, fraction=0.05):
+def is_from_b(jet, event, fraction=0.01):
     '''returns true if more than a fraction of the jet energy
     is from a b.'''
     history = HistoryHelper(event.papasevent)
@@ -25,9 +25,9 @@ def is_from_b(jet, event, fraction=0.05):
                                       event.gen_vertices)       
     sum_e_from_b = 0
     # charged_ptcs = jet.constituents[211]
-    from_b = False
     for ptc in jet.constituents.particles:
         simids = history.get_linked_collection(ptc.uniqueid, 'ps')
+        from_b = False
         for simid in simids:
             simptc = event.papasevent.get_object(simid)
             if is_ptc_from_b(event, simptc.gen_ptc, event.genbrowser):

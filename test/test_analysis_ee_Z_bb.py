@@ -48,7 +48,7 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
             plotter = Plotter(rootfile)
-            self.assertGreater(plotter.bfrac(), 0.95)
+            self.assertAlmostEqual(plotter.bfrac(), 0.83, places=2)
             self.assertAlmostEqual(plotter.beff(), 0.7, places=2)
     
         def test_fake_cms(self):
