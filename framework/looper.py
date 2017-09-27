@@ -356,11 +356,13 @@ possibly skipping a number of events at the beginning.
                 #TODO: check that this works fine with non podio inputs, e.g. plain TChains.
                 if hasattr(self.event, 'input') and \
                    hasattr(self.event.input, 'current_filename'):
-                    print 'exception running analyzer {ana} on event {iev} in file\n {fname}'.format(
-                        ana=analyzer.cfg_ana.name,
-                        iev=self.event.iEv, 
-                        fname=self.event.input.current_filename()
-                    )   
+# TODO re-enable analyzer printout when next podio is available
+##                    print 'exception running analyzer {ana} on event {iev} in file\n {fname}'.format(
+##                        ana=analyzer.cfg_ana.name,
+##                        iev=self.event.iEv, 
+##                        fname=self.event.input.current_filename()
+##                    )
+                    pass
                 raise 
             if self.memReportFirstEvent >=0 and iEv >= self.memReportFirstEvent:           
                 memNow=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
