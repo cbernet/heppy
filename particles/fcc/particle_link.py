@@ -13,8 +13,6 @@ class Particle_Link(BaseLink, POD):
         self.outgoing = []
         tlv = TLorentzVector()
         #papas id for sim particle
-        #self._parent= fccobj.sim().getObjectID().index
-        #self._child= fccobj.rec().getObjectID().index
         p4 = fccobj.sim().core().p4
         tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
         self._parentid= Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, fccobj.sim().getObjectID().index, parenttype, tlv.E())
@@ -22,5 +20,4 @@ class Particle_Link(BaseLink, POD):
         p4 = fccobj.rec().core().p4
         tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
         self._childid= Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, fccobj.rec().getObjectID().index, childtype, tlv.E())
-  
 

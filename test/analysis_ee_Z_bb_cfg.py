@@ -84,7 +84,7 @@ jet_tree = cfg.Analyzer(
     tree_name = 'events',
     tree_title = 'jets',
     jets = 'jets',
-    taggers = ['b', 'b_ip', 'bmatch', 'bfrac'], 
+    taggers = ['b', 'bmatch', 'bfrac'], 
     njets = 2, 
     store_match =False
 )
@@ -105,7 +105,7 @@ sequence = cfg.Sequence(
     papas_sequence,
     jets, 
     btag_parametrized,
-    btag_ip_smearing, 
+    #btag_ip_smearing, 
     jet_tree, 
     display
     )

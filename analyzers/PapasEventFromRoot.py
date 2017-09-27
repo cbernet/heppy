@@ -1,11 +1,6 @@
 from heppy.framework.analyzer import Analyzer
-#from heppy.papas.papas_exceptions import PropagationError, SimulationError
 from heppy.papas.data.papasevent import PapasEvent
-#from heppy.papas.data.identifier import Identifier
 from heppy.papas.graphtools.DAG import Node
-#from heppy.particles.p4 import P4
-#from heppy.utils.pdebug import pdebugger
-#import heppy.statistics.rrandom as random
 
 class PapasEventFromRoot(Analyzer):
     '''Sets up a papas event containing gen and rec particles from a ROOT file (eg using FCCSW papas run output)
@@ -37,7 +32,7 @@ class PapasEventFromRoot(Analyzer):
         super(PapasEventFromRoot, self).__init__(*args, **kwargs)
 
     def process(self, event):
-        event.papasevent = PapasEvent(event.iEv)   
+        event.papasevent = PapasEvent(event.iEv)
         papasevent = event.papasevent
         #make a dict from the gen_particles list so that it can be stored into the papasevent collections
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
@@ -52,10 +47,10 @@ class PapasEventFromRoot(Analyzer):
             child = papasevent.history.setdefault(nodeid, Node(nodeid)) #creates a new node if it is not there already
             nodeid =  plink.parentid()
             parent = papasevent.history.setdefault(nodeid, Node(nodeid))
-            parent.add_child(child)            
-        
+            parent.add_child(child)
+
         papasevent.add_collection(gen_particles_collection)
-        papasevent.add_collection(rec_particles_collection)  
- 
+        papasevent.add_collection(rec_particles_collection)
+
         #useful when producing outputs from a papasevent
         papasevent.iEv = event.iEv
