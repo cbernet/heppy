@@ -28,6 +28,7 @@ def is_from_b(jet, event, fraction=0.01):
     sum_e_from_b = 0
     # charged_ptcs = jet.constituents[211]
     for ptc in jet.constituents.particles:
+        from_b = False
         genids = history.get_linked_collection(ptc.uniqueid(), 'pg')
         from_b = False
         for genid in genids:
@@ -36,9 +37,10 @@ def is_from_b(jet, event, fraction=0.01):
                 from_b = True
                 break
         if from_b:
-            sum_e_from_b += ptc.e()        
+            sum_e_from_b += ptc.e()
     bfrac = sum_e_from_b / jet.e()
     jet.tags['bfrac'] = bfrac
+    print "BFRAC" + str(bfrac)
     return bfrac > fraction
 
 

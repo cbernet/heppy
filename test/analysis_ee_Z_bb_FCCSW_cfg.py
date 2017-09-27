@@ -32,11 +32,12 @@ Collider.SQRTS = 91.
 # input definition
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
-    files = [
+    #files = [
        # 'data/ee_Z_ddbar.root'
         #'/Users/alice/fcc/papasmodular/heppy/data/ee_Z_ddbar.root'
-        os.path.abspath('/Users/alice/fcc/papasmodular/heppy/data/output.root')
-    ]
+    files = ['/'.join([os.environ['HEPPY'],
+                       'test/data/ee_Z_bbbar_with_papas_rec.root'] )]
+    #]
 )
 
 selectedComponents = [ee_Z_bbbar]
@@ -47,9 +48,9 @@ from heppy.analyzers.fcc.Reader import Reader
 source = cfg.Analyzer(
     Reader,
     gen_particles = 'GenParticle',
-    rec_particles= 'RecParticle',
-    gen_rec_links= 'ParticleLinks',
-    gen_vertices = 'GenVertex'
+    rec_particles = 'RecParticle',
+    gen_rec_links = 'ParticleLinks',
+    gen_vertices  = 'GenVertex'
 )
 
 from heppy.analyzers.PapasEventFromRoot import PapasEventFromRoot

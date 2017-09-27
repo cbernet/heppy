@@ -34,11 +34,18 @@ class PapasEventFromRoot(Analyzer):
     def process(self, event):
         event.papasevent = PapasEvent(event.iEv)
         papasevent = event.papasevent
+
         #make a dict from the gen_particles list so that it can be stored into the papasevent collections
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         gen_particles_collection = {x.uniqueid():x for x in gen_particles}
-        #make a dict from the rec_particles list so that it can be stored into the papasevent collections
+
+        #make a dict from the rec_particles list so that it can be stored
+        #into the papasevent collections
         rec_particles = getattr(event, self.cfg_ana.rec_particles)
+        #if there are no rec_partivcles we assume this was an evernt discarded during reconstruction and skip it
+        if len(rec_particles) == 0:
+            self.mainLogger.error('no reconsrtucted particles found -> Event discarded')
+            return False
         rec_particles_collection = {x.uniqueid():x for x in rec_particles}
         #create the history links for relationship between gen and rec particles
         particle_links = getattr(event, self.cfg_ana.gen_rec_links)

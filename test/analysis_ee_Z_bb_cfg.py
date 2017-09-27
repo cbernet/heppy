@@ -32,10 +32,8 @@ Collider.SQRTS = 91.
 # input definition
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
-    files = [
-       # 'data/ee_Z_ddbar.root'
-        '/Users/alice/fcc/papasmodular/heppy/data/ee_Z_ddbar.root'
-    ]
+    files = ['/'.join([os.environ['HEPPY'],
+                              'test/data/ee_Z_bbbar_with_papas_rec.root'] )]
 )
 
 selectedComponents = [ee_Z_bbbar]

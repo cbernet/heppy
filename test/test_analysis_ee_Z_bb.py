@@ -8,7 +8,8 @@ import heppy.framework.context as context
 
 if context.name == 'fcc':
 
-    from analysis_ee_Z_bb_cfg import config
+    #from analysis_ee_Z_bb_cfg import config
+    from analysis_ee_Z_bb_FCCSW_cfg import config
     from heppy.test.plot_ee_b import Plotter
     from heppy.framework.looper import Looper
     from ROOT import TFile
@@ -34,8 +35,10 @@ if context.name == 'fcc':
             '''Check b matching probability and b tag efficiency in CMS 
             '''
             from heppy.papas.detectors.CMS import cms
+            #fname = '/'.join([os.environ['HEPPY'],
+            #                  'test/data/ee_Z_bbbar.root'])
             fname = '/'.join([os.environ['HEPPY'],
-                              'test/data/ee_Z_bbbar.root'])
+                              'test/data/ee_Z_bbbar_with_papas_rec.root'])
             config.components[0].files = [fname]
             for s in config.sequence:
                 if hasattr( s,'detector'):
@@ -55,8 +58,10 @@ if context.name == 'fcc':
             '''Check fake rate in CMS
             '''
             from heppy.papas.detectors.CMS import cms
+            #fname = '/'.join([os.environ['HEPPY'],
+            #                  'test/data/ee_Z_ddbar.root'])
             fname = '/'.join([os.environ['HEPPY'],
-                              'test/data/ee_Z_ddbar.root'])
+                                      'test/data/ee_Z_ddbar_with_papas_rec.root'])    
             config.components[0].files = [fname]
             for s in config.sequence:
                 if hasattr( s,'detector'):
