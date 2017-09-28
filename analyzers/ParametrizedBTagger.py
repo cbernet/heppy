@@ -28,18 +28,18 @@ def is_from_b(jet, event, fraction=0.01):
     sum_e_from_b = 0
     # charged_ptcs = jet.constituents[211]
     for ptc in jet.constituents.particles:
-        ptcids = history.get_linked_collection(ptc.uniqueid(), 'ps')
+        ptcids = history.get_linked_collection(ptc.uniqueid(), 'pg')
         from_b = False
         for ptcid in ptcids:
-            ptc = event.papasevent.get_object(ptcid)
-            if is_ptc_from_b(event, ptc.gen_ptc, event.genbrowser):
+            gptc = event.papasevent.get_object(ptcid)
+            if is_ptc_from_b(event, gptc, event.genbrowser):
                 from_b = True
                 break
         if from_b:
             sum_e_from_b += ptc.e()
     bfrac = sum_e_from_b / jet.e()
     jet.tags['bfrac'] = bfrac
-    print "BFRAC" + str(bfrac)
+    #print "BFRAC" + str(bfrac)
     return bfrac > fraction
 
 
