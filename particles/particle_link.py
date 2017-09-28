@@ -1,6 +1,8 @@
 
 class Particle_Link(object):
-    '''Interface for link between two particles, contains the ids of each particle
+    '''Interface for link between two particles eg if a particle is the child/parent
+    of another particle.
+    The link contains only the uniqueid of each particle
     Make sure your code satisfies this interface.
     Specializations in cms, fcc, and tlv packages
     '''

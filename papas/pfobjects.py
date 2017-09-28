@@ -312,7 +312,6 @@ class Particle(BaseParticle):
             idvalue=self.e()
         else:
             idvalue=self.pt()
-        #self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, index, subtype, idvalue)
         self.vertex = vertex
         self.path = None
         self.clusters = dict()

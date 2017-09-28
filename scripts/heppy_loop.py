@@ -5,8 +5,7 @@ if __name__ == '__main__':
     parser = create_parser()
     (options,args) = parser.parse_args()
 
-    #alice
-    options.force = True
+    #alice options.force = True
     
     loop = main(options, args, parser)
     if not options.interactive:

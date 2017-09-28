@@ -32,12 +32,8 @@ Collider.SQRTS = 91.
 # input definition
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
-    #files = [
-       # 'data/ee_Z_ddbar.root'
-        #'/Users/alice/fcc/papasmodular/heppy/data/ee_Z_ddbar.root'
     files = ['/'.join([os.environ['HEPPY'],
                        'test/data/ee_Z_bbbar_with_papas_rec.root'] )]
-    #]
 )
 
 selectedComponents = [ee_Z_bbbar]
@@ -63,7 +59,7 @@ papas_from_root = cfg.Analyzer(
     verbose = True
 )
 
-from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
+#from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
 from heppy.test.papas_cfg import papasdisplaycompare as display 
 
 # Make jets 
@@ -80,9 +76,6 @@ jets = cfg.Analyzer(
 from heppy.test.btag_parametrized_cfg import btag_parametrized, btag
 from heppy.analyzers.roc import cms_roc
 btag.roc = cms_roc
-
-# b tagging, IP smearing
-from heppy.test.btag_ip_smearing_2_cfg import btag_ip_smearing
 
 do_clic = False
 if do_clic:
@@ -110,19 +103,14 @@ output_to_stdout = False, #optional
 debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
 )
 
-
-
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
-    pdebug, 
-    # gen_particles_stable, 
-    #papas_sequence,
+    #pdebug, 
     papas_from_root,
     jets, 
     btag_parametrized,
-    #btag_ip_smearing, 
     jet_tree, 
     display
     )

@@ -3,7 +3,6 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.historyhelper import HistoryHelper
 from heppy.analyzers.ChargedHadronsFromB import is_ptc_from_b
 from heppy.particles.genbrowser import GenBrowser
-
 from heppy.papas.data.identifier import Identifier
 
 def is_matched_to_b(jet):
@@ -31,15 +30,14 @@ def is_from_b(jet, event, fraction=0.01):
         ptcids = history.get_linked_collection(ptc.uniqueid(), 'pg')
         from_b = False
         for ptcid in ptcids:
-            gptc = event.papasevent.get_object(ptcid)
-            if is_ptc_from_b(event, gptc, event.genbrowser):
+            genptc = event.papasevent.get_object(ptcid)
+            if is_ptc_from_b(event, genptc, event.genbrowser):
                 from_b = True
                 break
         if from_b:
             sum_e_from_b += ptc.e()
     bfrac = sum_e_from_b / jet.e()
     jet.tags['bfrac'] = bfrac
-    #print "BFRAC" + str(bfrac)
     return bfrac > fraction
 
 

@@ -6,6 +6,10 @@ from ROOT import TLorentzVector
 from ROOT import TVector3
 
 class Particle_Link(BaseLink, POD):
+    '''Interface for link between two particles eg if a particle is the child/parent
+    of another particle.
+    The link contains only the uniqueid of each particle
+    '''    
 
     def __init__(self, fccobj, parenttype='g', childtype='r'):
         super(Particle_Link, self).__init__(fccobj)
