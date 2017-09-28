@@ -108,7 +108,14 @@ class JetConstituents(dict):
         try:
             self[pdgid].append(ptc)
         except KeyError:
-            import pdb; pdb.set_trace()
+            msg = '''Particle
+            {ptc}
+            cannot be added to the jet as it cannot be interpreted
+            as a charged hadron, a neutral hadron, a photon, an electron or a muon.
+            are you sure that you are using reconstructed particles or
+            stable and visible particles from a generator? 
+            '''.format(ptc=str(ptc))
+            raise ValueError(msg)
         self.particles.append(ptc)
             
     def sort(self):
