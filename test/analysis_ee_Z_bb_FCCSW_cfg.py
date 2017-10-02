@@ -53,9 +53,9 @@ source = cfg.Analyzer(
     gen_vertices  = 'GenVertex'
 )
 
-from heppy.analyzers.PapasEventFromRoot import PapasEventFromRoot
+from heppy.analyzers.PapasFromFccsw import PapasFromFccsw
 papas_from_root = cfg.Analyzer(
-    PapasEventFromRoot,
+    PapasFromFccsw,
     instance_label = 'papas_from_root',
     gen_particles = 'gen_particles',
     rec_particles = 'rec_particles',

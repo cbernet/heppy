@@ -90,13 +90,13 @@ source = cfg.Analyzer(
 # configure the papas fast simulation with the CMS detector
 # help(Papas) for more information
 # history nodes keeps track of which particles produced which tracks, clusters 
-from heppy.analyzers.PapasEventFromRoot import PapasEventFromRoot
+from heppy.analyzers.PapasFromFccsw import PapasFromFccsw
 # from heppy.analyzers.Papas import Papas
 from heppy.papas.detectors.CMS import CMS
 detector = CMS()
 
 papasfromroot = cfg.Analyzer(
-    PapasEventFromRoot,
+    PapasFromFccsw,
     instance_label = 'papasfromroot',
     gen_particles = 'gen_particles',
     rec_particles = 'rec_particles',
