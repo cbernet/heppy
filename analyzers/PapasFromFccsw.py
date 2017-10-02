@@ -53,11 +53,11 @@ class PapasFromFccsw(Analyzer):
             genid = None
             recid = None
             for g in gen_particles:
-                if g.objid()[0] == plink.id1().index and  g.objid()[1] == plink.id1().collectionID :
+                if g.objid() == plink.id1() :
                     genid = g.uniqueid()
                     break
             for g in rec_particles:
-                if g.objid()[0] == plink.id2().index and  g.objid()[1] == plink.id2().collectionID :
+                if g.objid() == plink.id2() :
                     recid = g.uniqueid()
                     break            
             #todo add in a throw incase soemthing is not found

@@ -11,14 +11,7 @@ class ObjectLink(BaseLink, POD):
         super(ObjectLink, self).__init__(fccobj)
         self.incoming = []
         self.outgoing = []
-        tlv = TLorentzVector()
-        #papas id for sim particle
-        p4 = fccobj.sim().core().p4
-        tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
-        #self._id1= Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, fccobj.sim().getObjectID().index, parenttype, tlv.E())
-        self._id1 = fccobj.sim().getObjectID()
-        #papas id for rec particle
-        p4 = fccobj.rec().core().p4
-        tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
-        #self._id2= Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, fccobj.rec().getObjectID().index, childtype, tlv.E())
-        self._id2 = fccobj.rec().getObjectID()
+        self._id1 =  (fccobj.sim().getObjectID().index,
+                       fccobj.sim().getObjectID().collectionID) 
+        self._id2 =  (fccobj.sim().getObjectID().index,
+                      fccobj.sim().getObjectID().collectionID)         
