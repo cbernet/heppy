@@ -2,14 +2,14 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.graphtools.DAG import Node
 
-class PapasEventFromRoot(Analyzer):
+class PapasFromFccsw(Analyzer):
     '''Sets up a papas event containing gen and rec particles from a ROOT file (eg using FCCSW papas run output)
 
     Example configuration:
 
-    from heppy.analyzers.PapasEventFromRoot import PapasEventFromRoot
+    from heppy.analyzers.PapasFromFccsw import PapasFromFccsw
     papas_from_root = cfg.Analyzer(
-        PapasEventFromRoot,
+        PapasFromFccsw,
         instance_label = 'papas_from_root',
         gen_particles = 'gen_particles',
         rec_particles = 'rec_particles',
@@ -29,7 +29,7 @@ class PapasEventFromRoot(Analyzer):
     '''
 
     def __init__(self, *args, **kwargs):
-        super(PapasEventFromRoot, self).__init__(*args, **kwargs)
+        super(PapasFromFccsw, self).__init__(*args, **kwargs)
 
     def process(self, event):
         event.papasevent = PapasEvent(event.iEv)
@@ -49,10 +49,19 @@ class PapasEventFromRoot(Analyzer):
         #create the history links for relationship between gen and rec particles
         particle_links = getattr(event, self.cfg_ana.gen_rec_links)
         for plink in particle_links:
-            nodeid = plink.childid()
-            child = papasevent.history.setdefault(nodeid, Node(nodeid)) #creates a new node if it is not there already
-            nodeid =  plink.parentid()
-            parent = papasevent.history.setdefault(nodeid, Node(nodeid))
+            genid = None
+            recid = None
+            for g in gen_particles:
+                if g.objid() == plink.id1() :
+                    genid = g.uniqueid()
+                    break
+            for g in rec_particles:
+                if g.objid() == plink.id2() :
+                    recid = g.uniqueid()
+                    break            
+            #todo add in a throw incase soemthing is not found
+            child = papasevent.history.setdefault(recid, Node(recid)) #creates a new node if it is not there already
+            parent = papasevent.history.setdefault(genid, Node(genid))
             parent.add_child(child)
 
         papasevent.add_collection(gen_particles_collection)

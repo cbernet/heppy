@@ -65,10 +65,8 @@ class PapasSim(Analyzer):
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             #simptc.gen_ptc = ptc
             #record that sim particle derives from gen particle
-            nodeid=simptc.uniqueid()
-            child = papasevent.history.setdefault(nodeid, Node(nodeid)) #creates a new node if it is not there already
-            nodeid= ptc.uniqueid()
-            parent = papasevent.history.setdefault(nodeid, Node(nodeid))
+            child = papasevent.history.setdefault(simptc.uniqueid(), Node(simptc.uniqueid())) #creates a new node if it is not there already
+            parent = papasevent.history.setdefault(ptc.uniqueid(), Node(ptc.uniqueid()))
             parent.add_child(child)
             return simptc
         simptcs = [simparticle(ptc, index)

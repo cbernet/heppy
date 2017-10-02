@@ -293,8 +293,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                 # to avoid numerical problems in propagation (and avoid making a particle that is not used)
                 continue
             pdebugger.info(str('Simulating {}'.format(ptc)))
-            uniqueid = ptc.uniqueid()
-            parent = self.history.setdefault(uniqueid, Node(uniqueid))
+            parent = self.history.setdefault(ptc.uniqueid(), Node(ptc.uniqueid()))
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11: #check with colin
@@ -308,7 +307,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             elif abs(ptc.pdgid()) > 100: #TODO make sure this is ok
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            self.simulated_particles[uniqueid]= ptc
+            self.simulated_particles[ptc.uniqueid()]= ptc
 
 if __name__ == '__main__':
 

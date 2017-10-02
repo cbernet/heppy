@@ -26,4 +26,6 @@ class POD(object):
         '''
         return hash( self._objid )
 
+    def objid(self):
+        return self._objid;
                 

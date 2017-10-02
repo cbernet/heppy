@@ -2,7 +2,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
-from heppy.particles.fcc.particle_link import Particle_Link
+from heppy.particles.fcc.object_link import ObjectLink
 from heppy.particles.fcc.met import Met
 import heppy.configuration
 
@@ -109,7 +109,7 @@ class Reader(Analyzer):
             get_collection(Particle, 'rec_particles', coll_subtype='r')
         
         if hasattr(self.cfg_ana, 'gen_rec_links'):
-            get_collection(Particle_Link, 'gen_rec_links')
+            get_collection(ObjectLink, 'gen_rec_links')
 
         if hasattr(self.cfg_ana, 'gen_vertices'):
             get_collection(Vertex, 'gen_vertices', sort=False)
@@ -251,13 +251,13 @@ class Reader(Analyzer):
 
 
         if hasattr(self.cfg_ana, 'pfcharged'):
-            pfcharged  = get_collection(Particle, 'pfcharged', False)
+            pfcharged  = get_collection(Particle, 'pfcharged', sort=False)
         if hasattr(self.cfg_ana, 'pfphotons'):
-            pfphotons  = get_collection(Particle, 'pfphotons', False)
+            pfphotons  = get_collection(Particle, 'pfphotons', sort=False)
         if hasattr(self.cfg_ana, 'pfneutrals'):
-            pfneutrals = get_collection(Particle, 'pfneutrals', False)
+            pfneutrals = get_collection(Particle, 'pfneutrals', sort=False)
 
 
-        met = get_collection(Met, 'met', False)
+        met = get_collection(Met, 'met', sort=False)
         if met:
             event.met = event.met[0]

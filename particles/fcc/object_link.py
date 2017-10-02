@@ -15,3 +15,4 @@ class ObjectLink(BaseLink, POD):
                        fccobj.sim().getObjectID().collectionID) 
         self._id2 =  (fccobj.rec().getObjectID().index,
                       fccobj.rec().getObjectID().collectionID)         
+
