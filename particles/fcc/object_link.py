@@ -9,8 +9,6 @@ class ObjectLink(BaseLink, POD):
 
     def __init__(self, fccobj, parenttype='g', childtype='r'):
         super(ObjectLink, self).__init__(fccobj)
-        self.incoming = []
-        self.outgoing = []
         self._id1 =  (fccobj.sim().getObjectID().index,
                        fccobj.sim().getObjectID().collectionID) 
         self._id2 =  (fccobj.rec().getObjectID().index,
