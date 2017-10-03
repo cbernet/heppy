@@ -31,9 +31,17 @@ class Particle(P4):
         '''end vertex (3d point)'''
         return self._end_vertex
 
-    def uniqueid(self):
+    def set_dagid(self, dagid):
+        '''unique DAG Identifier'''
+        self._dagid = dagid
+    
+    def dagid(self):
+        '''unique DAG Identifier'''
+        return self._dagid    
+    
+    def objid(self):
         '''unique Identifier'''
-        return self._uid
+        return self._objid        
 
     def __repr__(self):
         return str(self)
@@ -41,10 +49,10 @@ class Particle(P4):
     def __str__(self):
         tmp = '{className} :{idstr} pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
         idstr = ""
-        if self.uniqueid()!=0 :
+        if self.dagid()!=0 :
             idstr = '{pretty:6}:{uid}:'.format(
-                pretty=Identifier.pretty(self.uniqueid()),
-                uid=self.uniqueid())
+                pretty=Identifier.pretty(self.dagid()),
+                uid=self.dagid())
         return tmp.format(
             className = self.__class__.__name__,
             idstr = idstr,

@@ -13,6 +13,7 @@ class Particle(BaseParticle, POD):
         super(Particle, self).__init__(fccobj)
         self._charge = fccobj.core().charge
         self._pid = fccobj.core().pdgId
+        self._dagid = None
         self._status = fccobj.core().status
         if hasattr(fccobj, 'startVertex'):
             start = fccobj.startVertex()
@@ -24,8 +25,8 @@ class Particle(BaseParticle, POD):
         self._tlv = TLorentzVector()
         p4 = fccobj.core().p4
         self._tlv.SetXYZM(p4.px, p4.py, p4.pz, p4.mass)
-        self._uid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, fccobj.getObjectID().index, subtype, self._tlv.E())
-        
+    
+    
     def __deepcopy__(self, memodict={}):
         newone = type(self).__new__(type(self))
         for attr, val in self.__dict__.iteritems():

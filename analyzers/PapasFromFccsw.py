@@ -1,6 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.graphtools.DAG import Node
+from heppy.papas.data.identifier import Identifier
 
 class PapasFromFccsw(Analyzer):
     '''Sets up a papas event containing gen and rec particles from a ROOT file (eg using FCCSW papas run output)
@@ -37,15 +38,22 @@ class PapasFromFccsw(Analyzer):
 
         #make a dict from the gen_particles list so that it can be stored into the papasevent collections
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        gen_particles_collection = {x.uniqueid():x for x in gen_particles}
+        for g in gen_particles:
+            g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
+        #make a dict from the gen_particles list so that it can be stored into the papasevent collections           
+        gen_particles_collection = {x.dagid():x for x in gen_particles}
 
         #make a dict from the rec_particles list so that it can be stored into the papasevent collections
         rec_particles = getattr(event, self.cfg_ana.rec_particles)
+        for r in rec_particles:
+            r.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, r.objid()[0], 'r', r.p4().E()))
+                
         #if there are no rec_particles we assume this was an evernt discarded during reconstruction and skip it
         if len(rec_particles) == 0:
             self.mainLogger.error('no reconsrtucted particles found -> Event discarded')
             return False
-        rec_particles_collection = {x.uniqueid():x for x in rec_particles}
+        #make a dict from the rec_particles list so that it can be stored into the papasevent collections           
+        rec_particles_collection = {x.dagid():x for x in rec_particles}
         #create the history links for relationship between gen and rec particles
         particle_links = getattr(event, self.cfg_ana.gen_rec_links)
         for plink in particle_links:
@@ -53,11 +61,11 @@ class PapasFromFccsw(Analyzer):
             recid = None
             for g in gen_particles:
                 if g.objid() == plink.id1() :
-                    genid = g.uniqueid()
+                    genid = g.dagid()
                     break
             for g in rec_particles:
                 if g.objid() == plink.id2() :
-                    recid = g.uniqueid()
+                    recid = g.dagid()
                     break            
             #todo add in a throw incase soemthing is not found
             child = papasevent.history.setdefault(recid, Node(recid)) #creates a new node if it is not there already

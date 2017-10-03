@@ -51,9 +51,10 @@ class PapasSim(Analyzer):
         event.simulator = self
         event.papasevent = PapasEvent(event.iEv)   
         papasevent = event.papasevent
-        gen_particles = getattr(event, self.cfg_ana.gen_particles)
-        #make a dict from the gen_particles list so that it can be stored into the papasevent collections
-        gen_particles_collection = {x.uniqueid():x for x in gen_particles}
+        for g in event.gen_particles:
+            g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
+        #make a dict from the gen_particles list so that it can be stored into the papasevent collections              
+        gen_particles_collection = {x.dagid():x for x in event.gen_particles}
         def simparticle(ptc, index):
             '''Create a sim particle to be used in papas from an input particle.
             '''
@@ -62,11 +63,12 @@ class PapasSim(Analyzer):
             charge = ptc.q()
             pid = ptc.pdgid()
             simptc = Particle(tp4, vertex, charge, pid, index)
+            simptc.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, index, 's', simptc.idvalue))
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             #simptc.gen_ptc = ptc
             #record that sim particle derives from gen particle
-            child = papasevent.history.setdefault(simptc.uniqueid(), Node(simptc.uniqueid())) #creates a new node if it is not there already
-            parent = papasevent.history.setdefault(ptc.uniqueid(), Node(ptc.uniqueid()))
+            child = papasevent.history.setdefault(simptc.uniqueid(), Node(simptc.dagid())) #creates a new node if it is not there already
+            parent = papasevent.history.setdefault(ptc.dagid(), Node(ptc.dagid()))
             parent.add_child(child)
             return simptc
         simptcs = [simparticle(ptc, index)

@@ -302,9 +302,9 @@ class SmearedTrack(Track):
 
 
 class Particle(BaseParticle):
-    def __init__(self, tlv, vertex, charge, pdgid, index=0, subtype='s'):
+    def __init__(self, tlv, vertex, charge, pdgid):
         self.subtype = subtype
-        super(Particle, self).__init__(pdgid, charge, tlv, index=index, subtype=subtype)
+        super(Particle, self).__init__(pdgid, charge, tlv)
         
     #allow the value used in the particle unique id to depend on the collider type
         idvalue = 0.

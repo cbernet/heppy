@@ -103,7 +103,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         #update collections and history
         ptc.clusters[cylname] = cluster
         clusters[cluster.uniqueid] = cluster 
-        self.update_history(ptc.uniqueid(), cluster.uniqueid)
+        self.update_history(ptc.dagid(), cluster.uniqueid)
         pdebugger.info(" ".join(("Made", cluster.__str__())))
         return cluster
 
@@ -152,7 +152,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
         track = Track(ptc.p3(), ptc.q(), ptc.path, index=len(self.true_tracks))
         pdebugger.info(" ".join(("Made", track.__str__())))
         self.true_tracks[track.uniqueid] = track                     
-        self.update_history(ptc.uniqueid(), track.uniqueid)      
+        self.update_history(ptc.dagid(), track.uniqueid)      
         ptc.set_track(track)
         return track
         
@@ -293,7 +293,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                 # to avoid numerical problems in propagation (and avoid making a particle that is not used)
                 continue
             pdebugger.info(str('Simulating {}'.format(ptc)))
-            parent = self.history.setdefault(ptc.uniqueid(), Node(ptc.uniqueid()))
+            parent = self.history.setdefault(ptc.dagid(), Node(ptc.dagid()))
             if ptc.pdgid() == 22:
                 self.simulate_photon(ptc)
             elif abs(ptc.pdgid()) == 11: #check with colin
@@ -307,7 +307,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
             elif abs(ptc.pdgid()) > 100: #TODO make sure this is ok
                 self.simulate_hadron(ptc)
             self.ptcs.append(ptc)
-            self.simulated_particles[ptc.uniqueid()]= ptc
+            self.simulated_particles[ptc.dagid()]= ptc
 
 if __name__ == '__main__':
 
