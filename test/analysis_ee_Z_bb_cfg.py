@@ -29,6 +29,8 @@ from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
 
+from heppy.configuration import PapasRuntype
+
 # input definition
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
@@ -38,16 +40,38 @@ ee_Z_bbbar = cfg.Component(
 
 selectedComponents = [ee_Z_bbbar]
 
-# read FCC EDM events from the input root file(s)
-# do help(Reader) for more information
-from heppy.analyzers.fcc.Reader import Reader
-source = cfg.Analyzer(
-    Reader,
-    gen_particles = 'GenParticle',
-    gen_vertices = 'GenVertex'
-)
+if PapasRuntype.from_fccsw :
+    from heppy.analyzers.fcc.Reader import Reader
+    source = cfg.Analyzer(
+        Reader,
+        gen_particles = 'GenParticle',
+        rec_particles = 'RecParticle',
+        gen_rec_links = 'ParticleLinks',
+        gen_vertices  = 'GenVertex'
+    )
 
-from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare
+    from heppy.analyzers.PapasFromFccsw import PapasFromFccsw
+    papas_process = cfg.Analyzer(
+        PapasFromFccsw,
+        instance_label = 'papas_from_fccsw',
+        gen_particles = 'gen_particles',
+        rec_particles = 'rec_particles',
+        gen_rec_links = 'gen_rec_links',
+        verbose = True
+    )
+else:
+    # read FCC EDM events from the input root file(s)
+    # do help(Reader) for more information
+    from heppy.analyzers.fcc.Reader import Reader
+    source = cfg.Analyzer(
+        Reader,
+        gen_particles = 'GenParticle',
+        gen_vertices = 'GenVertex'
+    )
+    from heppy.test.papas_cfg import gen_particles_stable, detector, papas, papasdisplay
+    from heppy.test.papas_cfg import  papas_sequence as papas_process
+ 
+
 from heppy.test.papas_cfg import papasdisplaycompare as display 
 
 # Make jets 
@@ -65,8 +89,8 @@ from heppy.test.btag_parametrized_cfg import btag_parametrized, btag
 from heppy.analyzers.roc import cms_roc
 btag.roc = cms_roc
 
-# b tagging, IP smearing
-from heppy.test.btag_ip_smearing_2_cfg import btag_ip_smearing
+## b tagging, IP smearing
+#from heppy.test.btag_ip_smearing_2_cfg import btag_ip_smearing
 
 do_clic = False
 if do_clic:
@@ -87,26 +111,19 @@ jet_tree = cfg.Analyzer(
     store_match =False
 )
 
-from heppy.analyzers.PDebugger import PDebugger
-pdebug = cfg.Analyzer(
-PDebugger,
-output_to_stdout = False, #optional
-debug_filename = os.getcwd()+'/python_physics_debug.log' #optional argument
-)
+from heppy.test.pdebug_cfg import pdebug
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
     pdebug,
-    # gen_particles_stable, 
-    papas_sequence,
+    papas_process,
     jets, 
     btag_parametrized,
-    #btag_ip_smearing, 
     jet_tree, 
     display
-    )
+)
 
 # Specifics to read FCC events 
 from ROOT import gSystem

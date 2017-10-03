@@ -14,7 +14,6 @@ class PFObject(object):
     forming graphs called "blocks".
     All PFObjects have a unique identifier which encodes information about the object type, subtype and an associated value such 
     as energy or pt. See Identifier class for more details. 
-
     attributes:
     linked : list of PFObjects linked to this one
     locked : already used in the particle flow algorithm
@@ -22,7 +21,7 @@ class PFObject(object):
     '''
 
 
-    def __init__(self):
+    def __init__(self, pfobjecttype, index, subtype='u', identifiervalue = 0.0):
         '''@param pfobjecttype: type of the object to be created (used in Identifier class) eg Identifier.PFOBJECTTYPE.ECALCLUSTER
            @param subtype: Identifier subtype, eg 'm' for merged
            @param identifiervalue: The value to be encoded into the Identifier eg energy or pt
@@ -31,7 +30,8 @@ class PFObject(object):
         self.linked = []
         self.locked = False
         self.block_label = None
-        
+        self.uniqueid=Identifier.make_id(pfobjecttype, index, subtype, identifiervalue)
+
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
         notseen = visitor.visit(self)
@@ -39,8 +39,19 @@ class PFObject(object):
             for elem in self.linked:
                 elem.accept(visitor)
 
+    def __repr__(self):
+        return str(self)
+
     def info(self):
         return ""
+
+    def __str__(self):
+        return '{classname}: {pretty:6}:{uid}: {info}'.format(
+            classname=self.__class__.__name__,
+            pretty=Identifier.pretty(self.uniqueid),
+            uid=self.uniqueid,
+            info=self.info())
+
 
 class Cluster(PFObject):
     '''
@@ -62,13 +73,11 @@ class Cluster(PFObject):
         if identifiervalue== None:
             identifiervalue = max(energy, 0.)
         if layer == 'ecal_in':
-            idtype = Identifier.PFOBJECTTYPE.ECALCLUSTER
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, index, self.subtype, identifiervalue)
         elif layer == 'hcal_in':
-            idtype = Identifier.PFOBJECTTYPE.HCALCLUSTER
+            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, index, self.subtype, identifiervalue)
         else :
             assert (False)
-        self.uniqueid = Identifier.make_id(idtype, index, self.subtype, identifiervalue)  
-        super(Cluster, self).__init__()
         self.position = position
         self.set_energy(energy)
         self.set_size(float(size_m))
@@ -190,16 +199,6 @@ class Cluster(PFObject):
         return '{e:.1f}'.format(
             e = self.energy,
         )
-    
-    def __repr__(self):
-        return str(self)
-    
-    def __str__(self):
-        return '{classname}: {pretty:6}:{uid}: {info}'.format(
-            classname=self.__class__.__name__,
-            pretty=Identifier.pretty(self.uniqueid),
-            uid=self.uniqueid,
-            info=self.info())    
 
 class SmearedCluster(Cluster):
     def __init__(self, mother, *args, **kwargs):
@@ -244,7 +243,6 @@ class MergedCluster(Cluster):
 
 class Track(PFObject):
     '''Determines the trajectory in space and time of a particle (charged or neutral).
-
     attributes:
     - p3 : momentum in 3D space (px, py, pz)
     - charge : particle charge
@@ -254,8 +252,8 @@ class Track(PFObject):
     def __init__(self, p3, charge, path, index=0, particle=None, subtype='t'):
         if not hasattr(self, 'subtype'):
             self.subtype = subtype        
-        super(Track, self).__init__()
-        self.uniqueid=Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
+        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
+
         self._p3 = p3
         self.charge = charge
         self.path = path
@@ -279,17 +277,7 @@ class Track(PFObject):
     def short_info(self):
         return '{e:.1f}'.format(
             e = self.energy,
-        )
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return '{classname}: {pretty:6}:{uid}: {info}'.format(
-            classname=self.__class__.__name__,
-            pretty=Identifier.pretty(self.uniqueid),
-            uid=self.uniqueid,
-            info=self.info())
+        )     
 
     
 class SmearedTrack(Track):
@@ -303,15 +291,13 @@ class SmearedTrack(Track):
 
 class Particle(BaseParticle):
     def __init__(self, tlv, vertex, charge, pdgid):
-        self.subtype = subtype
         super(Particle, self).__init__(pdgid, charge, tlv)
-        
     #allow the value used in the particle unique id to depend on the collider type
-        idvalue = 0.
+        self.idvalue = 0.
         if Collider.BEAMS == 'ee':
-            idvalue=self.e()
+            self.idvalue=self.e()
         else:
-            idvalue=self.pt()
+            self.idvalue=self.pt()
         self.vertex = vertex
         self.path = None
         self.clusters = dict()

@@ -414,7 +414,7 @@ class PFReconstructor(object):
         mass, charge = particle_data[pdgid]
         p4 = TLorentzVector()
         p4.SetVectM(track.p3() , mass)
-        particle = Particle(p4, vertex, charge, pdgid, len(self.particles), subtype='r')
+        particle = Particle(p4, vertex, charge, pdgid)
         particle.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,len(self.particles), 'r', particle.idvalue))
         
         #todo fix this so it picks up smeared track points (need to propagagte smeared track)

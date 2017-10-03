@@ -14,3 +14,8 @@ class Collider(object):
     '''
     BEAMS = 'pp' 
     SQRTS = 13000.
+
+class PapasRuntype(object):
+    '''Describes the run parameters:
+    '''
+    from_fccsw = False
