@@ -1,6 +1,6 @@
 
 class ObjectLink(object):
-    '''Interface for link between two particles, contains the ids of each particle
+    '''Interface for link between two objects, contains the ids of each object
     Make sure your code satisfies this interface.
     Specializations in cms, fcc, and tlv packages
     '''
@@ -14,13 +14,14 @@ class ObjectLink(object):
         return self._id2
 
     def __str__(self):
-        tmp = '{className} : id1 = {i}, id2 = {i}'
+        tmp = '{className} : id1 = {id1}, id2 = {id2}'
         return tmp.format(
             className = self.__class__.__name__,
-            id1 =self._id1.index,
-            id2 =self._id2.index
+            id1 =self._id1,
+            id2 =self._id2
             )
 
     def __repr__(self):
         return str(self)
+
 

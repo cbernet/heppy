@@ -9,7 +9,7 @@ import copy
 
 class Particle(BaseParticle, POD):
     
-    def __init__(self, fccobj, subtype = 'g'):
+    def __init__(self, fccobj):
         super(Particle, self).__init__(fccobj)
         self._charge = fccobj.core().charge
         self._pid = fccobj.core().pdgId
@@ -45,4 +45,11 @@ class Particle(BaseParticle, POD):
             pdgid =pid,
             e = self.e()        
         )
+
+    def  dagid_str(self):
+        if self.dagid() != None:
+            return '{pretty:6}:{uid}:'.format(
+                pretty=Identifier.pretty(self.dagid()),
+                uid=self.dagid())
+        return ""
 

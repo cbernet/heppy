@@ -340,7 +340,14 @@ class Particle(BaseParticle):
         return tmp.format(
             pdgid =pid,
             e = self.e()
-        )    
+        )
+
+    def  dagid_str(self):
+        if self.dagid() != None:
+            return '{pretty:6}:{uid}:'.format(
+                pretty=Identifier.pretty(self.dagid()),
+                uid=self.dagid())
+        return ""
 
 
 if __name__ == '__main__':

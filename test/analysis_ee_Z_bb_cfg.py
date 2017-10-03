@@ -34,8 +34,9 @@ from heppy.configuration import PapasRuntype
 # input definition
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
-    files = ['/'.join([os.environ['HEPPY'],
-                              'test/data/ee_Z_bbbar_with_papas_rec.root'] )]
+    files = [
+        'data/ee_Z_ddbar.root'
+    ]
 )
 
 selectedComponents = [ee_Z_bbbar]
@@ -117,7 +118,7 @@ from heppy.test.pdebug_cfg import pdebug
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
-    pdebug,
+    #pdebug,
     papas_process,
     jets, 
     btag_parametrized,

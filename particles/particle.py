@@ -37,7 +37,10 @@ class Particle(P4):
     
     def dagid(self):
         '''unique DAG Identifier'''
-        return self._dagid    
+        return self._dagid  
+    
+    def dagid_str(self):
+        return ""
     
     def objid(self):
         '''unique Identifier'''
@@ -48,11 +51,7 @@ class Particle(P4):
     
     def __str__(self):
         tmp = '{className} :{idstr} pdgid = {pdgid:5}, status = {status:3}, q = {q:2}, {p4}'
-        idstr = ""
-        if self.dagid()!=0 :
-            idstr = '{pretty:6}:{uid}:'.format(
-                pretty=Identifier.pretty(self.dagid()),
-                uid=self.dagid())
+        idstr = self.dagid_str()
         return tmp.format(
             className = self.__class__.__name__,
             idstr = idstr,

@@ -75,7 +75,7 @@ class Reader(Analyzer):
     def process(self, event):
         store = event.input
 
-        def get_collection(class_object, coll_label, coll_subtype=None, sort=True):
+        def get_collection(class_object, coll_label, sort=True):
             pycoll = None
             if hasattr(self.cfg_ana, coll_label):
                 coll_name = getattr( self.cfg_ana, coll_label)
@@ -84,15 +84,11 @@ class Reader(Analyzer):
                     raise MissingCollection(
                         'collection {} is missing'.format(coll_name)
                         )
-                if coll_subtype == None:
-                    pycoll = map(class_object, coll)
-                else: #make a collection of a specific subtype
-                    pycoll = map( lambda x: class_object(x,  subtype=coll_subtype), coll)
+                pycoll = map(class_object, coll)
                 if sort:
                     pycoll.sort(reverse=True)
                 setattr(event, coll_label, pycoll)
             return pycoll
-
 
         # store only 1st event weight for now
         event.weight = - 999.
@@ -103,10 +99,10 @@ class Reader(Analyzer):
                 event.weight = weightcoll[0].value()
 
         if hasattr(self.cfg_ana, 'gen_particles'):
-            get_collection(Particle, 'gen_particles', coll_subtype='g')
+            get_collection(Particle, 'gen_particles')
 
         if hasattr(self.cfg_ana, 'rec_particles'):
-            get_collection(Particle, 'rec_particles', coll_subtype='r')
+            get_collection(Particle, 'rec_particles')
         
         if hasattr(self.cfg_ana, 'gen_rec_links'):
             get_collection(ObjectLink, 'gen_rec_links')

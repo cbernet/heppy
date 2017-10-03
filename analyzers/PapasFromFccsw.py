@@ -39,6 +39,7 @@ class PapasFromFccsw(Analyzer):
         #make a dict from the gen_particles list so that it can be stored into the papasevent collections
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         for g in gen_particles:
+            #set the papas identifiers for use in DAG
             g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
         #make a dict from the gen_particles list so that it can be stored into the papasevent collections           
         gen_particles_collection = {x.dagid():x for x in gen_particles}
@@ -46,6 +47,7 @@ class PapasFromFccsw(Analyzer):
         #make a dict from the rec_particles list so that it can be stored into the papasevent collections
         rec_particles = getattr(event, self.cfg_ana.rec_particles)
         for r in rec_particles:
+            #set the papas identifiers for use in DAG
             r.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, r.objid()[0], 'r', r.p4().E()))
                 
         #if there are no rec_particles we assume this was an evernt discarded during reconstruction and skip it

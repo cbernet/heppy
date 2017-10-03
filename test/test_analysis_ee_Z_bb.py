@@ -51,17 +51,15 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
             plotter = Plotter(rootfile)
-            self.assertAlmostEqual(plotter.bfrac(), 0.83, places=2) #changing of random seed varies this between approx 0.78 and 0.83
-            self.assertAlmostEqual(plotter.beff(), 0.70, places=2) #changing of seed  varies this from 0.63/0.68 etc
+            self.assertAlmostEqual(plotter.bfrac(), 0.83, places=2)
+            self.assertAlmostEqual(plotter.beff(), 0.7, places=2)
     
         def test_fake_cms(self):
             '''Check fake rate in CMS
             '''
             from heppy.papas.detectors.CMS import cms
-            #fname = '/'.join([os.environ['HEPPY'],
-            #                  'test/data/ee_Z_ddbar.root'])
             fname = '/'.join([os.environ['HEPPY'],
-                                      'test/data/ee_Z_ddbar_with_papas_rec.root'])    
+                              'test/data/ee_Z_ddbar.root'])
             config.components[0].files = [fname]
             for s in config.sequence:
                 if hasattr( s,'detector'):
