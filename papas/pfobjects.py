@@ -344,9 +344,7 @@ class Particle(BaseParticle):
 
     def  dagid_str(self):
         if self.dagid() != None:
-            return '{pretty:6}:{uid}:'.format(
-                pretty=Identifier.pretty(self.dagid()),
-                uid=self.dagid())
+            return Identifier.id_str(self.dagid())
         return ""
 
 

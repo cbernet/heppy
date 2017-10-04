@@ -13,7 +13,6 @@ class Particle(BaseParticle, POD):
         super(Particle, self).__init__(fccobj)
         self._charge = fccobj.core().charge
         self._pid = fccobj.core().pdgId
-        self._dagid = None
         self._status = fccobj.core().status
         if hasattr(fccobj, 'startVertex'):
             start = fccobj.startVertex()
@@ -48,8 +47,6 @@ class Particle(BaseParticle, POD):
 
     def  dagid_str(self):
         if self.dagid() != None:
-            return '{pretty:6}:{uid}:'.format(
-                pretty=Identifier.pretty(self.dagid()),
-                uid=self.dagid())
+            return Identifier.id_str(self.dagid() )
         return ""
 

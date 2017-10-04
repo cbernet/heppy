@@ -38,24 +38,25 @@ class PapasFromFccsw(Analyzer):
 
         #make a dict from the gen_particles list so that it can be stored into the papasevent collections
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
+        gen_particles_collection = {}
         for g in gen_particles:
             #set the papas identifiers for use in DAG
             g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
-        #make a dict from the gen_particles list so that it can be stored into the papasevent collections           
-        gen_particles_collection = {x.dagid():x for x in gen_particles}
+            gen_particles_collection[g.dagid()] = g
 
         #make a dict from the rec_particles list so that it can be stored into the papasevent collections
         rec_particles = getattr(event, self.cfg_ana.rec_particles)
-        for r in rec_particles:
-            #set the papas identifiers for use in DAG
-            r.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, r.objid()[0], 'r', r.p4().E()))
-                
+
         #if there are no rec_particles we assume this was an evernt discarded during reconstruction and skip it
         if len(rec_particles) == 0:
             self.mainLogger.error('no reconsrtucted particles found -> Event discarded')
             return False
-        #make a dict from the rec_particles list so that it can be stored into the papasevent collections           
-        rec_particles_collection = {x.dagid():x for x in rec_particles}
+        rec_particles_collection = {}
+        for r in rec_particles:
+            #set the papas identifiers for use in DAG
+            r.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, r.objid()[0], 'r', r.p4().E()))
+            rec_particles_collection[r.dagid()] = r
+
         #create the history links for relationship between gen and rec particles
         particle_links = getattr(event, self.cfg_ana.gen_rec_links)
         for plink in particle_links:
@@ -69,13 +70,12 @@ class PapasFromFccsw(Analyzer):
                 if g.objid() == plink.id2() :
                     recid = g.dagid()
                     break            
-            #todo add in a throw incase soemthing is not found
+            if recid==None or genid ==None:
+                self.mainLogger.error('Error: One of the particles in the Particle Link was not found-> discarding event')
+                return False 
             child = papasevent.history.setdefault(recid, Node(recid)) #creates a new node if it is not there already
             parent = papasevent.history.setdefault(genid, Node(genid))
             parent.add_child(child)
 
         papasevent.add_collection(gen_particles_collection)
         papasevent.add_collection(rec_particles_collection)
-
-        #useful when producing outputs from a papasevent
-        papasevent.iEv = event.iEv

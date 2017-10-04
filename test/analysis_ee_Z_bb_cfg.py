@@ -29,37 +29,20 @@ from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
 
-from heppy.configuration import PapasRuntype
+from heppy.configuration import from_fccsw
 
 # input definition
 ee_Z_bbbar = cfg.Component(
     'ee_Z_bbbar',
     files = [
-        'data/ee_Z_ddbar.root'
+        'data/ee_Z_bbbar.root'
     ]
 )
 
 selectedComponents = [ee_Z_bbbar]
 
-if PapasRuntype.from_fccsw :
-    from heppy.analyzers.fcc.Reader import Reader
-    source = cfg.Analyzer(
-        Reader,
-        gen_particles = 'GenParticle',
-        rec_particles = 'RecParticle',
-        gen_rec_links = 'ParticleLinks',
-        gen_vertices  = 'GenVertex'
-    )
-
-    from heppy.analyzers.PapasFromFccsw import PapasFromFccsw
-    papas_process = cfg.Analyzer(
-        PapasFromFccsw,
-        instance_label = 'papas_from_fccsw',
-        gen_particles = 'gen_particles',
-        rec_particles = 'rec_particles',
-        gen_rec_links = 'gen_rec_links',
-        verbose = True
-    )
+if from_fccsw :
+    from heppy.test.fccsw_cf import source, papas_process
 else:
     # read FCC EDM events from the input root file(s)
     # do help(Reader) for more information

@@ -10,6 +10,7 @@ class Particle(P4):
     '''
     def __init__(self, *args, **kwargs):
         super(Particle, self).__init__(*args, **kwargs)
+        self._dagid = None
     
     def pdgid(self):
         '''particle type'''

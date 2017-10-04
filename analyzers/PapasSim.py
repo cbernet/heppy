@@ -52,10 +52,10 @@ class PapasSim(Analyzer):
         event.papasevent = PapasEvent(event.iEv)   
         papasevent = event.papasevent
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
+        gen_particles_collection = {} #make a dict from the gen_particles list so that it can be stored into the papasevent collections  
         for g in gen_particles:
             g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
-        #make a dict from the gen_particles list so that it can be stored into the papasevent collections              
-        gen_particles_collection = {x.dagid():x for x in gen_particles}
+            gen_particles_collection[g.dagid()] = g
         def simparticle(ptc, index):
             '''Create a sim particle to be used in papas from an input particle.
             '''

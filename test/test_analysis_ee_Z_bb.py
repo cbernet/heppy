@@ -10,16 +10,14 @@ if context.name == 'fcc':
     
     from heppy.test.plot_ee_b import Plotter
     from heppy.framework.looper import Looper
-    from heppy.configuration import PapasRuntype
+    from heppy.configuration import from_fccsw
     from ROOT import TFile
-    PapasRuntype.from_fccsw = False
     from analysis_ee_Z_bb_cfg import config
     
     import logging
     logging.getLogger().setLevel(logging.ERROR)
 
     import heppy.statistics.rrandom as random
-    from_fccsw = False
 
     class TestAnalysis_ee_Z_bb(unittest.TestCase):
 
