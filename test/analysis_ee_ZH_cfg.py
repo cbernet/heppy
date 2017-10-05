@@ -213,12 +213,7 @@ tree = cfg.Analyzer(
     misenergy = 'missing_energy'
 )
 
-from heppy.analyzers.PDebugger import PDebugger
-pdebug = cfg.Analyzer(
-PDebugger,
-output_to_stdout = False, #optional
-debug_filename = None #No physics debug output unless this is subsequently set
-)
+from heppy.test.pdebug_cfg import pdebug
 
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
