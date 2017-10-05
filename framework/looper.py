@@ -189,8 +189,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         tmpname = name
         while True and index < 2000:
             try:
-                # print 'mkdir', self.name
-                os.mkdir( tmpname )
+                os.makedirs(tmpname)
                 break
             except OSError:
                 # failed to create the directory
