@@ -41,7 +41,7 @@ def haddPck(file, odir, idirs):
 def hadd(file, odir, idirs, appx=''):
     if file.endswith('.pck'):
         try:
-            haddPck( file, odir, idirs)
+            haddPck(file, odir, idirs)
         except ImportError:
             pass
         return
@@ -74,8 +74,6 @@ def haddRec(odir, idirs):
     print 'to', odir 
 
     cmd = ' '.join( ['mkdir', odir])
-    # import pdb; pdb.set_trace()
-    # os.system( cmd )
     try:
         os.mkdir( odir )
     except OSError:

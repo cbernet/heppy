@@ -13,11 +13,11 @@ from math import ceil
 import timeit
 import resource
 import json
-from event import Event
+import pickle
 
+from event import Event
 from heppy.framework.exceptions import UserStop
 from heppy.statistics.counter import Counter
-
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -57,7 +57,7 @@ class Looper(object):
     """Creates a set of analyzers, and schedules the event processing."""
 
     def __init__( self, name,
-                  config, 
+                  config,
                   nEvents=None,
                   firstEvent=0,
                   nPrint=0,
@@ -87,6 +87,13 @@ class Looper(object):
         self.config = config
         self.name = self._prepareOutput(name)
         self.outDir = self.name
+    
+        # save the config
+        pck_fname = '/'.join([self.outDir, 'config.pck'])
+        with open(pck_fname, 'w') as out:
+            pickle.dump(self.config, out)
+            
+        # set up logger 
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))

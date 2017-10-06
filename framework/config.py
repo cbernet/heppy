@@ -5,6 +5,7 @@ from weight import Weight
 import glob
 import analyzer
 import copy
+import dill  # necessary for lambdas in configuration objects
 
 # Forbidding PyROOT to hijack help system,
 # in case the configuration module is used as a script.
@@ -338,7 +339,6 @@ class DataComponent( Component ):
                        genEff = -1,
                        intLumi = self.intLumi,
                        addWeight = 1. )
-
 
 
 class MCComponent( Component ):

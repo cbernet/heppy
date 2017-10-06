@@ -69,6 +69,25 @@ class ConfigTestCase(unittest.TestCase):
         self.assertEqual(seq, ['blah'])
         self.assertRaises(ValueError, cfg.Sequence, dict(a=1) )
         
+    def test_pickle(self):
+        '''Test that a config object can be pickled and unpickled'''
+        import pickle
+        import shelve
+        import tempfile
+        ana = cfg.Analyzer(
+            Analyzer,
+            'test_pickle', 
+            var=1,
+            fun=lambda x: x  # works because dill is imported in config.py
+        )
+        fd, tmpfname = tempfile.mkstemp()
+        os.close(fd)
+        with open(tmpfname, 'w') as out:
+            pickle.dump(ana, out)
+            self.assertTrue(True)
+        with open(tmpfname) as infile:
+            ana2 = pickle.load(infile)
+            self.assertEqual(ana2.fun(1), 1)
         
 if __name__ == '__main__':
     unittest.main()

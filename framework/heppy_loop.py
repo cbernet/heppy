@@ -163,7 +163,8 @@ def main( options, args, parser ):
         ## workaround for a scoping problem in ipython+multiprocessing
         import heppy.framework.heppy_loop as ML 
         for comp in selComps:
-            pool.apply_async( ML.runLoopAsync, [comp, outDir, 'heppy.__cfg_to_run__', options],
+            pool.apply_async( ML.runLoopAsync,
+                              [comp, outDir, 'heppy.__cfg_to_run__', options],
                               callback=ML.callBack)
         pool.close()
         pool.join()
