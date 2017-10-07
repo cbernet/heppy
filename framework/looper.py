@@ -91,7 +91,7 @@ class Looper(object):
         # save the config
         pck_fname = '/'.join([self.outDir, 'config.pck'])
         with open(pck_fname, 'w') as out:
-            pickle.dump(self.config, out)
+            pickle.dump(self.config, out, protocol=-1)
             
         # set up logger 
         self.logger = logging.getLogger( self.name )
