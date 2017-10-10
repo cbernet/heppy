@@ -28,5 +28,5 @@ class TestVersion(unittest.TestCase):
             self.assertEqual(data['software']['heppy'],
                              self.versions.tracked['heppy']['commitid'])
         
-##if __name__ == '__main__':
-##    unittest.main()
+if __name__ == '__main__':
+    unittest.main()
