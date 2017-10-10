@@ -33,7 +33,6 @@ class Versions(object):
         repo = git.Repo(module.__path__[0])
         info['commitid'] = repo.head.commit.hexsha
         self.tracked[key] = info
-        print
 
     #----------------------------------------------------------------------
     def write_yaml(self, path):

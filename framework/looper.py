@@ -14,6 +14,7 @@ import timeit
 import resource
 import json
 import pickle
+import copy
 
 from event import Event
 from heppy.framework.exceptions import UserStop
@@ -87,12 +88,7 @@ class Looper(object):
         self.config = config
         self.name = self._prepareOutput(name)
         self.outDir = self.name
-    
-        # save the config
-        pck_fname = '/'.join([self.outDir, 'config.pck'])
-        with open(pck_fname, 'w') as out:
-            pickle.dump(self.config, out, protocol=-1)
-            
+                    
         # set up logger 
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
@@ -386,13 +382,29 @@ possibly skipping a number of events at the beginning.
         return (True, analyzer.name)
 
     def write(self):
-        """Writes all analyzers.
+        """Writes the configuration, the software versions,
+        and the output of all analyzers in the output directory.
 
         See Analyzer.Write for more information.
         """
         for analyzer in self._analyzers:
             analyzer.write(self.setup)
-        self.setup.close() 
+        self.setup.close()
+
+        # save the versions
+        if self.config.versions:
+            self.config.versions.write_yaml('/'.join([self.outDir,
+                                                      'software.yaml']))
+        
+        # remove versions from the config as it can't be pickled
+        config_no_versions = copy.copy(self.config)
+        delattr(config_no_versions, 'versions')
+        
+        # save the config
+        pck_fname = '/'.join([self.outDir, 'config.pck'])
+        with open(pck_fname, 'w') as out:
+            pickle.dump(config_no_versions, out, protocol=-1)
+        
 
 
 if __name__ == '__main__':
