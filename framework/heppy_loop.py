@@ -243,7 +243,7 @@ def create_parser():
     parser.add_option("-t", "--trackversions", 
                       dest="track_versions",
                       help="list of the python packages to track, e.g. heppy,my_package",
-                      default=None)
+                      default='heppy')
     parser.add_option("-I", "--input",
                       dest="input",
                       type="str",
