@@ -408,7 +408,8 @@ possibly skipping a number of events at the beginning.
 
 
 if __name__ == '__main__':
-
+    """The main section is used by heppy_batch.py"""
+    
     import pickle
     import sys
     import os
@@ -426,23 +427,13 @@ if __name__ == '__main__':
             _heppyGlobalOptions[k]=v
         jfile.close()
 
-    if len(args) == 1 :
-        cfgFileName = args[0]
-        pckfile = open( cfgFileName, 'r' )
-        config = pickle.load( pckfile )
-        comp = config.components[0]
-        events_class = config.events_class
-    elif len(args) == 2 :
-        cfgFileName = args[0]
-        file = open( cfgFileName, 'r' )
-        cfg = imp.load_source( 'cfg', cfgFileName, file)
-        compFileName = args[1]
-        pckfile = open( compFileName, 'r' )
-        comp = pickle.load( pckfile )
-        cfg.config.components=[comp]
-        events_class = cfg.config.events_class
+    cfgFileName = args[0]
+    pckfile = open( cfgFileName, 'r' )
+    config = pickle.load( pckfile )
+    comp = config.components[0]
+    events_class = config.events_class
 
-    looper = Looper( 'Loop', cfg.config,nPrint = 5)
+    looper = Looper( 'Loop', config, nPrint = 5)
     looper.loop()
     looper.write()
 

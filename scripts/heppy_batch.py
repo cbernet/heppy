@@ -10,6 +10,7 @@ import json
 import math
 from heppy.utils.batchmanager import BatchManager
 from heppy.framework.config import split
+from heppy.utils.versions import Versions
 
 import heppy.framework.looper as looper
 
@@ -325,7 +326,7 @@ def batchScriptLocal(  remoteDir, index ):
 
    script = """#!/bin/bash
 echo 'running'
-python {looper} pycfg.py config.pck --options=options.json
+python {looper} config.pck --options=options.json
 echo
 echo 'sending the job directory back'
 mv Loop/* ./
@@ -369,13 +370,12 @@ class MyBatchManager( BatchManager ):
       scriptFile.close()
       os.system('chmod +x %s' % scriptFileName)
 
-      shutil.copyfile(self.cfgFileName, jobDir+'/pycfg.py')
-#      jobConfig = copy.deepcopy(config)
-#      jobConfig.self.components = [ self.components[value] ]
-      cfgFile = open(jobDir+'/config.pck','w')
-      pickle.dump(  self.components[value] , cfgFile )
-      # pickle.dump( cfo, cfgFile )
-      cfgFile.close()
+      # update components in config for this job,
+      # and save it as a pickle file
+      cfo = copy.deepcopy(self.config)
+      cfo.components = [ self.components[value] ]
+      with open('/'.join([jobDir, 'config.pck']), 'w') as outconfig:
+         pickle.dump(cfo, outconfig, protocol=-1)
       if hasattr(self,"heppyOptions_"):
          optjsonfile = open(jobDir+'/options.json','w')
          optjsonfile.write(json.dumps(self.heppyOptions_))
@@ -401,8 +401,14 @@ def main(options, args, batchManager):
    config = cfo.config
    handle.close()
 
+   versions = None
+   to_track = options.track_versions.split(',')
+   config.versions = Versions(batchManager.cfgFileName,
+                              to_track)
+   batchManager.config = config
+
    batchManager.components = split( [comp for comp in config.components \
-                                        if len(comp.files)>0] )
+                                     if len(comp.files)>0] )
    listOfValues = range(0, len(batchManager.components))
    listOfNames = [comp.name for comp in batchManager.components]
 
