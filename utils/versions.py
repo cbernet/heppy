@@ -18,11 +18,11 @@ class Versions(object):
         exclude = 'python2'
         path = [p for p in sys.path if 'python2' not in p]
         self.scriptfname = scriptfname
-        self.finder = modulefinder.ModuleFinder(path)
-        self.finder.run_script(scriptfname)
+        finder = modulefinder.ModuleFinder(path)
+        finder.run_script(scriptfname)
         # self.finder.report()
         self.tracked = dict()
-        for key, mod in self.finder.modules.iteritems():
+        for key, mod in finder.modules.iteritems():
             for pattern in to_track:
                 if fnmatch.fnmatch(key, pattern):
                     self._analyze(key, mod)
@@ -33,7 +33,6 @@ class Versions(object):
         repo = git.Repo(module.__path__[0])
         info['commitid'] = repo.head.commit.hexsha
         self.tracked[key] = info
-        print
 
     #----------------------------------------------------------------------
     def write_yaml(self, path):

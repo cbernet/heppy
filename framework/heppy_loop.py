@@ -22,6 +22,7 @@ if "-i" not in sys.argv:
 
 from heppy.framework.looper import Looper
 from heppy.framework.config import split
+from heppy.utils.versions import Versions
 
 # global, to be used interactively when only one component is processed.
 loop = None
@@ -105,6 +106,7 @@ _heppyGlobalOptions = {}
 def getHeppyOption(name,default=None):
     global _heppyGlobalOptions
     return _heppyGlobalOptions[name] if name in _heppyGlobalOptions else default
+
 def setHeppyOption(name,value=True):
     global _heppyGlobalOptions
     _heppyGlobalOptions[name] = value
@@ -126,7 +128,6 @@ def main( options, args, parser ):
         parser.print_help()
         print 'ERROR: second argument must be an existing file (your input cfg).'
         sys.exit(3)
-
     if options.verbose:
         import logging
         logging.basicConfig(level=logging.INFO)
@@ -141,22 +142,27 @@ def main( options, args, parser ):
             _heppyGlobalOptions[key] = val
         else:
             _heppyGlobalOptions[opt] = True
-
+            
+    # open the cfg, and create the config for each job
     file = open( cfgFileName, 'r' )
     sys.path.append( os.path.dirname(cfgFileName) )
-
     cfg = imp.load_source( 'heppy.__cfg_to_run__', 
                            cfgFileName, file)
 
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
-    # for comp in selComps:
-    #    print comp
+
+    # track the versions
+    versions = None
+    to_track = options.track_versions.split(',')
+    to_track.append('heppy')
+    cfg.config.versions = Versions(cfgFileName,
+                                   to_track)
     if len(selComps)>options.ntasks:
         print "WARNING: too many threads {tnum}, will just use a maximum of {jnum}.".format(tnum=len(selComps),jnum=options.ntasks)
     if not createOutputDir(outDir, selComps, options.force):
         print 'exiting'
-        sys.exit(0)
+        sys.exit(1)
     if len(selComps)>1:
         shutil.copy( cfgFileName, outDir )
         pool = multiprocessing.Pool(processes=min(len(selComps),options.ntasks))
@@ -172,7 +178,7 @@ def main( options, args, parser ):
         # when running only one loop, do not use multiprocessor module.
         # then, the exceptions are visible -> use only one sample for testing
         global loop
-        loop = runLoop( comp, outDir, cfg.config, options )
+        loop = runLoop( comp, outDir, cfg.config, options)
     return loop
 
 
@@ -233,6 +239,10 @@ def create_parser():
                       action='store_true',
                       help="Activate memory checks per event",
                       default=False)
+    parser.add_option("-t", "--trackversions", 
+                      dest="track_versions",
+                      help="list of the python packages to track, e.g. heppy,my_package",
+                      default='heppy')
     parser.add_option("-I", "--input",
                       dest="input",
                       type="str",

@@ -46,6 +46,10 @@ class BatchManager:
         self.parser_.add_option("-b", "--batch", dest="batch",
                                 help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
                                 default="bsub -q 8nh < ./batchScript.sh")
+        self.parser_.add_option("-t", "--trackversions", 
+                                dest="track_versions",
+                                help="list of the python packages to track, e.g. heppy,my_package",
+                                default='heppy')        
         self.parser_.add_option( "--option",
                                 dest="extraOptions",
                                 type="string",
