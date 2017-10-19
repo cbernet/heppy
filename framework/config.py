@@ -5,6 +5,7 @@ from weight import Weight
 import glob
 import analyzer
 import copy
+import dill  # necessary for lambdas in configuration objects
 
 # Forbidding PyROOT to hijack help system,
 # in case the configuration module is used as a script.
@@ -340,7 +341,6 @@ class DataComponent( Component ):
                        addWeight = 1. )
 
 
-
 class MCComponent( Component ):
     '''A component for Monte Carlo
     
@@ -386,12 +386,26 @@ class MCComponent( Component ):
 class Config( object ):
     '''Main configuration object, holds a sequence of analyzers, and
     a list of components.'''
-    def __init__(self, components, sequence, services, events_class,preprocessor=None):
+    def __init__(self, components, sequence, services,
+                 events_class,preprocessor=None, versions=None):
+        '''Create the configuration object for a heppy job.
+        
+        @param components: list of Components to be processed (input)
+        @param sequence: list of Analyzers
+        @param services: list of services
+        @param events_class: class object to be used to extract events
+                            from the input files
+        @param preprocessor: CMS only
+        @param versions: dictionary listing the version of the software that is used.
+        
+        versions is an object of the class heppy.utils.versions.Versions 
+        '''
         self.preprocessor = preprocessor
         self.components = components
         self.sequence = sequence
         self.services = services
         self.events_class = events_class
+        self.versions = versions
 
     def __str__(self):
         comp = '\n'.join(map(str, self.components))

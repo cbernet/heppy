@@ -59,7 +59,7 @@ class BlockBuilder(SubgraphBuilder):
             block = PFBlock(subgraph, self.edges, self.startindex + len(self.blocks), subtype=self.subtype)        
             pdebugger.info("Made {}".format(block))
             #put the block in the dict of blocks            
-            self.blocks[block.uniqueid] = block        
+            self.blocks[block.uniqueid] = block
             
             #make a node for the block and add into the history Nodes
             if (self.history != None):

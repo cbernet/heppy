@@ -13,11 +13,12 @@ from math import ceil
 import timeit
 import resource
 import json
-from event import Event
+import pickle
+import copy
 
+from event import Event
 from heppy.framework.exceptions import UserStop
 from heppy.statistics.counter import Counter
-
 
 class Setup(object):
     '''The Looper creates a Setup object to hold information relevant during 
@@ -57,7 +58,7 @@ class Looper(object):
     """Creates a set of analyzers, and schedules the event processing."""
 
     def __init__( self, name,
-                  config, 
+                  config,
                   nEvents=None,
                   firstEvent=0,
                   nPrint=0,
@@ -87,6 +88,8 @@ class Looper(object):
         self.config = config
         self.name = self._prepareOutput(name)
         self.outDir = self.name
+                    
+        # set up logger 
         self.logger = logging.getLogger( self.name )
         self.logger.addHandler(logging.FileHandler('/'.join([self.name,
                                                              'log.txt'])))
@@ -189,8 +192,7 @@ Make sure that the configuration object is of class cfg.Analyzer.
         tmpname = name
         while True and index < 2000:
             try:
-                # print 'mkdir', self.name
-                os.mkdir( tmpname )
+                os.makedirs(tmpname)
                 break
             except OSError:
                 # failed to create the directory
@@ -380,17 +382,34 @@ possibly skipping a number of events at the beginning.
         return (True, analyzer.name)
 
     def write(self):
-        """Writes all analyzers.
+        """Writes the configuration, the software versions,
+        and the output of all analyzers in the output directory.
 
         See Analyzer.Write for more information.
         """
         for analyzer in self._analyzers:
             analyzer.write(self.setup)
-        self.setup.close() 
+        self.setup.close()
+
+        # save the versions
+        if self.config.versions:
+            self.config.versions.write_yaml('/'.join([self.outDir,
+                                                      'software.yaml']))
+        
+        # remove versions from the config as it can't be pickled
+        config_no_versions = copy.copy(self.config)
+        delattr(config_no_versions, 'versions')
+        
+        # save the config
+        pck_fname = '/'.join([self.outDir, 'config.pck'])
+        with open(pck_fname, 'w') as out:
+            pickle.dump(config_no_versions, out, protocol=-1)
+        
 
 
 if __name__ == '__main__':
-
+    """The main section is used by heppy_batch.py"""
+    
     import pickle
     import sys
     import os
@@ -408,23 +427,13 @@ if __name__ == '__main__':
             _heppyGlobalOptions[k]=v
         jfile.close()
 
-    if len(args) == 1 :
-        cfgFileName = args[0]
-        pckfile = open( cfgFileName, 'r' )
-        config = pickle.load( pckfile )
-        comp = config.components[0]
-        events_class = config.events_class
-    elif len(args) == 2 :
-        cfgFileName = args[0]
-        file = open( cfgFileName, 'r' )
-        cfg = imp.load_source( 'cfg', cfgFileName, file)
-        compFileName = args[1]
-        pckfile = open( compFileName, 'r' )
-        comp = pickle.load( pckfile )
-        cfg.config.components=[comp]
-        events_class = cfg.config.events_class
+    cfgFileName = args[0]
+    pckfile = open( cfgFileName, 'r' )
+    config = pickle.load( pckfile )
+    comp = config.components[0]
+    events_class = config.events_class
 
-    looper = Looper( 'Loop', cfg.config,nPrint = 5)
+    looper = Looper( 'Loop', config, nPrint = 5)
     looper.loop()
     looper.write()
 

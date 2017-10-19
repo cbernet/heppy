@@ -51,7 +51,7 @@ class JetTreeProducer(Analyzer):
                               'recreate')
         self.tree = Tree( self.cfg_ana.tree_name,
                           self.cfg_ana.tree_title )
-        for ijet in range(self.cfg_ana.njets):
+        for ijet in range(self.cfg_ana.njets):    
             bookJet(self.tree, 'jet{}'.format(ijet), self.cfg_ana.taggers)
             bookJet(self.tree, 'jet{}_match'.format(ijet))
         var(self.tree, 'event')
@@ -74,6 +74,8 @@ class JetTreeProducer(Analyzer):
             fill(self.tree, 'event', event.iEv)
         jets = getattr(event, self.cfg_ana.jets)
         for ijet in range(self.cfg_ana.njets):
+            if ijet == len(jets):
+                break
             jet = jets[ijet]
             fillJet(self.tree, 'jet{}'.format(ijet), jet, self.cfg_ana.taggers)
             if hasattr(jet, 'match') and jet.match:

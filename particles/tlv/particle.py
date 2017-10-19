@@ -15,3 +15,4 @@ class Particle(BaseParticle, RootObj):
         self._status = status
         self._start_vertex = Vertex(TVector3(),0)
         self._end_vertex = None
+

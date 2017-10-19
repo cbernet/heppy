@@ -21,10 +21,15 @@ class ROC(object):
         the roc curve.
         '''
         self.sig_bgd_points = sig_bgd_points
-        lin_interp = scipy.interpolate.interp1d(sig_bgd_points[:, 0],
-                                                np.log10(sig_bgd_points[:, 1]), 
+        lin_interp = scipy.interpolate.interp1d(self.sig_bgd_points[:, 0],
+                                                np.log10(self.sig_bgd_points[:, 1]), 
                                                 'linear')
-        self.roc = lambda zz: np.power(10.0, lin_interp(zz))
+        self._roc = lambda zz: np.power(10.0, lin_interp(zz))                    
+        self.fake_rate = None
+        self.eff = None
+                
+    def roc(self, eff):         
+        return self._roc(eff)
         
     def plot(self):
         '''Plot the curve.'''

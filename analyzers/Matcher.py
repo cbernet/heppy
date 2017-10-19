@@ -114,6 +114,5 @@ class Matcher(Analyzer):
                     drname = 'dr'
                     if pdgid:
                         drname = 'dr_{pdgid}'.format(pdgid=pdgid)
-                    dr = deltaR(ptc.theta(), ptc.phi(),
-                                match.theta(), match.phi())
+                    dr = deltaR(ptc, match)
                     setattr(ptc, drname, dr)

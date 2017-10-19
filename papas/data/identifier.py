@@ -184,6 +184,13 @@ class Identifier(long):
         #pdebugger.info("reset ID")
         return
 
+    @staticmethod
+    def id_str(ident):
+        ''' string formatted for outputs'''
+        return '{pretty:6}:{uid}:'.format(
+            pretty=Identifier.pretty(ident),
+            uid=ident)
+
 if __name__ == '__main__':
 
     uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  1, 's', 1.23456)

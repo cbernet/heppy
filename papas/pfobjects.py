@@ -14,7 +14,6 @@ class PFObject(object):
     forming graphs called "blocks".
     All PFObjects have a unique identifier which encodes information about the object type, subtype and an associated value such 
     as energy or pt. See Identifier class for more details. 
-
     attributes:
     linked : list of PFObjects linked to this one
     locked : already used in the particle flow algorithm
@@ -244,7 +243,6 @@ class MergedCluster(Cluster):
 
 class Track(PFObject):
     '''Determines the trajectory in space and time of a particle (charged or neutral).
-
     attributes:
     - p3 : momentum in 3D space (px, py, pz)
     - charge : particle charge
@@ -292,17 +290,14 @@ class SmearedTrack(Track):
 
 
 class Particle(BaseParticle):
-    def __init__(self, tlv, vertex, charge, pdgid, index=0, subtype='s'):
-        self.subtype = subtype
+    def __init__(self, tlv, vertex, charge, pdgid):
         super(Particle, self).__init__(pdgid, charge, tlv)
-        
     #allow the value used in the particle unique id to depend on the collider type
-        idvalue = 0.
+        self.idvalue = 0.
         if Collider.BEAMS == 'ee':
-            idvalue=self.e()
+            self.idvalue=self.e()
         else:
-            idvalue=self.pt()
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, index, subtype, idvalue)
+            self.idvalue=self.pt()
         self.vertex = vertex
         self.path = None
         self.clusters = dict()
@@ -345,19 +340,12 @@ class Particle(BaseParticle):
         return tmp.format(
             pdgid =pid,
             e = self.e()
-        )    
-    
-    def __repr__(self):
-        return str(self)
+        )
 
-    def __str__(self):
-        mainstr = super(Particle, self).__str__()
-        idstr = '{pretty:6}:{uid}'.format(
-            pretty=Identifier.pretty(self.uniqueid),
-            uid=self.uniqueid)
-        fields = mainstr.split(':')
-        fields.insert(1, idstr)
-        return ':'.join(fields)
+    def  dagid_str(self):
+        if self.dagid() != None:
+            return Identifier.id_str(self.dagid())
+        return ""
 
 
 if __name__ == '__main__':

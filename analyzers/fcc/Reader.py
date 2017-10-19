@@ -2,6 +2,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.particles.fcc.particle import Particle
 from heppy.particles.fcc.jet import Jet
 from heppy.particles.fcc.vertex import Vertex 
+from heppy.particles.fcc.particle_MCparticle_link import ParticleMCParticleLink
 from heppy.particles.fcc.met import Met
 import heppy.configuration
 
@@ -89,7 +90,6 @@ class Reader(Analyzer):
                 setattr(event, coll_label, pycoll)
             return pycoll
 
-
         # store only 1st event weight for now
         event.weight = - 999.
         if hasattr(self.cfg_ana, 'weights'):
@@ -100,6 +100,12 @@ class Reader(Analyzer):
 
         if hasattr(self.cfg_ana, 'gen_particles'):
             get_collection(Particle, 'gen_particles')
+
+        if hasattr(self.cfg_ana, 'rec_particles'):
+            get_collection(Particle, 'rec_particles')
+        
+        if hasattr(self.cfg_ana, 'gen_rec_links'):
+            get_collection(ParticleMCParticleLink, 'gen_rec_links')
 
         if hasattr(self.cfg_ana, 'gen_vertices'):
             get_collection(Vertex, 'gen_vertices', False)

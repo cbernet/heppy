@@ -87,10 +87,13 @@ if do_clic:
     display.detector = clic
     pfreconstruct.detector = clic
 
+from heppy.test.pdebug_cfg import pdebug
+
 # definition of a sequence of analyzers,
 # the analyzers will process each event in this order
 sequence = cfg.Sequence(
     source,
+    pdebug,
     # gen_particles_stable, 
     papas_sequence,
     sum_particles,
