@@ -4,6 +4,7 @@
 
 import os
 import pprint
+import dill
 import pickle
 import shutil
 

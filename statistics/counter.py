@@ -1,6 +1,7 @@
 # Copyright (C) 2014 Colin Bernet
 # https://github.com/cbernet/heppy/blob/master/LICENSE
 
+import dill
 import pickle
 from heppy.utils.diclist import diclist
 
