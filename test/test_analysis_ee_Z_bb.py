@@ -42,14 +42,14 @@ if context.name == 'fcc':
                 if hasattr( s,'detector'):
                     s.detector = cms
             self.looper = Looper( self.outdir, config,
-                                  nEvents=100,
+                                  nEvents=500,
                                   nPrint=0 )
             self.looper.loop()
             self.looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
             plotter = Plotter(rootfile)
-            self.assertAlmostEqual(plotter.bfrac(), 0.83, places=2)
+            self.assertAlmostEqual(plotter.bfrac(), 0.88, places=2)
             self.assertAlmostEqual(plotter.beff(), 0.7, places=2)
     
         def test_fake_cms(self):
