@@ -11,6 +11,10 @@ import copy
 import multiprocessing 
 from pprint import pprint
 
+from heppy.utils.versions import Versions
+from heppy.framework.looper import Looper
+from heppy.framework.config import split
+
 # import root in batch mode if "-i" is not among the options
 if "-i" not in sys.argv:
     oldv = sys.argv[:]
@@ -19,10 +23,6 @@ if "-i" not in sys.argv:
     ROOT.gROOT.SetBatch(True)
     sys.argv = oldv
 
-
-from heppy.framework.looper import Looper
-from heppy.framework.config import split
-from heppy.utils.versions import Versions
 
 # global, to be used interactively when only one component is processed.
 loop = None
@@ -44,7 +44,6 @@ def runLoopAsync(comp, outDir, configName, options):
 
 _globalGracefulStopFlag = multiprocessing.Value('i',0)
 def runLoop( comp, outDir, config, options):
-   
     if options.input is not None:
         comp.files = [options.input]
 
@@ -58,7 +57,8 @@ def runLoop( comp, outDir, config, options):
                    nPrint = options.nprint, 
                    quiet = options.quiet,
                    memCheckFromEvent = memcheck,
-                   stopFlag = _globalGracefulStopFlag)
+                   stopFlag = _globalGracefulStopFlag
+                   )
     # print loop
     if options.iEvent is None:
         loop.loop()
@@ -112,7 +112,6 @@ def setHeppyOption(name,value=True):
     _heppyGlobalOptions[name] = value
 
 def main( options, args, parser ):
-
     if len(args) != 2:
         parser.print_help()
         print 'ERROR: please provide the processing name and the component list'
