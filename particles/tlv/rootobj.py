@@ -10,7 +10,7 @@ class RootObj(object):
     
     def __init__(self, *args, **kwargs):
         super(RootObj, self).__init__(*args, **kwargs)
-        self._objid = self._ids.next()
+        self._objid = (self._ids.next(), 0)
 
     def __eq__(self, other):
         '''compares two objects for equality. 
