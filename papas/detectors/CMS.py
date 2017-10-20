@@ -168,6 +168,14 @@ class CMS(Detector):
     def muon_resolution(self, ptc):
         return 0.02 
     
+    
+    def jet_energy_correction(self, jet):
+        '''The factor roughly corresponds to the raw PF jet response in CMS,
+        which is around 90%. The factor was checked in the reconstruction
+        of Z->jj in papas.
+        '''
+        return 1.1
+    
     def __init__(self):
         super(CMS, self).__init__()
         self.elements['tracker'] = Tracker()
