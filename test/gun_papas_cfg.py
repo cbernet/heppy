@@ -81,7 +81,6 @@ source = cfg.Analyzer(
     ptmin = 0.2,
     ptmax = 0.2,
     flat_pt = False,
-    papas = True
 )
 
 # importing the papas simulation and reconstruction sequence,

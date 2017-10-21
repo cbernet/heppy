@@ -64,9 +64,12 @@ class HCAL(DetectorElement):
         part = 'barrel'
         if abs(eta)>self.eta_crack:
             part = 'endcap'
-        stoch = self.eres[part][0] / math.sqrt(energy)
-        noise = self.eres[part][1] / energy
-        constant = self.eres[part][2]
+        # stoch = self.eres[part][0] / math.sqrt(energy)
+        # noise = self.eres[part][1] / energy
+        # constant = self.eres[part][2]
+        stoch = 1.1 / math.sqrt(energy)
+        noise = 0
+        constant = 0.09
         return math.sqrt( stoch**2 + noise**2 + constant**2)
 
     def energy_response(self, energy, eta=0):
@@ -164,6 +167,14 @@ class CMS(Detector):
             
     def muon_resolution(self, ptc):
         return 0.02 
+    
+    
+    def jet_energy_correction(self, jet):
+        '''The factor roughly corresponds to the raw PF jet response in CMS,
+        which is around 90%. The factor was checked in the reconstruction
+        of Z->jj in papas.
+        '''
+        return 1.1
     
     def __init__(self):
         super(CMS, self).__init__()

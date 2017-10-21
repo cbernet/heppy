@@ -3,6 +3,7 @@
 import os
 import pprint
 import re
+import dill
 import pickle
 import sys
 

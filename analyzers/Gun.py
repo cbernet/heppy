@@ -12,7 +12,7 @@ import heppy.statistics.rrandom as random
 
 from ROOT import TLorentzVector
 
-def particle(pdgid, thetamin, thetamax, ptmin, ptmax,
+def particle(index, pdgid, thetamin, thetamax, ptmin, ptmax,
              flat_pt=False, papas = False,
              phimin=-math.pi, phimax=math.pi):
     '''Create and return a particle in a given phase space
@@ -49,10 +49,7 @@ def particle(pdgid, thetamin, thetamax, ptmin, ptmax,
                          momentum*sintheta*sinphi,
                          momentum*costheta,
                          energy)
-    if papas:
-        return PapasParticle(tlv, vertex, charge, pdgid, subtype ='g') #pfobjects has a uniqueid
-    else:
-        return TlvParticle(pdgid, charge, tlv) #pfobjects has a uniqueid    
+    return TlvParticle(pdgid, charge, tlv) #pfobjects has a uniqueid    
     
 
 class Gun(Analyzer):
@@ -108,15 +105,18 @@ class Gun(Analyzer):
         if not (self.cfg_ana.pdgid, '__iter__'):
             self.cfg_ana.pdgid = [self.cfg_ana.pdgid]
         event.gen_particles = []
-        for pdgid in self.cfg_ana.pdgid:
-            event.gen_particles.append(particle(pdgid, 
-                                                self.cfg_ana.thetamin, 
-                                                self.cfg_ana.thetamax,
-                                                self.cfg_ana.ptmin, 
-                                                self.cfg_ana.ptmax,
-                                                flat_pt=self.cfg_ana.flat_pt,
-                                                papas = self.papas, 
-                                                phimin=self.cfg_ana.phimin, 
-                                                phimax=self.cfg_ana.phimax 
-                                                ))
+        for index, pdgid in enumerate(self.cfg_ana.pdgid):
+            event.gen_particles.append(
+                particle(index,
+                         pdgid, 
+                         self.cfg_ana.thetamin, 
+                         self.cfg_ana.thetamax,
+                         self.cfg_ana.ptmin, 
+                         self.cfg_ana.ptmax,
+                         flat_pt=self.cfg_ana.flat_pt,
+                         papas = self.papas, 
+                         phimin=self.cfg_ana.phimin, 
+                         phimax=self.cfg_ana.phimax 
+                         )
+            )
         event.gen_particles_stable = event.gen_particles

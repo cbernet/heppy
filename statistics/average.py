@@ -2,6 +2,7 @@
 # https://github.com/cbernet/heppy/blob/master/LICENSE
 
 import math
+import dill
 import pickle
 from heppy.utils.diclist import diclist
 

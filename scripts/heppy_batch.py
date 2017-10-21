@@ -5,6 +5,7 @@ import imp
 import copy
 import os
 import shutil
+import dill
 import pickle
 import json
 import math

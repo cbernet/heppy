@@ -7,11 +7,6 @@ import analyzer
 import copy
 import dill  # necessary for lambdas in configuration objects
 
-# Forbidding PyROOT to hijack help system,
-# in case the configuration module is used as a script.
-import ROOT 
-ROOT.PyConfig.IgnoreCommandLineOptions = True
-
 def printComps(comps, details=False):
     '''
     Summary printout for  a list of components comps.

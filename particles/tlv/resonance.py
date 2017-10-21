@@ -12,14 +12,14 @@ class Resonance(Particle, RootObj):
     - e(): returns energy
     """
     
-    def __init__(self, legs, pid):
+    def __init__(self, legs, pid, status=3):
         self.legs = legs
         tlv = TLorentzVector()
         charge = 0
         for leg in legs:
             charge += leg.q()
             tlv += leg.p4()
-        super(Resonance, self).__init__(pid, charge, tlv, status=3)
+        super(Resonance, self).__init__(pid, charge, tlv, status)
 
     def boost(self, boost_vector):
         '''Boost the resonance and its legs to another lorentz frame.
@@ -36,12 +36,12 @@ class Resonance(Particle, RootObj):
 class Resonance2(Resonance):
     '''Resonance decaying to two legs.'''
 
-    def __init__(self, leg1, leg2, pid):
+    def __init__(self, leg1, leg2, pid, status=3):
         '''leg1 and leg2 are the first and second legs, respectively.
         no sorting is done internally.
         pid is the pdg id of the resonance.
         '''
-        super(Resonance2, self).__init__([leg1, leg2], pid)
+        super(Resonance2, self).__init__([leg1, leg2], pid, status)
 
     def leg1(self):
         '''return first leg'''

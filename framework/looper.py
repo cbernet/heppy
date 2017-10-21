@@ -13,6 +13,7 @@ from math import ceil
 import timeit
 import resource
 import json
+import dill
 import pickle
 import copy
 
@@ -409,7 +410,8 @@ possibly skipping a number of events at the beginning.
 
 if __name__ == '__main__':
     """The main section is used by heppy_batch.py"""
-    
+
+    import dill
     import pickle
     import sys
     import os
