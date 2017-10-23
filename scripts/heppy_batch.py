@@ -198,7 +198,7 @@ cp -rf $LS_SUBCWD .
 ls
 cd `find . -type d | grep /`
 echo 'running'
-python {looper} pycfg.py config.pck
+python {looper} config.pck
 echo
 {copy}
 """.format(looper=looper.__file__, copy=cpCmd, 
@@ -371,6 +371,10 @@ class MyBatchManager( BatchManager ):
       scriptFile.close()
       os.system('chmod +x %s' % scriptFileName)
 
+      # save the configuration python file for later unpickling of the
+      # config
+      shutil.copy(batchManager.cfgFileName,
+                  '/'.join([jobDir, '__cfg_to_run__.py']))
       # update components in config for this job,
       # and save it as a pickle file
       cfo = copy.deepcopy(self.config)
@@ -398,7 +402,9 @@ def main(options, args, batchManager):
    batchManager.cfgFileName = args[0]
 
    handle = open(batchManager.cfgFileName, 'r')
-   cfo = imp.load_source("pycfg", batchManager.cfgFileName, handle)
+   cfo = imp.load_source('__cfg_to_run__',
+                         batchManager.cfgFileName,
+                         handle)
    config = cfo.config
    handle.close()
 
