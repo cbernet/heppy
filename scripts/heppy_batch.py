@@ -198,7 +198,7 @@ cp -rf $LS_SUBCWD .
 ls
 cd `find . -type d | grep /`
 echo 'running'
-python {looper} pycfg.py config.pck
+python {looper} config.pck
 echo
 {copy}
 """.format(looper=looper.__file__, copy=cpCmd, 
