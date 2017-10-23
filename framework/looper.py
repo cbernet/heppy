@@ -429,6 +429,12 @@ if __name__ == '__main__':
             _heppyGlobalOptions[k]=v
         jfile.close()
 
+    # to unpickle the config, one needs access to the
+    # python configuration file (__cfg_to_run__.py)
+    # it should be stored in the same directory as the pickled config,
+    # which is done by heppy_batch
+    sys.path.insert(0, os.getcwd())
+    
     cfgFileName = args[0]
     pckfile = open( cfgFileName, 'r' )
     config = pickle.load( pckfile )
