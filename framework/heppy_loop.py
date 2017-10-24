@@ -30,9 +30,10 @@ loop = None
 def callBack( result ):
     pass
 
-def runLoopAsync(comp, outDir, configName, options):
+def runLoopAsync(comp, outDir, configName, cfgFileName, options):
     try:
-        loop = runLoop( comp, outDir, copy.copy(sys.modules[configName].config), options)
+        loop = runLoop( comp, outDir, copy.copy(sys.modules[configName].config),
+                        cfgFileName, options)
         return loop.name
     except Exception:
         import traceback
@@ -43,7 +44,7 @@ def runLoopAsync(comp, outDir, configName, options):
         raise
 
 _globalGracefulStopFlag = multiprocessing.Value('i',0)
-def runLoop( comp, outDir, config, options):
+def runLoop( comp, outDir, config, cfgFileName, options):
     if options.input is not None:
         comp.files = [options.input]
 
@@ -59,6 +60,8 @@ def runLoop( comp, outDir, config, options):
                    memCheckFromEvent = memcheck,
                    stopFlag = _globalGracefulStopFlag
                    )
+    shutil.copy( cfgFileName, loop.outDir )
+    shutil.copy( cfgFileName, '/'.join([loop.outDir, '__cfg_to_run__.py'] ) )            
     # print loop
     if options.iEvent is None:
         loop.loop()
@@ -147,7 +150,7 @@ def main( options, args, parser ):
     sys.path.append( os.path.dirname(cfgFileName) )
     cfg = imp.load_source( 'heppy.__cfg_to_run__', 
                            cfgFileName, file)
-
+    
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
     selComps = split(selComps)
 
@@ -163,13 +166,12 @@ def main( options, args, parser ):
         print 'exiting'
         sys.exit(1)
     if len(selComps)>1:
-        shutil.copy( cfgFileName, outDir )
         pool = multiprocessing.Pool(processes=min(len(selComps),options.ntasks))
         ## workaround for a scoping problem in ipython+multiprocessing
         import heppy.framework.heppy_loop as ML 
         for comp in selComps:
             pool.apply_async( ML.runLoopAsync,
-                              [comp, outDir, 'heppy.__cfg_to_run__', options],
+                              [comp, outDir, 'heppy.__cfg_to_run__', cfgFileName, options],
                               callback=ML.callBack)
         pool.close()
         pool.join()
@@ -177,7 +179,7 @@ def main( options, args, parser ):
         # when running only one loop, do not use multiprocessor module.
         # then, the exceptions are visible -> use only one sample for testing
         global loop
-        loop = runLoop( comp, outDir, cfg.config, options)
+        loop = runLoop( comp, outDir, cfg.config, cfgFileName, options)
     return loop
 
 
