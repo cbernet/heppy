@@ -16,8 +16,11 @@ def haddPck(file, odir, idirs):
     Each pickle file will be opened, and the corresponding objects added to a destination pickle in odir.
     '''
     objsum = None
+    basedir = os.getcwd()
+    fileName = os.path.basename(file)
     for dirpath in idirs:
-        fileName = file.replace( idirs[0], dirpath )
+        # fileName = file.replace( idirs[0], dirpath )
+        os.chdir(dirpath)
         pckfile = open(fileName)
         obj = pickle.load(pckfile)
         if objsum is None:
@@ -28,10 +31,12 @@ def haddPck(file, odir, idirs):
             except TypeError:
                 # += not implemented, nevermind
                 pass
+        os.chdir(basedir)
                 
     oFileName = file.replace( idirs[0], odir )
     pckfile = open(oFileName, 'w')
-    pickle.dump(objsum, pckfile)
+    print 'output:', oFileName
+    pickle.dump(objsum, pckfile, protocol=-1)
     txtFileName = oFileName.replace('.pck','.txt')
     txtFile = open(txtFileName, 'w')
     txtFile.write( str(objsum) )
@@ -41,14 +46,11 @@ def haddPck(file, odir, idirs):
 
 def hadd(fname, odir, idirs, appx=''):
     if fname.endswith('.pck'):
-        try:
-            haddPck(fname, odir, idirs)
-        except ImportError:
-            pass
-        return
+        haddPck(fname, odir, idirs)
     elif fname.endswith('.yaml'):
         # just copy the yaml file to the output dir
         shutil.copy(fname, odir)
+        return 
     elif not fname.endswith('.root'):
         return
     haddCmd = ['hadd']
@@ -74,8 +76,13 @@ def hadd(fname, odir, idirs, appx=''):
 
 
 def haddRec(odir, idirs):
-    print 'adding', idirs
-    print 'to', odir 
+    print 
+    print 'adding' 
+    pprint.pprint(idirs)
+    print
+    print 'to' 
+    print odir 
+    print 
 
     cmd = ' '.join( ['mkdir', odir])
     if os.path.isdir(odir):
@@ -140,6 +147,8 @@ if __name__ == '__main__':
     import os
     import sys
     from optparse import OptionParser
+    
+    sys.path.insert(0,'.')
 
     parser = OptionParser()
     parser.usage = """
