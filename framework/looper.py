@@ -405,6 +405,20 @@ possibly skipping a number of events at the beginning.
         pck_fname = '/'.join([self.outDir, 'config.pck'])
         with open(pck_fname, 'w') as out:
             pickle.dump(config_no_versions, out, protocol=-1)
+            
+        # later, it is possible that unpickling the config
+        # does not work, e.g. because of
+        # - changes in the type of the stored objects
+        # - different machine
+        # so we also keep the component in a simple form:
+        comp_data = dict(
+            name=self.cfg_comp.name, 
+            files=self.cfg_comp.files
+        )
+        pck_fname = '/'.join([self.outDir, 'component.pck'])
+        with open(pck_fname, 'w') as out:
+            pickle.dump(comp_data, out)
+        
         
 
 

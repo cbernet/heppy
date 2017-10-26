@@ -47,6 +47,7 @@ def haddPck(file, odir, idirs):
 def hadd(fname, odir, idirs, appx=''):
     if fname.endswith('.pck'):
         haddPck(fname, odir, idirs)
+        return
     elif fname.endswith('.yaml') or fname.endswith('.py'):
         # just copy the yaml file to the output dir
         shutil.copy(fname, odir)
