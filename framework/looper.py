@@ -434,7 +434,9 @@ if __name__ == '__main__':
     from heppy.framework.heppy_loop import _heppyGlobalOptions
     from optparse import OptionParser
     parser = OptionParser(usage='%prog cfgFileName compFileName [--options=optFile.json]')
-    parser.add_option('--options',dest='options',default='',help='options json file')
+    parser.add_option('--options',
+                      dest='options',
+                      default='',help='options json file')
     (options,args) = parser.parse_args()
 
     if options.options!='':

@@ -148,7 +148,7 @@ def main( options, args, parser ):
     # open the cfg, and create the config for each job
     file = open( cfgFileName, 'r' )
     sys.path.append( os.path.dirname(cfgFileName) )
-    cfg = imp.load_source( 'heppy.__cfg_to_run__', 
+    cfg = imp.load_source( '__cfg_to_run__', 
                            cfgFileName, file)
     
     selComps = [comp for comp in cfg.config.components if len(comp.files)>0]
@@ -171,7 +171,7 @@ def main( options, args, parser ):
         import heppy.framework.heppy_loop as ML 
         for comp in selComps:
             pool.apply_async( ML.runLoopAsync,
-                              [comp, outDir, 'heppy.__cfg_to_run__', cfgFileName, options],
+                              [comp, outDir, '__cfg_to_run__', cfgFileName, options],
                               callback=ML.callBack)
         pool.close()
         pool.join()

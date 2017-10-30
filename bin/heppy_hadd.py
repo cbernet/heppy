@@ -22,7 +22,9 @@ def haddPck(file, odir, idirs):
         # fileName = file.replace( idirs[0], dirpath )
         os.chdir(dirpath)
         pckfile = open(fileName)
+        sys.path.insert(0, dirpath)
         obj = pickle.load(pckfile)
+        sys.path.pop(0)
         if objsum is None:
             objsum = obj
         else:
@@ -177,6 +179,6 @@ if __name__ == '__main__':
         odir = args[1]
     else:
         odir = dirname
-
+        
     haddChunks(dirname, options.remove, options.clean, odir)
 
