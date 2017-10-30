@@ -437,6 +437,13 @@ if __name__ == '__main__':
     parser.add_option('--options',
                       dest='options',
                       default='',help='options json file')
+    parser.add_option(
+        "-N", "--nevents",
+          dest="nevents",
+          type="int",
+          help="number of events to process",
+          default=None
+    )    
     (options,args) = parser.parse_args()
 
     if options.options!='':
@@ -459,7 +466,7 @@ if __name__ == '__main__':
     comp = config.components[0]
     events_class = config.events_class
 
-    looper = Looper( 'Loop', config, nPrint = 5)
+    looper = Looper( 'Loop', config, nPrint = 5, nEvents=options.nevents)
     looper.loop()
     looper.write()
 
