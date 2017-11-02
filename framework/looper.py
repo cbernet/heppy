@@ -163,6 +163,35 @@ class Looper(object):
         # but cannot copy the autofill config.
         self.setup = Setup(config, services)
 
+        ######### Save processing information to output directory
+
+        # save the versions
+        if self.config.versions:
+            self.config.versions.write_yaml('/'.join([self.outDir,
+                                                      'software.yaml']))        
+        # remove versions from the config as it can't be pickled
+        config_no_versions = copy.copy(self.config)
+        delattr(config_no_versions, 'versions')
+        
+        # save the config
+        pck_fname = '/'.join([self.outDir, 'config.pck'])
+        with open(pck_fname, 'w') as out:
+            pickle.dump(config_no_versions, out, protocol=-1)
+            
+        # later, it is possible that unpickling the config
+        # does not work, e.g. because of
+        # - changes in the type of the stored objects
+        # - different machine
+        # so we also keep the component in a simple form:
+        comp_data = dict(
+            name=self.cfg_comp.name, 
+            files=self.cfg_comp.files
+        )
+        pck_fname = '/'.join([self.outDir, 'component.pck'])
+        with open(pck_fname, 'w') as out:
+            pickle.dump(comp_data, out)
+
+
     def _build(self, cfg):
         try: 
             theClass = cfg.class_object
@@ -391,20 +420,7 @@ possibly skipping a number of events at the beginning.
         for analyzer in self._analyzers:
             analyzer.write(self.setup)
         self.setup.close()
-
-        # save the versions
-        if self.config.versions:
-            self.config.versions.write_yaml('/'.join([self.outDir,
-                                                      'software.yaml']))
         
-        # remove versions from the config as it can't be pickled
-        config_no_versions = copy.copy(self.config)
-        delattr(config_no_versions, 'versions')
-        
-        # save the config
-        pck_fname = '/'.join([self.outDir, 'config.pck'])
-        with open(pck_fname, 'w') as out:
-            pickle.dump(config_no_versions, out, protocol=-1)
         
 
 
@@ -418,7 +434,16 @@ if __name__ == '__main__':
     from heppy.framework.heppy_loop import _heppyGlobalOptions
     from optparse import OptionParser
     parser = OptionParser(usage='%prog cfgFileName compFileName [--options=optFile.json]')
-    parser.add_option('--options',dest='options',default='',help='options json file')
+    parser.add_option('--options',
+                      dest='options',
+                      default='',help='options json file')
+    parser.add_option(
+        "-N", "--nevents",
+          dest="nevents",
+          type="int",
+          help="number of events to process",
+          default=None
+    )    
     (options,args) = parser.parse_args()
 
     if options.options!='':
@@ -441,7 +466,7 @@ if __name__ == '__main__':
     comp = config.components[0]
     events_class = config.events_class
 
-    looper = Looper( 'Loop', config, nPrint = 5)
+    looper = Looper( 'Loop', config, nPrint = 5, nEvents=options.nevents)
     looper.loop()
     looper.write()
 

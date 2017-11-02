@@ -15,6 +15,8 @@ from heppy.utils.versions import Versions
 
 import heppy.framework.looper as looper
 
+heppy_option_str = None
+
 def batchScriptPADOVA( index, jobDir='./'):
    '''prepare the LSF version of the batch script, to run on LSF'''
    script = """#!/bin/bash
@@ -198,10 +200,12 @@ cp -rf $LS_SUBCWD .
 ls
 cd `find . -type d | grep /`
 echo 'running'
-python {looper} config.pck
+python {looper} config.pck {heppy_option_str}
 echo
 {copy}
-""".format(looper=looper.__file__, copy=cpCmd, 
+""".format(looper=looper.__file__,
+           heppy_option_str=heppy_option_str, 
+           copy=cpCmd, 
            pythonpath=os.getcwd(), fccswpath=os.environ['FCCSWPATH'])
 
    return script
@@ -327,11 +331,11 @@ def batchScriptLocal(  remoteDir, index ):
 
    script = """#!/bin/bash
 echo 'running'
-python {looper} config.pck --options=options.json
+python {looper} config.pck --options=options.json {heppy_option_str}
 echo
 echo 'sending the job directory back'
 mv Loop/* ./
-""".format(looper=looper.__file__) 
+""".format(looper=looper.__file__, heppy_option_str=heppy_option_str) 
    return script
 
 
@@ -398,7 +402,7 @@ def create_batch_manager():
    return batchManager
 
 
-def main(options, args, batchManager): 
+def main(options, heppy_args, batchManager): 
    batchManager.cfgFileName = args[0]
 
    handle = open(batchManager.cfgFileName, 'r')
@@ -409,9 +413,7 @@ def main(options, args, batchManager):
    handle.close()
 
    versions = None
-   to_track = options.track_versions.split(',')
-   config.versions = Versions(batchManager.cfgFileName,
-                              to_track)
+   config.versions = Versions(batchManager.cfgFileName)
    batchManager.config = config
 
    batchManager.components = split( [comp for comp in config.components \
@@ -422,11 +424,33 @@ def main(options, args, batchManager):
    batchManager.PrepareJobs( listOfValues, listOfNames )
    waitingTime = 0.1
    batchManager.SubmitJobs( waitingTime )
-   
+ 
+def looper_options(batchManager, options):
+   '''select a subset of options,
+   and return the option string that can be used on the command line,
+   when calling the looper in the batch scripts.
+   '''
+   select = ['--nevents']
+   opts = []
+   for opt in batchManager.parser_.option_list:
+      optstr = opt.get_opt_string()
+      if optstr not in select:
+         continue
+      else:
+         value = getattr(options, opt.dest)
+         opts.append('{}={}'.format(optstr, value))
+   return ' '.join(opts)
 
 if __name__ == '__main__':
 
-   batchManager = create_batch_manager() 
+   batchManager = create_batch_manager()
+   batchManager.parser_.add_option(
+      "-N", "--nevents",
+      dest="nevents",
+      type="int",
+      help="number of events to process",
+      default=None
+   )
    options, args = batchManager.ParseOptions()
    from heppy.framework.heppy_loop import _heppyGlobalOptions
    for opt in options.extraOptions:
@@ -436,4 +460,5 @@ if __name__ == '__main__':
       else:
          _heppyGlobalOptions[opt] = True
    batchManager.heppyOptions_=_heppyGlobalOptions
+   heppy_option_str = looper_options(batchManager, options)
    main(options, args, batchManager)

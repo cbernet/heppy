@@ -7,6 +7,8 @@ import pprint
 import dill
 import pickle
 import shutil
+import yaml
+from heppy.bin.heppy_check import check_chunk
 
 MAX_ARG_STRLEN = 131072
 
@@ -16,10 +18,15 @@ def haddPck(file, odir, idirs):
     Each pickle file will be opened, and the corresponding objects added to a destination pickle in odir.
     '''
     objsum = None
+    basedir = os.getcwd()
+    fileName = os.path.basename(file)
     for dirpath in idirs:
-        fileName = file.replace( idirs[0], dirpath )
+        # fileName = file.replace( idirs[0], dirpath )
+        os.chdir(dirpath)
         pckfile = open(fileName)
+        sys.path.insert(0, dirpath)
         obj = pickle.load(pckfile)
+        sys.path.pop(0)
         if objsum is None:
             objsum = obj
         else:
@@ -28,10 +35,12 @@ def haddPck(file, odir, idirs):
             except TypeError:
                 # += not implemented, nevermind
                 pass
+        os.chdir(basedir)
                 
     oFileName = file.replace( idirs[0], odir )
     pckfile = open(oFileName, 'w')
-    pickle.dump(objsum, pckfile)
+    print 'output:', oFileName
+    pickle.dump(objsum, pckfile, protocol=-1)
     txtFileName = oFileName.replace('.pck','.txt')
     txtFile = open(txtFileName, 'w')
     txtFile.write( str(objsum) )
@@ -41,20 +50,23 @@ def haddPck(file, odir, idirs):
 
 def hadd(fname, odir, idirs, appx=''):
     if fname.endswith('.pck'):
-        try:
-            haddPck(fname, odir, idirs)
-        except ImportError:
-            pass
+        haddPck(fname, odir, idirs)
         return
-    elif fname.endswith('.yaml'):
+    elif fname.endswith('.yaml') or fname.endswith('.py'):
         # just copy the yaml file to the output dir
         shutil.copy(fname, odir)
+        return 
     elif not fname.endswith('.root'):
         return
     haddCmd = ['hadd']
+##    ngoodfiles = 0
     haddCmd.append( fname.replace( idirs[0], odir ).replace('.root', appx+'.root') )
     for dir in idirs:
-        haddCmd.append( fname.replace( idirs[0], dir ) )
+        prov_fname = fname.replace( idirs[0], dir )
+        assert(os.path.isfile(prov_fname))
+##        if os.path.isfile(prov_fname):
+##            ngoodfiles += 1
+        haddCmd.append( prov_fname )
     # import pdb; pdb.set_trace()
     cmd = ' '.join(haddCmd)
     print cmd
@@ -71,11 +83,23 @@ def hadd(fname, odir, idirs, appx=''):
         os.system(cmd)
     else:
         os.system(cmd)
-
-
+##    data = {
+##        'processing' : {
+##            'ngoodfiles' : ngoodfiles,
+##            'nfiles' : len(idirs)
+##        }   
+##    }   
+##    with open('processing.yaml', 'w') as outyaml:
+##        yaml.dump(data)
+        
 def haddRec(odir, idirs):
-    print 'adding', idirs
-    print 'to', odir 
+    print 
+    print 'adding' 
+    pprint.pprint(idirs)
+    print
+    print 'to' 
+    print odir 
+    print 
 
     cmd = ' '.join( ['mkdir', odir])
     if os.path.isdir(odir):
@@ -102,17 +126,20 @@ def haddRec(odir, idirs):
 
 def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
     chunks = {}
-    for file in sorted(os.listdir(idir)):
-        filepath = '/'.join( [idir, file] )
+    nchunks = {}
+    for path in sorted(os.listdir(idir)):
+        filepath = '/'.join( [idir, path] )
         if os.path.isdir(filepath):
-            compdir = file
+            compdir = path
             try:
                 prefix,num = compdir.split('_Chunk')
             except ValueError:
                 # ok, not a chunk
                 continue
-            # print prefix, num
-            chunks.setdefault( prefix, list() ).append(filepath)
+            nchunks[prefix] = nchunks.setdefault(prefix, 0) + 1
+            code = check_chunk(compdir)
+            if code == 1:
+                chunks.setdefault( prefix, list() ).append(filepath)
     if len(chunks)==0:
         print 'warning: no chunk found.'
         return
@@ -124,6 +151,14 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
             if os.path.isdir( odir ):
                 shutil.rmtree(odir)
         haddRec(odir, cchunks)
+        data = {
+            'processing' : {
+                'ngoodfiles' : len(cchunks),
+                'nfiles' : nchunks[prefix]
+            }   
+        }   
+        with open('/'.join([odir, 'processing.yaml']), 'w') as outyaml:
+            yaml.dump(data, outyaml, default_flow_style=False)        
     if cleanUp:
         chunkDir = 'Chunks'
         if os.path.isdir('Chunks'):
@@ -133,13 +168,16 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
         for comp, chunks in chunks.iteritems():
             for chunk in chunks:
                 shutil.move(chunk, chunkDir)
-        
+ 
+    
 
 if __name__ == '__main__':
 
     import os
     import sys
     from optparse import OptionParser
+    
+    sys.path.insert(0,'.')
 
     parser = OptionParser()
     parser.usage = """
@@ -167,6 +205,6 @@ if __name__ == '__main__':
         odir = args[1]
     else:
         odir = dirname
-
+        
     haddChunks(dirname, options.remove, options.clean, odir)
 

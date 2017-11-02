@@ -2,6 +2,7 @@ import modulefinder
 import git
 import yaml
 import sys
+import os
 import fnmatch
 import pprint
 
@@ -10,7 +11,7 @@ class Versions(object):
     """"""
 
     #----------------------------------------------------------------------
-    def __init__(self, scriptfname, to_track):
+    def __init__(self, scriptfname):
         """Analyze the script scriptfname to find the version of the
         packages matching the patterns in to_track
         """
@@ -20,19 +21,22 @@ class Versions(object):
         self.scriptfname = scriptfname
         finder = modulefinder.ModuleFinder(path)
         finder.run_script(scriptfname)
-        # self.finder.report()
+#        finder.report()
         self.tracked = dict()
+        processed = []
         for key, mod in finder.modules.iteritems():
-            for pattern in to_track:
-                if fnmatch.fnmatch(key, pattern):
-                    self._analyze(key, mod)
-                    break
-        
+            #if mod.__path__ and os.environ['USER'] in mod.__path__[0]:
+            self._analyze(key, mod)
+
     def _analyze(self, key, module):
         info = dict()
-        repo = git.Repo(module.__path__[0])
-        info['commitid'] = repo.head.commit.hexsha
-        self.tracked[key] = info
+        if module.__path__:
+            try:        
+                repo = git.Repo(module.__path__[0])
+                info['commitid'] = repo.head.commit.hexsha
+                self.tracked[key] = info
+            except git.InvalidGitRepositoryError:
+                pass 
 
     #----------------------------------------------------------------------
     def write_yaml(self, path):
