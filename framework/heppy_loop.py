@@ -156,10 +156,7 @@ def main( options, args, parser ):
 
     # track the versions
     versions = None
-    to_track = options.track_versions.split(',')
-    to_track.append('heppy')
-    cfg.config.versions = Versions(cfgFileName,
-                                   to_track)
+    cfg.config.versions = Versions(cfgFileName)
     if len(selComps)>options.ntasks:
         print "WARNING: too many threads {tnum}, will just use a maximum of {jnum}.".format(tnum=len(selComps),jnum=options.ntasks)
     if not createOutputDir(outDir, selComps, options.force):
