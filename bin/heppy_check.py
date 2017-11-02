@@ -7,35 +7,15 @@ import re
 import os
 import pprint
 
-from optparse import OptionParser
-
-parser = OptionParser(usage='%prog <target_directories> [options]',
-                      description='Check one or more chunck folders. Wildcard (*) can be used to specify multiple directories')
-
-parser.add_option("-b","--batch", dest="batch",
-                  default=None,
-                  help="batch command for resubmission"
-                  )
-
-(options,args) = parser.parse_args()
-
-if len(args)==0:
-    print 'provide at least one directory in argument. Use -h to display help'
-
-dirs = sys.argv[1:]
-
-badDirs = []
-
-for dir in dirs:
-    if not os.path.isdir(dir):
-        continue
-    if dir.find('_Chunk') == -1:
-        continue
-    logName  = '/'.join([dir, 'log.txt'])
+def check_chunk(dirname):
+    if not os.path.isdir(dirname):
+        return -1
+    if dirname.find('_Chunk') == -1:
+        return -1
+    logName  = '/'.join([dirname, 'log.txt'])
     if not os.path.isfile( logName ):
-        print dir, ': log.txt does not exist'
-        badDirs.append(dir)
-        continue
+        print dirname, ': log.txt does not exist'
+        return 0
     logFile = open(logName)
     nEvents = -1
     for line in logFile:
@@ -44,24 +24,48 @@ for dir in dirs:
         except:
             pass
     if nEvents == -1:
-        print dir, 'cannot find number of processed events'
-    elif nEvents == 0:
-        print dir, '0 events'
+        print dirname, 'cannot find number of processed events'
+        return 0
     else:
-        continue
-    badDirs.append(dir)
+        return 1    
 
-print 'list of bad directories:'
-pprint.pprint(badDirs)
-
-if options.batch is not None:
-    for dir in badDirs:
-        oldPwd = os.getcwd()
-        os.chdir( dir )
-        cmd =  [options.batch, '-J', dir, ' < batchScript.sh' ]
-        print 'resubmitting in', os.getcwd()
-        cmds = ' '.join( cmd )
-        print cmds
-        os.system( cmds )
-        os.chdir( oldPwd )
-        
+if __name__ == '__main__':
+    
+    from optparse import OptionParser
+    
+    parser = OptionParser(usage='%prog <target_directories> [options]',
+                          description='Check one or more chunck folders. Wildcard (*) can be used to specify multiple directories')
+    
+    parser.add_option("-b","--batch", dest="batch",
+                      default=None,
+                      help="batch command for resubmission"
+                      )
+    
+    (options,args) = parser.parse_args()
+    
+    if len(args)==0:
+        print 'provide at least one directory in argument. Use -h to display help'
+    
+    dirs = sys.argv[1:]
+    
+    badDirs = []
+    
+    for dirname in dirs:
+        code = check_chunk(dirname)
+        if code == 0:
+            badDirs.append(dirname)
+    
+    print 'list of bad directories:'
+    pprint.pprint(badDirs)
+    
+    if options.batch is not None:
+        for dirname in badDirs:
+            oldPwd = os.getcwd()
+            os.chdir( dirname )
+            cmd =  [options.batch, '-J', dirname, ' < batchScript.sh' ]
+            print 'resubmitting in', os.getcwd()
+            cmds = ' '.join( cmd )
+            print cmds
+            os.system( cmds )
+            os.chdir( oldPwd )
+            
