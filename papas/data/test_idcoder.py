@@ -1,6 +1,6 @@
 import unittest
 import itertools
-from heppy.papas.data.idcoder import IdCoder 
+from idcoder import IdCoder 
 
 class TestIdentifier(unittest.TestCase):
 

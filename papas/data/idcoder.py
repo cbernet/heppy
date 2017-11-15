@@ -7,7 +7,7 @@ from heppy.utils.pdebug import pdebugger
 class IdCoder(long):
     '''The Idcoder creates/manages an identifier (a uniqueid) that contains encoded information about an element
     
-    Given an uniqueid, we can determine whether the element is for example an ecal_cluster
+    Given an identifier made via IdCoder, we can determine whether the element is for example an ecal_cluster
     and then retrieve the cluster from a cluster dict.
 
     The Idcoder class consists of a set of static methods that can be used
