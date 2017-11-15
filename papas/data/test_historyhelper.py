@@ -1,7 +1,7 @@
 import unittest
 import itertools
 import copy
-from identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from papasevent import PapasEvent 
 from historyhelper import HistoryHelper
 from heppy.papas.graphtools.DAG import Node
@@ -17,15 +17,15 @@ class TestHistoryHelper(unittest.TestCase):
         mixed = dict()
         
         for i in range(0, 2):
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, i, 't', 4.5)
+            uid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.ECALCLUSTER, i, 't', 4.5)
             ecals[uid] = uid
             papasevent.history[uid] = Node(uid)
-            uidt = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, i, 's', 4.5)
+            uidt = IdCoder.make_id(IdCoder.PFOBJECTTYPE.TRACK, i, 's', 4.5)
             tracks[uidt] = uidt  
             papasevent.history[uidt] = Node(uidt)
             papasevent.history[uidt].add_child(papasevent.history[uid])
 
-        lastid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 3, 't', 3)
+        lastid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.ECALCLUSTER, 3, 't', 3)
         ecals[lastid] = lastid   
         papasevent.history[lastid] = Node(lastid)
         papasevent.add_collection(ecals)

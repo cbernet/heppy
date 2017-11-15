@@ -1,6 +1,6 @@
 from DAG import Node, DAGFloodFill
 from heppy.utils.pdebug import pdebugger
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 import collections
 
 class SubgraphBuilder(object):

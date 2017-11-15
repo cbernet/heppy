@@ -2,7 +2,7 @@ from heppy.particles.particle import Particle as BaseParticle
 from rootobj import RootObj
 from ROOT import TVector3
 from vertex import Vertex 
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 import math
 

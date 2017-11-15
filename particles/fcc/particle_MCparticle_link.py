@@ -1,6 +1,6 @@
 from heppy.particles.object_link import ObjectLink as BaseLink
 from pod import POD
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 from ROOT import TLorentzVector
 from ROOT import TVector3

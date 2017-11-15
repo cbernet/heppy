@@ -3,7 +3,7 @@ from vertex import Vertex
 from pod import POD
 from ROOT import TLorentzVector
 from heppy.utils.pdebug import pdebugger
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 import copy
 
@@ -47,6 +47,6 @@ class Particle(BaseParticle, POD):
 
     def  dagid_str(self):
         if self.dagid() != None:
-            return Identifier.id_str(self.dagid() )
+            return IdCoder.id_str(self.dagid() )
         return ""
 

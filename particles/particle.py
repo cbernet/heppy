@@ -1,7 +1,7 @@
 import copy
 
 from p4 import P4
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 class Particle(P4):
     '''Interface for particles. 
