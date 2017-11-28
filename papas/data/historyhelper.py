@@ -1,6 +1,6 @@
 '''Papas history helper'''
 from heppy.papas.graphtools.DAG import BreadthFirstSearchIterative, DAGFloodFill
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 class HistoryHelper(object):
     '''Tool to assist with printing, plotting and reconstructing histories.
@@ -61,7 +61,7 @@ class HistoryHelper(object):
             @param type_and_subtype: a two letter type and subtype eg 'es' for smeared ecal
         '''
         return [uid for uid in ids
-                if Identifier.type_and_subtype(uid) == type_and_subtype]
+                if IdCoder.type_and_subtype(uid) == type_and_subtype]
     
     def id_from_pretty(self, pretty):
         ''' Searches to find the true id given a pretty id string
@@ -70,7 +70,7 @@ class HistoryHelper(object):
             @param: pretty is the easily readable name from the Identifier class which is shown in prints and plots eg 'et103'
         '''
         for uid in self.history.keys():
-            if Identifier.pretty(uid) == pretty:
+            if IdCoder.pretty(uid) == pretty:
                 return uid
         return None
         

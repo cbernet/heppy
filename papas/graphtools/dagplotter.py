@@ -1,7 +1,7 @@
 
 '''Produces plots of Papas Directed Acyclic Graphs'''
 import pydot
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from heppy.papas.data.historyhelper import HistoryHelper
 
 class DagPlotter(object):
@@ -86,31 +86,31 @@ class DagPlotter(object):
                 label = "{:.1E}".format(edge.distance)
                 if edge.distance == 0:
                     label = "0"
-                graph.add_edge(pydot.Edge(graphnodes[Identifier.pretty(edge.id1)],
-                                          graphnodes[Identifier.pretty(edge.id2)],
+                graph.add_edge(pydot.Edge(graphnodes[IdCoder.pretty(edge.id1)],
+                                          graphnodes[IdCoder.pretty(edge.id2)],
                                           label=label, style="dashed", color="red", arrowhead="none", arrowtail="none", fontsize='7'))
     
     def pretty(self, node):
         ''' pretty form of the unique identifier
         @param node: a node in the DAG history'''
-        return Identifier.pretty(node.get_value())
+        return IdCoder.pretty(node.get_value())
     
     def type_and_subtype(self, node):
         ''' Return two letter type and subtype code for a node For example 'pg', 'ht' etc
         @param node: a node in the DAG history'''
-        return Identifier.type_and_subtype(node.get_value()) 
+        return IdCoder.type_and_subtype(node.get_value()) 
 
     def short_info(self, node):
         '''used to label plotted dag nodes
         @param node: a node in the DAG history'''
         obj = self.object(node)
-        return Identifier.pretty(obj.uniqueid) + "\n " +obj.short_info()        
+        return IdCoder.pretty(obj.uniqueid) + "\n " +obj.short_info()        
 
     def color(self, node):
         '''used to color dag nodes
         @param node: a node in the DAG history'''
         cols = ["red", "lightblue", "green", "yellow", "cyan", "grey", "white", "pink"]
-        return cols[Identifier.get_type(node.get_value())]                     
+        return cols[IdCoder.get_type(node.get_value())]                     
 
     def object(self, node):
         '''returns object corresponding to a node

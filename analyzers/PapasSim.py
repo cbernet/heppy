@@ -3,7 +3,7 @@ from heppy.papas.pfobjects import Particle
 from heppy.papas.papas_exceptions import PropagationError, SimulationError
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.simulator import Simulator
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from heppy.papas.graphtools.DAG import Node
 from heppy.papas.pfalgo.distance import Distance
 from heppy.papas.mergedclusterbuilder import MergedClusterBuilder
@@ -54,7 +54,7 @@ class PapasSim(Analyzer):
         gen_particles = getattr(event, self.cfg_ana.gen_particles)
         gen_particles_collection = {} #make a dict from the gen_particles list so that it can be stored into the papasevent collections  
         for g in gen_particles:
-            g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
+            g.set_dagid(IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
             gen_particles_collection[g.dagid()] = g
         def simparticle(ptc, index):
             '''Create a sim particle to be used in papas from an input particle.
@@ -64,7 +64,7 @@ class PapasSim(Analyzer):
             charge = ptc.q()
             pid = ptc.pdgid()
             simptc = Particle(tp4, vertex, charge, pid)
-            simptc.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, index, 's', simptc.idvalue))
+            simptc.set_dagid(IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, index, 's', simptc.idvalue))
             pdebugger.info(" ".join(("Made", simptc.__str__())))
             #simptc.gen_ptc = ptc
             #record that sim particle derives from gen particle

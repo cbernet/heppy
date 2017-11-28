@@ -1,6 +1,6 @@
 import unittest
 from heppy.papas.graphtools.DAG import Node, BreadthFirstSearchIterative,DAGFloodFill
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.pfalgo.pfblockbuilder import PFBlockBuilder
 from heppy.papas.pfalgo.pfblock import PFBlock as realPFBlock
@@ -16,9 +16,9 @@ class Cluster(object):
               layer is ecal/hcal
         '''
         if (layer == 'ecal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, uid, 't')
+            self.uniqueid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.ECALCLUSTER, uid, 't')
         elif (layer == 'hcal_in'):
-            self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.HCALCLUSTER, uid,  't')
+            self.uniqueid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.HCALCLUSTER, uid,  't')
         else:
             assert false
         self.layer = layer
@@ -35,7 +35,7 @@ class Track(object):
     def __init__(self, uid):
         ''' uid is unique integer from 1-99
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  uid, 't')
+        self.uniqueid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.TRACK,  uid, 't')
         self.uid = uid
         self.layer = 'tracker'
         self.energy=0
@@ -51,7 +51,7 @@ class Particle(object):
         ''' uid is unique integer from 301-399
             pdgid is particle uid eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, uid, 'g')
+        self.uniqueid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, uid, 'g')
         #print "particle: ",self.uniqueid," ",uid
         self.pdgid = pdgid
         self.uid = uid
@@ -68,7 +68,7 @@ class ReconstructedParticle(Particle):
         ''' uid is unique integer from 601-699
             pdgid is particle uid eg 22 for photon
         '''
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE,  uid,'r')
+        self.uniqueid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE,  uid,'r')
         self.pdgid = pdgid
         self.uid = uid
         
@@ -98,20 +98,20 @@ class Event(object):
     def get_object(self, uniqueid):
         ''' given a uniqueid return the underlying obejct
         '''
-        type = Identifier.get_type(uniqueid)
-        subtype = Identifier.get_subtype(uniqueid)
-        if type == Identifier.PFOBJECTTYPE.TRACK:
+        type = IdCoder.get_type(uniqueid)
+        subtype = IdCoder.get_subtype(uniqueid)
+        if type == IdCoder.PFOBJECTTYPE.TRACK:
             return self.tracks[uniqueid]       
-        elif type == Identifier.PFOBJECTTYPE.ECALCLUSTER:      
+        elif type == IdCoder.PFOBJECTTYPE.ECALCLUSTER:      
             return self.ecal_clusters[uniqueid] 
-        elif type == Identifier.PFOBJECTTYPE.HCALCLUSTER:            
+        elif type == IdCoder.PFOBJECTTYPE.HCALCLUSTER:            
             return self.hcal_clusters[uniqueid]            
-        elif type == Identifier.PFOBJECTTYPE.PARTICLE:
+        elif type == IdCoder.PFOBJECTTYPE.PARTICLE:
             if subtype == 'g':
                 return self.sim_particles[uniqueid]       
             elif subtype == 'r':
                 return self.reconstructed_particles[uniqueid]
-        elif type == Identifier.PFOBJECTTYPE.BLOCK:
+        elif type == IdCoder.PFOBJECTTYPE.BLOCK:
             return self.blocks[uniqueid]
         else:
             assert(False)   
@@ -227,7 +227,7 @@ class Reconstructor(object):
         #take a block and find its parents (clusters and tracks)
         parents = block.element_uniqueids
         
-        if  (len(parents) == 1) & (Identifier.is_ecal(parents[0])):
+        if  (len(parents) == 1) & (IdCoder.is_ecal(parents[0])):
             #print "make photon"
             self.make_photon(parents)
             
@@ -241,7 +241,7 @@ class Reconstructor(object):
                 hparents = [] # will contain parents for the Hadron which gets everything except the 
                               #hcal which is used for the photom
                 for elem in parents:
-                    if (Identifier.is_hcal(elem)):
+                    if (IdCoder.is_hcal(elem)):
                         self.make_photon({elem})
                     else :
                         hparents.append(elem)    
@@ -317,7 +317,7 @@ class TestBlockReconstruction(unittest.TestCase):
     
         
     def test_1(self):
-        Identifier.reset()
+        IdCoder.reset()
         event  =  Event(distance)
         sim  =  Simulator(event)
         event=sim.event
@@ -363,7 +363,7 @@ class TestBlockReconstruction(unittest.TestCase):
         #1b WHAT BLOCK Does it belong to   
         x = None
         for uid in ids:
-            if Identifier.is_block(uid) and event.blocks[uid].short_info()== "E1H1T1":
+            if IdCoder.is_block(uid) and event.blocks[uid].short_info()== "E1H1T1":
                 x =  event.blocks[uid]     
                 
         #1c #check that the block contains the expected list of suspects    

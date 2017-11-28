@@ -2,7 +2,7 @@ import unittest
 import itertools
 import copy
 
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from papasevent import PapasEvent 
 
 class TestPapasEvent(unittest.TestCase):
@@ -13,13 +13,13 @@ class TestPapasEvent(unittest.TestCase):
         mixed = dict()
 
         for i in range(0, 2):
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, i,'t', 4.5)
+            uid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.ECALCLUSTER, i,'t', 4.5)
             ecals[uid] = uid
         for i in range(0, 2):
-            uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK, i, 's', 4.5)
+            uid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.TRACK, i, 's', 4.5)
             tracks[uid] = uid            
         
-        lastid = Identifier.make_id(Identifier.PFOBJECTTYPE.ECALCLUSTER, 3, 't', 3)
+        lastid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.ECALCLUSTER, 3, 't', 3)
         ecals[lastid] = lastid    
         
         papasevent.add_collection(ecals)
@@ -38,7 +38,7 @@ class TestPapasEvent(unittest.TestCase):
         self.assertTrue( len(papasevent.get_collection('et'))  == 3 )
         
         #check get_object
-        self.assertTrue( Identifier.pretty(papasevent.get_object(lastid))  == 'et3' )
+        self.assertTrue( IdCoder.pretty(papasevent.get_object(lastid))  == 'et3' )
         self.assertTrue( papasevent.get_object(499)  is None )       
 
 if __name__ == '__main__':

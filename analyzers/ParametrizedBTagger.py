@@ -3,7 +3,7 @@ from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.historyhelper import HistoryHelper
 from heppy.analyzers.ChargedHadronsFromB import is_ptc_from_b
 from heppy.particles.genbrowser import GenBrowser
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 def is_matched_to_b(jet):
     '''returns true if jet.match is a b quark.

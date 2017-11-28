@@ -1,16 +1,16 @@
 
-'''Unique Identifer'''
+'''IdCoder for creating Unique Identifers'''
 import struct
 from itertools import count
 from heppy.utils.pdebug import pdebugger
 
-class Identifier(long):
-    '''The Identifier is a uniqueid that contains encoded information about an element
+class IdCoder(long):
+    '''The Idcoder creates/manages an identifier (a uniqueid) that contains encoded information about an element
     
-    Given an identifier, we can determine whether the element is for example an ecal_cluster
+    Given an identifier made via IdCoder, we can determine whether the element is for example an ecal_cluster
     and then retrieve the cluster from a cluster dict.
 
-    The Identifier class consists of a set of static methods that can be used
+    The Idcoder class consists of a set of static methods that can be used
     to create and to dissect identifiers.
 
     The identifier is 64 bits wide and stores info as follows
@@ -46,15 +46,15 @@ class Identifier(long):
         assert(value >= 0) #actually I would like it to work with negative numbers but need to change float to bit conversions
         #shift all the parts and join together	
         typeshift = type << 61
-        valueshift = Identifier._float_to_bits(value) << 21
+        valueshift = IdCoder._float_to_bits(value) << 21
         subtypeshift = ord(subtype.lower()) << 53
         uid = subtypeshift | valueshift | typeshift | index
         #verify		
-        assert (Identifier.get_index(uid) == index )
+        assert (IdCoder.get_index(uid) == index )
         if value != 0:
-            assert(abs(Identifier.get_value(uid) - value) < abs(value) * 10 ** -6)
-        assert (Identifier.get_type(uid) == type)
-        assert (Identifier.get_subtype(uid) == subtype)
+            assert(abs(IdCoder.get_value(uid) - value) < abs(value) * 10 ** -6)
+        assert (IdCoder.get_type(uid) == type)
+        assert (IdCoder.get_subtype(uid) == subtype)
         if index >= 2**(21 -1):
             raise ValueError('identifer index has exceeded maximum value allowed')
         return uid
@@ -70,14 +70,14 @@ class Identifier(long):
         '''The unique id combines the index, type and subtype to form a shorter unique identifier (without the value)
         Its not strictly needed for Python at the moment '''
         bitshift = 21  +  61 - 53
-        typeshift = Identifier.get_type(ident) << 29
-        subtypeshift = ord(Identifier.get_subtype(ident)) << 21
-        uniqueid = subtypeshift |  typeshift | Identifier.get_index(ident) 
+        typeshift = IdCoder.get_type(ident) << 29
+        subtypeshift = ord(IdCoder.get_subtype(ident)) << 21
+        uniqueid = subtypeshift |  typeshift | IdCoder.get_index(ident) 
         #verify		
-        assert (uniqueid >> bitshift & 0b111 == Identifier.get_type(ident) )
-        assert (uniqueid >> 61 -53  & 0b11111111 == Identifier.get_subtype(ident) )
-        assert (uniqueid >> 61 -53  & 0b11111111 == Identifier.get_subtype(ident) )
-        assert ( (ident >> 0b111111111111111111111) == Identifier.get_index(ident))
+        assert (uniqueid >> bitshift & 0b111 == IdCoder.get_type(ident) )
+        assert (uniqueid >> 61 -53  & 0b11111111 == IdCoder.get_subtype(ident) )
+        assert (uniqueid >> 61 -53  & 0b11111111 == IdCoder.get_subtype(ident) )
+        assert ( (ident >> 0b111111111111111111111) == IdCoder.get_index(ident))
         return uniqueid
     
     @staticmethod  
@@ -108,59 +108,59 @@ class Identifier(long):
         '''returns the float value encoded in the identifier 
         @param ident: unique identifier'''         
         bitvalue = ident >> 21 & 0b11111111111111111111111111111111
-        return Identifier._bits_to_float(bitvalue)
+        return IdCoder._bits_to_float(bitvalue)
 
     @staticmethod  
     def is_ecal ( ident):
         '''boolean test of whether it is an ecal
         @param ident: unique identifier'''         
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.ECALCLUSTER  
+        return IdCoder.get_type(ident)  == IdCoder.PFOBJECTTYPE.ECALCLUSTER  
 
     @staticmethod  
     def is_hcal ( ident):
         '''boolean test of whether it is an hcal
         @param ident: unique identifier'''   
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.HCALCLUSTER  
+        return IdCoder.get_type(ident)  == IdCoder.PFOBJECTTYPE.HCALCLUSTER  
 
     @staticmethod  
     def is_track ( ident):
         '''boolean test of whether it is a track
         @param ident: unique identifier'''   
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.TRACK 
+        return IdCoder.get_type(ident)  == IdCoder.PFOBJECTTYPE.TRACK 
 
     @staticmethod  
   
     def is_block ( ident):
         '''boolean test of whether it is a block
         @param ident: unique identifier'''         
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.BLOCK     
+        return IdCoder.get_type(ident)  == IdCoder.PFOBJECTTYPE.BLOCK     
 
     @staticmethod  
     def is_particle ( ident):
         '''boolean test of whether it is an ecal
         @param ident: unique identifier'''   
-        return Identifier.get_type(ident)  == Identifier.PFOBJECTTYPE.PARTICLE 
+        return IdCoder.get_type(ident)  == IdCoder.PFOBJECTTYPE.PARTICLE 
 
     @staticmethod
     def type_letter(ident): #character/letter for this type
         '''returns a single letter representation of the PFOBJECTTYPE type eg 'p' for particle
         @param ident: unique identifier'''     
         typelist=".ehtpb..." #the enum value (0 to 8) will index into this and return E is it is ECAL etc
-        return typelist[Identifier.get_type(ident)]    
+        return typelist[IdCoder.get_type(ident)]    
 
     @staticmethod
     def type_and_subtype(ident):
         '''returns a two  letter representation of the type/ subtype eg 'pr' for reconstructed particle
         @param ident: unique identifier
         '''        
-        return  Identifier.type_letter(ident) + Identifier.get_subtype(ident) 
+        return  IdCoder.type_letter(ident) + IdCoder.get_subtype(ident) 
 
     @staticmethod
     def pretty(ident):
         '''returns a pretty string representation of the identifier with the two letter typ_and_subtype and the uniqueid
            @param ident: unique identifier
         '''          
-        return  Identifier.type_and_subtype(ident) + str(Identifier.get_index(ident))
+        return  IdCoder.type_and_subtype(ident) + str(IdCoder.get_index(ident))
 
     @staticmethod
     def _float_to_bits (floatvalue):  #standard float packing
@@ -188,20 +188,20 @@ class Identifier(long):
     def id_str(ident):
         ''' string formatted for outputs'''
         return '{pretty:6}:{uid}:'.format(
-            pretty=Identifier.pretty(ident),
+            pretty=IdCoder.pretty(ident),
             uid=ident)
 
 if __name__ == '__main__':
 
-    uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  1, 's', 1.23456)
-    id1 = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  2, 's', 12.782) 
+    uid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.TRACK,  1, 's', 1.23456)
+    id1 = IdCoder.make_id(IdCoder.PFOBJECTTYPE.TRACK,  2, 's', 12.782) 
    
-    assert (Identifier.pretty(id1) == 'ts2')
+    assert (IdCoder.pretty(id1) == 'ts2')
     ids = []
     for i in range(0,100):
-        uid = Identifier.make_id(Identifier.PFOBJECTTYPE.TRACK,  i, 's', 2**(-i) )
+        uid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.TRACK,  i, 's', 2**(-i) )
         ids.append(uid)
     ids = sorted(ids, reverse = True)
     for uid in ids:
-        print Identifier.pretty(uid) + ": " + str(Identifier.get_value(uid))
+        print IdCoder.pretty(uid) + ": " + str(IdCoder.get_value(uid))
     pass

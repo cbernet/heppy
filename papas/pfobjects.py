@@ -1,7 +1,7 @@
 import math
 from heppy.particles.tlv.particle import Particle as BaseParticle
 from heppy.utils.deltar import deltaR
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from heppy.configuration import Collider
 from ROOT import TVector3
 
@@ -30,7 +30,7 @@ class PFObject(object):
         self.linked = []
         self.locked = False
         self.block_label = None
-        self.uniqueid=Identifier.make_id(pfobjecttype, index, subtype, identifiervalue)
+        self.uniqueid=IdCoder.make_id(pfobjecttype, index, subtype, identifiervalue)
 
     def accept(self, visitor):
         '''Called by visitors, such as FloodFill. See pfalgo.floodfill'''
@@ -48,7 +48,7 @@ class PFObject(object):
     def __str__(self):
         return '{classname}: {pretty:6}:{uid}: {info}'.format(
             classname=self.__class__.__name__,
-            pretty=Identifier.pretty(self.uniqueid),
+            pretty=IdCoder.pretty(self.uniqueid),
             uid=self.uniqueid,
             info=self.info())
 
@@ -73,9 +73,9 @@ class Cluster(PFObject):
         if identifiervalue== None:
             identifiervalue = max(energy, 0.)
         if layer == 'ecal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.ECALCLUSTER, index, self.subtype, identifiervalue)
+            super(Cluster, self).__init__(IdCoder.PFOBJECTTYPE.ECALCLUSTER, index, self.subtype, identifiervalue)
         elif layer == 'hcal_in':
-            super(Cluster, self).__init__(Identifier.PFOBJECTTYPE.HCALCLUSTER, index, self.subtype, identifiervalue)
+            super(Cluster, self).__init__(IdCoder.PFOBJECTTYPE.HCALCLUSTER, index, self.subtype, identifiervalue)
         else :
             assert (False)
         self.position = position
@@ -186,7 +186,7 @@ class Cluster(PFObject):
     def info(self):
         subclusterstr = str('sub(')
         for s in self.subclusters:
-            subclusterstr += str('{:}, '.format(Identifier.pretty(s.uniqueid)))
+            subclusterstr += str('{:}, '.format(IdCoder.pretty(s.uniqueid)))
         subclusterstr += ")"
         return '{energy:7.2f} {theta:5.2f} {phi:5.2f} {sub}'.format(
             energy=self.energy,
@@ -252,7 +252,7 @@ class Track(PFObject):
     def __init__(self, p3, charge, path, index=0, particle=None, subtype='t'):
         if not hasattr(self, 'subtype'):
             self.subtype = subtype        
-        super(Track, self).__init__(Identifier.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
+        super(Track, self).__init__(IdCoder.PFOBJECTTYPE.TRACK, index, self.subtype, p3.Mag())
 
         self._p3 = p3
         self.charge = charge
@@ -344,7 +344,7 @@ class Particle(BaseParticle):
 
     def  dagid_str(self):
         if self.dagid() != None:
-            return Identifier.id_str(self.dagid())
+            return IdCoder.id_str(self.dagid())
         return ""
 
 
