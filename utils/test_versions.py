@@ -14,7 +14,7 @@ class TestVersion(unittest.TestCase):
     #----------------------------------------------------------------------
     def setUp(self):
         """"""
-        self.versions = Versions(scriptfname, ['heppy', 'fcc_ee_higgs'])
+        self.versions = Versions(scriptfname)
         print self.versions
 
     #----------------------------------------------------------------------

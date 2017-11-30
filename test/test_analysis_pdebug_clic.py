@@ -32,7 +32,12 @@ if context.name == 'fcc':
             logging.disable(logging.NOTSET)
 
         
-
+        # NB If this test fails and If you expected the physics results to change 
+        # then it means that the cpp version of papas will need to be updated.
+        # Please
+        # (1) take the physics_clic.txt file that is produced by this test and rename it to update
+        # the required_clic_physics_dd.txt file in heppy/test/data
+        # (2) notify alice to change papas cpp
         def test_z_clic(self):
             '''Check Z mass in ee->Z->ddbar (CLIC).
             Will fail if physics algorithms are modified,

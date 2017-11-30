@@ -413,9 +413,7 @@ def main(options, heppy_args, batchManager):
    handle.close()
 
    versions = None
-   to_track = options.track_versions.split(',')
-   config.versions = Versions(batchManager.cfgFileName,
-                              to_track)
+   config.versions = Versions(batchManager.cfgFileName)
    batchManager.config = config
 
    batchManager.components = split( [comp for comp in config.components \
