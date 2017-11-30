@@ -442,14 +442,14 @@ def looper_options(batchManager, options):
    return ' '.join(opts)
 
 if __name__ == '__main__':
-
+   import sys
    batchManager = create_batch_manager()
    batchManager.parser_.add_option(
       "-N", "--nevents",
       dest="nevents",
       type="int",
       help="number of events to process",
-      default=None
+      default=sys.maxint
    )
    options, args = batchManager.ParseOptions()
    from heppy.framework.heppy_loop import _heppyGlobalOptions
