@@ -1,6 +1,6 @@
 import itertools
 from heppy.papas.graphtools.edge import Edge
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 class PFBlock(object):
 
@@ -37,7 +37,7 @@ class PFBlock(object):
            
         '''
         #make a uniqueid for this block
-        self.uniqueid = Identifier.make_id(Identifier.PFOBJECTTYPE.BLOCK, index, subtype, len(element_ids))
+        self.uniqueid = IdCoder.make_id(IdCoder.PFOBJECTTYPE.BLOCK, index, subtype, len(element_ids))
         #this will sort by type eg ecal, hcal, track and then by energy (biggest first)
         self.element_uniqueids = sorted(element_ids, reverse=True)
         #sequential numbering of blocks, not essential but helpful for debugging
@@ -54,21 +54,21 @@ class PFBlock(object):
         ''' Counts how many ecal cluster ids are in the block '''
         count = 0
         for elem in self.element_uniqueids:
-            count += Identifier.is_ecal(elem)
+            count += IdCoder.is_ecal(elem)
         return count
 
     def count_tracks(self):
         ''' Counts how many track ids are in the block '''
         count = 0
         for elem in self.element_uniqueids:
-            count += Identifier.is_track(elem)
+            count += IdCoder.is_track(elem)
         return count
 
     def count_hcal(self):
         ''' Counts how many hcal cluster ids are in the block '''
         count = 0
         for elem in self.element_uniqueids:
-            count += Identifier.is_hcal(elem)
+            count += IdCoder.is_hcal(elem)
         return count
 
     def linked_edges(self, uniqueid, edgetype=None) :
@@ -125,10 +125,10 @@ class PFBlock(object):
         elemdetails = "    elements:\n"
         for uid in self.element_uniqueids:
             elemdetails += "{shortname:>7}{count} = {strdescrip:9} value={val:5.1f} ({uid})\n".format(
-                shortname=Identifier.type_letter(uid),
+                shortname=IdCoder.type_letter(uid),
                 count=count,
-                strdescrip=Identifier.pretty(uid),
-                val=Identifier.get_value(uid),
+                strdescrip=IdCoder.pretty(uid),
+                val=IdCoder.get_value(uid),
                 uid=uid)
             count = count + 1
         return elemdetails
@@ -168,7 +168,7 @@ class PFBlock(object):
             matrixstr = "    distances:\n        "
             for e1 in self.element_uniqueids :
                 # will produce short id of form E2 H3, T4 etc in tidy format
-                elemstr = Identifier.type_letter(e1) + str(count)
+                elemstr = IdCoder.type_letter(e1) + str(count)
                 matrixstr += "{:>8}".format(elemstr)
                 count += 1
             matrixstr += "\n"
@@ -179,7 +179,7 @@ class PFBlock(object):
                 countcol = 0
                 rowstr = ""
                 #make short name for the row element eg E3, H5 etc
-                rowname = Identifier.type_letter(e1) +str(countrow)
+                rowname = IdCoder.type_letter(e1) +str(countrow)
                 for e2 in self.element_uniqueids:  # these will be the columns
                     countcol += 1
                     if e1 == e2:
@@ -229,7 +229,7 @@ class PFBlock(object):
         description = "block:"
         description += str('{shortname:8} :{prettyid:6}: ecals = {count_ecal} hcals = {count_hcal} tracks = {count_tracks}'.format(
             shortname=self.short_info(),
-            prettyid=Identifier.pretty(self.uniqueid),
+            prettyid=IdCoder.pretty(self.uniqueid),
             count_ecal=self.count_ecal(),
             count_hcal=self.count_hcal(),
             count_tracks=self.count_tracks())

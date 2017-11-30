@@ -1,4 +1,4 @@
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 class Edge(object): 
     '''An Edge stores end node ids, distance between the nodes, and whether they are linked
        
@@ -36,8 +36,8 @@ class Edge(object):
             eg for one track and one ecal the type will always be "ecal_track" (and never be a "track_ecal")         
         '''
         #consider creating an ENUM instead for the edge_type
-        shortid1=Identifier.type_letter(self.id1);
-        shortid2=Identifier.type_letter(self.id2);
+        shortid1=IdCoder.type_letter(self.id1);
+        shortid2=IdCoder.type_letter(self.id2);
         if shortid1 == shortid2:
             if shortid1 == "h":
                 return "hcal_hcal"

@@ -1,6 +1,6 @@
 import math
 import copy
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from heppy.papas.data.historyhelper import HistoryHelper
 from heppy.papas.graphtools.edge import Edge
 from heppy.papas.graphtools.DAG import Node
@@ -118,7 +118,7 @@ class PFReconstructor(object):
         newedges = copy.deepcopy(block.edges)
         if len(ids) > 1 :   
             for uid in ids :
-                if Identifier.is_track(uid):
+                if IdCoder.is_track(uid):
                     # for tracks unlink all hcals except the closest hcal
                     linked_ids = block.linked_ids(uid, "hcal_track") # NB already sorted from small to large distance
                     if linked_ids != None and len(linked_ids) > 1:
@@ -149,22 +149,22 @@ class PFReconstructor(object):
         if len(uids) == 1: #TODO WARNING!!! LOTS OF MISSING CASES
             uid = uids[0]
             parent_ids = [block.uniqueid, uid]
-            if Identifier.is_ecal(uid):
+            if IdCoder.is_ecal(uid):
                 self.reconstruct_cluster(self.papasevent.get_object(uid),
                                          "ecal_in", parent_ids)
-            elif Identifier.is_hcal(uid):
+            elif IdCoder.is_hcal(uid):
                 self.reconstruct_cluster(self.papasevent.get_object(uid),
                                          "hcal_in", parent_ids)
-            elif Identifier.is_track(uid):
+            elif IdCoder.is_track(uid):
                 self.reconstruct_track(self.papasevent.get_object(uid), 211,
                                        parent_ids)
                 
         else: #TODO
             for uid in uids: #already sorted to have higher energy things first (see pfblock)
-                if Identifier.is_hcal(uid):
+                if IdCoder.is_hcal(uid):
                     self.reconstruct_hcal(block, uid)
             for uid in uids: #already sorted to have higher energy things first
-                if Identifier.is_track(uid) and not self.locked[uid]:
+                if IdCoder.is_track(uid) and not self.locked[uid]:
                 # unused tracks, so not linked to HCAL
                 # reconstructing charged hadrons.
                 # ELECTRONS TO BE DEALT WITH.
@@ -195,7 +195,7 @@ class PFReconstructor(object):
         '''Reconstruct muons in block.'''
         uids = block.element_uniqueids
         for uid in uids:
-            if Identifier.is_track(uid) and \
+            if IdCoder.is_track(uid) and \
                self.is_from_particle(uid, 'ps', 13):
                 parent_ids = [block.uniqueid, uid]
                 self.reconstruct_track(self.papasevent.get_object(uid),
@@ -206,7 +206,7 @@ class PFReconstructor(object):
         '''Reconstruct electrons in block.'''
         uids = block.element_uniqueids
         for uid in uids:
-            if Identifier.is_track(uid) and \
+            if IdCoder.is_track(uid) and \
                self.is_from_particle(uid, 'ps', 11):
                 parent_ids = [block.uniqueid, uid]
                 track = self.papasevent.get_object(uid)
@@ -389,7 +389,7 @@ class PFReconstructor(object):
         p3 = cluster.position.Unit() * momentum
         p4 = TLorentzVector(p3.Px(), p3.Py(), p3.Pz(), energy) #mass is not accurate here
         particle = Particle(p4, vertex, charge, pdg_id)
-        particle.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, len(self.particles), 'r', particle.idvalue))
+        particle.set_dagid(IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, len(self.particles), 'r', particle.idvalue))
         
         # alice: this may be a bit strange because we can make a photon 
         # with a path where the point is actually that of the hcal?
@@ -415,7 +415,7 @@ class PFReconstructor(object):
         p4 = TLorentzVector()
         p4.SetVectM(track.p3() , mass)
         particle = Particle(p4, vertex, charge, pdgid)
-        particle.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, len(self.particles), 'r', particle.idvalue))
+        particle.set_dagid(IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, len(self.particles), 'r', particle.idvalue))
         
         #todo fix this so it picks up smeared track points (need to propagagte smeared track)
         particle.set_track(track) #refer to existing track rather than make a new one

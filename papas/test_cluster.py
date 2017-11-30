@@ -44,7 +44,7 @@ class TestCluster(unittest.TestCase):
                         100, -5, 5, 100, 0, 15)
         h_ptvseta = TH2F('h_ptvseta','cluster pt vs eta',
                          100, -5, 5, 100, 0, 15)
-        nclust = 1000
+        nclust = 1000 
         # making 1000 deposits between 0 and 10 GeV
         energies = np.random.uniform(0., 10., nclust)
         # theta between 0 and pi

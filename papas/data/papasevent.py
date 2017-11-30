@@ -1,4 +1,4 @@
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 from heppy.framework.event import Event
 
 
@@ -42,7 +42,7 @@ class PapasEvent(Event):
     
     def __init__(self, iEv):
         super(PapasEvent, self).__init__(iEv)
-        Identifier.reset()
+        IdCoder.reset()
         self.collections = dict()
         self.history = dict()    
         
@@ -53,7 +53,7 @@ class PapasEvent(Event):
         #find all the type_and_subtypes in the incoming collection
         if len(collection) == 0:
             return
-        types = set(map(Identifier.type_and_subtype, collection.keys()))
+        types = set(map(IdCoder.type_and_subtype, collection.keys()))
         if len(types) > 1:
             raise ValueError('More than one type')
         the_type = types.pop()
@@ -70,7 +70,7 @@ class PapasEvent(Event):
         #would it be better to let it fail when asking for something that does not exist like this:
         #    return self.get_collections(Identifier.type_and_subtype(uid))[uid]
         #
-        collection = self.get_collection(Identifier.type_and_subtype(uid))
+        collection = self.get_collection(IdCoder.type_and_subtype(uid))
         if collection:
             return collection.get(uid, None)
         return None

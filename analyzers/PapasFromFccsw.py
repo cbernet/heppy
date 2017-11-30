@@ -1,7 +1,7 @@
 from heppy.framework.analyzer import Analyzer
 from heppy.papas.data.papasevent import PapasEvent
 from heppy.papas.graphtools.DAG import Node
-from heppy.papas.data.identifier import Identifier
+from heppy.papas.data.idcoder import IdCoder
 
 class PapasFromFccsw(Analyzer):
     '''Sets up a papas event containing gen and rec particles from a ROOT file (eg using FCCSW papas run output)
@@ -41,7 +41,7 @@ class PapasFromFccsw(Analyzer):
         gen_particles_collection = {}
         for g in gen_particles:
             #set the papas identifiers for use in DAG
-            g.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
+            g.set_dagid(IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, g.objid()[0], 'g', g.p4().E()))
             gen_particles_collection[g.dagid()] = g
 
         #make a dict from the rec_particles list so that it can be stored into the papasevent collections
@@ -54,7 +54,7 @@ class PapasFromFccsw(Analyzer):
         rec_particles_collection = {}
         for r in rec_particles:
             #set the papas identifiers for use in DAG
-            r.set_dagid(Identifier.make_id(Identifier.PFOBJECTTYPE.PARTICLE, r.objid()[0], 'r', r.p4().E()))
+            r.set_dagid(IdCoder.make_id(IdCoder.PFOBJECTTYPE.PARTICLE, r.objid()[0], 'r', r.p4().E()))
             rec_particles_collection[r.dagid()] = r
 
         #create the history links for relationship between gen and rec particles
