@@ -156,14 +156,39 @@ class BeamPipe(DetectorElement):
         
 class CMS(Detector):
         
-    def electron_acceptance(self, track):
-        return track.p3() .Mag() > 5 and abs(track.p3() .Eta()) < 2.5
+    def electron_acceptance(self, ptc):
+        """Delphes parametrization
+        https://github.com/delphes/delphes/blob/master/cards/delphes_card_CMS.tcl
+        96d6bcf 
+        """
+        rnd = random.uniform(0, 1)
+        if ptc.pt() < 10.:
+            return False
+        else:
+            eta = abs(ptc.eta())
+            if eta < 1.5:
+                return rnd < 0.95
+            elif eta < 2.5:
+                return rnd < 0.85
+            else:
+                return False
 
     def electron_resolution(self, ptc):
         return 0.1 / math.sqrt(ptc.e())
             
-    def muon_acceptance(self, track):
-        return track.p3() .Pt() > 5 and abs(track.p3() .Eta()) < 2.5
+    def muon_acceptance(self, ptc):
+        """Delphes parametrization
+        https://github.com/delphes/delphes/blob/master/cards/delphes_card_CMS.tcl
+        96d6bcf 
+        """        
+        rnd = random.uniform(0, 1)
+        eta = abs(ptc.eta())        
+        if ptc.pt() < 10.:
+            return False
+        elif eta < 2.4:
+            return rnd < 0.95
+        else:
+            return False
             
     def muon_resolution(self, ptc):
         return 0.02 

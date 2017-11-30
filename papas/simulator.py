@@ -168,7 +168,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                      track.path,
                                      index = len(self.smeared_tracks))
         pdebugger.info(" ".join(("Made", smeared_track.__str__())))
-        if detector_acceptance(smeared_track):
+        if detector_acceptance(ptc):
             self.smeared_tracks[smeared_track.uniqueid] = smeared_track
             self.update_history(track.uniqueid, smeared_track.uniqueid)   
             ptc.track_smeared = smeared_track             
