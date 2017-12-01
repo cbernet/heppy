@@ -174,7 +174,8 @@ class CMS(Detector):
                 return False
 
     def electron_resolution(self, ptc):
-        return 0.1 / math.sqrt(ptc.e())
+        # return 0.1 / math.sqrt(ptc.e())
+        return 0.03
             
     def muon_acceptance(self, ptc):
         """Delphes parametrization
@@ -191,8 +192,26 @@ class CMS(Detector):
             return False
             
     def muon_resolution(self, ptc):
-        return 0.02 
-    
+        """Delphes parametrization
+        
+          # resolution formula for muons
+          set ResolutionFormula {
+                         (abs(eta) <= 0.5) * (pt > 0.1) * sqrt(0.01^2 + pt^2*1.0e-4^2) +
+                         (abs(eta) > 0.5 && abs(eta) <= 1.5) * (pt > 0.1) * sqrt(0.015^2 + pt^2*1.5e-4^2) +
+                         (abs(eta) > 1.5 && abs(eta) <= 2.5) * (pt > 0.1) * sqrt(0.025^2 + pt^2*3.5e-4^2)}
+        """
+        rnd = random.uniform(0, 1)
+        eta = abs(ptc.eta())
+        cstt = None
+        vart = None
+        if eta < 0.5:
+            cstt, vart = 0.01, 1e-4
+        elif eta < 1.5:
+            cstt, vart = 0.015, 1.5e-4
+        else:
+            cstt, vart = 0.025, 3.5e-4
+        res = math.sqrt(cstt**2 + vart**2)
+        return res
     
     def jet_energy_correction(self, jet):
         '''The factor roughly corresponds to the raw PF jet response in CMS,
