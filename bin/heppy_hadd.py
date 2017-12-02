@@ -137,7 +137,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
                 # ok, not a chunk
                 continue
             nchunks[prefix] = nchunks.setdefault(prefix, 0) + 1
-            code = check_chunk(compdir)
+            code = check_chunk(filepath)
             if code == 1:
                 chunks.setdefault( prefix, list() ).append(filepath)
     if len(chunks)==0:
