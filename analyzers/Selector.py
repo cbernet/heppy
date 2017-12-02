@@ -8,32 +8,25 @@ class Selector(Analyzer):
     and store them in the output collection. The objects are not copied
     in the process. 
 
-    Example:
-    
-    from heppy.analyzers.Selector import Selector
-    def is_lepton(ptc):
-      """Returns true if the particle energy is larger than 5 GeV
-      and if its pdgid is +-11 (electrons) or +-13 (muons)
-      return ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13]
+    Example::
+        leptons = cfg.Analyzer(
+          Selector,
+          'sel_leptons',
+          output = 'leptons',
+          input_objects = 'rec_particles',
+          filter_func = lambda ptc: ptc.e()> 5. and abs(ptc.pdgid()) in [11, 13],
+          nmax = 2
+          )
 
-    leptons = cfg.Analyzer(
-      Selector,
-      'sel_leptons',
-      output = 'leptons',
-      input_objects = 'rec_particles',
-      filter_func = is_lepton 
-      )
-
-    * input_objects : the input collection.
+    @param input_objects: the input collection.
         If a dictionary, the filtering function is applied to the dictionary values,
         and not to the keys.
 
-    * output : the output collection
+    @param output: the output collection.
 
-    * filter_func : a function object.
-    IMPORTANT NOTE: lambda statements should not be used, as they
-    do not work in multiprocessing mode. looking for a solution...
+    @param filter_func: a function object.
     
+    @param nmax: up to nmax objects verifying filter_func are kept (optional).
     '''
 
     def process(self, event):
@@ -51,4 +44,6 @@ class Selector(Analyzer):
         else:
             output_collection = [obj for obj in input_collection \
                                  if self.cfg_ana.filter_func(obj)]
+        if hasattr(self.cfg_ana, 'nmax'):
+            output_collection = output_collection[:self.cfg_ana.nmax]
         setattr(event, self.cfg_ana.output, output_collection)
