@@ -19,7 +19,7 @@ def haddPck(file, odir, idirs):
     '''
     objsum = None
     basedir = os.getcwd()
-    fileName = os.path.basename(file)
+    fileName = file # os.path.basename(file)
     for dirpath in idirs:
         # fileName = file.replace( idirs[0], dirpath )
         os.chdir(dirpath)
@@ -39,7 +39,6 @@ def haddPck(file, odir, idirs):
                 
     oFileName = file.replace( idirs[0], odir )
     pckfile = open(oFileName, 'w')
-    print 'output:', oFileName
     pickle.dump(objsum, pckfile, protocol=-1)
     txtFileName = oFileName.replace('.pck','.txt')
     txtFile = open(txtFileName, 'w')
@@ -113,7 +112,6 @@ def haddRec(odir, idirs):
 ##        print 
 ##        raise
     for root,dirs,files in os.walk( idirs[0] ):
-        # print root, dirs, files
         for dir in dirs:
             dir = '/'.join([root, dir])
             dir = dir.replace(idirs[0], odir)
@@ -127,10 +125,11 @@ def haddRec(odir, idirs):
 def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
     chunks = {}
     nchunks = {}
+    basedir = os.getcwd()
     for path in sorted(os.listdir(idir)):
-        filepath = '/'.join( [idir, path] )
+        filepath = '/'.join( [basedir, idir, path] )
         if os.path.isdir(filepath):
-            compdir = path
+            compdir = filepath
             try:
                 prefix,num = compdir.split('_Chunk')
             except ValueError:
@@ -145,7 +144,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
         return
     for comp, cchunks in chunks.iteritems():
         # odir = base_odir+'/'+'/'.join( [idir, comp] )
-        odir = '/'.join( [base_odir, comp] )
+        odir = comp #'/'.join( [idir, comp] )
         print odir, cchunks
         if removeDestDir:
             if os.path.isdir( odir ):

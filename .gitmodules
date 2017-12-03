@@ -1,0 +1,6 @@
+[submodule "analyzers/examples/zh_fourjet"]
+	path = analyzers/examples/zh_fourjet
+	url = https://github.com/jndrf/zh_fourjet
+[submodule "papas/detectors/FCCHiggsDetectors"]
+	path = papas/detectors/FCCHiggsDetectors
+	url = https://github.com/jndrf/FCCHiggsDetectors
