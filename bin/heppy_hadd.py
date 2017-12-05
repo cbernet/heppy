@@ -154,7 +154,7 @@ def haddChunks(idir, removeDestDir, cleanUp=False, base_odir='./'):
         data = {
             'processing' : {
                 'ngoodfiles' : len(cchunks),
-                'nfiles' : nchunks[prefix]
+                'nfiles' : nchunks[comp]
             }   
         }   
         with open('/'.join([odir, 'processing.yaml']), 'w') as outyaml:
