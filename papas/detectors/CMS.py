@@ -175,7 +175,7 @@ class CMS(Detector):
 
     def electron_resolution(self, ptc):
         # return 0.1 / math.sqrt(ptc.e())
-        return 0.05
+        return 0.03
             
     def muon_acceptance(self, ptc):
         """Delphes parametrization
