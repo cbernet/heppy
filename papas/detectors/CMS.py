@@ -73,6 +73,7 @@ class HCAL(DetectorElement):
         return math.sqrt( stoch**2 + noise**2 + constant**2)
 
     def energy_response(self, energy, eta=0):
+        return 1.
         part = 'barrel'
         if abs(eta)>self.eta_crack:
             part = 'endcap'
