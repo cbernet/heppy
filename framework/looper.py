@@ -460,6 +460,9 @@ if __name__ == '__main__':
     # which is done by heppy_batch
     sys.path.insert(0, os.getcwd())
     
+    # importing __cfg_to_run__.py to set global variables as intended by the user
+    import __cfg_to_run__
+    
     cfgFileName = args[0]
     pckfile = open( cfgFileName, 'r' )
     config = pickle.load( pckfile )
