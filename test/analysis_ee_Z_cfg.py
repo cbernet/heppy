@@ -28,7 +28,7 @@ random.seed(0xdeadbeef)
 from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
-do_clic = True
+do_clic = False
 
 # input definition
 import glob
