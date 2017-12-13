@@ -9,14 +9,18 @@ from ROOT import TLorentzVector
 
 mass = {23: 91, 25: 125}
 
-class P4SumBuilder(Analyzer):
-    '''Builds the p4 sum of all input particles
+class SingleJetBuilder(Analyzer):
+    '''Builds a (pseudo)-jet with all input particles.
+    
+    This class is mainly used for papas debugging purpose.
+    It allows to check the total p4 of the input particles,
+    as well as their flavour. 
     
     Example::
     
-        from heppy.analyzers.P4SumBuilder import P4SumBuilder
+        from heppy.analyzers.SingleJetBuilder import SingleJetBuilder
         recoil = cfg.Analyzer(
-          P4SumBuilder,
+          SingleJetBuilder,
           particles = 'rec_particles',
           output = 'sum_ptc',
         ) 
@@ -25,7 +29,9 @@ class P4SumBuilder(Analyzer):
 
     @param output: contains a single particle with a p4 equal to the
                sum p4 of all input particles. The single particle is of
-               type L{particles.particle.Particle}.
+               type L{particles.jet.Jet} to keep track of the
+               L{jet constituents<particles.jet.JetConstituents>}.
+    
     '''
     
     def process(self, event):
@@ -38,9 +44,15 @@ class P4SumBuilder(Analyzer):
         charge = 0
         pdgid = 0
         ptcs = getattr(event, self.cfg_ana.particles)
+        jet = Jet(p4)
+        constituents = JetConstituents()
         for ptc in ptcs:
             p4 += ptc.p4()
             charge += ptc.q()
+            constituents.append(ptc)
         sumptc = Particle(pdgid, charge, p4)
-        setattr(event, self.cfg_ana.output, sumptc)
+        jet = Jet(p4)
+        jet.constituents = constituents
+        jet.constituents.sort()
+        setattr(event, self.cfg_ana.output, jet)
                 

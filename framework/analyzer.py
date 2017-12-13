@@ -140,14 +140,16 @@ class Analyzer(object):
 
     def __str__(self):
         """A multipurpose printout. Should do the job for most analyzers."""
+        fields = []
         ana = str( self.cfg_ana )
-        count = ''
-        ave = ''
+        fields.append(ana)
         if hasattr(self, 'counters') and len( self.counters.counters ) > 0:
             count = '\n'.join(map(str, self.counters.counters))
+            fields.append(count)
         if hasattr(self, 'averages') and len( self.averages ) > 0:
             ave = '\n'.join(map(str, self.averages))
-        return '\n'.join( [ana, count, ave] )
+            fields.append(ave)
+        return '\n'.join(fields)
 
     def __repr__(self):
         return self.name

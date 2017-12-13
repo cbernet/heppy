@@ -55,15 +55,15 @@ if context.name == 'fcc':
                                       'test/data/ee_ZH_Zmumu_Hbb.root'])
             config.components[0].files = [fname]
             looper = Looper( self.outdir, config,
-                                          nEvents=50,
+                                          nEvents=100,
                                           nPrint=0 )
             looper.loop()
             looper.write()
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
             mean, sigma = plot(rootfile)
-            self.assertAlmostEqual(mean, 107.9, 1)
-            self.assertAlmostEqual(sigma, 8.84, 1)
+            self.assertAlmostEqual(mean, 110.87, 1)
+            self.assertAlmostEqual(sigma, 18.6, 1)
 
         def test_analysis_sorting(self):
             fname = '/'.join([os.environ['HEPPY'],

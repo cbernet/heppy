@@ -73,6 +73,7 @@ class HCAL(DetectorElement):
         return math.sqrt( stoch**2 + noise**2 + constant**2)
 
     def energy_response(self, energy, eta=0):
+        return 1.
         part = 'barrel'
         if abs(eta)>self.eta_crack:
             part = 'endcap'
@@ -156,18 +157,62 @@ class BeamPipe(DetectorElement):
         
 class CMS(Detector):
         
-    def electron_acceptance(self, track):
-        return track.p3() .Mag() > 5 and abs(track.p3() .Eta()) < 2.5
+    def electron_acceptance(self, ptc):
+        """Delphes parametrization
+        https://github.com/delphes/delphes/blob/master/cards/delphes_card_CMS.tcl
+        96d6bcf 
+        """
+        rnd = random.uniform(0, 1)
+        if ptc.pt() < 10.:
+            return False
+        else:
+            eta = abs(ptc.eta())
+            if eta < 1.5:
+                return rnd < 0.95
+            elif eta < 2.5:
+                return rnd < 0.85
+            else:
+                return False
 
     def electron_resolution(self, ptc):
-        return 0.1 / math.sqrt(ptc.e())
+        # return 0.1 / math.sqrt(ptc.e())
+        return 0.03
             
-    def muon_acceptance(self, track):
-        return track.p3() .Pt() > 5 and abs(track.p3() .Eta()) < 2.5
+    def muon_acceptance(self, ptc):
+        """Delphes parametrization
+        https://github.com/delphes/delphes/blob/master/cards/delphes_card_CMS.tcl
+        96d6bcf 
+        """        
+        rnd = random.uniform(0, 1)
+        eta = abs(ptc.eta())        
+        if ptc.pt() < 10.:
+            return False
+        elif eta < 2.4:
+            return rnd < 0.95
+        else:
+            return False
             
     def muon_resolution(self, ptc):
-        return 0.02 
-    
+        """Delphes parametrization
+        
+          # resolution formula for muons
+          set ResolutionFormula {
+                         (abs(eta) <= 0.5) * (pt > 0.1) * sqrt(0.01^2 + pt^2*1.0e-4^2) +
+                         (abs(eta) > 0.5 && abs(eta) <= 1.5) * (pt > 0.1) * sqrt(0.015^2 + pt^2*1.5e-4^2) +
+                         (abs(eta) > 1.5 && abs(eta) <= 2.5) * (pt > 0.1) * sqrt(0.025^2 + pt^2*3.5e-4^2)}
+        """
+        rnd = random.uniform(0, 1)
+        eta = abs(ptc.eta())
+        cstt = None
+        vart = None
+        if eta < 0.5:
+            cstt, vart = 0.01, 1e-4
+        elif eta < 1.5:
+            cstt, vart = 0.015, 1.5e-4
+        else:
+            cstt, vart = 0.025, 3.5e-4
+        res = math.sqrt(cstt**2 + vart**2)
+        return res
     
     def jet_energy_correction(self, jet):
         '''The factor roughly corresponds to the raw PF jet response in CMS,

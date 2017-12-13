@@ -34,7 +34,7 @@ if context.name == 'fcc':
             logging.disable(logging.NOTSET)
 
         def test_beff_cms_fccsw(self):
-            '''Check b matching probability and b tag efficiency in CMS 
+            '''check that the analysis runs with papas inputs from cmssw
             '''
             from heppy.papas.detectors.CMS import cms
             fname = '/'.join([os.environ['HEPPY'],
@@ -47,11 +47,6 @@ if context.name == 'fcc':
                                   nEvents=100,
                                   nPrint=0 )
             self.looper.loop()
-            self.looper.write()
-            rootfile = '/'.join([self.outdir,
-                                'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
-            plotter = Plotter(rootfile)
-            self.assertAlmostEqual(plotter.bfrac(), 0.80, places=1) #changing of random seed varies this between approx 0.78 and 0.83
 
 
 if __name__ == '__main__':

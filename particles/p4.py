@@ -1,4 +1,5 @@
 import math
+import copy
 from heppy.configuration import Collider
 
 from functools import total_ordering
@@ -7,6 +8,11 @@ class P4(object):
 
     def __init__(self, *args, **kwargs):
         super(P4, self).__init__(*args, **kwargs)
+    
+    def shallow_clone(self):
+        p4 = self.__class__(None)
+        p4._tlv = copy.deepcopy(self._tlv)
+        return p4
     
     def p4(self):
         '''4-momentum, px, py, pz, E'''

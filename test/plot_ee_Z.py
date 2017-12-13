@@ -4,13 +4,15 @@ import time
 holder = list()
 tree = None
 
-def plot_ee_mass(fname, nbins=100, xmin=10, xmax=200):
+def plot_ee_mass(fname, nbins=100, xmin=70, xmax=100):
     global tree
     root_file = TFile(fname)
     tree = root_file.Get('events')
     canvas = TCanvas("canvas", "canvas", 600,600)  
     hist = TH1F("hist", ";mass of all particles (GeV)", nbins, 0, 200)
-    tree.Draw('sum_all_m>>hist', '', '') 
+    tree.Draw('sum_all_m>>hist', '', '')
+    xmin = hist.GetMean() - hist.GetRMS() * 2.
+    xmax = hist.GetMean() + hist.GetRMS() * 2.
     hist.Fit("gaus", "LM", "", xmin, xmax)
     gPad.Update()
     gPad.SaveAs('sum_all_m.png')
@@ -28,6 +30,7 @@ if __name__ == '__main__':
         sys.exit(1)
 
     mean, sigma = plot_ee_mass(sys.argv[1])
-    print mean, sigma
+    print 'fit: mean = {mean:5.2f} sigma = {sigma:5.2f} resolution = {res:5.2f}'.format(
+        mean=mean, sigma=sigma, res=sigma/mean*100)
     
     
