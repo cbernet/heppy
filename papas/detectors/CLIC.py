@@ -106,7 +106,7 @@ class Tracker(DetectorElement):
         super(Tracker, self).__init__('tracker',
                                       VolumeCylinder('tracker', 2.14, 2.6),
                                       material.void)
-        self.theta_max = 80. * math.pi / 180.
+        self.theta_max = 75. * math.pi / 180.
         # CLIC CDR Table 5.3.
         # using our definition of theta (equal to zero at eta=0)
         # first line added by hand for small angles,
@@ -122,16 +122,24 @@ class Tracker(DetectorElement):
     def acceptance(self, track):
         '''Returns True if the track is seen.
         
+        Currently taken from
+        https://indico.cern.ch/event/650053/contributions/2672772/attachments/1501093/2338117/FCCee_MDI_Jul30.pdf
+
+        Original values for CLIC:
         Acceptance from the CLIC CDF p107, Fig. 5.12 without background.
         The tracker is taken to be efficient up to theta = 80 degrees. 
         '''
         pt = track.p3().Pt()
         theta = abs(track.theta())
         if theta < self.theta_max:
-            if pt > 0.4:
+            if pt < 0.1:
+                return False
+            elif pt < 0.3:
+                return random.uniform(0,1) < 0.9
+            elif pt < 1:
                 return random.uniform(0,1) < 0.95
-            elif pt > 2:
-                return random.uniform(0,1) < 0.99
+            else:
+                return True
         return False
 
     def _sigmapt_over_pt2(self, a, b, pt):
