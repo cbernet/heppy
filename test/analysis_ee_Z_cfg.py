@@ -28,6 +28,7 @@ random.seed(0xdeadbeef)
 from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
+do_clic = False
 
 # input definition
 import glob
@@ -54,16 +55,16 @@ source = cfg.Analyzer(
     gen_vertices = 'GenVertex'
 )
 
-from heppy.analyzers.P4SumBuilder import P4SumBuilder
+from heppy.analyzers.SingleJetBuilder import SingleJetBuilder
 sum_particles = cfg.Analyzer(
-    P4SumBuilder, 
+    SingleJetBuilder, 
     output='sum_all_ptcs',
     #    particles='gen_particles_stable'
     particles='rec_particles'
 )
 
 sum_gen = cfg.Analyzer(
-    P4SumBuilder, 
+    SingleJetBuilder, 
     output='sum_all_gen',
     particles='gen_particles_stable'
 )
@@ -80,7 +81,6 @@ zed_tree = cfg.Analyzer(
 from heppy.test.papas_cfg import gen_particles_stable, papas_sequence, detector, papas, papasdisplay, papasdisplaycompare, pfreconstruct
 from heppy.test.papas_cfg import papasdisplaycompare as display
 
-do_clic = False
 if do_clic:
     from heppy.papas.detectors.CLIC import clic
     papas.detector = clic    

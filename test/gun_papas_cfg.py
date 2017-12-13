@@ -90,16 +90,16 @@ from heppy.test.papas_cfg import papas, papas_sequence, detector
 
 from heppy.test.papas_cfg import papasdisplay as display 
 
-from heppy.analyzers.P4SumBuilder import P4SumBuilder
+from heppy.analyzers.SingleJetBuilder import SingleJetBuilder
 sum_particles = cfg.Analyzer(
-    P4SumBuilder, 
+    SingleJetBuilder, 
     output='sum_all_ptcs',
     #    particles='gen_particles_stable'
     particles='rec_particles'
 )
 
 sum_gen = cfg.Analyzer(
-    P4SumBuilder, 
+    SingleJetBuilder, 
     output='sum_all_gen',
     particles='gen_particles_stable'
 )

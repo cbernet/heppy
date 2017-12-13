@@ -49,8 +49,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.JetTreeProducer.JetTreeProducer_1/jet_tree.root '])
             plotter = Plotter(rootfile)
-            self.assertAlmostEqual(plotter.bfrac(), 0.88, places=2)
-            self.assertAlmostEqual(plotter.beff(), 0.7, places=2)
+            self.assertAlmostEqual(plotter.bfrac(), 0.867, places=2)
+            self.assertAlmostEqual(plotter.beff(), 0.71, places=2)
     
         def test_fake_cms(self):
             '''Check fake rate in CMS

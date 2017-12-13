@@ -78,6 +78,7 @@ class ParametrizedBTagger(Analyzer):
         jets = getattr(event, self.cfg_ana.input_jets)
         for jet in jets:
             is_bjet = is_from_b(jet, event)
-            is_btagged = self.cfg_ana.roc.is_tagged(is_bjet)
-            jet.tags['b'] = is_btagged
             jet.tags['bmatch'] = is_bjet
+            if self.cfg_ana.roc:
+                is_btagged = self.cfg_ana.roc.is_tagged(is_bjet)
+                jet.tags['b'] = is_btagged
