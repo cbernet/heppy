@@ -87,6 +87,7 @@ class Gun(Analyzer):
     '''
 
     def beginLoop(self, setup):
+        super(Gun, self).beginLoop(setup)
         self.papas = False
         if hasattr(self.cfg_ana, 'papas'):
             self.papas = self.cfg_ana.papas

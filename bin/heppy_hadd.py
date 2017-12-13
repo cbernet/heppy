@@ -22,10 +22,6 @@ def haddPck(file, odir, idirs):
     fileName = os.path.basename(file)
     for dirpath in idirs:
         fileName = file.replace( idirs[0], dirpath )
-        # os.chdir(dirpath)
-        # import pdb; pdb.set_trace()
-        # print dirpath
-        # print fileName
         pckfile = open(fileName)
         sys.path.insert(0, dirpath)
         obj = pickle.load(pckfile)

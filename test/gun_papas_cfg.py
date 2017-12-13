@@ -78,8 +78,8 @@ source = cfg.Analyzer(
     thetamax = 0.1,
     phimin = math.pi/2.,
     phimax = math.pi/2.,
-    ptmin = 0.2,
-    ptmax = 0.2,
+    ptmin = 0.,
+    ptmax = 100,
     flat_pt = False,
 )
 
@@ -91,25 +91,27 @@ from heppy.test.papas_cfg import papas, papas_sequence, detector
 from heppy.test.papas_cfg import papasdisplay as display 
 
 from heppy.analyzers.SingleJetBuilder import SingleJetBuilder
-sum_particles = cfg.Analyzer(
+sum_rec = cfg.Analyzer(
     SingleJetBuilder, 
-    output='sum_all_ptcs',
-    #    particles='gen_particles_stable'
+    output='sum_all_gen',
     particles='rec_particles'
 )
 
-sum_gen = cfg.Analyzer(
-    SingleJetBuilder, 
-    output='sum_all_gen',
-    particles='gen_particles_stable'
+from heppy.analyzers.Selector import Selector
+sel_charged_hadrons = cfg.Analyzer(
+    Selector,
+    output = 'sel_charged_hadrons',
+    input_objects = 'rec_particles',
+    filter_func = lambda ptc: ptc.e()> 50. and abs(ptc.pdgid()) == 211,
+    nmax = 2
 )
 
-
-from heppy.analyzers.GlobalEventTreeProducer import GlobalEventTreeProducer
-zed_tree = cfg.Analyzer(
-    GlobalEventTreeProducer, 
-    sum_all='sum_all_ptcs', 
-    sum_all_gen='sum_all_gen'
+from heppy.analyzers.EventFilter import EventFilter
+event_filter = cfg.Analyzer(
+    EventFilter  ,
+    input_objects = 'sel_charged_hadrons',
+    min_number = 1,
+    veto = False 
 )
 
 # definition of a sequence of analyzers,
@@ -117,6 +119,9 @@ zed_tree = cfg.Analyzer(
 sequence = cfg.Sequence(
     source, 
     papas_sequence,
+    sum_rec,
+    sel_charged_hadrons,
+    event_filter, 
     display
 )
 
