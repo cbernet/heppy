@@ -8,11 +8,17 @@ FNAME="test_tree.root"
 
 def create_tree(filename=FNAME, nentries=None):
     '''Create the test tree in file FNAME.'''
-    if not nentries: 
+    if not nentries:
+        file_good = False
         if os.path.isfile(filename):
-            #default number of entries, file exists
+            rfile = TFile(filename)
+            if not rfile.IsZombie():
+                file_good = True
+        if file_good:
             return filename
-        else: 
+        else:
+            # file needs to be regenerated so setting default
+            # number of entries
             nentries = 200
     nentries = int(nentries)
     outfile = TFile(filename, 'recreate')
