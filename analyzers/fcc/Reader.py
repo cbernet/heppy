@@ -247,7 +247,7 @@ class Reader(Analyzer):
                     photons[Particle(pho.particle())].iso.sumpt = photons[Particle(pho.particle())].pt()*pho.tag()
 
             # a single reco photon can have relation to multiple sim particle (ele, pho)
-            # reco photon will thus have a list of gen particles attached               
+            # reco photon will thus have a list of gen particles attached
             if hasattr(self.cfg_ana, 'photonsToMC'):
                 from collections import defaultdict
                 relations = defaultdict(list)
