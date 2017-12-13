@@ -1,4 +1,8 @@
-'''CLIC-ILD model'''
+'''CLIC-ILD model
+
+TODO : use new tracker momentum resolution (important for muons)
+TODO : electron resolution : use quad sum of tracker and ecal resolution
+'''
 
 from detector import Detector, DetectorElement
 import material as material
@@ -139,7 +143,7 @@ class Tracker(DetectorElement):
             elif pt < 1:
                 return random.uniform(0,1) < 0.95
             else:
-                return True
+                return random.uniform(0,1) < 0.99
         return False
 
     def _sigmapt_over_pt2(self, a, b, pt):
@@ -219,7 +223,7 @@ class CLIC(Detector):
         
         In CLIC, the momentum resolution of the tracker is excellent and,
         due to the large amount of material before the muon chambers,
-        the muon chambers cannot improve the resolution.
+        the muon chambers cannot improve the resolution in the energy domain of FCCee.
         Therefore, using the momentum resolution of the tracker (CLIC CDR, section 8.1.1)
         '''
         return self.elements['tracker'].resolution(ptc)
