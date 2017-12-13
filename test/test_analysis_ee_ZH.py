@@ -55,7 +55,7 @@ if context.name == 'fcc':
                                       'test/data/ee_ZH_Zmumu_Hbb.root'])
             config.components[0].files = [fname]
             looper = Looper( self.outdir, config,
-                                          nEvents=50,
+                                          nEvents=500,
                                           nPrint=0 )
             looper.loop()
             looper.write()
