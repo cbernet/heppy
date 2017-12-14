@@ -117,11 +117,19 @@ class Tracker(DetectorElement):
         # with a bad resolution.
         # these tracks will not be accepted anyway,
         # but please pay attention to the acceptance method.
-        self.resmap = [ (90, 8.2e-2, 9.1e-2),  
-                        (80, 8.2e-4, 9.1e-3),
-                        (30, 9.9e-5, 3.8e-3),
-                        (20, 3.9e-5, 1.6e-3),
-                        (10, 2e-5, 7.2e-4) ]  
+        ##        self.resmap = [ (90, 8.2e-2, 9.1e-2),  
+        ##                        (80, 8.2e-4, 9.1e-3),
+        ##                        (30, 9.9e-5, 3.8e-3),
+        ##                        (20, 3.9e-5, 1.6e-3),
+        ##                        (10, 2e-5, 7.2e-4) ]
+        # Emilia Leogrande
+        self.resmap = [(80.0, [0.00064001464571871076, 0.13554521466257508, 1.1091870672607593]),
+                       (60.0, [7.9414367183119937e-05, 0.014845686639308672, 1.0821694803464048]),
+                       (40.0, [4.8900068724976152e-05, 0.0056580423053257511, 1.0924861152630758]),
+                       # setting max angle of last line to 20 so that it's used. 
+                       (20.0, [3.959021523612684e-05, 0.0028148305792289668, 1.0362271035102992])]
+
+
 
     def acceptance(self, track):
         '''Returns True if the track is seen.
@@ -146,9 +154,12 @@ class Tracker(DetectorElement):
                 return random.uniform(0,1) < 0.99
         return False
 
-    def _sigmapt_over_pt2(self, a, b, pt):
-        '''CLIC CDR Eq. 5.1'''
-        return math.sqrt( a ** 2 + (b / pt) ** 2)           
+##    def _sigmapt_over_pt2(self, a, b, pt):
+##        '''CLIC CDR Eq. 5.1'''
+##        return math.sqrt( a ** 2 + (b / pt) ** 2)           
+
+    def _sigpt_over_pt2(self, x, a, b, c):
+        return math.sqrt( a ** 2 + (b / x**c) ** 2 )
 
     def resolution(self, track):
         '''Returns relative resolution on the track momentum
@@ -158,12 +169,14 @@ class Tracker(DetectorElement):
         pt = track.p3().Pt()
         # matching the resmap defined above.
         theta = abs(track.theta()) * 180 / math.pi
-        the_a, the_b = None, None
-        for maxtheta, a, b in reversed(self.resmap):
+        the_pars = None
+        for maxtheta, pars in reversed(self.resmap):
             if theta < maxtheta:
-                the_a, the_b = a, b
+                the_pars = pars 
                 break
-        res = self._sigmapt_over_pt2(the_a, the_b, pt) * pt
+        res = 0.1  # default, for particles out of the resmap 
+        if the_pars:
+            res = self._sigpt_over_pt2(pt, *the_pars) * pt
         return res
 
     
@@ -231,6 +244,10 @@ class CLIC(Detector):
     def ip_resolution(self, ptc):
         '''Not used yet'''
         pass
+
+    def jet_energy_correction(self, jet):
+        '''No jet energy correction for now, returning 1.'''
+        return 1.
     
     def __init__(self):
         super(CLIC, self).__init__()
@@ -240,5 +257,7 @@ class CLIC(Detector):
         # field limited to 2 T for FCC-ee 
         self.elements['field'] = Field(2.)
         self.elements['beampipe'] = BeamPipe()
+
+
 
 clic = CLIC()
