@@ -63,8 +63,8 @@ Made Particle :ps60  :10261322061202849852: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261534350380105728: pdgid =   -13, status =   1, q =  1, e =  54.2, theta = -0.88, phi =  1.34, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964698540364529664:   54.25   34.59 -0.88  1.34
-Made SmearedTrack: ts0   :7955691640117526528:   54.79   34.93 -0.88  1.34
-Rejected SmearedTrack: ts0   :7955691640117526528:   54.79   34.93 -0.88  1.34
+Made SmearedTrack: ts0   :7955691657481945088:   54.82   34.95 -0.88  1.34
+Rejected SmearedTrack: ts0   :7955691657481945088:   54.82   34.95 -0.88  1.34
 Simulating Particle :ps1   :10261527063680778241: pdgid =    22, status =   1, q =  0, e =  41.0, theta =  1.07, phi = -0.51, mass =  0.00
 Simulating Photon
 Made Cluster: et0   :3353005235294437376:   40.99  1.07 -0.51 sub(et0, )
@@ -174,8 +174,8 @@ Made SmearedCluster: es11  :3343926217186213899:    2.40  0.15 -2.51 sub(es11, )
 Simulating Particle :ps18  :10261460957129605138: pdgid =    13, status =   1, q = -1, e =   3.0, theta =  0.47, phi = -0.01, mass =  0.11
 Simulating Muon
 Made Track: tt8   :7964625131049844744:    3.04    2.71  0.47 -0.01
-Made SmearedTrack: ts6   :7955618248500707334:    3.08    2.74  0.47 -0.01
-Rejected SmearedTrack: ts6   :7955618248500707334:    3.08    2.74  0.47 -0.01
+Made SmearedTrack: ts6   :7955618248601370630:    3.08    2.74  0.47 -0.01
+Rejected SmearedTrack: ts6   :7955618248601370630:    3.08    2.74  0.47 -0.01
 Simulating Particle :ps19  :10261460099075670035: pdgid =   130, status =   1, q =  0, e =   2.9, theta = -0.18, phi = -0.20, mass =  0.50
 Simulating Hadron
 Made Cluster: ht10  :5658781279903023114:    2.95 -0.18 -0.20 sub(ht10, )
@@ -1469,16 +1469,16 @@ Made Particle :ps80  :10261350594285404240: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261538516949270528: pdgid =    13, status =   1, q = -1, e =  61.8, theta =  0.48, phi =  1.52, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964702706942083072:   61.83   54.72  0.48  1.52
-Made SmearedTrack: ts0   :7955695118835515392:   61.12   54.09  0.48  1.52
+Made SmearedTrack: ts0   :7955695064452169728:   61.02   54.00  0.48  1.52
 Simulating Particle :ps1   :10261525040717627393: pdgid =   -13, status =   1, q =  1, e =  37.3, theta =  0.01, phi = -0.75, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964689230676885505:   37.31   37.31  0.01 -0.75
-Made SmearedTrack: ts1   :7955681612696387585:   36.55   36.55  0.01 -0.75
+Made SmearedTrack: ts1   :7955681584521150465:   36.50   36.50  0.01 -0.75
 Simulating Particle :ps2   :10261491264203522050: pdgid =   -13, status =   1, q =  1, e =  10.0, theta = -0.26, phi =  2.91, mass =  0.11
 Simulating Muon
 Made Track: tt2   :7964655453011443714:    9.97    9.64 -0.26  2.91
-Made SmearedTrack: ts2   :7955648615286833154:   10.13    9.80 -0.26  2.91
-Rejected SmearedTrack: ts2   :7955648615286833154:   10.13    9.80 -0.26  2.91
+Made SmearedTrack: ts2   :7955648616945680386:   10.13    9.80 -0.26  2.91
+Rejected SmearedTrack: ts2   :7955648616945680386:   10.13    9.80 -0.26  2.91
 Simulating Particle :ps3   :10261488162658320387: pdgid =   321, status =   1, q =  1, e =   8.6, theta = -0.40, phi = -1.03, mass =  0.49
 Simulating Hadron
 Made Track: tt3   :7964652321361625091:    8.54    7.88 -0.40 -1.03
@@ -2039,7 +2039,7 @@ Made block:E1       :br23  : ecals = 1 hcals = 0 tracks = 0
 
 Made block:E1T1     :br24  : ecals = 1 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 36.6 (7955681612696387585)
+      t0 = ts1       value= 36.5 (7955681584521150465)
       e1 = em25      value=  5.4 (3289903344369270809)
     distances:
               t0      e1
@@ -2102,7 +2102,7 @@ Made block:T1       :br30  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br31  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 61.1 (7955695118835515392)
+      t0 = ts0       value= 61.0 (7955695064452169728)
 
 Splitting block:E1H1T5   :br25  : ecals = 1 hcals = 1 tracks = 5
     elements:
@@ -2220,7 +2220,7 @@ Made block:H1T1     :bs4   : ecals = 0 hcals = 1 tracks = 1
 
 Splitting block:E1T1     :br24  : ecals = 1 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 36.6 (7955681612696387585)
+      t0 = ts1       value= 36.5 (7955681584521150465)
       e1 = em25      value=  5.4 (3289903344369270809)
     distances:
               t0      e1
@@ -2229,7 +2229,7 @@ Splitting block:E1T1     :br24  : ecals = 1 hcals = 0 tracks = 1
 
 Made block:E1T1     :bs5   : ecals = 1 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 36.6 (7955681612696387585)
+      t0 = ts1       value= 36.5 (7955681584521150465)
       e1 = em25      value=  5.4 (3289903344369270809)
     distances:
               t0      e1
@@ -2256,11 +2256,11 @@ Made block:E1T1     :bs6   : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br31  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 61.1 (7955695118835515392)
+      t0 = ts0       value= 61.0 (7955695064452169728)
 
 Made block:T1       :bs7   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 61.1 (7955695118835515392)
+      t0 = ts0       value= 61.0 (7955695064452169728)
 
 Splitting block:T1       :br30  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -2506,14 +2506,14 @@ Made Particle :pr7   :10252451317383430151: pdgid =  -211, status =   1, q = -1,
 Finished block
 Processing block:E1T1     :bs5   : ecals = 1 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 36.6 (7955681612696387585)
+      t0 = ts1       value= 36.5 (7955681584521150465)
       e1 = em25      value=  5.4 (3289903344369270809)
     distances:
               t0      e1
       t0       .
       e1  0.0177       .
 
-Made Particle :pr8   :10252517422739226632: pdgid =    13, status =   1, q =  1, e =  36.6, theta =  0.01, phi = -0.75, mass =  0.11 from SmearedTrack: ts1   :7955681612696387585:   36.55   36.55  0.01 -0.75
+Made Particle :pr8   :10252517394563989512: pdgid =    13, status =   1, q =  1, e =  36.5, theta =  0.01, phi = -0.75, mass =  0.11 from SmearedTrack: ts1   :7955681584521150465:   36.50   36.50  0.01 -0.75
 Made Particle :pr9   :10252468368284057609: pdgid =    22, status =   1, q =  0, e =   5.4, theta =  0.00, phi = -0.75, mass =  0.00 from MergedCluster: em25  :3289903344369270809:    5.42  0.00 -0.75 sub(es1, )
 Finished block
 Processing block:H1T1     :bs4   : ecals = 0 hcals = 1 tracks = 1
@@ -2695,9 +2695,9 @@ Made Particle :pr36  :10252429085626073124: pdgid =  -211, status =   1, q = -1,
 Finished block
 Processing block:T1       :bs7   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 61.1 (7955695118835515392)
+      t0 = ts0       value= 61.0 (7955695064452169728)
 
-Made Particle :pr37  :10252530928844800037: pdgid =   -13, status =   1, q = -1, e =  61.1, theta =  0.48, phi =  1.52, mass =  0.10 from SmearedTrack: ts0   :7955695118835515392:   61.12   54.09  0.48  1.52
+Made Particle :pr37  :10252530874461454373: pdgid =   -13, status =   1, q = -1, e =  61.0, theta =  0.48, phi =  1.52, mass =  0.10 from SmearedTrack: ts0   :7955695064452169728:   61.02   54.00  0.48  1.52
 Finished block
 Finished reconstruction
 Event: 2
@@ -2760,11 +2760,11 @@ Made Particle :ps55  :10261254474039296055: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261535975219920896: pdgid =    13, status =   1, q = -1, e =  57.2, theta =  0.50, phi =  0.44, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964700165206441984:   57.20   50.07  0.50  0.44
-Made SmearedTrack: ts0   :7955692199501365248:   55.81   48.85  0.50  0.44
+Made SmearedTrack: ts0   :7955692108841484288:   55.64   48.70  0.50  0.44
 Simulating Particle :ps1   :10261529332111376385: pdgid =   -13, status =   1, q =  1, e =  45.1, theta = -0.26, phi = -1.44, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964693522085314561:   45.12   43.66 -0.26 -1.44
-Made SmearedTrack: ts1   :7955686573905805313:   45.58   44.10 -0.26 -1.44
+Made SmearedTrack: ts1   :7955686596777345025:   45.62   44.14 -0.26 -1.44
 Simulating Particle :ps2   :10261512631124754434: pdgid =    22, status =   1, q =  0, e =  23.4, theta =  0.24, phi =  2.75, mass =  0.00
 Simulating Photon
 Made Cluster: et0   :3352990802738413568:   23.37  0.24  2.75 sub(et0, )
@@ -3294,11 +3294,11 @@ Made block:T1       :br33  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br34  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 45.6 (7955686573905805313)
+      t0 = ts1       value= 45.6 (7955686596777345025)
 
 Made block:T1       :br35  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 55.8 (7955692199501365248)
+      t0 = ts0       value= 55.6 (7955692108841484288)
 
 Splitting block:E1H1T2   :br12  : ecals = 1 hcals = 1 tracks = 2
     elements:
@@ -3492,19 +3492,19 @@ Made block:E1T1     :bs8   : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br35  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 55.8 (7955692199501365248)
+      t0 = ts0       value= 55.6 (7955692108841484288)
 
 Made block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 55.8 (7955692199501365248)
+      t0 = ts0       value= 55.6 (7955692108841484288)
 
 Splitting block:T1       :br34  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 45.6 (7955686573905805313)
+      t0 = ts1       value= 45.6 (7955686596777345025)
 
 Made block:T1       :bs10  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 45.6 (7955686573905805313)
+      t0 = ts1       value= 45.6 (7955686596777345025)
 
 Splitting block:T1       :br33  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -3974,15 +3974,15 @@ Made Particle :pr36  :10252443835722367012: pdgid =   211, status =   1, q =  1,
 Finished block
 Processing block:T1       :bs10  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 45.6 (7955686573905805313)
+      t0 = ts1       value= 45.6 (7955686596777345025)
 
-Made Particle :pr37  :10252522383931867173: pdgid =    13, status =   1, q =  1, e =  45.6, theta = -0.26, phi = -1.44, mass =  0.11 from SmearedTrack: ts1   :7955686573905805313:   45.58   44.10 -0.26 -1.44
+Made Particle :pr37  :10252522406803406885: pdgid =    13, status =   1, q =  1, e =  45.6, theta = -0.26, phi = -1.44, mass =  0.10 from SmearedTrack: ts1   :7955686596777345025:   45.62   44.14 -0.26 -1.44
 Finished block
 Processing block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 55.8 (7955692199501365248)
+      t0 = ts0       value= 55.6 (7955692108841484288)
 
-Made Particle :pr38  :10252528009514844198: pdgid =   -13, status =   1, q = -1, e =  55.8, theta =  0.50, phi =  0.44, mass =  0.10 from SmearedTrack: ts0   :7955692199501365248:   55.81   48.85  0.50  0.44
+Made Particle :pr38  :10252527918854963238: pdgid =   -13, status =   1, q = -1, e =  55.6, theta =  0.50, phi =  0.44, mass =  0.11 from SmearedTrack: ts0   :7955692108841484288:   55.64   48.70  0.50  0.44
 Finished block
 Finished reconstruction
 Event: 3
@@ -4067,12 +4067,12 @@ Made Particle :ps77  :10261360117012234317: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261534825150152704: pdgid =   -13, status =   1, q =  1, e =  55.1, theta = -1.14, phi =  0.59, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964699015136673792:   55.11   22.92 -1.14  0.59
-Made SmearedTrack: ts0   :7955693625325649920:   58.40   24.29 -1.14  0.59
+Made SmearedTrack: ts0   :7955693716019085312:   58.57   24.36 -1.14  0.59
 Simulating Particle :ps1   :10261532135405912065: pdgid =    13, status =   1, q = -1, e =  50.2, theta =  0.56, phi =  2.35, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964696325384044545:   50.22   42.52  0.56  2.35
-Made SmearedTrack: ts1   :7955689618154717185:   51.11   43.28  0.56  2.35
-Rejected SmearedTrack: ts1   :7955689618154717185:   51.11   43.28  0.56  2.35
+Made SmearedTrack: ts1   :7955689660766748673:   51.19   43.35  0.56  2.35
+Rejected SmearedTrack: ts1   :7955689660766748673:   51.19   43.35  0.56  2.35
 Simulating Particle :ps2   :10261505199491252226: pdgid =  2112, status =   1, q =  0, e =  16.6, theta =  0.01, phi = -1.89, mass =  0.94
 Simulating Hadron
 Made Cluster: et0   :3352960607440601088:    6.98  0.01 -1.89 sub(et0, )
@@ -4812,7 +4812,7 @@ Made block:T1       :br50  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br51  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 58.4 (7955693625325649920)
+      t0 = ts0       value= 58.6 (7955693716019085312)
 
 Splitting block:E1H1T1   :br27  : ecals = 1 hcals = 1 tracks = 1
     elements:
@@ -4994,11 +4994,11 @@ Made block:E1T1     :bs8   : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br51  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 58.4 (7955693625325649920)
+      t0 = ts0       value= 58.6 (7955693716019085312)
 
 Made block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 58.4 (7955693625325649920)
+      t0 = ts0       value= 58.6 (7955693716019085312)
 
 Splitting block:T1       :br50  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -5697,9 +5697,9 @@ Made Particle :pr50  :10252490467910352946: pdgid =   211, status =   1, q =  1,
 Finished block
 Processing block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 58.4 (7955693625325649920)
+      t0 = ts0       value= 58.6 (7955693716019085312)
 
-Made Particle :pr51  :10252529435337031731: pdgid =    13, status =   1, q =  1, e =  58.4, theta = -1.14, phi =  0.59, mass =  0.10 from SmearedTrack: ts0   :7955693625325649920:   58.40   24.29 -1.14  0.59
+Made Particle :pr51  :10252529526028369971: pdgid =    13, status =   1, q =  1, e =  58.6, theta = -1.14, phi =  0.59, mass =  0.11 from SmearedTrack: ts0   :7955693716019085312:   58.57   24.36 -1.14  0.59
 Finished block
 Finished reconstruction
 Event: 4
@@ -5791,12 +5791,12 @@ Made Particle :ps84  :10261280415083921492: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261532433513971712: pdgid =    13, status =   1, q = -1, e =  50.8, theta = -1.36, phi =  0.53, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964696623496298496:   50.76   10.80 -1.36  0.53
-Made SmearedTrack: ts0   :7955689716802650112:   51.29   10.91 -1.36  0.53
-Rejected SmearedTrack: ts0   :7955689716802650112:   51.29   10.91 -1.36  0.53
+Made SmearedTrack: ts0   :7955689720097275904:   51.30   10.91 -1.36  0.53
+Rejected SmearedTrack: ts0   :7955689720097275904:   51.30   10.91 -1.36  0.53
 Simulating Particle :ps1   :10261529486740684801: pdgid =   -13, status =   1, q =  1, e =  45.4, theta =  0.70, phi = -1.07, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964693676714622977:   45.40   34.77  0.70 -1.07
-Made SmearedTrack: ts0   :7955685478276005888:   43.58   33.38  0.70 -1.07
+Made SmearedTrack: ts0   :7955685419662704640:   43.48   33.29  0.70 -1.07
 Simulating Particle :ps2   :10261491712857735170: pdgid =    22, status =   1, q =  0, e =  10.2, theta = -1.57, phi = -1.05, mass =  0.00
 Simulating Photon
 Made Cluster: et0   :3352969884471394304:   10.17 -1.57 -1.05 sub(et0, )
@@ -6671,7 +6671,7 @@ Made block:T1       :br46  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br47  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 43.6 (7955685478276005888)
+      t0 = ts0       value= 43.5 (7955685419662704640)
 
 Splitting block:E1H1T2   :br32  : ecals = 1 hcals = 1 tracks = 2
     elements:
@@ -7053,11 +7053,11 @@ Made block:E1T1     :bs18  : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br47  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 43.6 (7955685478276005888)
+      t0 = ts0       value= 43.5 (7955685419662704640)
 
 Made block:T1       :bs19  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 43.6 (7955685478276005888)
+      t0 = ts0       value= 43.5 (7955685419662704640)
 
 Splitting block:T1       :br46  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -7687,9 +7687,9 @@ Made Particle :pr53  :10252455047195525173: pdgid =  -211, status =   1, q = -1,
 Finished block
 Processing block:T1       :bs19  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 43.6 (7955685478276005888)
+      t0 = ts0       value= 43.5 (7955685419662704640)
 
-Made Particle :pr54  :10252521288304164918: pdgid =    13, status =   1, q =  1, e =  43.6, theta =  0.70, phi = -1.07, mass =  0.11 from SmearedTrack: ts0   :7955685478276005888:   43.58   33.38  0.70 -1.07
+Made Particle :pr54  :10252521229690863670: pdgid =    13, status =   1, q =  1, e =  43.5, theta =  0.70, phi = -1.07, mass =  0.11 from SmearedTrack: ts0   :7955685419662704640:   43.48   33.29  0.70 -1.07
 Finished block
 Finished reconstruction
 Event: 5
@@ -7754,11 +7754,11 @@ Made Particle :ps57  :10261363801043501113: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261539073036386304: pdgid =    13, status =   1, q = -1, e =  62.8, theta = -0.06, phi = -2.03, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964703263029198848:   62.84   62.73 -0.06 -2.03
-Made SmearedTrack: ts0   :7955696746818961408:   64.16   64.05 -0.06 -2.03
+Made SmearedTrack: ts0   :7955696812417875968:   64.40   64.29 -0.06 -2.03
 Simulating Particle :ps1   :10261527696316039169: pdgid =   -13, status =   1, q =  1, e =  42.1, theta = -0.19, phi =  2.03, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964691886283685889:   42.14   41.42 -0.19  2.03
-Made SmearedTrack: ts1   :7955684456849735681:   41.72   41.01 -0.19  2.03
+Made SmearedTrack: ts1   :7955684437895675905:   41.69   40.98 -0.19  2.03
 Simulating Particle :ps2   :10261508092965421058: pdgid =   211, status =   1, q =  1, e =  19.2, theta =  0.21, phi =  0.82, mass =  0.14
 Simulating Hadron
 Made Track: tt2   :7964672282450722818:   19.24   18.81  0.21  0.82
@@ -7770,7 +7770,7 @@ Made SmearedCluster: hs0   :5649814577087512576:   14.21  0.22  0.80 sub(hs0, )
 Simulating Particle :ps3   :10261507063133765635: pdgid =   -13, status =   1, q =  1, e =  18.3, theta =  0.34, phi =  0.90, mass =  0.11
 Simulating Muon
 Made Track: tt3   :7964671252839268355:   18.31   17.27  0.34  0.90
-Made SmearedTrack: ts3   :7955664138812784643:   18.38   17.34  0.34  0.90
+Made SmearedTrack: ts3   :7955664140071075843:   18.38   17.34  0.34  0.90
 Simulating Particle :ps4   :10261504740282073092: pdgid =  -211, status =   1, q = -1, e =  16.2, theta =  0.25, phi =  0.83, mass =  0.14
 Simulating Hadron
 Made Track: tt4   :7964668929660420100:   16.19   15.69  0.25  0.83
@@ -8282,15 +8282,15 @@ Made block:T1       :br29  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br30  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts3       value= 18.4 (7955664138812784643)
+      t0 = ts3       value= 18.4 (7955664140071075843)
 
 Made block:T1       :br31  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 41.7 (7955684456849735681)
+      t0 = ts1       value= 41.7 (7955684437895675905)
 
 Made block:T1       :br32  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 64.2 (7955696746818961408)
+      t0 = ts0       value= 64.4 (7955696812417875968)
 
 Splitting block:E1H1T3   :br19  : ecals = 1 hcals = 1 tracks = 3
     elements:
@@ -8480,27 +8480,27 @@ Made block:E1T1     :bs8   : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br32  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 64.2 (7955696746818961408)
+      t0 = ts0       value= 64.4 (7955696812417875968)
 
 Made block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 64.2 (7955696746818961408)
+      t0 = ts0       value= 64.4 (7955696812417875968)
 
 Splitting block:T1       :br31  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 41.7 (7955684456849735681)
+      t0 = ts1       value= 41.7 (7955684437895675905)
 
 Made block:T1       :bs10  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 41.7 (7955684456849735681)
+      t0 = ts1       value= 41.7 (7955684437895675905)
 
 Splitting block:T1       :br30  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts3       value= 18.4 (7955664138812784643)
+      t0 = ts3       value= 18.4 (7955664140071075843)
 
 Made block:T1       :bs11  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts3       value= 18.4 (7955664138812784643)
+      t0 = ts3       value= 18.4 (7955664140071075843)
 
 Splitting block:T1       :br29  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -8911,21 +8911,21 @@ Made Particle :pr31  :10252439810086010911: pdgid =   211, status =   1, q =  1,
 Finished block
 Processing block:T1       :bs11  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts3       value= 18.4 (7955664138812784643)
+      t0 = ts3       value= 18.4 (7955664140071075843)
 
-Made Particle :pr32  :10252499949100990496: pdgid =    13, status =   1, q =  1, e =  18.4, theta =  0.34, phi =  0.90, mass =  0.10 from SmearedTrack: ts3   :7955664138812784643:   18.38   17.34  0.34  0.90
+Made Particle :pr32  :10252499950359281696: pdgid =    13, status =   1, q =  1, e =  18.4, theta =  0.34, phi =  0.90, mass =  0.11 from SmearedTrack: ts3   :7955664140071075843:   18.38   17.34  0.34  0.90
 Finished block
 Processing block:T1       :bs10  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 41.7 (7955684456849735681)
+      t0 = ts1       value= 41.7 (7955684437895675905)
 
-Made Particle :pr33  :10252520266879991841: pdgid =    13, status =   1, q =  1, e =  41.7, theta = -0.19, phi =  2.03, mass =  0.11 from SmearedTrack: ts1   :7955684456849735681:   41.72   41.01 -0.19  2.03
+Made Particle :pr33  :10252520247928029217: pdgid =    13, status =   1, q =  1, e =  41.7, theta = -0.19, phi =  2.03, mass =  0.11 from SmearedTrack: ts1   :7955684437895675905:   41.69   40.98 -0.19  2.03
 Finished block
 Processing block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 64.2 (7955696746818961408)
+      t0 = ts0       value= 64.4 (7955696812417875968)
 
-Made Particle :pr34  :10252532556803080226: pdgid =   -13, status =   1, q = -1, e =  64.2, theta = -0.06, phi = -2.03, mass =  0.10 from SmearedTrack: ts0   :7955696746818961408:   64.16   64.05 -0.06 -2.03
+Made Particle :pr34  :10252532622401994786: pdgid =   -13, status =   1, q = -1, e =  64.4, theta = -0.06, phi = -2.03, mass =  0.10 from SmearedTrack: ts0   :7955696812417875968:   64.40   64.29 -0.06 -2.03
 Finished block
 Finished reconstruction
 Event: 6
@@ -8992,11 +8992,11 @@ Made Particle :ps59  :10261241481201188923: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261541683780911104: pdgid =   -13, status =   1, q =  1, e =  71.2, theta =  0.42, phi =  2.54, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964705873800986624:   71.17   65.12  0.42  2.54
-Made SmearedTrack: ts0   :7955698629061115904:   71.01   64.97  0.42  2.54
+Made SmearedTrack: ts0   :7955698620269854720:   70.98   64.94  0.42  2.54
 Simulating Particle :ps1   :10261522908868247553: pdgid =    13, status =   1, q = -1, e =  33.4, theta = -1.15, phi = -0.86, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964687098819117057:   33.44   13.72 -1.15 -0.86
-Made SmearedTrack: ts1   :7955680181740371969:   33.95   13.93 -1.15 -0.86
+Made SmearedTrack: ts1   :7955680186870005761:   33.96   13.93 -1.15 -0.86
 Simulating Particle :ps2   :10261500880845012994: pdgid =   321, status =   1, q =  1, e =  14.3, theta = -0.51, phi =  3.11, mass =  0.49
 Simulating Hadron
 Made Track: tt2   :7964665052194144258:   14.33   12.52 -0.51  3.11
@@ -9063,11 +9063,11 @@ Made Particle :ps53  :10261317773806272565: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261539759165800448: pdgid =    13, status =   1, q = -1, e =  64.2, theta =  0.46, phi = -1.63, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964703949183778816:   64.17   57.46  0.46 -1.63
-Made SmearedTrack: ts0   :7955696166864158720:   63.03   56.44  0.46 -1.63
+Made SmearedTrack: ts0   :7955696070239977472:   62.85   56.28  0.46 -1.63
 Simulating Particle :ps1   :10261526673744723969: pdgid =   -13, status =   1, q =  1, e =  40.3, theta = -0.06, phi =  0.61, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964690863708176385:   40.28   40.22 -0.06  0.61
-Made SmearedTrack: ts1   :7955683408582017025:   39.82   39.75 -0.06  0.61
+Made SmearedTrack: ts1   :7955683388677947393:   39.78   39.72 -0.06  0.61
 Simulating Particle :ps2   :10261495652617814018: pdgid =    22, status =   1, q =  0, e =  12.0, theta = -1.03, phi =  1.51, mass =  0.00
 Simulating Photon
 Made Cluster: et0   :3352973824231473152:   11.96 -1.03  1.51 sub(et0, )
@@ -9574,11 +9574,11 @@ Made block:T1       :br33  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br34  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.8 (7955683408582017025)
+      t0 = ts1       value= 39.8 (7955683388677947393)
 
 Made block:T1       :br35  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 63.0 (7955696166864158720)
+      t0 = ts0       value= 62.8 (7955696070239977472)
 
 Splitting block:E1H1T1   :br16  : ecals = 1 hcals = 1 tracks = 1
     elements:
@@ -9756,19 +9756,19 @@ Made block:E1T1     :bs8   : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br35  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 63.0 (7955696166864158720)
+      t0 = ts0       value= 62.8 (7955696070239977472)
 
 Made block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 63.0 (7955696166864158720)
+      t0 = ts0       value= 62.8 (7955696070239977472)
 
 Splitting block:T1       :br34  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.8 (7955683408582017025)
+      t0 = ts1       value= 39.8 (7955683388677947393)
 
 Made block:T1       :bs10  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.8 (7955683408582017025)
+      t0 = ts1       value= 39.8 (7955683388677947393)
 
 Splitting block:T1       :br33  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -10229,15 +10229,15 @@ Made Particle :pr35  :10252480456303837219: pdgid =  -211, status =   1, q = -1,
 Finished block
 Processing block:T1       :bs10  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.8 (7955683408582017025)
+      t0 = ts1       value= 39.8 (7955683388677947393)
 
-Made Particle :pr36  :10252519218616467492: pdgid =    13, status =   1, q =  1, e =  39.8, theta = -0.06, phi =  0.61, mass =  0.11 from SmearedTrack: ts1   :7955683408582017025:   39.82   39.75 -0.06  0.61
+Made Particle :pr36  :10252519198712397860: pdgid =    13, status =   1, q =  1, e =  39.8, theta = -0.06, phi =  0.61, mass =  0.11 from SmearedTrack: ts1   :7955683388677947393:   39.78   39.72 -0.06  0.61
 Finished block
 Processing block:T1       :bs9   : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 63.0 (7955696166864158720)
+      t0 = ts0       value= 62.8 (7955696070239977472)
 
-Made Particle :pr37  :10252531976871346213: pdgid =   -13, status =   1, q = -1, e =  63.0, theta =  0.46, phi = -1.63, mass =  0.10 from SmearedTrack: ts0   :7955696166864158720:   63.03   56.44  0.46 -1.63
+Made Particle :pr37  :10252531880247164965: pdgid =   -13, status =   1, q = -1, e =  62.8, theta =  0.46, phi = -1.63, mass =  0.10 from SmearedTrack: ts0   :7955696070239977472:   62.85   56.28  0.46 -1.63
 Finished block
 Finished reconstruction
 Event: 8
@@ -10333,11 +10333,11 @@ Made Particle :ps88  :10261296670635458648: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261534607033761792: pdgid =    13, status =   1, q = -1, e =  54.7, theta = -1.25, phi =  1.40, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964698797018185728:   54.71   17.20 -1.25  1.40
-Made SmearedTrack: ts0   :7955691319179870208:   54.21   17.04 -1.25  1.40
+Made SmearedTrack: ts0   :7955691311246344192:   54.19   17.03 -1.25  1.40
 Simulating Particle :ps1   :10261526215483457537: pdgid =   -13, status =   1, q =  1, e =  39.5, theta =  0.96, phi = -0.32, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964690405444812801:   39.45   22.52  0.96 -0.32
-Made SmearedTrack: ts1   :7955683328649068545:   39.67   22.65  0.96 -0.32
+Made SmearedTrack: ts1   :7955683331710910465:   39.68   22.65  0.96 -0.32
 Simulating Particle :ps2   :10261499699649314818: pdgid =    22, status =   1, q =  0, e =  13.8, theta = -1.57, phi = -2.91, mass =  0.00
 Simulating Photon
 Made Cluster: et0   :3352977871262973952:   13.80 -1.57 -2.91 sub(et0, )
@@ -11111,11 +11111,11 @@ Made block:T1       :br46  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br47  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.7 (7955683328649068545)
+      t0 = ts1       value= 39.7 (7955683331710910465)
 
 Made block:T1       :br48  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 54.2 (7955691319179870208)
+      t0 = ts0       value= 54.2 (7955691311246344192)
 
 Splitting block:H1T2     :br37  : ecals = 0 hcals = 1 tracks = 2
     elements:
@@ -11365,19 +11365,19 @@ Made block:E1T1     :bs12  : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br48  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 54.2 (7955691319179870208)
+      t0 = ts0       value= 54.2 (7955691311246344192)
 
 Made block:T1       :bs13  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 54.2 (7955691319179870208)
+      t0 = ts0       value= 54.2 (7955691311246344192)
 
 Splitting block:T1       :br47  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.7 (7955683328649068545)
+      t0 = ts1       value= 39.7 (7955683331710910465)
 
 Made block:T1       :bs14  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.7 (7955683328649068545)
+      t0 = ts1       value= 39.7 (7955683331710910465)
 
 Splitting block:T1       :br46  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -12010,15 +12010,15 @@ Made Particle :pr50  :10252462371140272178: pdgid =   211, status =   1, q =  1,
 Finished block
 Processing block:T1       :bs14  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 39.7 (7955683328649068545)
+      t0 = ts1       value= 39.7 (7955683331710910465)
 
-Made Particle :pr51  :10252519138683519027: pdgid =    13, status =   1, q =  1, e =  39.7, theta =  0.96, phi = -0.32, mass =  0.11 from SmearedTrack: ts1   :7955683328649068545:   39.67   22.65  0.96 -0.32
+Made Particle :pr51  :10252519141745360947: pdgid =    13, status =   1, q =  1, e =  39.7, theta =  0.96, phi = -0.32, mass =  0.10 from SmearedTrack: ts1   :7955683331710910465:   39.68   22.65  0.96 -0.32
 Finished block
 Processing block:T1       :bs13  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 54.2 (7955691319179870208)
+      t0 = ts0       value= 54.2 (7955691311246344192)
 
-Made Particle :pr52  :10252527129193349172: pdgid =   -13, status =   1, q = -1, e =  54.2, theta = -1.25, phi =  1.40, mass =  0.10 from SmearedTrack: ts0   :7955691319179870208:   54.21   17.04 -1.25  1.40
+Made Particle :pr52  :10252527121261920308: pdgid =   -13, status =   1, q = -1, e =  54.2, theta = -1.25, phi =  1.40, mass =  0.10 from SmearedTrack: ts0   :7955691311246344192:   54.19   17.03 -1.25  1.40
 Finished block
 Finished reconstruction
 Event: 9
@@ -12085,11 +12085,11 @@ Made Particle :ps59  :10261349540049190971: pdgid =    22, status =   1, q =  0,
 Simulating Particle :ps0   :10261540265344892928: pdgid =   -13, status =   1, q =  1, e =  66.0, theta = -0.06, phi = -1.33, mass =  0.11
 Simulating Muon
 Made Track: tt0   :7964704455362871296:   66.01   65.88 -0.06 -1.33
-Made SmearedTrack: ts0   :7955697202863538176:   65.82   65.69 -0.06 -1.33
+Made SmearedTrack: ts0   :7955697192350515200:   65.78   65.65 -0.06 -1.33
 Simulating Particle :ps1   :10261525717919465473: pdgid =    13, status =   1, q = -1, e =  38.5, theta =  0.97, phi =  1.66, mass =  0.11
 Simulating Muon
 Made Track: tt1   :7964689907880820737:   38.54   21.93  0.97  1.66
-Made SmearedTrack: ts1   :7955682657279410177:   38.45   21.88  0.97  1.66
+Made SmearedTrack: ts1   :7955682656060964865:   38.45   21.88  0.97  1.66
 Simulating Particle :ps2   :10261520120385896450: pdgid =   321, status =   1, q =  1, e =  30.2, theta = -0.79, phi =  0.41, mass =  0.49
 Simulating Hadron
 Made Track: tt2   :7964684305987272706:   30.18   21.14 -0.79  0.41
@@ -12634,11 +12634,11 @@ Made block:T1       :br30  : ecals = 0 hcals = 0 tracks = 1
 
 Made block:T1       :br31  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 38.5 (7955682657279410177)
+      t0 = ts1       value= 38.4 (7955682656060964865)
 
 Made block:T1       :br32  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 65.8 (7955697202863538176)
+      t0 = ts0       value= 65.8 (7955697192350515200)
 
 Splitting block:E1H1T1   :br25  : ecals = 1 hcals = 1 tracks = 1
     elements:
@@ -12860,19 +12860,19 @@ Made block:E1T1     :bs10  : ecals = 1 hcals = 0 tracks = 1
 
 Splitting block:T1       :br32  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 65.8 (7955697202863538176)
+      t0 = ts0       value= 65.8 (7955697192350515200)
 
 Made block:T1       :bs11  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 65.8 (7955697202863538176)
+      t0 = ts0       value= 65.8 (7955697192350515200)
 
 Splitting block:T1       :br31  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 38.5 (7955682657279410177)
+      t0 = ts1       value= 38.4 (7955682656060964865)
 
 Made block:T1       :bs12  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 38.5 (7955682657279410177)
+      t0 = ts1       value= 38.4 (7955682656060964865)
 
 Splitting block:T1       :br30  : ecals = 0 hcals = 0 tracks = 1
     elements:
@@ -13292,14 +13292,14 @@ Made Particle :pr35  :10252442768355885091: pdgid =   211, status =   1, q =  1,
 Finished block
 Processing block:T1       :bs12  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts1       value= 38.5 (7955682657279410177)
+      t0 = ts1       value= 38.4 (7955682656060964865)
 
-Made Particle :pr36  :10252518467318054948: pdgid =   -13, status =   1, q = -1, e =  38.5, theta =  0.97, phi =  1.66, mass =  0.11 from SmearedTrack: ts1   :7955682657279410177:   38.45   21.88  0.97  1.66
+Made Particle :pr36  :10252518466099609636: pdgid =   -13, status =   1, q = -1, e =  38.4, theta =  0.97, phi =  1.66, mass =  0.11 from SmearedTrack: ts1   :7955682656060964865:   38.45   21.88  0.97  1.66
 Finished block
 Processing block:T1       :bs11  : ecals = 0 hcals = 0 tracks = 1
     elements:
-      t0 = ts0       value= 65.8 (7955697202863538176)
+      t0 = ts0       value= 65.8 (7955697192350515200)
 
-Made Particle :pr37  :10252533012845559845: pdgid =    13, status =   1, q =  1, e =  65.8, theta = -0.06, phi = -1.33, mass =  0.10 from SmearedTrack: ts0   :7955697202863538176:   65.82   65.69 -0.06 -1.33
+Made Particle :pr37  :10252533002332536869: pdgid =    13, status =   1, q =  1, e =  65.8, theta = -0.06, phi = -1.33, mass =  0.10 from SmearedTrack: ts0   :7955697192350515200:   65.78   65.65 -0.06 -1.33
 Finished block
 Finished reconstruction

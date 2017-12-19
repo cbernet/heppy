@@ -53,6 +53,39 @@ if context.name == 'fcc':
             mean, sigma = plot_ee_mass(rootfile)
             self.assertAlmostEqual(mean, 83.58, 1)
             self.assertAlmostEqual(sigma, 7.06, 1)
+ 
+        def test_z_ee_cms(self):
+            '''Test Z->ee with CMS
+            '''
+            from heppy.papas.detectors.CMS import cms
+            fname = '/'.join([os.environ['HEPPY'],
+                                      'test/data/ee_Z_ee.root'])
+            config.components[0].files = [fname]
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = cms
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=10,
+                                  nPrint=0 )
+            self.looper.loop()
+            self.looper.write()
+
+        def test_z_mumu_cms(self):
+            '''Test Z->mumu with CMS
+            '''
+            from heppy.papas.detectors.CMS import cms
+            fname = '/'.join([os.environ['HEPPY'],
+                                      'test/data/ee_Z_mumu.root'])
+            config.components[0].files = [fname]
+            for s in config.sequence:
+                if hasattr( s,'detector'):
+                    s.detector = cms
+            self.looper = Looper( self.outdir, config,
+                                  nEvents=10,
+                                  nPrint=0 )
+            self.looper.loop()
+            self.looper.write()
+
 
         def test_z_2_clic(self):
             '''Check Z mass in ee->Z->ddbar (CLIC).
@@ -125,6 +158,7 @@ if context.name == 'fcc':
             mean, sigma = plot_ee_mass(rootfile, nbins=400, xmin=70, xmax=110)
             self.assertAlmostEqual(mean, 90.43, 1)
             self.assertAlmostEqual(sigma, 4.66, 1)
+
 
         
 

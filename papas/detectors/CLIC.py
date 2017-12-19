@@ -215,13 +215,15 @@ class CLIC(Detector):
         else:
             return False
 
-    def electron_resolution(self, ptc):
+    def electron_resolution(self, track):
         '''returns the relative electron resolution.
         
         The CLIC CDR does not give any value for the electron resolution.
         We simply use the ECAL resolution.
         '''
-        return self.elements['ecal'].energy_resolution(ptc.e(), ptc.eta())
+        # using the track momentum as an estimator of the electron energy
+        return self.elements['ecal'].energy_resolution(track.p3().Mag(),
+                                                       track.p3().Eta())
             
     def muon_acceptance(self, track):
         '''returns True if muon is seen.
@@ -231,7 +233,7 @@ class CLIC(Detector):
         return track.p3().Mag() > 7.5 and \
                abs(track.theta()) < 80. * math.pi / 180.
             
-    def muon_resolution(self, ptc):
+    def muon_resolution(self, track):
         '''returns the relative muon resolution.
         
         In CLIC, the momentum resolution of the tracker is excellent and,
@@ -239,7 +241,7 @@ class CLIC(Detector):
         the muon chambers cannot improve the resolution in the energy domain of FCCee.
         Therefore, using the momentum resolution of the tracker (CLIC CDR, section 8.1.1)
         '''
-        return self.elements['tracker'].resolution(ptc)
+        return self.elements['tracker'].resolution(track)
     
     def ip_resolution(self, ptc):
         '''Not used yet'''
