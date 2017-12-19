@@ -119,8 +119,8 @@ class Tracker(DetectorElement):
 
     def acceptance(self, track):
         # return False
-        pt = track.p3() .Pt()
-        eta = abs(track.p3() .Eta())
+        pt = track.p3().Pt()
+        eta = abs(track.p3().Eta())
         if eta < 1.35 and pt>0.5:
             return random.uniform(0,1)<0.95
         elif eta < 2.5 and pt>0.5:
@@ -211,7 +211,7 @@ class CMS(Detector):
             cstt, vart = 0.015, 1.5e-4
         else:
             cstt, vart = 0.025, 3.5e-4
-        res = math.sqrt(cstt**2 + vart**2)
+        res = math.sqrt(cstt**2 + (ptc.pt() * vart)**2)
         return res
     
     def jet_energy_correction(self, jet):
