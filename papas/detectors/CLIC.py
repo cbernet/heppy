@@ -141,17 +141,18 @@ class Tracker(DetectorElement):
         Acceptance from the CLIC CDF p107, Fig. 5.12 without background.
         The tracker is taken to be efficient up to theta = 80 degrees. 
         '''
+        rnd = random.uniform(0,1)
         pt = track.p3().Pt()
         theta = abs(track.theta())
         if theta < self.theta_max:
             if pt < 0.1:
                 return False
             elif pt < 0.3:
-                return random.uniform(0,1) < 0.9
+                return rnd < 0.9
             elif pt < 1:
-                return random.uniform(0,1) < 0.95
+                return rnd < 0.95
             else:
-                return random.uniform(0,1) < 0.99
+                return rnd < 0.99
         return False
 
 ##    def _sigmapt_over_pt2(self, a, b, pt):
