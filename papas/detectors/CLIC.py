@@ -1,7 +1,8 @@
 '''CLIC-ILD model
 
-TODO : use new tracker momentum resolution (important for muons)
-TODO : electron resolution : use quad sum of tracker and ecal resolution
+Physics and Detectors at CLIC:
+https://arxiv.org/abs/1202.5940
+
 '''
 
 from detector import Detector, DetectorElement
@@ -12,24 +13,31 @@ import heppy.statistics.rrandom as random
 
 class ECAL(DetectorElement):
 
+    max_radius = 4.8
+    min_radius = 2.15
+    max_z = 3.4
+    min_z = 1.8
+
     def __init__(self):
         depth = 0.25
-        inner_radius = 2.15
-        inner_z = 2.6
+        min_radius = self.__class__.min_radius
+        min_z = self.__class__.min_z
+        inner_endcap_radius = 0.25
+        self.maxeta = -math.log(math.tan(math.atan(inner_endcap_radius/1.7) / 2.))
         nX0 = 23  #CLIC CDR, page 70, value for CLIC_ILD
         nLambdaI = 1  # ibid
-        outer_radius = inner_radius + depth
-        outer_z = inner_z + depth
+        outer_radius = min_radius + depth
+        outer_z = min_z + depth
         X0 = depth / nX0
         lambdaI = depth / nLambdaI
-        volume = VolumeCylinder('ecal', outer_radius, outer_z, inner_radius, inner_z)
+        volume = VolumeCylinder('ecal', outer_radius, outer_z, min_radius, min_z)
         mat = material.Material('ECAL', X0, lambdaI)
         # todo: recompute
         self.eta_junction = volume.inner.eta_junction()
-        # as for ILD (thresholds chosen by Mogens)
-        self.emin = {'barrel':0.5, 'endcap':0.5}
-        # CLIC CDR p.123. adding a noise term of 1%
-        self.eres = {'barrel':[0.167, 0.010, 0.011]}
+        # cooking up thresholds. a HG calo must be quite sensitive
+        self.emin = {'barrel':0.2, 'endcap':0.2}
+        # CLIC CDR p.123
+        self.eres = {'barrel':[0.167, 0.0, 0.011]}
         super(ECAL, self).__init__('ecal', volume,  mat)
 
     def energy_resolution(self, energy, eta=0.):
@@ -55,7 +63,7 @@ class ECAL(DetectorElement):
         eta = abs(cluster.position.Eta())
         if eta < self.eta_junction:
             return energy>self.emin['barrel']
-        elif eta < 2.76:  #TODO check this value
+        elif eta < self.maxeta:
             return energy>self.emin['endcap']
         else:
             return False
@@ -66,12 +74,19 @@ class ECAL(DetectorElement):
     
 class HCAL(DetectorElement):
 
+    max_radius = 4.8
+    min_radius = 2.4
+    max_z = 3.4
+    min_z = 1.8
+    
     def __init__(self):
-        volume = VolumeCylinder('hcal', 4.8, 5.3, 2.4, 2.85 )
+        volume = VolumeCylinder('hcal',
+                                self.__class__.max_radius, self.__class__.max_z,
+                                self.__class__.min_radius, self.__class__.min_z)
         # not sure about X0 and lambda_i, but these don't matter anyway
         mat = material.Material('HCAL', 0.018, 0.17)
-        # resolution from CLIC CDR Fig. 6.11, 1st hypothesis
-        self.eres = [0.60, 0., 0.025]        
+        # resolution from CLIC CDR Fig. 6.11, 2nd hypothesis (simple software compensation)
+        self.eres = [0.5, 0.5, 0.0234]        
         super(HCAL, self).__init__('ecal', volume, mat)
 
     def energy_resolution(self, energy, eta=0.):
@@ -87,9 +102,8 @@ class HCAL(DetectorElement):
         '''returns cluster size in the HCAL
         
         25 cm for CLIC, c.f. CLIC CDR Fig. 6.12
-        Value taken to get a 80% chance of separating two showers.
         '''
-        return 0.25
+        return 0.10
 
     def acceptance(self, cluster):
         energy = cluster.energy
@@ -108,21 +122,11 @@ class Tracker(DetectorElement):
    
     def __init__(self):
         super(Tracker, self).__init__('tracker',
-                                      VolumeCylinder('tracker', 2.14, 2.6),
+                                      VolumeCylinder('tracker', ECAL.min_radius , ECAL.min_z),
                                       material.void)
         self.theta_max = 75. * math.pi / 180.
-        # CLIC CDR Table 5.3.
-        # using our definition of theta (equal to zero at eta=0)
-        # first line added by hand for small angles,
-        # with a bad resolution.
-        # these tracks will not be accepted anyway,
-        # but please pay attention to the acceptance method.
-        ##        self.resmap = [ (90, 8.2e-2, 9.1e-2),  
-        ##                        (80, 8.2e-4, 9.1e-3),
-        ##                        (30, 9.9e-5, 3.8e-3),
-        ##                        (20, 3.9e-5, 1.6e-3),
-        ##                        (10, 2e-5, 7.2e-4) ]
         # Emilia Leogrande
+        # using our definition of theta (equal to zero at eta=0)
         self.resmap = [(80.0, [0.00064001464571871076, 0.13554521466257508, 1.1091870672607593]),
                        (60.0, [7.9414367183119937e-05, 0.014845686639308672, 1.0821694803464048]),
                        (40.0, [4.8900068724976152e-05, 0.0056580423053257511, 1.0924861152630758]),
@@ -155,17 +159,11 @@ class Tracker(DetectorElement):
                 return rnd < 0.99
         return False
 
-##    def _sigmapt_over_pt2(self, a, b, pt):
-##        '''CLIC CDR Eq. 5.1'''
-##        return math.sqrt( a ** 2 + (b / pt) ** 2)           
-
     def _sigpt_over_pt2(self, x, a, b, c):
         return math.sqrt( a ** 2 + (b / x**c) ** 2 )
 
     def resolution(self, track):
         '''Returns relative resolution on the track momentum
-        
-        CLIC CDR, Table 5.3
         '''
         pt = track.p3().Pt()
         # matching the resmap defined above.
@@ -186,7 +184,7 @@ class Field(DetectorElement):
 
     def __init__(self, magnitude):
         self.magnitude = magnitude
-        volume = VolumeCylinder('field', 4.8, 5.3)
+        volume = VolumeCylinder('field', HCAL.max_radius, HCAL.max_z)
         mat = material.void
         super(Field, self).__init__('tracker', volume,  mat)
 
@@ -220,11 +218,10 @@ class CLIC(Detector):
         '''returns the relative electron resolution.
         
         The CLIC CDR does not give any value for the electron resolution.
-        We simply use the ECAL resolution.
+        We simply use the tracker resolution as for muons
+        (very thin tracker, low electron energy, low ECAL resolution w/r to CMS)
         '''
-        # using the track momentum as an estimator of the electron energy
-        return self.elements['ecal'].energy_resolution(track.p3().Mag(),
-                                                       track.p3().Eta())
+        return self.elements['tracker'].resolution(track)
             
     def muon_acceptance(self, track):
         '''returns True if muon is seen.
@@ -259,7 +256,6 @@ class CLIC(Detector):
         self.elements['hcal'] = HCAL()
         # field limited to 2 T for FCC-ee 
         self.elements['field'] = Field(2.)
-        self.elements['beampipe'] = BeamPipe()
 
 
 
