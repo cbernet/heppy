@@ -212,8 +212,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                 tracker.acceptance
             )
         propagator(ptc.q()).propagate_one(ptc,
-                                           ecal.volume.inner,
-                                           self.detector.elements['field'].magnitude)
+                                          ecal.volume.inner,
+                                          self.detector.elements['field'].magnitude)
         
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)
