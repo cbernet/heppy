@@ -108,8 +108,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot_ee_mass(rootfile)
-            self.assertAlmostEqual(mean, 87.45, 1)
-            self.assertAlmostEqual(sigma, 3.75, 1)
+            self.assertAlmostEqual(mean, 90.15, 1)
+            self.assertAlmostEqual(sigma, 3.3, 1)
 
         def test_z_mumu_clic(self):
             '''Check Z mass in ee->Z->mumu (CLIC).
@@ -132,8 +132,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot_ee_mass(rootfile, nbins=400, xmin=70, xmax=110)
-            self.assertAlmostEqual(mean, 90.84, 1)
-            self.assertAlmostEqual(sigma, 1.32, 1)
+            self.assertAlmostEqual(mean, 90.80, 1)
+            self.assertAlmostEqual(sigma, 2.7, 1)
 
         def test_z_ee_clic(self):
             '''Check Z mass in ee->Z->ee (CLIC).
@@ -156,8 +156,8 @@ if context.name == 'fcc':
             rootfile = '/'.join([self.outdir,
                                 'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
             mean, sigma = plot_ee_mass(rootfile, nbins=400, xmin=70, xmax=110)
-            self.assertAlmostEqual(mean, 90.43, 1)
-            self.assertAlmostEqual(sigma, 4.66, 1)
+            self.assertAlmostEqual(mean, 90.67, 1)
+            self.assertAlmostEqual(sigma, 5.05, 1)
 
 
         
