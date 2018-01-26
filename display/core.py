@@ -32,11 +32,12 @@ class Display(object):
         self.views = dict() #will store the windows, one per projection
         self.subscreens = subscreens
         #set up the projections
+        smax = 5.  # 5m limit on all views
         for view in projections:
             if view in ['yz', 'xz']:
-                self.views[view] = ViewPane(view, view, 100, -4, 4, 100, -4, 4, subscreens=subscreens)
+                self.views[view] = ViewPane(view, view, 100, -smax, smax, 100, -smax, smax, subscreens=subscreens)
             if view in ['xy']:
-                self.views[view] = ViewPane(view, view, 100, -4, 4, 100, -4, 4, subscreens=subscreens)
+                self.views[view] = ViewPane(view, view, 100, -smax, smax, 100, -smax, smax, subscreens=subscreens)
             elif 'thetaphi' in view:
                 self.views[view] = ViewPane(view, view,
                                             100, -math.pi/2, math.pi/2,
@@ -148,10 +149,11 @@ class ViewPane(object): #a graphics window
         #manufacture the subscreens
         for x in range(0, self.nsubscreens):
             c1 = self.canvas.cd(x+1)
-            c1.SetLeftMargin(0.0015)
-            c1.SetRightMargin(0.0015)  
-            c1.SetTopMargin(0.0015)  
-            c1.SetBottomMargin(0.0015)  
+            margin = 0.05
+            c1.SetLeftMargin(margin)
+            c1.SetRightMargin(margin)  
+            c1.SetTopMargin(margin)  
+            c1.SetBottomMargin(margin)  
             panename = name + ": " + subscreens[x]
             #create a ViewPad, this is the subscreen on which outputs will be plotted.
             #side is used to index the subscreens
