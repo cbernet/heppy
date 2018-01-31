@@ -160,7 +160,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                      detector_resolution, detector_acceptance):
         '''create a new smeared track'''
         #TODO smearing depends on particle type!
-        resolution = detector_resolution(ptc)
+        resolution = detector_resolution(track)
         scale_factor = random.gauss(1, resolution)
         smeared_track = SmearedTrack(track,
                                      track._p3 * scale_factor,
@@ -168,7 +168,7 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                                      track.path,
                                      index = len(self.smeared_tracks))
         pdebugger.info(" ".join(("Made", smeared_track.__str__())))
-        if detector_acceptance(ptc):
+        if detector_acceptance(track):
             self.smeared_tracks[smeared_track.uniqueid] = smeared_track
             self.update_history(track.uniqueid, smeared_track.uniqueid)   
             ptc.track_smeared = smeared_track             
@@ -212,8 +212,8 @@ cannot be extrapolated to : {det}\n'''.format(ptc=ptc,
                 tracker.acceptance
             )
         propagator(ptc.q()).propagate_one(ptc,
-                                           ecal.volume.inner,
-                                           self.detector.elements['field'].magnitude)
+                                          ecal.volume.inner,
+                                          self.detector.elements['field'].magnitude)
         
         if 'ecal_in' in ptc.path.points:
             # doesn't have to be the case (long-lived particles)

@@ -119,8 +119,8 @@ class Tracker(DetectorElement):
 
     def acceptance(self, track):
         # return False
-        pt = track.p3() .Pt()
-        eta = abs(track.p3() .Eta())
+        pt = track.p3().Pt()
+        eta = abs(track.p3().Eta())
         if eta < 1.35 and pt>0.5:
             return random.uniform(0,1)<0.95
         elif eta < 2.5 and pt>0.5:
@@ -157,16 +157,17 @@ class BeamPipe(DetectorElement):
         
 class CMS(Detector):
         
-    def electron_acceptance(self, ptc):
+    def electron_acceptance(self, track):
         """Delphes parametrization
         https://github.com/delphes/delphes/blob/master/cards/delphes_card_CMS.tcl
         96d6bcf 
         """
         rnd = random.uniform(0, 1)
-        if ptc.pt() < 10.:
+        pt = track.p3().Perp()
+        if pt < 10.:
             return False
         else:
-            eta = abs(ptc.eta())
+            eta = abs(track.p3().Eta())
             if eta < 1.5:
                 return rnd < 0.95
             elif eta < 2.5:
@@ -174,25 +175,25 @@ class CMS(Detector):
             else:
                 return False
 
-    def electron_resolution(self, ptc):
-        # return 0.1 / math.sqrt(ptc.e())
+    def electron_resolution(self, track):
         return 0.03
             
-    def muon_acceptance(self, ptc):
+    def muon_acceptance(self, track):
         """Delphes parametrization
         https://github.com/delphes/delphes/blob/master/cards/delphes_card_CMS.tcl
         96d6bcf 
         """        
         rnd = random.uniform(0, 1)
-        eta = abs(ptc.eta())        
-        if ptc.pt() < 10.:
+        eta = abs(track.p3().Eta())
+        pt = track.p3().Perp()
+        if pt < 10.:
             return False
         elif eta < 2.4:
             return rnd < 0.95
         else:
             return False
             
-    def muon_resolution(self, ptc):
+    def muon_resolution(self, track):
         """Delphes parametrization
         
           # resolution formula for muons
@@ -202,7 +203,8 @@ class CMS(Detector):
                          (abs(eta) > 1.5 && abs(eta) <= 2.5) * (pt > 0.1) * sqrt(0.025^2 + pt^2*3.5e-4^2)}
         """
         rnd = random.uniform(0, 1)
-        eta = abs(ptc.eta())
+        eta = abs(track.p3().Eta())
+        pt = track.p3().Perp()
         cstt = None
         vart = None
         if eta < 0.5:
@@ -211,7 +213,7 @@ class CMS(Detector):
             cstt, vart = 0.015, 1.5e-4
         else:
             cstt, vart = 0.025, 3.5e-4
-        res = math.sqrt(cstt**2 + vart**2)
+        res = math.sqrt(cstt**2 + (pt * vart)**2)
         return res
     
     def jet_energy_correction(self, jet):

@@ -9,6 +9,7 @@ from analysis_ee_ZH_cfg import *
 
 import os
 import copy
+import glob
 import heppy.framework.config as cfg
 
 from heppy.framework.event import Event
@@ -29,20 +30,15 @@ from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
 do_clic = False
-
+nfiles = 4
+files = glob.glob('data/ee_Z_ddbar_pythia*.root')[:nfiles]
 # input definition
 import glob
 ee_Z_ddbar = cfg.Component(
     'ee_Z_ddbar',
-    files = ['data/ee_Z_ddbar.root'] 
+    files = files
     )
 ee_Z_ddbar.splitFactor = len(ee_Z_ddbar.files)
-
-ee_Z_bbbar = cfg.Component(
-    'ee_Z_bbbar',
-    files = ['data/ee_Z_bbbar.root']
-)
-
 
 selectedComponents = [ee_Z_ddbar]
 
