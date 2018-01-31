@@ -90,6 +90,19 @@ class Reader(Analyzer):
                 setattr(event, coll_label, pycoll)
             return pycoll
 
+
+        def get_tag(tag_label):
+            pycoll = None
+            if hasattr(self.cfg_ana, tag_label):
+                tag_name = getattr( self.cfg_ana, tag_label)
+                tags = store.get( tag_name )
+                if tags == None:
+                    raise MissingCollection(
+                        'tag {} is missing'.format(tag_name)
+                        )
+            return tags
+
+
         # store only 1st event weight for now
         event.weight = - 999.
         if hasattr(self.cfg_ana, 'weights'):
@@ -113,74 +126,73 @@ class Reader(Analyzer):
         if hasattr(self.cfg_ana, 'gen_jets'):
             get_collection(Jet, 'gen_jets')
 
-        jetcoll = get_collection(Jet, 'jets')
-        if jetcoll:
-            jets = dict()
-            for jet in jetcoll:
-                jets[jet] = jet
-            if hasattr(self.cfg_ana, 'bTags'):
-                for bjet in store.get(self.cfg_ana.bTags):
-                    jets[Jet(bjet.jet())].tags['bf'] = bjet.tag()
-
-            if hasattr(self.cfg_ana, 'cTags'):
-                for cjet in store.get(self.cfg_ana.cTags):
-                    jets[Jet(cjet.jet())].tags['cf'] = cjet.tag()
-
-            if hasattr(self.cfg_ana, 'tauTags'):
-                for taujet in store.get(self.cfg_ana.tauTags):
-                    jets[Jet(taujet.jet())].tags['tauf'] = taujet.tag()
-
-        ############################
-        #  jet substructure stuff  #
-        ############################
         
-        fatjetcoll = get_collection(Jet, 'fatjets')
-        if fatjetcoll:
-            fatjets = dict()
-            for jet in fatjetcoll:
-                fatjets[jet] = jet
-            # store N-subjettiness up to 3
-            if hasattr(self.cfg_ana, 'jetsOneSubJettiness'):
-                for tjet in store.get(self.cfg_ana.jetsOneSubJettiness):
-                    fatjets[Jet(tjet.jet())].tau1 = tjet.tag()
+        # last empty entries allows for bk compatibility
+        algos = ['pf', 'calo', 'trk', '']
+        cones = ['02', '04', '08', '']
+        
+        for algo in algos:
+            for cone in cones:
+                if hasattr(self.cfg_ana, '{}jets{}'.format(algo,cone)):
+                   jetcoll = get_collection(Jet, '{}jets{}'.format(algo,cone))
+                   if jetcoll:
+                       jets = dict()
+                       for jet in jetcoll:
+                           jets[jet] = jet
+                       if hasattr(self.cfg_ana, '{}bTags{}'.format(algo,cone)):
+                           for bjet in get_tag('{}bTags{}'.format(algo,cone)):
+                               jets[Jet(bjet.jet())].tags['bf'] = bjet.tag()
 
-            if hasattr(self.cfg_ana, 'jetsTwoSubJettiness'):
-                for tjet in store.get(self.cfg_ana.jetsTwoSubJettiness):
-                    fatjets[Jet(tjet.jet())].tau2 = tjet.tag()
-            if hasattr(self.cfg_ana, 'jetsThreeSubJettiness'):
-                for tjet in store.get(self.cfg_ana.jetsThreeSubJettiness):
-                    fatjets[Jet(tjet.jet())].tau3 = tjet.tag()
+                       if hasattr(self.cfg_ana, '{}cTags{}'.format(algo,cone)):
+                           for cjet in get_tag('{}cTags{}'.format(algo,cone)):
+                               jets[Jet(cjet.jet())].tags['cf'] = cjet.tag()
 
-            from collections import defaultdict
-            # store subjets according to various algorithms
-            # the first entry of subjets list is the "cleaned" fastjet itself
-            
-            # trimming
-            if hasattr(self.cfg_ana, 'subjetsTrimming') and hasattr(self.cfg_ana, 'subjetsTrimmingTagged'):
-                 relations = defaultdict(list)
-                 for tjet in store.get(self.cfg_ana.subjetsTrimmingTagged):
-                      for i in range(tjet.subjets_size()):
-                          relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
-                 for fatjet, subjets in relations.items():
-                     fatjets[fatjet].subjetsTrimming = subjets
+                       if hasattr(self.cfg_ana, '{}tauTags{}'.format(algo,cone)):
+                           for taujet in get_tag('{}tauTags{}'.format(algo,cone)):
+                               jets[Jet(taujet.jet())].tags['tauf'] = taujet.tag()
 
-            # pruning
-            if hasattr(self.cfg_ana, 'subjetsPruning') and hasattr(self.cfg_ana, 'subjetsPruningTagged'):
-                 relations = defaultdict(list)
-                 for tjet in store.get(self.cfg_ana.subjetsPruningTagged):
-                      for i in range(tjet.subjets_size()):
-                          relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
-                 for fatjet, subjets in relations.items():
-                     fatjets[fatjet].subjetsPruning = subjets
+                       # store N-subjettiness up to 3
+                       if hasattr(self.cfg_ana, '{}jetsOneSubJettiness{}'.format(algo,cone)):
+                           for tjet in get_tag('{}jetsOneSubJettiness{}'.format(algo,cone)):
+                               jets[Jet(tjet.jet())].tau1 = tjet.tag()
 
-            # soft drop
-            if hasattr(self.cfg_ana, 'subjetsSoftDrop') and hasattr(self.cfg_ana, 'subjetsSoftDropTagged'):
-                 relations = defaultdict(list)
-                 for tjet in store.get(self.cfg_ana.subjetsSoftDropTagged):
-                      for i in range(tjet.subjets_size()):
-                          relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
-                 for fatjet, subjets in relations.items():
-                     fatjets[fatjet].subjetsSoftDrop = subjets
+                       if hasattr(self.cfg_ana, '{}jetsTwoSubJettiness{}'.format(algo,cone)):
+                           for tjet in get_tag('{}jetsTwoSubJettiness{}'.format(algo,cone)):
+                               jets[Jet(tjet.jet())].tau2 = tjet.tag()
+                       if hasattr(self.cfg_ana, '{}jetsThreeSubJettiness{}'.format(algo,cone)):
+                           for tjet in get_tag('{}jetsThreeSubJettiness{}'.format(algo,cone)):
+                               jets[Jet(tjet.jet())].tau3 = tjet.tag()
+
+                       from collections import defaultdict
+                       # store subjets according to various algorithms
+                       # the first entry of subjets list is the "cleaned" fastjet itself
+
+                       # trimming
+                       if hasattr(self.cfg_ana, '{}subjetsTrimming{}'.format(algo,cone)) and hasattr(self.cfg_ana, '{}subjetsTrimmingTagged{}'.format(algo,cone)):
+                            relations = defaultdict(list)
+                            for tjet in get_tag('{}subjetsTrimmingTagged{}'.format(algo,cone)):
+                                 for i in range(tjet.subjets_size()):
+                                     relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
+                            for jet, subjets in relations.items():
+                                jets[jet].subjetsTrimming = subjets
+
+                       # pruning
+                       if hasattr(self.cfg_ana, '{}subjetsPruning{}'.format(algo,cone)) and hasattr(self.cfg_ana, '{}subjetsPruningTagged{}'.format(algo,cone)):
+                            relations = defaultdict(list)
+                            for tjet in get_tag('{}subjetsPruningTagged{}'.format(algo,cone)):
+                                 for i in range(tjet.subjets_size()):
+                                     relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
+                            for jet, subjets in relations.items():
+                                jets[jet].subjetsPruning = subjets
+
+                       # soft drop
+                       if hasattr(self.cfg_ana, '{}subjetsSoftDrop{}'.format(algo,cone)) and hasattr(self.cfg_ana, '{}subjetsSoftDropTagged{}'.format(algo,cone)):
+                            relations = defaultdict(list)
+                            for tjet in get_tag('{}subjetsSoftDropTagged{}'.format(algo,cone)):
+                                 for i in range(tjet.subjets_size()):
+                                     relations[Jet(tjet.jet())].append(Jet(tjet.subjets(i)))
+                            for jet, subjets in relations.items():
+                                jets[jet].subjetsSoftDrop = subjets
 
 
         class Iso(object):
@@ -235,7 +247,7 @@ class Reader(Analyzer):
                     photons[Particle(pho.particle())].iso.sumpt = photons[Particle(pho.particle())].pt()*pho.tag()
 
             # a single reco photon can have relation to multiple sim particle (ele, pho)
-            # reco photon will thus have a list of gen particles attached		
+            # reco photon will thus have a list of gen particles attached
             if hasattr(self.cfg_ana, 'photonsToMC'):
                 from collections import defaultdict
                 relations = defaultdict(list)
