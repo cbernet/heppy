@@ -129,6 +129,12 @@ zeds = cfg.Analyzer(
     pdgid = 23
 )
 
+from heppy.analyzers.ResonanceLegExtractor import ResonanceLegExtractor
+leg_extractor = cfg.Analyzer(
+    ResonanceLegExtractor,
+    resonances = 'zeds'
+)
+
 # Computing the recoil p4 (here, p_initial - p_zed)
 # help(RecoilBuilder) for more information
 sqrts = Collider.SQRTS 
@@ -225,6 +231,7 @@ sequence = cfg.Sequence(
     iso_leptons,
     sel_iso_leptons,
     zeds,
+    leg_extractor, 
     recoil,
     missing_energy,
     particles_not_zed,
