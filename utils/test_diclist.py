@@ -10,7 +10,7 @@ class DiclistTestCase(unittest.TestCase):
         dl.add('b', 2)
         dl.add('c', 3)
         self.assertEqual([1,2,3], [value for value in dl] ) 
-        self.assertEqual(dl['c'], 3)
+        self.assertEqual(dl['c'], 3)        
 
     def test_bad_int_key(self):
         dl = diclist()

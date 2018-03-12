@@ -63,6 +63,7 @@ class Counter(diclist):
         retstr = 'Counter %s :\n' % self.name
         prev = None
         init = None
+        level_len = max(len(key) for key in self.keys()) + 5
         for level, count in self:
             if prev == None:
                 prev = count
@@ -75,7 +76,10 @@ class Counter(diclist):
                 eff2 = -1.
             else:
                 eff2 = float(count)/init
-            retstr += '\t {level:<60} {count:>9} \t {eff1:4.2f} \t {eff2:6.4f}\n'.format(
+            form = '\t {{level:<{level_len}}} {{count:>9}} \t {{eff1:4.2f}} \t {{eff2:6.4f}}\n'.format(
+                level_len=level_len
+            )
+            retstr += form.format(
                 level=level,
                 count=count,
                 eff1=eff1,
