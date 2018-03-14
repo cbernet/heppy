@@ -55,19 +55,27 @@ class JetClusterizer(Analyzer):
         self.njets = 0
         if 'ptmin' in args and 'njets' in args:
             raise ValueError('cannot specify both ptmin and njets arguments')
-        if 'ptmin' in args:
-            self.clusterizer = CCJetClusterizer(0)
-            def clusterize():
-                return self.clusterizer.make_inclusive_jets(args['ptmin']) 
-            self.clusterize = clusterize
-        elif 'njets' in args:
-            self.njets = args['njets']
-            self.clusterizer = CCJetClusterizer(1)
-            def clusterize():
-                return self.clusterizer.make_exclusive_jets(self.njets) 
-            self.clusterize = clusterize
-        else:
-            raise ValueError('specify either ptmin or njets') 
+        if len(args) == 1:       
+            if 'ptmin' in args:
+                self.clusterizer = CCJetClusterizer(0)
+                def clusterize():
+                    return self.clusterizer.make_inclusive_jets(args['ptmin'],
+                                                                0.4) 
+                self.clusterize = clusterize
+            elif 'njets' in args:
+                self.njets = args['njets']
+                self.clusterizer = CCJetClusterizer(1)
+                def clusterize():
+                    return self.clusterizer.make_exclusive_jets(self.njets) 
+                self.clusterize = clusterize
+            else:
+                raise ValueError('specify either ptmin or njets') 
+        elif len(args) == 3:
+            if 'R' in args and 'p' in args and 'emin' in args:
+                self.clusterizer = CCJetClusterizer(2, args['R'], args['p'])
+                def clusterize():
+                    return self.clusterizer.make_inclusive_jets(args['emin']) 
+                self.clusterize = clusterize
         
     def validate(self, jet):
         constits = jet.constituents
@@ -118,6 +126,8 @@ class JetClusterizer(Analyzer):
             self.clusterizer.add_p4( ptc.p4() )
         self.clusterize()
         jets = []
+        if self.cfg_ana.verbose:
+            print self.clusterizer.n_jets(), 'jets:'
         for jeti in range(self.clusterizer.n_jets()):
             jet = Jet( self.clusterizer.jet(jeti) )
             jet.constituents = JetConstituents()
@@ -128,4 +138,6 @@ class JetClusterizer(Analyzer):
                 jet.constituents.append(constituent)
             jet.constituents.sort()
             self.validate(jet)
+            if self.cfg_ana.verbose:
+                print '\t', jet
         setattr(event, self.cfg_ana.output, jets)
