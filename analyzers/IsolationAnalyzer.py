@@ -56,9 +56,13 @@ class IsolationAnalyzer(Analyzer):
         super(IsolationAnalyzer, self).beginLoop(setup)
         # now using same isolation definition for all pdgids
         self.iso_computers = dict()
+        off_iso_area = None
+        if hasattr(self.cfg_ana, 'off_iso_area'):
+            off_iso_area = self.cfg_ana.off_iso_area
         for pdgid in pdgids:
             self.iso_computers[pdgid] = IsolationComputer(
                 [self.cfg_ana.iso_area],
+                off_areas=[off_iso_area], 
                 label='iso{pdgid}'.format(pdgid=str(pdgid))
             )
             

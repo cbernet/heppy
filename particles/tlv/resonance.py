@@ -52,7 +52,7 @@ class Resonance2(Resonance):
         return self.legs[1]
 
     def acollinearity(self):
-        '''return the angle between the two legs, in radians'''
+        '''return the angle between the two legs, in degrees'''
         return self.leg1().p3().Angle(self.leg2().p3()) * 180 / math.pi
     
     def acoplanarity(self, axis=None):

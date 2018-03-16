@@ -31,6 +31,7 @@ class JetComponent(object):
         self._pt = 0
         self._num = 0
         self._pdgid = pdgid
+        self._q = 0
         self._particles = list()
 
     def pdgid(self):
@@ -49,6 +50,10 @@ class JetComponent(object):
         '''@return: the number of particles with this pdgid'''
         return self._num
     
+    def q(self):
+        '''@return: total charge of the particles with this pdgid'''
+        return self._q
+    
     def particles(self):
         '''@return list of particles'''
         return self._particles
@@ -63,6 +68,7 @@ class JetComponent(object):
         self._particles.append(ptc)
         self._e += ptc.e()
         self._pt += ptc.pt()
+        self._q += ptc.q()
         self._num += 1
 
     def sort(self, *args, **kwargs):
@@ -197,6 +203,7 @@ class Jet(P4):
         super(Jet, self).__init__(*args, **kwargs)
         self.constituents = None
         self.tags = JetTags()
+        self._q = None
 
     def pdgid(self):
         '''needed to behave as a particle.
@@ -206,11 +213,9 @@ class Jet(P4):
         return 0
 
     def q(self):
-        '''Needed to behave as a particle.
-        
-        @return 0
-        '''
-        return 0
+        if self._q is None:
+            self._q = sum(const.q() for const in self.constituents.values())
+        return self._q
     
     def __str__(self):
         tmp = '{className} : {p4}, tags={tags}'
