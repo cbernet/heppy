@@ -53,6 +53,11 @@ class EventFilter  (Analyzer):
             passed = len(input_collection) >= self.cfg_ana.min_number
         if passed:
             self.counters['efficiency'].inc('Selected')
+##        else:
+##            if self.cfg_ana.instance_label != 'gen_taus_acc':
+##                print self.cfg_ana
+##                print event
+##                print   
         return passed
             
 

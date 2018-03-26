@@ -97,7 +97,7 @@ class IsolationAnalyzer(Analyzer):
           - photon -> 22
           - other -> neutral hadron
         '''
-        if ptc.pdgid() in [11,13]:
+        if abs(ptc.pdgid()) in [11,13]:
             return ptc.pdgid() 
         elif ptc.q(): 
             return ptc.q() * 211
