@@ -81,11 +81,13 @@ class JetComponent(object):
             e = self.e(),
             pt = self.pt()
         )
-        ptcs = []
-        for ptc in self._particles:
-            ptcs.append('\t\t\t{particle}'.format(particle=str(ptc)))
         result = [header]
-        result.extend(ptcs)
+        if hasattr(self, '_particles'):
+            # not there if the component was deepcopied, see below
+            ptcs = []
+            for ptc in self._particles:
+                ptcs.append('\t\t\t{particle}'.format(particle=str(ptc)))
+            result.extend(ptcs)
         return '\n'.join(result)
     
     def __deepcopy__(self, memodict={}):
