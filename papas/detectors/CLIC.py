@@ -120,7 +120,8 @@ class HCAL(DetectorElement):
     
 class Tracker(DetectorElement):
    
-    theta_max = 75. * math.pi / 180.
+    # acceptance in radians 
+    theta_max = math.pi / 2.
     
     def __init__(self):
         super(Tracker, self).__init__('tracker',
