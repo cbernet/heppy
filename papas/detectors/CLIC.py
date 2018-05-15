@@ -120,11 +120,12 @@ class HCAL(DetectorElement):
     
 class Tracker(DetectorElement):
    
+    theta_max = 75. * math.pi / 180.
+    
     def __init__(self):
         super(Tracker, self).__init__('tracker',
                                       VolumeCylinder('tracker', ECAL.min_radius , ECAL.min_z),
                                       material.void)
-        self.theta_max = 75. * math.pi / 180.
         # Emilia Leogrande
         # using our definition of theta (equal to zero at eta=0)
         self.resmap = [(80.0, [0.00064001464571871076, 0.13554521466257508, 1.1091870672607593]),
@@ -148,7 +149,7 @@ class Tracker(DetectorElement):
         rnd = random.uniform(0,1)
         pt = track.p3().Pt()
         theta = abs(track.theta())
-        if theta < self.theta_max:
+        if theta < self.__class__.theta_max:
             if pt < 0.1:
                 return False
             elif pt < 0.3:
@@ -209,7 +210,7 @@ class CLIC(Detector):
         No information, cooking something up.
         '''
         if track.p3().Mag() > 5 and \
-           abs(track.theta()) < 80. * math.pi / 180.:
+           abs(track.theta()) < Tracker.theta_max:
             return random.uniform(0, 1) < 0.95
         else:
             return False
@@ -229,7 +230,7 @@ class CLIC(Detector):
         The CLIC CDR gives 99% for E > 7.5GeV and polar angle > 10 degrees
         '''
         return track.p3().Mag() > 7.5 and \
-               abs(track.theta()) < 80. * math.pi / 180.
+               abs(track.theta()) < Tracker.theta_max
             
     def muon_resolution(self, track):
         '''returns the relative muon resolution.
