@@ -29,7 +29,7 @@ random.seed(0xdeadbeef)
 from heppy.configuration import Collider
 Collider.BEAMS = 'ee'
 Collider.SQRTS = 91.
-do_clic = False
+do_clic = True
 nfiles = 4
 files = glob.glob('data/ee_Z_ddbar_pythia*.root')[:nfiles]
 # input definition
