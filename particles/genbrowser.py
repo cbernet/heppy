@@ -54,7 +54,9 @@ class GenBrowser(object):
                 
     def ancestors(self, particle):
         """Returns the list of ancestors for a given particle, 
-        that is mothers, grandmothers, etc."""
+        that is mothers, grandmothers, etc.
+        Recursive.
+        """
         result = []
         for mother in particle.mothers:
             result.append(mother)
@@ -63,13 +65,25 @@ class GenBrowser(object):
 
     def descendants(self, particle):
         """Returns the list of descendants for a given particle, 
-        that is daughters, granddaughters, etc."""
+        that is daughters, granddaughters, etc.
+        Recursive.
+        """
         result = []
         for daughter in particle.daughters:
             result.append(daughter)
             result.extend(self.descendants(daughter))
         return result
 
-
+    def decay_daughters(self, particle):
+        '''Returns decay daughters.
+        If particle decays to a single particle (itself), return daughters of daughter.
+        Recursive.
+        '''
+        result = []
+        if len(particle.daughters) == 1:
+            result.extend(self.decay_daughters(particle.daughters[0]))
+        else:
+            result.extend(particle.daughters)
+        return result
 
 
