@@ -80,7 +80,11 @@ class GenBrowser(object):
         Recursive.
         '''
         result = []
-        if len(particle.daughters) == 1:
+        self_decay = False
+        for dau in particle.daughters:
+            if dau.pdgid() == particle.pdgid():
+                self_decay = True
+        if self_decay:
             result.extend(self.decay_daughters(particle.daughters[0]))
         else:
             result.extend(particle.daughters)
