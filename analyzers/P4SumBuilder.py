@@ -15,10 +15,10 @@ class P4SumBuilder(Analyzer):
     Example::
     
         from heppy.analyzers.P4SumBuilder import P4SumBuilder
-        recoil = cfg.Analyzer(
+        sum_vis = cfg.Analyzer(
           P4SumBuilder,
+          output = 'sum_vis',
           particles = 'rec_particles',
-          output = 'sum_ptc',
         ) 
 
     @param particles: collection of input particles.

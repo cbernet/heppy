@@ -143,6 +143,12 @@ class JetConstituents(object):
             raise ValueError(msg)
         self.particles.append(ptc)
             
+    def n_particles(self):
+        return sum(comp.num() for comp in self._components.values())
+    
+    def n_charged_hadrons(self):
+        return self._components[211].num()
+            
     def __getattr__(self, attr):
         return getattr(self._components, attr)
     
