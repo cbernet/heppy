@@ -112,15 +112,13 @@ class IsolationComputer(object):
                 continue
             is_on = False
             for area in self.on_areas:
-                if area.is_inside(lepton.eta(), lepton.phi(),
-                                  ptc.eta(), ptc.phi() ):
+                if area.is_inside(lepton, ptc):
                     is_on = True
                     break
             if not is_on:
                 continue        
             for area in self.off_areas:
-                if area.is_inside(lepton.eta(), lepton.phi(),
-                                  ptc.eta(), ptc.phi() ):
+                if area.is_inside(lepton, ptc):
                     is_on = False
                     break
             if is_on:
