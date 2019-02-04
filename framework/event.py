@@ -3,8 +3,6 @@ import copy
 import collections
 import fnmatch
 
-from ROOT import TChain
-
 class Event(object):
     '''Event class.
 
