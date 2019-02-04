@@ -51,6 +51,13 @@ class IsolationInfo(object):
         self.sume += ptc.e()
         self.num += 1 
 
+    def rm_particle(self, ptc):
+        '''Remove a particle and update counters (e.g. for FSR recovery)'''
+        self.particles.remove(ptc)
+        self.sumpt -= ptc.pt()
+        self.sume -= ptc.e()
+        self.num -= 1
+
     def __iadd__(self, other):
         self.particles.extend(other.particles)
         self.sumpt += other.sumpt
