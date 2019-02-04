@@ -14,7 +14,7 @@ Table of contents:
 1. [Full analysis workflows](doc/Heppy_-_Full_analysis_workflows.md)
 1. [Reference guide](http://fcc-support-heppy.web.cern.ch/fcc-support-heppy/)
 1. [Generic analyses: working in several experiments](doc/particles.md)
-1. [Papas, the parametrized particle simulation](doc/ papas_-_The_PArametrized_PArticle_Simulation.md)
+1. [Papas, the parametrized particle simulation](doc/papas_-_The_PArametrized_PArticle_Simulation.md)
 
 Support & feedback: [https://github.com/cbernet]()
 
