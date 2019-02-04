@@ -16,7 +16,9 @@ from heppy.framework.looper import Looper
 from heppy.framework.config import split
 
 # import root in batch mode if "-i" is not among the options
-if "-i" not in sys.argv:
+import heppy.framework.context as context
+if context.name != 'bare' and \
+   '-i' not in sys.argv:
     oldv = sys.argv[:]
     sys.argv = [ "-b-"]
     import ROOT

@@ -1,8 +1,11 @@
 # Copyright (C) 2014 Colin Bernet
 # https://github.com/cbernet/heppy/blob/master/LICENSE
 
-import ROOT 
-ROOT.PyConfig.IgnoreCommandLineOptions = True
+import heppy.framework.context as context 
+if context.name != 'bare':
+    # root should not hijack command line options
+    import ROOT     
+    ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 import os
 import sys
