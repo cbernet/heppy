@@ -21,7 +21,12 @@ def get_name(env=None):
     if len(defined)>1: 
         raise ValueError('several contexts defined: ' + str(defined) )
     elif len(defined)==0:
-        raise ValueError('context is undefined!')
+        # FCC and CMS contexts not set. do we have ROOT? 
+        is_root = env.get('ROOTSYS', None)
+        if is_root: 
+            return 'root'
+        else: 
+            return 'bare'
     else: 
         return defined.pop()
 
@@ -35,5 +40,5 @@ def heppy_path():
 
 
 name = get_name()
-
+print name 
 heppy_path = heppy_path()
