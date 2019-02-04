@@ -1,12 +1,14 @@
 import unittest
 
-from ROOT import TFile
-
-from eventstfile import Events
-from heppy.utils.testtree import create_tree
+import heppy.framework.context as context
+if context.name != 'bare':
+    from ROOT import TFile
+    from eventstfile import Events
+    from heppy.utils.debug_tree import create_tree
 
 testfname = 'test_tree.root'
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class EventsTFileTestCase(unittest.TestCase):
 
     def setUp(self):

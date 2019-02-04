@@ -12,7 +12,7 @@ class Printer(Analyzer):
         '''Process the event.
         
         The input data must contain a variable called "var1",
-        which is the case of the L{test tree<heppy.utils.testtree>}. 
+        which is the case of the L{test tree<heppy.utils.debug_tree>}. 
         '''
         self.logger.info(
             "event {iEv}, var1 {var1}".format(

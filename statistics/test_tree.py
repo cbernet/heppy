@@ -1,7 +1,10 @@
 import unittest
-from ROOT import TFile
-from tree import Tree
+import heppy.framework.context as context
+if context.name != 'bare':
+    from ROOT import TFile
+    from tree import Tree
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TreeTestCase(unittest.TestCase):
 
     def test_fill(self):

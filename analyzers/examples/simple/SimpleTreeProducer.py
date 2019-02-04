@@ -34,7 +34,7 @@ class SimpleTreeProducer(Analyzer):
         '''Process the event.
         
         The input data must contain a variable called "var1",
-        which is the case of the L{test tree<heppy.utils.testtree>}. 
+        which is the case of the L{test tree<heppy.utils.debug_tree>}. 
         
         The event must contain:
          - var_random, which is the case if the L{RandomAnalyzer<heppy.analyzers.examples.simple.RandomAnalyzer.RandomAnalyzer>}

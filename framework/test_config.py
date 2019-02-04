@@ -40,7 +40,7 @@ class ConfigTestCase(unittest.TestCase):
             files='*.root',
             triggers='HLT_stuff'
             )
-        from heppy.framework.chain import Chain as Events
+        from heppy.framework.eventstext import Events
         config = cfg.Config( components = [comp1],
                             sequence = [ana1], 
                             services = [],

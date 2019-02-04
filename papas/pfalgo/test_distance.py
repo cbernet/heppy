@@ -1,14 +1,16 @@
 import unittest
 import itertools
-from distance import Distance
-from links import Element
-from heppy.papas.pfobjects import Cluster, Track
-from heppy.papas.path import StraightLine
 
-from ROOT import TVector3, TLorentzVector
- 
-ruler = Distance()
+import heppy.framework.context as context
+if context.name != 'bare':
+    from distance import Distance
+    from links import Element    
+    from heppy.papas.pfobjects import Cluster, Track
+    from heppy.papas.path import StraightLine
+    from ROOT import TVector3, TLorentzVector
+    ruler = Distance()  
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestDistance(unittest.TestCase):
     
     def test_layerfan(self):

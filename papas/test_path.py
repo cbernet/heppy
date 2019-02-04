@@ -1,13 +1,16 @@
 import unittest
-
-from path import Helix, ImpactParameter
-from heppy.analyzers.ImpactParameterSmearer import smear_IP
-from ROOT import TLorentzVector, TVector3
-from heppy.utils.computeIP import compute_IP
 import numpy as np
-import math
+import math 
 import copy
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from path import Helix, ImpactParameter
+    from heppy.analyzers.ImpactParameterSmearer import smear_IP
+    from ROOT import TLorentzVector, TVector3
+    from heppy.utils.computeIP import compute_IP
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestPath(unittest.TestCase):        
     
     def setUp(self):

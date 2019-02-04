@@ -2,14 +2,17 @@ import unittest
 import shutil
 import tempfile
 import os 
-from simple_example_noindexing_cfg import config
-from heppy.utils.testtree import create_tree, remove_tree
-from heppy.framework.looper import Looper
-from ROOT import TFile
-
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from simple_example_noindexing_cfg import config
+    from heppy.utils.debug_tree import create_tree, remove_tree
+    from heppy.framework.looper import Looper
+    from ROOT import TFile
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestNoIndexing(unittest.TestCase):
 
     def setUp(self):

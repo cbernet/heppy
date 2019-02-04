@@ -1,14 +1,17 @@
 import unittest
-from pfobjects import Cluster, SmearedCluster
-from detectors.CMS import cms
-from simulator import Simulator
-from ROOT import TVector3
 import math
 import numpy as np
-from ROOT import TFile, TH1F, TH2F
 
-simulator = Simulator(cms)
+import heppy.framework.context as context
+if context.name != 'bare':
+    from pfobjects import Cluster, SmearedCluster
+    from detectors.CMS import cms
+    from simulator import Simulator
+    from ROOT import TVector3
+    from ROOT import TFile, TH1F, TH2F
+    simulator = Simulator(cms)
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestCluster(unittest.TestCase):
 
     def test_pt(self):

@@ -2,13 +2,16 @@ import unittest
 import os
 import shutil
 
-from ROOT import TFile
-
-from heppy.framework.chain import Chain
-from heppy.utils.testtree import create_tree
+import heppy.framework.config as cfg
+import heppy.framework.context as context
+if context.name != 'bare':
+    from ROOT import TFile
+    from heppy.framework.chain import Chain
+    from heppy.utils.debug_tree import create_tree
 
 testfname = 'test_tree.root'
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class ChainTestCase(unittest.TestCase):
 
     def setUp(self):

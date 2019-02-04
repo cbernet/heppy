@@ -3,16 +3,19 @@ import tempfile
 import copy
 import os
 import shutil
-
-from analysis_ee_ZZ_resmatch_cfg import config
-from heppy.framework.looper import Looper
-from ROOT import TFile
-
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 
 import heppy.statistics.rrandom as random
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from analysis_ee_ZZ_resmatch_cfg import config
+    from heppy.framework.looper import Looper
+    from ROOT import TFile
+
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestAnalysis_ee_ZZ_resmatch(unittest.TestCase):
 
     def setUp(self):

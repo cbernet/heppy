@@ -1,9 +1,14 @@
 import unittest
-from detectors.geometry import SurfaceCylinder
-from pfobjects import Particle
-from propagator import straight_line, helix
-from vectors import LorentzVector, Point
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from detectors.geometry import SurfaceCylinder
+    from pfobjects import Particle
+    from propagator import straight_line, helix
+    from vectors import LorentzVector, Point
+
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestPropagator(unittest.TestCase):
     
     def test_straightline(self):

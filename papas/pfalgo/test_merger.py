@@ -1,9 +1,14 @@
 import unittest
 import copy
-from merger import merge_clusters
-from heppy.papas.pfobjects import Cluster
-from ROOT import TVector3
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from merger import merge_clusters
+    from heppy.papas.pfobjects import Cluster
+    from ROOT import TVector3
+
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestMerger(unittest.TestCase):
 
     def test_merge_pair(self):

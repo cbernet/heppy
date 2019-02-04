@@ -1,7 +1,10 @@
 import unittest
 
-from Gun import *
+import heppy.framework.context as context
+if context.name != 'bare':  
+    from Gun import *   
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class GunTestCase(unittest.TestCase):
     
     def test_particle(self):

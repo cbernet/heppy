@@ -1,10 +1,15 @@
 import unittest
 import math
 import copy
-from heppy.particles.isolation import *
-from heppy.particles.tlv.particle import Particle
-from ROOT import TLorentzVector
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from heppy.particles.isolation import *
+    from heppy.particles.tlv.particle import Particle
+    from ROOT import TLorentzVector
+
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestIsolation(unittest.TestCase):
 
     def test_circle(self):

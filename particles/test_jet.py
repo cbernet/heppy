@@ -1,11 +1,15 @@
 import unittest
 import pprint
 import copy
-from tlv.jet import Jet
-from jet import JetConstituents, JetTags, JetComponent
-from tlv.particle import Particle
-from ROOT import TLorentzVector
 
+import heppy.framework.context as context
+if context.name != 'bare':
+    from tlv.jet import Jet
+    from jet import JetConstituents, JetTags, JetComponent
+    from tlv.particle import Particle
+    from ROOT import TLorentzVector
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestJet(unittest.TestCase):
 
     def test_jet(self):

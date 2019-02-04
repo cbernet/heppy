@@ -1,13 +1,15 @@
 import unittest
 import math
-from ROOT import TLorentzVector
 import numpy as np
 
-from heppy.particles.tlv.particle import Particle
-from heppy.configuration import Collider
+import heppy.framework.context as context
+if context.name != 'bare':
+    from ROOT import TLorentzVector
+    from heppy.particles.tlv.particle import Particle
+    from heppy.configuration import Collider
+    from deltar import *
 
-from deltar import *
-
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestDeltaR(unittest.TestCase):
     
     #----------------------------------------------------------------------

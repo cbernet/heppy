@@ -35,7 +35,7 @@ def heppy_path():
     if context == 'cms':
         return '/'.join([os.environ['CMSSW_BASE'], 
                          'src/PhysicsTools/HeppyCore/python']) 
-    elif context == 'fcc': 
+    else: 
         return os.environ['HEPPY']
 
 

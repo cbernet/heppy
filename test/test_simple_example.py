@@ -3,17 +3,19 @@ import shutil
 import tempfile
 import os
 import copy
-from simple_example_cfg import config, stopper 
-from heppy.utils.testtree import create_tree, remove_tree
-from heppy.framework.heppy_loop import create_parser, main
-from heppy.framework.looper import Looper
-from heppy.framework.exceptions import UserStop
 import heppy.framework.context as context
-from ROOT import TFile
+if context.name != 'bare':
+    from ROOT import TFile
+    from simple_example_cfg import config, stopper 
+    from heppy.utils.debug_tree import create_tree, remove_tree
+    from heppy.framework.heppy_loop import create_parser, main
+    from heppy.framework.looper import Looper
+    from heppy.framework.exceptions import UserStop
 
 import logging
 logging.getLogger().setLevel(logging.ERROR)
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestSimpleExample(unittest.TestCase):
 
     def setUp(self):

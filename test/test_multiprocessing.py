@@ -5,19 +5,22 @@ import os
 import subprocess
 import copy
 import glob
-from simple_example_cfg import config, stopper 
-from heppy.utils.testtree import create_tree, remove_tree
-from heppy.framework.looper import Looper
-from heppy.framework.exceptions import UserStop
-import heppy.framework.context as context
-from ROOT import TFile
-
 import logging
 logging.getLogger().setLevel(logging.ERROR)
+
+import heppy.framework.context as context
+if context.name != 'bare':
+    from simple_example_cfg import config, stopper 
+    from heppy.utils.debug_tree import create_tree, remove_tree
+    from heppy.framework.looper import Looper
+    from heppy.framework.exceptions import UserStop
+    import heppy.framework.context as context
+    from ROOT import TFile
 
 class Options(object): 
     pass
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestMultiProcessing(unittest.TestCase):
 
     def setUp(self):

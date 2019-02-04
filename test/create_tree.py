@@ -1,4 +1,4 @@
-from heppy.utils.testtree import create_tree
+from heppy.utils.debug_tree import create_tree
 
 if __name__ == "__main__":
     

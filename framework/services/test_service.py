@@ -1,10 +1,12 @@
 import unittest
 import os 
 import shutil
-
-from tfile import TFileService
 import heppy.framework.config as cfg
+import heppy.framework.context as context
+if context.name != 'bare':
+    from tfile import TFileService
 
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class ServiceTestCase(unittest.TestCase):
 
     def test_tfile(self):

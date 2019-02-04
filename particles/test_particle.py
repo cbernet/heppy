@@ -1,13 +1,15 @@
 import unittest
 import os
 import copy
-from heppy.particles.tlv.particle import Particle as TlvParticle
-from heppy.particles.fcc.particle import Particle as FccParticle
-from heppy.configuration import Collider
-from ROOT import TLorentzVector, gSystem
-
 import heppy.framework.context as context
+if context.name != 'bare':
+    from heppy.particles.tlv.particle import Particle as TlvParticle
+    from heppy.particles.fcc.particle import Particle as FccParticle
+    from heppy.configuration import Collider
+    from ROOT import TLorentzVector, gSystem
 
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestParticle(unittest.TestCase):
 
     def tearDown(self):

@@ -2,26 +2,30 @@ import unittest
 import numpy as np
 import math
 import copy
-from heppy.particles.tlv.resonance import Resonance2 as Resonance
-from heppy.particles.tlv.particle import Particle
-from ROOT import TLorentzVector, TVector3
 
-def acop_patrick(leg1, leg2):
-    '''
-    Information sent by Patrick
-    vect1 = TVector3(self.jets[0].px(), self.jets[0].py(), self.jets[0].pz())
-    vect2 = TVector3(self.jets[1].px(), self.jets[1].py(), self.jets[1].pz())
-    cross = vect1.Unit().Cross(vect2.Unit())
-    # looks bugged, cross is not a unit vector
-    cross = abs(cross.z())
-    cross = asin(cross) * 180./pi
-    '''
-    cross = leg1.p3().Unit().Cross(leg2.p3().Unit())
-    cross = abs(cross.Z())
-    cross = math.asin(cross)*180./math.pi
-    # cross = math.asin(cross)
-    return cross
+import heppy.framework.context as context
+if context.name != 'bare':
+    from heppy.particles.tlv.resonance import Resonance2 as Resonance
+    from heppy.particles.tlv.particle import Particle
+    from ROOT import TLorentzVector, TVector3
 
+    def acop_patrick(leg1, leg2):
+        '''
+        Information sent by Patrick
+        vect1 = TVector3(self.jets[0].px(), self.jets[0].py(), self.jets[0].pz())
+        vect2 = TVector3(self.jets[1].px(), self.jets[1].py(), self.jets[1].pz())
+        cross = vect1.Unit().Cross(vect2.Unit())
+        # looks bugged, cross is not a unit vector
+        cross = abs(cross.z())
+        cross = asin(cross) * 180./pi
+        '''
+        cross = leg1.p3().Unit().Cross(leg2.p3().Unit())
+        cross = abs(cross.Z())
+        cross = math.asin(cross)*180./math.pi
+        # cross = math.asin(cross)
+        return cross
+
+@unittest.skipIf(context.name=='bare', 'ROOT not available')
 class TestResonance(unittest.TestCase):
     
     def test_many(self):        
