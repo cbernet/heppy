@@ -32,7 +32,8 @@ class Versions(object):
         info = dict()
         if module.__path__:
             try:        
-                repo = git.Repo(module.__path__[0])
+                repo = git.Repo(module.__path__[0],
+                                search_parent_directories=True)
                 info['commitid'] = repo.head.commit.hexsha
                 self.tracked[key] = info
             except git.InvalidGitRepositoryError:

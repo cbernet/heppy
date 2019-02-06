@@ -1,11 +1,16 @@
 import setuptools
+import glob
+
+scripts = glob.glob('bin/*.py')
+scripts.remove('bin/__init__.py')
+print scripts
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
     
 setuptools.setup(
     name='heppyfwk',
-    version='2.0.4',
+    version='2.0.5',
     author='Colin Bernet',
     author_email='colin.bernet@gmail.com',
     description='An event processing framework for High Energy Physics.',
@@ -47,4 +52,6 @@ setuptools.setup(
         'gitpython',
         'pyyaml'
         ],
+    scripts = scripts
 )
+

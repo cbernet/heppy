@@ -13,7 +13,7 @@ def get_name(env=None):
     reldir = env.get('CMSSW_BASE', None)
     if reldir and os.path.isdir(reldir):
         contexts['cms'] = True
-    fcc_envs = set(['PODIO', 'FCCPHYSICS', 'FCCEDM', 'HEPPY'])
+    fcc_envs = set(['PODIO', 'FCCPHYSICS', 'FCCEDM'])
     if fcc_envs.issubset( env ): 
         contexts['fcc'] = True
     defined = [key for key,defined in contexts.iteritems() 
@@ -35,8 +35,9 @@ def heppy_path():
     if context == 'cms':
         return '/'.join([os.environ['CMSSW_BASE'], 
                          'src/PhysicsTools/HeppyCore/python']) 
-    else: 
-        return os.environ['HEPPY']
+    else:
+        import heppy
+        return heppy.__path__[0]
 
 
 name = get_name()

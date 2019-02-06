@@ -17,7 +17,7 @@ class EventsTextTestCase(unittest.TestCase):
 
     def setUp(self):
         fname = create_data()
-        self.events = Events(fname)
+        self.events = Events([fname])
         
     def test_iterate(self):
         '''Test iteration'''

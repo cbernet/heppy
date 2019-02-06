@@ -1,11 +1,12 @@
 import unittest
 import heppy
+import heppy.framework.context as context
 
 scriptfname = '/'.join([
-    heppy.__path__[0], 
-    'test/simple_example_cfg.py'
+    context.heppy_path, 
+    'test/text_example_cfg.py'
     ])
-from versions import Versions
+from heppy.utils.versions import Versions
 
 ########################################################################
 class TestVersion(unittest.TestCase):
