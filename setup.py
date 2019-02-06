@@ -3,6 +3,7 @@ import glob
 
 scripts = glob.glob('bin/*.py')
 scripts.remove('bin/__init__.py')
+scripts.append('bin/heppy')
 print scripts
 
 with open("README.md", "r") as fh:
@@ -10,7 +11,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
     name='heppyfwk',
-    version='2.0.5',
+    version='2.0.9',
     author='Colin Bernet',
     author_email='colin.bernet@gmail.com',
     description='An event processing framework for High Energy Physics.',
@@ -50,7 +51,8 @@ setuptools.setup(
         'scipy',
         'dill',
         'gitpython',
-        'pyyaml'
+        'pyyaml',
+        'ipython'
         ],
     scripts = scripts
 )

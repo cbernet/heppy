@@ -10,12 +10,15 @@ do
     fi
 done
 
+bindir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 if [ "$interactive" = true ]; then
     args=`echo $@ | sed -e 's#-i##g'`
-    ln -sf $HEPPY/bin/heppy_interactive.py tmp_heppy.py
+    ln -sf $bindir/heppy_interactive.py tmp_heppy.py
     ipython -i tmp_heppy.py -- $args
 else
-    ln -sf $HEPPY/bin/heppy_loop.py tmp_heppy.py
+    echo $heppy
+    ln -sf $bindir/heppy_loop.py tmp_heppy.py
     ipython -- tmp_heppy.py "$@"
 fi 
 rm tmp_heppy.py
