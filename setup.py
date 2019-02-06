@@ -4,8 +4,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
     
 setuptools.setup(
-    name='heppy',
-    version='2.0.3',
+    name='heppyfwk',
+    version='2.0.4',
     author='Colin Bernet',
     author_email='colin.bernet@gmail.com',
     description='An event processing framework for High Energy Physics.',

@@ -9,15 +9,17 @@ Heppy only depends on python and ROOT (if you intend to read events from a ROOT 
 
 On top of python, you need the following python packages: 
 
-     numpy
-     ipython  (not strictly needed, but really useful)
+* numpy
+* scipy
+* dill
+* gitpython
+* pyyaml
 
 To get them, install pip and use it to install these packages.
 
-**ROOT 5, with pyroot support (optional)**
+**ROOT 6, with pyroot support (optional)**
 
-Note that you need to ensure that ROOT was compiled with the same
-version of python as the one in your PATH.
+Note that you need to ensure that ROOT was compiled with the same version of python as the one in your PATH.
 
 To check that, do the following:
 
