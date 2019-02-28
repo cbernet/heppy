@@ -11,7 +11,7 @@ with open("README.md", "r") as fh:
     
 setuptools.setup(
     name='heppyfwk',
-    version='2.0.11',
+    version='3.0.1',
     author='Colin Bernet',
     author_email='colin.bernet@gmail.com',
     description='An event processing framework for High Energy Physics.',
