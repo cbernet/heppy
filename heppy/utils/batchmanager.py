@@ -44,8 +44,12 @@ class BatchManager:
                                 dest="negate", default=False,
                                 help="create jobs, but does not submit the jobs.")
         self.parser_.add_option("-b", "--batch", dest="batch",
-                                help="batch command. default is: 'bsub -q 8nh < batchScript.sh'. You can also use 'nohup < ./batchScript.sh &' to run locally.",
-                                default="bsub -q 8nh < ./batchScript.sh")      
+                                help="""batch command to submit job. 
+                                    ==> HTCondor submission using HTCondor internal files transfer
+                                    ==> with max 240 minutes of wall clock runtime:
+                                          './run_condor.sh -t 240' 
+                                    The default is '%default'.""",
+                                default="./run_condor.sh -t 240")
         self.parser_.add_option( "--option",
                                 dest="extraOptions",
                                 type="string",
@@ -175,23 +179,32 @@ class BatchManager:
             print '*NOT* SUBMITTING JOBS - exit '
             return
         print 'SUBMITTING JOBS ======== '
-        for jobDir  in self.listOfJobs_:
-            root = os.getcwd()
-            # run it
-            print 'processing ', jobDir
-            os.chdir( jobDir )
-            self.SubmitJob( jobDir )
-            # and come back
-            os.chdir(root)
-            print 'waiting %s seconds...' % waitingTimeInSec
-            time.sleep( waitingTimeInSec )
-            print 'done.'
+        mode = self.RunningMode(self.options_.batch)
+        if mode != "LXPLUS":
+          for jobDir  in self.listOfJobs_:
+              root = os.getcwd()
+              # run it
+              print 'processing ', jobDir
+              os.chdir( jobDir )
+              self.SubmitJob( jobDir )
+              # and come back
+              os.chdir(root)
+              print 'waiting %s seconds...' % waitingTimeInSec
+              time.sleep( waitingTimeInSec )
+              print 'done.'
+        else :
+          self.SubmitJob_condor( )
+          print 'done.'
 
     def SubmitJob( self, jobDir ):
         '''Hook for job submission.'''
         print 'submitting (to be customized): ', jobDir  
         os.system( self.options_.batch )
 
+    def SubmitJob_condor( self):
+        '''Hook for job submission.'''
+        print 'submitting job to CONDOR'
+        os.system( "./script/"+self.options_.batch )
 
     def SubmitJobArray( self, numbOfJobs = 1 ):
         '''Hook for array job submission.'''
@@ -240,11 +253,11 @@ class BatchManager:
 
         '''Return "LXPUS", "PSI", "NAF", "LOCAL", or None,
 
-        "LXPLUS" : batch command is bsub, and logged on lxplus
-        "PSI"    : batch command is qsub, and logged to t3uiXX
-        "NAF"    : batch command is qsub, and logged on naf
-        "IC"     : batch command is qsub, and logged on hep.ph.ic.ac.uk
-        "LOCAL"  : batch command is nohup.
+        "LXPLUS"     : batch command is condor, and logged on lxplus
+        "PSI"        : batch command is qsub, and logged to t3uiXX
+        "NAF"        : batch command is qsub, and logged on naf
+        "IC"         : batch command is qsub, and logged on hep.ph.ic.ac.uk
+        "LOCAL"      : batch command is nohup.
 
         In all other cases, a CmsBatchException is raised
         '''
@@ -252,16 +265,16 @@ class BatchManager:
         hostName = socket.gethostname()
         onLxplus = hostName.startswith('lxplus')
         onPSI    = hostName.startswith('t3ui')
-        onNAF =  hostName.startswith('naf')
+        onNAF    = hostName.startswith('naf')
 
         batchCmd = batch.split()[0]
         
-        if batchCmd == 'bsub':
+        if 'run_condor.sh' in batchCmd:
             if not onLxplus:
                 err = 'Cannot run %s on %s' % (batchCmd, hostName)
                 raise ValueError( err )
             else:
-                print 'running on LSF : %s from %s' % (batchCmd, hostName)
+                print 'running on CONDOR : %s from %s' % (batchCmd, hostName)
                 return 'LXPLUS'
 
         elif batchCmd == "qsub":

@@ -6,8 +6,13 @@ scripts.remove('bin/__init__.py')
 scripts.append('bin/heppy')
 print scripts
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+long_description = """
+Heppy is an event processing framework for analyses in High Energy physics. It processes collision
+data event by event, creates high-level physics objects and filters, and provides interfaces that
+make it possible to write complete physics analyses with ease. While highly customizable through
+user-defines analyzers, it includes out-of-the-box functionality, including tools for batch job
+submission for certain experiments (currently CMS and FCC).
+"""
     
 setuptools.setup(
     name='heppyfwk',

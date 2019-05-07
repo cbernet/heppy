@@ -11,12 +11,11 @@ class TestContext(unittest.TestCase):
         self.assertEqual(get_name(env), 'cms')
 
     def test_fcc(self):
-        env = dict(PODIO='.', FCCEDM='.', FCCPHYSICS='.', HEPPY='.')        
+        env = dict(FCCVIEW='.')        
         self.assertEqual(get_name(env), 'fcc')
 
     def test_fcc_cms(self):
-        env = dict(PODIO='.', FCCEDM='.', FCCPHYSICS='.', HEPPY='.',
-                   CMSSW_BASE='.')        
+        env = dict(FCCVIEW='.', CMSSW_BASE='.')        
         self.assertRaises( ValueError, get_name, env )
      
     def test_root(self):

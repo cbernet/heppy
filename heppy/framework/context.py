@@ -13,7 +13,7 @@ def get_name(env=None):
     reldir = env.get('CMSSW_BASE', None)
     if reldir and os.path.isdir(reldir):
         contexts['cms'] = True
-    fcc_envs = set(['PODIO', 'FCCPHYSICS', 'FCCEDM'])
+    fcc_envs = set(['FCCVIEW'])
     if fcc_envs.issubset( env ): 
         contexts['fcc'] = True
     defined = [key for key,defined in contexts.iteritems() 

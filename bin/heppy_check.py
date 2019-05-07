@@ -62,7 +62,7 @@ if __name__ == '__main__':
         for dirname in badDirs:
             oldPwd = os.getcwd()
             os.chdir( dirname )
-            cmd =  [options.batch, '-J', dirname, ' < batchScript.sh' ]
+            cmd =  [oldPwd+"/script/./"+options.batch]
             print 'resubmitting in', os.getcwd()
             cmds = ' '.join( cmd )
             print cmds

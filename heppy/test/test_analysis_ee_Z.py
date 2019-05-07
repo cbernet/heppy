@@ -107,7 +107,7 @@ class TestAnalysis_ee_Z(unittest.TestCase):
         rootfile = '/'.join([self.outdir,
                             'heppy.analyzers.GlobalEventTreeProducer.GlobalEventTreeProducer_1/tree.root'])
         mean, sigma = plot_ee_mass(rootfile)
-        self.assertAlmostEqual(mean, 90.15, 1)
+        self.assertAlmostEqual(mean, 90.15, delta=1)
         self.assertAlmostEqual(sigma, 3.3, 1)
 
     def test_z_mumu_clic(self):

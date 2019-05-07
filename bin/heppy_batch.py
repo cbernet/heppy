@@ -78,98 +78,9 @@ exit $?
 """.format(looper=looper.__file__)
    return script
 
-def batchScriptCERN( jobDir, remoteDir=''):
-   '''prepare the LSF version of the batch script, to run on LSF'''
-
-   dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
-rm Loop/cmsswPreProcessing.root
-cp -r Loop/* $LS_SUBCWD
-if [ $? -ne 0 ]; then
-   echo 'ERROR: problem copying job directory back'
-else
-   echo 'job directory copy succeeded'
-fi"""
-   if remoteDir=='':
-      cpCmd=dirCopy
-   elif  remoteDir.startswith("root://eoscms.cern.ch//eos/cms/store/"):
-       cpCmd="""echo 'sending root files to remote dir'
-export LD_LIBRARY_PATH=/usr/lib64:$LD_LIBRARY_PATH # 
-for f in Loop/*/tree*.root
-do
-   rm Loop/cmsswPreProcessing.root
-   ff=`echo $f | cut -d/ -f2`
-   ff="${{ff}}_`basename $f | cut -d . -f 1`"
-   echo $f
-   echo $ff
-   export VO_CMS_SW_DIR=/cvmfs/cms.cern.ch
-   source $VO_CMS_SW_DIR/cmsset_default.sh
-   for try in `seq 1 3`; do
-      echo "Stageout try $try"
-      echo "/afs/cern.ch/project/eos/installation/pro/bin/eos.select mkdir {srm}"
-      /afs/cern.ch/project/eos/installation/pro/bin/eos.select mkdir {srm}
-      echo "/afs/cern.ch/project/eos/installation/pro/bin/eos.select cp `pwd`/$f {srm}/${{ff}}_{idx}.root"
-      /afs/cern.ch/project/eos/installation/pro/bin/eos.select cp `pwd`/$f {srm}/${{ff}}_{idx}.root
-      if [ $? -ne 0 ]; then
-         echo "ERROR: remote copy failed for file $ff"
-         continue
-      fi
-      echo "remote copy succeeded"
-      remsize=$(/afs/cern.ch/project/eos/installation/pro/bin/eos.select find --size {srm}/${{ff}}_{idx}.root | cut -d= -f3) 
-      locsize=$(cat `pwd`/$f | wc -c)
-      ok=$(($remsize==$locsize))
-      if [ $ok -ne 1 ]; then
-         echo "Problem with copy (file sizes don't match), will retry in 30s"
-         sleep 30
-         continue
-      fi
-      echo "everything ok"
-      rm $f
-      echo root://eoscms.cern.ch/{srm}/${{ff}}_{idx}.root > $f.url
-      break
-   done
-done
-cp -r Loop/* $LS_SUBCWD
-if [ $? -ne 0 ]; then
-   echo 'ERROR: problem copying job directory back'
-else
-   echo 'job directory copy succeeded'
-fi
-""".format(
-          idx = jobDir[jobDir.find("_Chunk")+6:].strip("/") if '_Chunk' in jobDir else 'all',
-          srm = (""+remoteDir+jobDir[ jobDir.rfind("/") : (jobDir.find("_Chunk") if '_Chunk' in jobDir else len(jobDir)) ]).replace("root://eoscms.cern.ch/","")
-          )
-   else:
-       print "chosen location not supported yet: ", remoteDir
-       print 'path must start with /store/'
-       sys.exit(1)
-
-   script = """#!/bin/bash
-#BSUB -q 8nm
-echo 'environment:'
-echo
-env | sort
-# ulimit -v 3000000 # NO
-echo 'copying job dir to worker'
-cd $CMSSW_BASE/src
-eval `scramv1 ru -sh`
-# cd $LS_SUBCWD
-# eval `scramv1 ru -sh`
-cd -
-cp -rf $LS_SUBCWD .
-ls
-cd `find . -type d | grep /`
-echo 'running'
-python {looper} pycfg.py config.pck --options=options.json
-echo
-{copy}
-""".format(looper=looper.__file__, copy=cpCmd)
-
-   return script
-
-
-
-def batchScriptCERN_FCC( jobDir ):
-   '''prepare the LSF version of the batch script, to run on LSF'''
+def batchScriptCERN( jobDir ):
+   # exactly the same as previous batchScriptCERN_FCC
+   '''prepare the CONDOR version of the batch script, to run on CONDOR'''
 
    dirCopy = """echo 'sending the logs back'  # will send also root files if copy failed
 cp -r Loop/* $LS_SUBCWD
@@ -180,36 +91,73 @@ else
 fi"""
    cpCmd=dirCopy
 
-   script = """#!/bin/bash
-#BSUB -q 8nm
-# ulimit -v 3000000 # NO
-unset LD_LIBRARY_PATH
-unset PYTHONHOME
-export PYTHONPATH={pythonpath}
-echo 'copying job dir to worker'
-source {fccswpath}/init_fcc_stack.sh  
+   script_old = """#!/bin/bash
 cd $HEPPY
 source ./init.sh
-echo 'environment:'
-echo
-env | sort
-echo
-which python
 cd -
 cp -rf $LS_SUBCWD .
 ls
-cd `find . -type d | grep /`
+cd `find . -type d | grep _pp_`
 echo 'running'
 python {looper} config.pck {heppy_option_str}
 echo
 {copy}
 """.format(looper=looper.__file__,
            heppy_option_str=heppy_option_str, 
-           copy=cpCmd, 
+           copy=cpCmd,
            pythonpath=os.getcwd(), fccswpath=os.environ['FCCSWPATH'])
 
-   return script
+# IMPORTANT -> need to make safer get back of the files with line :
+# cd `find . -type d | grep _pp_`
+# intially it was :
+# cd `find . -type d | grep /`
+# but condor generates var and tmp directorirs which makes this command not working
+# -> and job fails as it cannot get back the output files/dirs
 
+
+# new setup :
+# -----------
+
+#  add these lines in init.sh
+#export FCCEDM="unused"
+#export PODIO="unused"
+#export FCCPHYSICS="unused"
+#export FCCSWPATH="unused"
+
+# the script to use and comment old above :
+#   script_new = """#!/bin/bash
+#unset LD_LIBRARY_PATH
+#unset PYTHONHOME
+#export PYTHONPATH={pythonpath}
+#echo 'copying job dir to worker'
+#source {fccswpath}/setup.sh
+#cd $HEPPY
+#source ./init.sh
+#export FCCEDM="unused"
+#export PODIO="unused"
+#export FCCPHYSICS="unused"
+#echo 'environment:'
+#echo
+#env | sort
+#echo
+#which python
+#cd -
+#cp -rf $LS_SUBCWD .
+#ls
+#cd `find . -type d | grep _pp_`
+#echo 'running'
+#python {looper} config.pck {heppy_option_str}
+#echo
+#{copy}
+#""".format(looper=looper.__file__,
+#           heppy_option_str=heppy_option_str,
+#           copy=cpCmd,
+#           pythonpath=os.getcwd(), fccswpath=os.environ['FCCVIEW'])
+
+   script = script_old
+   #script = script_new
+
+   return script
 
 def batchScriptPSI( index, jobDir, remoteDir=''):
    '''prepare the SGE version of the batch script, to run on the PSI tier3 batch system'''
@@ -353,13 +301,7 @@ class MyBatchManager( BatchManager ):
       storeDir = self.remoteOutputDir_.replace('/castor/cern.ch/cms','')
       mode = self.RunningMode(self.options_.batch)
       if mode == 'LXPLUS':
-         if 'CMSSW_BASE' in os.environ and not 'PODIO' in os.environ:  
-            scriptFile.write( batchScriptCERN( jobDir, storeDir) )
-         elif 'PODIO' in os.environ:
-            #FCC case
-            scriptFile.write( batchScriptCERN_FCC( jobDir ) )
-         else: 
-            assert(False)
+         scriptFile.write( batchScriptCERN( jobDir ) )
       elif mode == 'PSI':
          # storeDir not implemented at the moment
          scriptFile.write( batchScriptPSI ( value, jobDir, storeDir ) ) 

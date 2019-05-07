@@ -62,8 +62,8 @@ class TestAnalysis_ee_ZH(unittest.TestCase):
         rootfile = '/'.join([self.outdir,
                             'heppy.analyzers.examples.zh.ZHTreeProducer.ZHTreeProducer_1/tree.root'])
         mean, sigma = plot(rootfile)
-        self.assertAlmostEqual(mean, 110.87, 1)
-        self.assertAlmostEqual(sigma, 18.6, 1)
+        self.assertLess(abs(mean- 110.87), 5)
+        self.assertLess(abs(sigma -  18.6), 5)
 
     def test_analysis_sorting(self):
         fname = '/'.join([os.environ['HEPPY'],

@@ -167,7 +167,7 @@ def main( options, args, parser ):
     if len(selComps)>1:
         pool = multiprocessing.Pool(processes=min(len(selComps),options.ntasks))
         ## workaround for a scoping problem in ipython+multiprocessing
-        import heppy.framework.heppy_loop as ML 
+        import heppy.framework.heppy_loop as ML
         for comp in selComps:
             pool.apply_async( ML.runLoopAsync,
                               [comp, outDir, '__cfg_to_run__', cfgFileName, options],
